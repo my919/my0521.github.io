@@ -18,7 +18,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
 
-<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js" defer></script>
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
 
     <meta property="og:type" content="website">
 <meta property="og:title" content="my">
@@ -49,7 +49,9 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
 <script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
 
-  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
 
 
 
@@ -93,6 +95,7 @@
 
   <div class="site-nav-right">
     <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
     </div>
   </div>
 </div>
@@ -101,11 +104,37 @@
 
 <nav class="site-nav">
   <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
   </ul>
 </nav>
 
 
 
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
 
 </header>
         
@@ -137,7 +166,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">3</span>
+          <span class="site-state-item-count">8</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -148,7 +177,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-count">9</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -176,6 +205,866 @@
     </div>
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/Python/UV%E9%A1%B9%E7%9B%AE%E5%BC%80%E5%8F%91%E6%B7%BB%E5%8A%A0Pytest/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/05/01/Python/UV%E9%A1%B9%E7%9B%AE%E5%BC%80%E5%8F%91%E6%B7%BB%E5%8A%A0Pytest/" class="post-title-link" itemprop="url">UV项目开发添加Pytest</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2026-05-01 12:00:00 / 修改时间：10:47:18" itemprop="dateCreated datePublished" datetime="2026-05-01T12:00:00+08:00">2026-05-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Python/" itemprop="url" rel="index"><span itemprop="name">Python</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>690</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>2 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p><strong>pytest</strong> 是 Python 生态里常用的<strong>测试框架</strong>，用断言函数与简洁的用例命名即可组织测试。本文在 <strong>uv 项目</strong>中以开发依赖安装 <strong>pytest</strong>，用 <strong><code>uv run</code></strong> 执行测试，并在 <strong><code>pyproject.toml</code></strong> 中集中配置。假定已有 <strong><code>pyproject.toml</code></strong>；若还没有，请先完成《UV从0到1创建项目》。命令默认在<strong>项目根目录</strong>执行。</p>
+<hr>
+<h1 id="一、安装-pytest"><a href="#一、安装-pytest" class="headerlink" title="一、安装 pytest"></a>一、安装 pytest</h1><h2 id="1-作为开发依赖添加"><a href="#1-作为开发依赖添加" class="headerlink" title="1. 作为开发依赖添加"></a>1. 作为开发依赖添加</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uv add --dev pytest</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-确认可执行文件"><a href="#2-确认可执行文件" class="headerlink" title="2. 确认可执行文件"></a>2. 确认可执行文件</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uv run pytest --version</span><br></pre></td></tr></table></figure>
+
+<p>能输出版本号即表示当前虚拟环境中已可用 pytest。</p>
+<hr>
+<h1 id="二、目录与示例用例"><a href="#二、目录与示例用例" class="headerlink" title="二、目录与示例用例"></a>二、目录与示例用例</h1><h2 id="1-推荐目录布局"><a href="#1-推荐目录布局" class="headerlink" title="1. 推荐目录布局"></a>1. 推荐目录布局</h2><p>常见两种（二选一即可，团队统一即可）：</p>
+<ul>
+<li><strong><code>tests/</code></strong> 与源码平级：适合应用项目。  </li>
+<li>源码包内 <strong><code>tests/</code></strong> 或 <strong><code>test_*.py</code></strong>：按包结构拆分。</li>
+</ul>
+<p>下文以仓库根下 <strong><code>tests/</code></strong> 为例。</p>
+<h2 id="2-第一个测试文件"><a href="#2-第一个测试文件" class="headerlink" title="2. 第一个测试文件"></a>2. 第一个测试文件</h2><p>创建 <strong><code>tests/test_example.py</code></strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">add</span>(<span class="params">a: <span class="built_in">int</span>, b: <span class="built_in">int</span></span>) -&gt; <span class="built_in">int</span>:</span><br><span class="line">    <span class="keyword">return</span> a + b</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">test_add</span>() -&gt; <span class="literal">None</span>:</span><br><span class="line">    <span class="keyword">assert</span> add(<span class="number">1</span>, <span class="number">2</span>) == <span class="number">3</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="3-运行全部测试"><a href="#3-运行全部测试" class="headerlink" title="3. 运行全部测试"></a>3. 运行全部测试</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uv run pytest</span><br></pre></td></tr></table></figure>
+
+<p>pytest 会递归收集 <strong><code>test_*.py</code></strong> &#x2F; <strong><code>*_test.py</code></strong> 中以 <strong><code>test_</code></strong> 开头的函数或类方法。</p>
+<hr>
+<h1 id="三、在-pyproject-toml-中配置-pytest"><a href="#三、在-pyproject-toml-中配置-pytest" class="headerlink" title="三、在 pyproject.toml 中配置 pytest"></a>三、在 <code>pyproject.toml</code> 中配置 pytest</h1><h2 id="1-最小可用配置"><a href="#1-最小可用配置" class="headerlink" title="1. 最小可用配置"></a>1. 最小可用配置</h2><p>在 <strong><code>pyproject.toml</code></strong> 中增加（或合并进已有块）：</p>
+<figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[tool.pytest.ini_options]</span></span><br><span class="line"><span class="attr">minversion</span> = <span class="string">&quot;8.0&quot;</span></span><br><span class="line"><span class="attr">testpaths</span> = [<span class="string">&quot;tests&quot;</span>]</span><br><span class="line"><span class="attr">pythonpath</span> = [<span class="string">&quot;.&quot;</span>]</span><br><span class="line"><span class="attr">addopts</span> = <span class="string">&quot;-ra -q&quot;</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong><code>testpaths</code></strong>：只从 <strong><code>tests</code></strong> 收集，避免误扫其它目录。  </li>
+<li><strong><code>pythonpath</code></strong>：把项目根加入 <strong>PYTHONPATH</strong>，便于 <code>from mypkg import ...</code> 式导入（按你包名调整）。  </li>
+<li><strong><code>addopts</code></strong>：示例为较安静输出 <strong><code>-q</code></strong> 与失败摘要 <strong><code>-ra</code></strong>，可按喜好修改。</li>
+</ul>
+<h2 id="2-标记（markers）示例"><a href="#2-标记（markers）示例" class="headerlink" title="2. 标记（markers）示例"></a>2. 标记（markers）示例</h2><p>用于给用例打标签（慢测、集成测等）：</p>
+<figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[tool.pytest.ini_options]</span></span><br><span class="line"><span class="attr">markers</span> = [</span><br><span class="line">    <span class="string">&quot;slow: marks tests as slow (deselect with &#x27;-m \&quot;not slow\&quot;&#x27;)&quot;</span>,</span><br><span class="line">    <span class="string">&quot;integration: integration tests&quot;</span>,</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+
+<p>用例上写：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> pytest</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">@pytest.mark.slow</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">test_heavy</span>() -&gt; <span class="literal">None</span>:</span><br><span class="line">    <span class="keyword">assert</span> <span class="literal">True</span></span><br></pre></td></tr></table></figure>
+
+<p>只跑非慢测：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uv run pytest -m <span class="string">&quot;not slow&quot;</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="四、常用运行方式"><a href="#四、常用运行方式" class="headerlink" title="四、常用运行方式"></a>四、常用运行方式</h1><h2 id="1-指定文件或节点"><a href="#1-指定文件或节点" class="headerlink" title="1. 指定文件或节点"></a>1. 指定文件或节点</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">uv run pytest tests/test_example.py</span><br><span class="line">uv run pytest tests/test_example.py::test_add</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-失败即停、打印局部变量"><a href="#2-失败即停、打印局部变量" class="headerlink" title="2. 失败即停、打印局部变量"></a>2. 失败即停、打印局部变量</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">uv run pytest -x</span><br><span class="line">uv run pytest -l</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-并行（可选插件）"><a href="#3-并行（可选插件）" class="headerlink" title="3. 并行（可选插件）"></a>3. 并行（可选插件）</h2><p>若已 <strong><code>uv add --dev pytest-xdist</code></strong>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uv run pytest -n auto</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="五、覆盖率（可选）"><a href="#五、覆盖率（可选）" class="headerlink" title="五、覆盖率（可选）"></a>五、覆盖率（可选）</h1><h2 id="1-安装-pytest-cov"><a href="#1-安装-pytest-cov" class="headerlink" title="1. 安装 pytest-cov"></a>1. 安装 pytest-cov</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uv add --dev pytest-cov</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-命令行生成报告"><a href="#2-命令行生成报告" class="headerlink" title="2. 命令行生成报告"></a>2. 命令行生成报告</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uv run pytest --cov=src --cov-report=term-missing</span><br></pre></td></tr></table></figure>
+
+<p>将 <strong><code>src</code></strong> 换成你的包目录名；或在 <strong><code>[tool.pytest.ini_options]</code></strong> 的 <strong><code>addopts</code></strong> 里固定 <strong><code>--cov=...</code></strong>（团队约定后再写死）。</p>
+<hr>
+<h1 id="六、与-CI、pre-commit"><a href="#六、与-CI、pre-commit" class="headerlink" title="六、与 CI、pre-commit"></a>六、与 CI、pre-commit</h1><ul>
+<li><strong>CI</strong>：在 <strong><code>uv sync</code></strong> 后执行 <strong><code>uv run pytest</code></strong>，与本地一致。  </li>
+<li><strong>pre-commit</strong>：可将 <strong><code>uv run pytest</code></strong> 接到 <strong><code>local</code> hook</strong>；注意全量测试较慢，常见做法是 <strong>CI 跑全量</strong>、pre-commit 只做 <strong>ruff</strong> 等轻量检查（见《UV项目开发添加pre-commit》）。</li>
+</ul>
+<hr>
+<h1 id="七、常用命令速查"><a href="#七、常用命令速查" class="headerlink" title="七、常用命令速查"></a>七、常用命令速查</h1><table>
+<thead>
+<tr>
+<th>目的</th>
+<th>命令</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>安装</td>
+<td><code>uv add --dev pytest</code></td>
+</tr>
+<tr>
+<td>版本</td>
+<td><code>uv run pytest --version</code></td>
+</tr>
+<tr>
+<td>默认收集运行</td>
+<td><code>uv run pytest</code></td>
+</tr>
+<tr>
+<td>匹配标记</td>
+<td><code>uv run pytest -m &quot;not slow&quot;</code></td>
+</tr>
+<tr>
+<td>覆盖率</td>
+<td><code>uv run pytest --cov=包或路径 --cov-report=term-missing</code></td>
+</tr>
+</tbody></table>
+<p>官方文档：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://docs.pytest.org/">pytest</a>。</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/Python/UV%E9%A1%B9%E7%9B%AE%E5%BC%80%E5%8F%91%E6%B7%BB%E5%8A%A0pre-commit/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/05/01/Python/UV%E9%A1%B9%E7%9B%AE%E5%BC%80%E5%8F%91%E6%B7%BB%E5%8A%A0pre-commit/" class="post-title-link" itemprop="url">UV项目开发添加pre-commit</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2026-05-01 11:05:00 / 修改时间：10:58:27" itemprop="dateCreated datePublished" datetime="2026-05-01T11:05:00+08:00">2026-05-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Python/" itemprop="url" rel="index"><span itemprop="name">Python</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>956</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>3 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p><strong>pre-commit</strong> 会在 <strong><code>git commit</code></strong> 前按 <strong><code>.pre-commit-config.yaml</code></strong> 里<strong>从上到下的顺序</strong>依次执行钩子，适合把「轻量修复 → Lint&#x2F;格式 → 类型检查 → 测试」串成<strong>前置流水线</strong>。本文在 <strong>uv 项目</strong>中安装 <strong>pre-commit</strong>，并用 <strong><code>local</code> + <code>uv run</code></strong> 调用与 <strong><code>uv.lock</code></strong> 一致的 <strong>Ruff</strong>、<strong>BasedPyright</strong>（与 Pyright 配置兼容）、<strong>pytest</strong>。假定仓库已用 Git 管理；初始化见《UV从0到1创建项目》，各工具单独说明见《UV项目开发添加Ruff》《UV项目开发添加Pyright》《UV项目开发添加Pytest》。命令默认在<strong>项目根目录</strong>执行。</p>
+<hr>
+<h1 id="一、安装-pre-commit-与前置工具"><a href="#一、安装-pre-commit-与前置工具" class="headerlink" title="一、安装 pre-commit 与前置工具"></a>一、安装 pre-commit 与前置工具</h1><h2 id="1-开发依赖（一次装齐）"><a href="#1-开发依赖（一次装齐）" class="headerlink" title="1. 开发依赖（一次装齐）"></a>1. 开发依赖（一次装齐）</h2><p>提交前若要跑 <strong>Ruff &#x2F; BasedPyright &#x2F; pytest</strong>，需先作为开发依赖安装（若已装可跳过对应包）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uv add --dev pre-commit ruff basedpyright pytest</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>Ruff</strong>：Lint 与格式化（见《UV项目开发添加Ruff》）。  </li>
+<li><strong>BasedPyright</strong>：静态类型检查（见《UV项目开发添加Pyright》）。  </li>
+<li><strong>pytest</strong>：单元测试（见《UV项目开发添加Pytest》）。</li>
+</ul>
+<h2 id="2-确认-pre-commit"><a href="#2-确认-pre-commit" class="headerlink" title="2. 确认 pre-commit"></a>2. 确认 pre-commit</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uv run pre-commit --version</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="二、添加配置文件"><a href="#二、添加配置文件" class="headerlink" title="二、添加配置文件"></a>二、添加配置文件</h1><h2 id="1-新建-pre-commit-config-yaml（含-Ruff、Pyright、pytest-前置链）"><a href="#1-新建-pre-commit-config-yaml（含-Ruff、Pyright、pytest-前置链）" class="headerlink" title="1. 新建 .pre-commit-config.yaml（含 Ruff、Pyright、pytest 前置链）"></a>1. 新建 <code>.pre-commit-config.yaml</code>（含 Ruff、Pyright、pytest 前置链）</h2><p>在项目根创建 <strong><code>.pre-commit-config.yaml</code></strong>。下面示例顺序为：<strong>通用清理 → Ruff → BasedPyright → pytest</strong>（可按团队习惯删减或调整顺序）。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">repos:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">repo:</span> <span class="string">https://github.com/pre-commit/pre-commit-hooks</span></span><br><span class="line">    <span class="attr">rev:</span> <span class="string">v5.0.0</span></span><br><span class="line">    <span class="attr">hooks:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">id:</span> <span class="string">trailing-whitespace</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">id:</span> <span class="string">end-of-file-fixer</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">id:</span> <span class="string">check-yaml</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">id:</span> <span class="string">check-added-large-files</span></span><br><span class="line"></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">repo:</span> <span class="string">local</span></span><br><span class="line">    <span class="attr">hooks:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">id:</span> <span class="string">ruff-check</span></span><br><span class="line">        <span class="attr">name:</span> <span class="string">ruff</span> <span class="string">check</span> <span class="string">(uv)</span></span><br><span class="line">        <span class="attr">entry:</span> <span class="string">uv</span> <span class="string">run</span> <span class="string">ruff</span> <span class="string">check</span> <span class="string">--fix</span></span><br><span class="line">        <span class="attr">language:</span> <span class="string">system</span></span><br><span class="line">        <span class="attr">types_or:</span> [<span class="string">python</span>, <span class="string">pyi</span>]</span><br><span class="line">        <span class="attr">pass_filenames:</span> <span class="literal">true</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">id:</span> <span class="string">ruff-format</span></span><br><span class="line">        <span class="attr">name:</span> <span class="string">ruff</span> <span class="string">format</span> <span class="string">(uv)</span></span><br><span class="line">        <span class="attr">entry:</span> <span class="string">uv</span> <span class="string">run</span> <span class="string">ruff</span> <span class="string">format</span></span><br><span class="line">        <span class="attr">language:</span> <span class="string">system</span></span><br><span class="line">        <span class="attr">types_or:</span> [<span class="string">python</span>, <span class="string">pyi</span>]</span><br><span class="line">        <span class="attr">pass_filenames:</span> <span class="literal">true</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">id:</span> <span class="string">basedpyright</span></span><br><span class="line">        <span class="attr">name:</span> <span class="string">basedpyright</span> <span class="string">(uv)</span></span><br><span class="line">        <span class="attr">entry:</span> <span class="string">uv</span> <span class="string">run</span> <span class="string">basedpyright</span></span><br><span class="line">        <span class="attr">language:</span> <span class="string">system</span></span><br><span class="line">        <span class="attr">types_or:</span> [<span class="string">python</span>, <span class="string">pyi</span>]</span><br><span class="line">        <span class="attr">pass_filenames:</span> <span class="literal">true</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">id:</span> <span class="string">pytest</span></span><br><span class="line">        <span class="attr">name:</span> <span class="string">pytest</span> <span class="string">(uv)</span></span><br><span class="line">        <span class="attr">entry:</span> <span class="string">uv</span> <span class="string">run</span> <span class="string">pytest</span></span><br><span class="line">        <span class="attr">language:</span> <span class="string">system</span></span><br><span class="line">        <span class="attr">pass_filenames:</span> <span class="literal">false</span></span><br></pre></td></tr></table></figure>
+
+<p>说明：</p>
+<ul>
+<li><strong><code>pre-commit-hooks</code> 的 <code>rev</code></strong>：须与 <a target="_blank" rel="noopener" href="https://github.com/pre-commit/pre-commit-hooks/releases">Releases</a> 上 tag 一致，文中为示例，可用 <strong><code>uv run pre-commit autoupdate</code></strong> 或手动更新。  </li>
+<li><strong>Ruff</strong>：<strong><code>local</code> + <code>uv run</code></strong>，版本与 <strong><code>uv.lock</code></strong> 中 <strong><code>ruff</code></strong> 完全一致；<strong><code>pass_filenames: true</code></strong> 时仅对暂存 <strong><code>.py</code> &#x2F; <code>.pyi</code></strong> 跑 <strong><code>check --fix</code></strong> 与 <strong><code>format</code></strong>。建议顺序为先 <strong><code>ruff check --fix</code></strong> 再 <strong><code>ruff format</code></strong>（与常见习惯一致）。若某次提交未包含 Python 文件，这两个钩子会被跳过。  </li>
+<li><strong>BasedPyright</strong>：<strong><code>pass_filenames: true</code></strong> 时把暂存路径传给 <strong><code>uv run basedpyright</code></strong>（需与 <strong><code>pyproject.toml</code></strong> 里 <strong><code>[tool.pyright]</code></strong> 的 <strong><code>include</code></strong> 等不矛盾）；若要整仓与 CI 一致可改为 <strong><code>pass_filenames: false</code></strong>。  </li>
+<li><strong>pytest</strong>：示例为 <strong><code>pass_filenames: false</code></strong>，每次 <strong><code>uv run pytest</code></strong>（范围由 <strong><code>pyproject.toml</code></strong> 中 <strong><code>testpaths</code></strong> 等决定）；若需减负可改为 <strong><code>pass_filenames: true</code></strong> 并加 <strong><code>files: ^tests/</code></strong> 等。</li>
+</ul>
+<h2 id="2-与-uv-lock-对齐"><a href="#2-与-uv-lock-对齐" class="headerlink" title="2. 与 uv.lock 对齐"></a>2. 与 <code>uv.lock</code> 对齐</h2><p><strong>Ruff、BasedPyright、pytest</strong> 均通过 <strong><code>uv run</code></strong> 调用，<strong>与本地及 CI 的 <code>uv sync</code> 结果一致</strong>；仅 <strong><code>pre-commit-hooks</code></strong> 仍由 pre-commit 按 <strong><code>rev</code></strong> 拉取，与 Python 工具链版本无关。</p>
+<hr>
+<h1 id="三、安装-Git-钩子"><a href="#三、安装-Git-钩子" class="headerlink" title="三、安装 Git 钩子"></a>三、安装 Git 钩子</h1><h2 id="1-一次性安装到当前仓库"><a href="#1-一次性安装到当前仓库" class="headerlink" title="1. 一次性安装到当前仓库"></a>1. 一次性安装到当前仓库</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uv run pre-commit install</span><br></pre></td></tr></table></figure>
+
+<p>之后每次 <strong><code>git commit</code></strong> 会按配置<strong>自上而下</strong>执行：先通用钩子与 Ruff，再 <strong>BasedPyright</strong>，最后 <strong>pytest</strong>。</p>
+<h2 id="2-手动跑一遍（不提交也可测）"><a href="#2-手动跑一遍（不提交也可测）" class="headerlink" title="2. 手动跑一遍（不提交也可测）"></a>2. 手动跑一遍（不提交也可测）</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uv run pre-commit run --all-files</span><br></pre></td></tr></table></figure>
+
+<p>首次运行主要拉取 <strong><code>pre-commit-hooks</code></strong> 指定 <strong><code>rev</code></strong>；<strong><code>local</code></strong> 钩子不另建虚拟环境，直接调用本机 <strong><code>uv</code></strong>。</p>
+<hr>
+<h1 id="四、CI-与团队协作"><a href="#四、CI-与团队协作" class="headerlink" title="四、CI 与团队协作"></a>四、CI 与团队协作</h1><h2 id="1-在流水线中复现"><a href="#1-在流水线中复现" class="headerlink" title="1. 在流水线中复现"></a>1. 在流水线中复现</h2><p>CI 在 <strong><code>uv sync</code></strong>（含 dev）之后执行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uv run pre-commit run --all-files</span><br></pre></td></tr></table></figure>
+
+<p>与本地同一套 <strong>Ruff → Pyright → pytest</strong> 前置链，减少环境漂移。</p>
+<h2 id="2-跳过钩子（慎用）"><a href="#2-跳过钩子（慎用）" class="headerlink" title="2. 跳过钩子（慎用）"></a>2. 跳过钩子（慎用）</h2><p>仅应急排障：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git commit --no-verify</span><br></pre></td></tr></table></figure>
+
+<p>勿作为常规绕过。</p>
+<hr>
+<h1 id="五、性能与拆分建议"><a href="#五、性能与拆分建议" class="headerlink" title="五、性能与拆分建议"></a>五、性能与拆分建议</h1><ul>
+<li><strong>pytest 全量</strong>放在每次 commit 可能偏慢：可只在 <strong>CI</strong> 跑全量，本地 pre-commit 保留 <strong>Ruff + BasedPyright</strong>，或给 <strong>pytest</strong> 加 <strong><code>stages: [manual]</code></strong> 改为手动 <strong><code>pre-commit run pytest</code></strong>。  </li>
+<li><strong>BasedPyright</strong> 对大仓库也偏慢：<strong><code>pass_filenames: true</code></strong> 只检查暂存文件通常更轻。详见《UV项目开发添加Pyright》中配置说明。</li>
+</ul>
+<hr>
+<h1 id="六、常用命令速查"><a href="#六、常用命令速查" class="headerlink" title="六、常用命令速查"></a>六、常用命令速查</h1><table>
+<thead>
+<tr>
+<th>目的</th>
+<th>命令</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>安装开发依赖</td>
+<td><code>uv add --dev pre-commit ruff basedpyright pytest</code></td>
+</tr>
+<tr>
+<td>安装 Git 钩子</td>
+<td><code>uv run pre-commit install</code></td>
+</tr>
+<tr>
+<td>全量跑 hooks</td>
+<td><code>uv run pre-commit run --all-files</code></td>
+</tr>
+<tr>
+<td>更新远程 rev</td>
+<td><code>uv run pre-commit autoupdate</code></td>
+</tr>
+</tbody></table>
+<p>官方文档：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://pre-commit.com/">pre-commit.com</a>。</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/Python/UV%E9%A1%B9%E7%9B%AE%E5%BC%80%E5%8F%91%E6%B7%BB%E5%8A%A0Pyright/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/05/01/Python/UV%E9%A1%B9%E7%9B%AE%E5%BC%80%E5%8F%91%E6%B7%BB%E5%8A%A0Pyright/" class="post-title-link" itemprop="url">UV项目开发添加Pyright</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2026-05-01 11:00:00 / 修改时间：10:58:26" itemprop="dateCreated datePublished" datetime="2026-05-01T11:00:00+08:00">2026-05-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Python/" itemprop="url" rel="index"><span itemprop="name">Python</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>614</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>2 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p><strong>Pyright</strong> 是微软开源的 <strong>Python 静态类型检查器</strong>，与 VS Code &#x2F; Cursor 的 <strong>Pylance</strong> 同源，适合在提交前发现类型错误。官方 CLI 多通过 <strong>Node.js</strong> 分发；在纯 <strong>uv + PyPI</strong> 工作流里，常用与 Pyright 配置兼容的 <strong>BasedPyright</strong>（维护活跃、一条 <code>uv add</code> 即可）。本文假定你已有 <strong>uv 项目</strong>；初始化步骤见《UV从0到1创建项目》。命令默认在<strong>项目根目录</strong>执行。</p>
+<hr>
+<h1 id="一、安装类型检查-CLI"><a href="#一、安装类型检查-CLI" class="headerlink" title="一、安装类型检查 CLI"></a>一、安装类型检查 CLI</h1><h2 id="1-推荐：BasedPyright（与-Pyright-配置兼容）"><a href="#1-推荐：BasedPyright（与-Pyright-配置兼容）" class="headerlink" title="1. 推荐：BasedPyright（与 Pyright 配置兼容）"></a>1. 推荐：BasedPyright（与 Pyright 配置兼容）</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uv add --dev basedpyright</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-验证"><a href="#2-验证" class="headerlink" title="2. 验证"></a>2. 验证</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uv run basedpyright --version</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-可选：使用微软原版-Pyright（Node）"><a href="#3-可选：使用微软原版-Pyright（Node）" class="headerlink" title="3. 可选：使用微软原版 Pyright（Node）"></a>3. 可选：使用微软原版 Pyright（Node）</h2><p>若团队统一使用 <strong>npm</strong> 安装的 Pyright，可在项目外加装 Node 后使用 <code>npx pyright</code>，或在 CI 里 <code>npm install -g pyright</code> 后调用 <strong><code>pyright</code></strong>；配置与下文 <strong><code>[tool.pyright]</code></strong> 键名一致（写在 <strong><code>pyproject.toml</code></strong> 即可）。</p>
+<hr>
+<h1 id="二、在-pyproject-toml-中配置"><a href="#二、在-pyproject-toml-中配置" class="headerlink" title="二、在 pyproject.toml 中配置"></a>二、在 <code>pyproject.toml</code> 中配置</h1><p>在 <strong><code>pyproject.toml</code></strong> 中增加 <strong><code>[tool.pyright]</code></strong>（<strong>BasedPyright</strong> 与 <strong>Pyright</strong> &#x2F; <strong>Pylance</strong> 均会读取，勿再单独维护 <strong><code>pyrightconfig.json</code></strong>，避免两处不一致）：</p>
+<figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[tool.pyright]</span></span><br><span class="line"><span class="attr">include</span> = [<span class="string">&quot;src&quot;</span>]</span><br><span class="line"><span class="attr">exclude</span> = [<span class="string">&quot;.venv&quot;</span>, <span class="string">&quot;**/__pycache__&quot;</span>]</span><br><span class="line"><span class="attr">pythonVersion</span> = <span class="string">&quot;3.14&quot;</span></span><br><span class="line"><span class="attr">typeCheckingMode</span> = <span class="string">&quot;standard&quot;</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong><code>include</code></strong>：按仓库实际源码目录修改（例如 <code>[&quot;hello_uv&quot;]</code> 或 <code>[&quot;.&quot;]</code>）。  </li>
+<li><strong><code>pythonVersion</code></strong>：与 <strong><code>[project] requires-python</code></strong> &#x2F; 本机解释器大版本一致。  </li>
+<li><strong><code>typeCheckingMode</code></strong>：常用 <strong><code>basic</code></strong> &#x2F; <strong><code>standard</code></strong> &#x2F; <strong><code>strict</code></strong>，由严到宽可调。</li>
+</ul>
+<p>更多键名与语义见：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://microsoft.github.io/pyright/#/configuration">Pyright Configuration</a>。</p>
+<hr>
+<h1 id="三、运行检查"><a href="#三、运行检查" class="headerlink" title="三、运行检查"></a>三、运行检查</h1><h2 id="1-全项目扫描"><a href="#1-全项目扫描" class="headerlink" title="1. 全项目扫描"></a>1. 全项目扫描</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uv run basedpyright</span><br></pre></td></tr></table></figure>
+
+<p>未指定路径时，会按 <strong><code>pyproject.toml</code></strong> 里 <strong><code>[tool.pyright]</code></strong> 的 <strong><code>include</code></strong> 等项解析工程。</p>
+<h2 id="2-指定目录或文件"><a href="#2-指定目录或文件" class="headerlink" title="2. 指定目录或文件"></a>2. 指定目录或文件</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uv run basedpyright src/hello_uv</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="四、为类型检查补全注解（简要）"><a href="#四、为类型检查补全注解（简要）" class="headerlink" title="四、为类型检查补全注解（简要）"></a>四、为类型检查补全注解（简要）</h1><p>Pyright 依赖 <strong><code>py.typed</code></strong> 标记与类型存根：</p>
+<ul>
+<li>若你发布<strong>库</strong>，在包根放置空文件 <strong><code>py.typed</code></strong>（PEP 561），并对公共 API 逐步补类型。  </li>
+<li>应用项目可在入口与关键模块为函数参数、返回值写上 <strong><code>str</code></strong>、<strong><code>list[str]</code></strong> 等，复杂结构用 <strong><code>TypedDict</code></strong>、<strong><code>Protocol</code></strong>。</li>
+</ul>
+<p>详细规则见官方文档：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://microsoft.github.io/pyright/#/configuration">Pyright Configuration</a>。</p>
+<hr>
+<h1 id="五、与编辑器、Ruff-的关系"><a href="#五、与编辑器、Ruff-的关系" class="headerlink" title="五、与编辑器、Ruff 的关系"></a>五、与编辑器、Ruff 的关系</h1><h2 id="1-VS-Code-Cursor"><a href="#1-VS-Code-Cursor" class="headerlink" title="1. VS Code &#x2F; Cursor"></a>1. VS Code &#x2F; Cursor</h2><p>安装 <strong>Pylance</strong>（或内置语言服务）后，会在编辑时读取 <strong><code>pyproject.toml</code></strong> 中的 <strong><code>[tool.pyright]</code></strong>；终端里 <strong><code>uv run basedpyright</code></strong> 与编辑器诊断应共用同一 <strong><code>pyproject.toml</code></strong>，避免两套配置。</p>
+<h2 id="2-与-Ruff-分工"><a href="#2-与-Ruff-分工" class="headerlink" title="2. 与 Ruff 分工"></a>2. 与 Ruff 分工</h2><ul>
+<li><strong>Ruff</strong>：风格、部分 lint、格式化（见《UV项目开发添加Ruff》）。  </li>
+<li><strong>Pyright &#x2F; BasedPyright</strong>：类型与导入解析等静态语义。二者可同时启用；避免用 Ruff 的 <strong><code>ANN</code></strong> 等与 Pyright 重复的规则集，减少噪音。</li>
+</ul>
+<hr>
+<h1 id="六、常用命令速查"><a href="#六、常用命令速查" class="headerlink" title="六、常用命令速查"></a>六、常用命令速查</h1><table>
+<thead>
+<tr>
+<th>目的</th>
+<th>命令</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>安装（PyPI）</td>
+<td><code>uv add --dev basedpyright</code></td>
+</tr>
+<tr>
+<td>版本</td>
+<td><code>uv run basedpyright --version</code></td>
+</tr>
+<tr>
+<td>按配置检查</td>
+<td><code>uv run basedpyright</code></td>
+</tr>
+<tr>
+<td>检查子路径</td>
+<td><code>uv run basedpyright src/包名</code></td>
+</tr>
+</tbody></table>
+<p>更多说明：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://docs.basedpyright.com/">BasedPyright</a> · <a target="_blank" rel="noopener" href="https://github.com/microsoft/pyright">Pyright</a>。</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/Python/UV%E9%A1%B9%E7%9B%AE%E5%BC%80%E5%8F%91%E6%B7%BB%E5%8A%A0Ruff/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/05/01/Python/UV%E9%A1%B9%E7%9B%AE%E5%BC%80%E5%8F%91%E6%B7%BB%E5%8A%A0Ruff/" class="post-title-link" itemprop="url">UV项目开发添加Ruff</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2026-05-01 10:30:00 / 修改时间：10:13:24" itemprop="dateCreated datePublished" datetime="2026-05-01T10:30:00+08:00">2026-05-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Python/" itemprop="url" rel="index"><span itemprop="name">Python</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>709</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>2 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p><strong>Ruff</strong> 是 <a target="_blank" rel="noopener external nofollow noreferrer" href="https://astral.sh/">Astral</a> 旗下的 Python <strong>极快</strong> linter 与 formatter，可替代或搭配 flake8、isort、pyupgrade 等工具链。本文假定你已有 <strong>uv 管理的项目</strong>（含 <code>pyproject.toml</code>）；若还没有，可先按《UV从0到1创建项目》完成初始化。下文命令均在<strong>项目根目录</strong>执行。</p>
+<hr>
+<h1 id="一、在-uv-项目中安装-Ruff"><a href="#一、在-uv-项目中安装-Ruff" class="headerlink" title="一、在 uv 项目中安装 Ruff"></a>一、在 uv 项目中安装 Ruff</h1><h2 id="1-作为开发依赖添加"><a href="#1-作为开发依赖添加" class="headerlink" title="1. 作为开发依赖添加"></a>1. 作为开发依赖添加</h2><p>将 <strong>Ruff</strong> 写入开发依赖组（不进入生产安装的最小集合，便于 CI 与本地统一）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uv add --dev ruff</span><br></pre></td></tr></table></figure>
+
+<p>若你使用 uv 的 <strong>dependency-groups</strong> 语法，等价写法可能是 <code>uv add --group dev ruff</code>，以本机 <code>uv add --help</code> 为准。</p>
+<h2 id="2-确认可执行文件"><a href="#2-确认可执行文件" class="headerlink" title="2. 确认可执行文件"></a>2. 确认可执行文件</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uv run ruff --version</span><br></pre></td></tr></table></figure>
+
+<p>能输出版本号即表示当前项目的虚拟环境里已可用 Ruff。</p>
+<hr>
+<h1 id="二、在-pyproject-toml-中配置-Ruff"><a href="#二、在-pyproject-toml-中配置-Ruff" class="headerlink" title="二、在 pyproject.toml 中配置 Ruff"></a>二、在 <code>pyproject.toml</code> 中配置 Ruff</h1><h2 id="1-最小可用配置"><a href="#1-最小可用配置" class="headerlink" title="1. 最小可用配置"></a>1. 最小可用配置</h2><p>在 <strong><code>pyproject.toml</code></strong> 末尾增加（或合并进已有 <strong><code>[tool.ruff]</code></strong>）：</p>
+<figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[tool.ruff]</span></span><br><span class="line"><span class="attr">target-version</span> = <span class="string">&quot;py314&quot;</span>   <span class="comment"># 与项目 Python 一致；若 Ruff 版本较旧可改为 py313 等</span></span><br><span class="line"><span class="attr">line-length</span> = <span class="number">88</span></span><br><span class="line"></span><br><span class="line"><span class="section">[tool.ruff.lint]</span></span><br><span class="line"><span class="attr">select</span> = [<span class="string">&quot;E&quot;</span>, <span class="string">&quot;F&quot;</span>, <span class="string">&quot;I&quot;</span>, <span class="string">&quot;UP&quot;</span>, <span class="string">&quot;B&quot;</span>]   <span class="comment"># 按需增减规则集</span></span><br><span class="line"><span class="attr">ignore</span> = []</span><br><span class="line"></span><br><span class="line"><span class="section">[tool.ruff.format]</span></span><br><span class="line"><span class="attr">quote-style</span> = <span class="string">&quot;double&quot;</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong><code>target-version</code></strong>：与 <code>requires-python</code> &#x2F; 实际运行版本对齐，避免规则与语法不匹配。  </li>
+<li><strong><code>select</code></strong>：示例包含 pycodestyle 类（E）、Pyflakes（F）、import 排序（I）、pyupgrade（UP）、bugbear（B）；可按团队规范调整。</li>
+</ul>
+<h2 id="2-指定要检查的路径（可选）"><a href="#2-指定要检查的路径（可选）" class="headerlink" title="2. 指定要检查的路径（可选）"></a>2. 指定要检查的路径（可选）</h2><p>默认可对仓库根目录递归检查；若只想扫源码目录，可加：</p>
+<figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[tool.ruff]</span></span><br><span class="line"><span class="attr">src</span> = [<span class="string">&quot;src&quot;</span>]</span><br></pre></td></tr></table></figure>
+
+<p>目录名按你项目实际修改（例如只有 <code>hello_uv</code> 包目录则写 <code>[&quot;hello_uv&quot;]</code>）。</p>
+<hr>
+<h1 id="三、日常检查与格式化"><a href="#三、日常检查与格式化" class="headerlink" title="三、日常检查与格式化"></a>三、日常检查与格式化</h1><h2 id="1-静态检查（lint）"><a href="#1-静态检查（lint）" class="headerlink" title="1. 静态检查（lint）"></a>1. 静态检查（lint）</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uv run ruff check .</span><br></pre></td></tr></table></figure>
+
+<p>仅检查 <strong><code>src</code></strong> 时：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uv run ruff check src</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-自动修复可修问题"><a href="#2-自动修复可修问题" class="headerlink" title="2. 自动修复可修问题"></a>2. 自动修复可修问题</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uv run ruff check . --fix</span><br></pre></td></tr></table></figure>
+
+<p><strong>建议</strong>在提交前于分支上执行，并 review diff；部分规则不会自动修复。</p>
+<h2 id="3-格式化（formatter）"><a href="#3-格式化（formatter）" class="headerlink" title="3. 格式化（formatter）"></a>3. 格式化（formatter）</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uv run ruff format .</span><br></pre></td></tr></table></figure>
+
+<p>与 <strong>Black</strong> 风格接近；若团队已有 Black，需统一约定再启用 Ruff format。</p>
+<hr>
+<h1 id="四、与-uv-run-以外的用法"><a href="#四、与-uv-run-以外的用法" class="headerlink" title="四、与 uv run 以外的用法"></a>四、与 <code>uv run</code> 以外的用法</h1><h2 id="1-激活虚拟环境后直接使用"><a href="#1-激活虚拟环境后直接使用" class="headerlink" title="1. 激活虚拟环境后直接使用"></a>1. 激活虚拟环境后直接使用</h2><p>若已 <code>source .venv/bin/activate</code>（Linux &#x2F; macOS），可直接：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ruff check .</span><br><span class="line">ruff format .</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-在-CI-中调用"><a href="#2-在-CI-中调用" class="headerlink" title="2. 在 CI 中调用"></a>2. 在 CI 中调用</h2><p>在流水线里进入仓库根目录后执行与本地相同的 <strong><code>uv sync</code></strong>（含 dev 依赖），再 <strong><code>uv run ruff check .</code></strong>，保证与开发机一致。</p>
+<hr>
+<h1 id="五、可选：忽略文件与-VS-Code"><a href="#五、可选：忽略文件与-VS-Code" class="headerlink" title="五、可选：忽略文件与 VS Code"></a>五、可选：忽略文件与 VS Code</h1><h2 id="1-ruffignore"><a href="#1-ruffignore" class="headerlink" title="1. .ruffignore"></a>1. <code>.ruffignore</code></h2><p>与 <code>.gitignore</code> 类似，在项目根创建 <strong><code>.ruffignore</code></strong>，排除迁移脚本、生成代码等：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">.venv/</span><br><span class="line">__pycache__/</span><br><span class="line">*.egg-info/</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-编辑器"><a href="#2-编辑器" class="headerlink" title="2. 编辑器"></a>2. 编辑器</h2><p>VS Code &#x2F; Cursor 可安装官方 <strong>Ruff</strong> 扩展，与本地 <strong><code>uv run</code></strong> 或激活后的解释器指向同一 <code>.venv</code>，便于保存时格式化与行内提示。详见 <a target="_blank" rel="noopener external nofollow noreferrer" href="https://docs.astral.sh/ruff/editors/setup/">Ruff 编辑器集成</a>。</p>
+<hr>
+<h1 id="六、常用命令速查"><a href="#六、常用命令速查" class="headerlink" title="六、常用命令速查"></a>六、常用命令速查</h1><table>
+<thead>
+<tr>
+<th>目的</th>
+<th>命令</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>安装为开发依赖</td>
+<td><code>uv add --dev ruff</code></td>
+</tr>
+<tr>
+<td>版本检查</td>
+<td><code>uv run ruff --version</code></td>
+</tr>
+<tr>
+<td>Lint 全仓库</td>
+<td><code>uv run ruff check .</code></td>
+</tr>
+<tr>
+<td>Lint 并修复</td>
+<td><code>uv run ruff check . --fix</code></td>
+</tr>
+<tr>
+<td>格式化</td>
+<td><code>uv run ruff format .</code></td>
+</tr>
+</tbody></table>
+<p>官方文档：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://docs.astral.sh/ruff/">Ruff</a>。</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/Python/UV%E4%BB%8E0%E5%88%B01%E5%88%9B%E5%BB%BA%E9%A1%B9%E7%9B%AE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/05/01/Python/UV%E4%BB%8E0%E5%88%B01%E5%88%9B%E5%BB%BA%E9%A1%B9%E7%9B%AE/" class="post-title-link" itemprop="url">UV从0到1创建项目</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2026-05-01 09:58:29 / 修改时间：11:03:55" itemprop="dateCreated datePublished" datetime="2026-05-01T09:58:29+08:00">2026-05-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Python/" itemprop="url" rel="index"><span itemprop="name">Python</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>1k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>3 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>本文从<strong>空目录</strong>开始，用 <strong>uv</strong> 初始化 Python 项目、固定解释器版本、创建虚拟环境、声明依赖并运行代码。假定你已能使用终端；<strong>uv 的安装与全局说明</strong>见同栏《Python的UV工具》一文。示例以 <strong>Python 3.14.3</strong> 为例，可按需改成你本机已安装的版本。</p>
+<hr>
+<h1 id="一、准备目录与检查-uv"><a href="#一、准备目录与检查-uv" class="headerlink" title="一、准备目录与检查 uv"></a>一、准备目录与检查 uv</h1><h2 id="1-新建项目文件夹"><a href="#1-新建项目文件夹" class="headerlink" title="1. 新建项目文件夹"></a>1. 新建项目文件夹</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">mkdir</span> hello-uv &amp;&amp; <span class="built_in">cd</span> hello-uv</span><br></pre></td></tr></table></figure>
+
+<p>路径与项目名可自定，下文以当前目录为「项目根」。</p>
+<h2 id="2-确认-uv-可用"><a href="#2-确认-uv-可用" class="headerlink" title="2. 确认 uv 可用"></a>2. 确认 uv 可用</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uv --version</span><br></pre></td></tr></table></figure>
+
+<p>若命令不存在，请先完成 uv 安装后再继续。</p>
+<hr>
+<h1 id="二、初始化项目（uv-init）"><a href="#二、初始化项目（uv-init）" class="headerlink" title="二、初始化项目（uv init）"></a>二、初始化项目（<code>uv init</code>）</h1><h2 id="1-生成-pyproject-toml-等骨架"><a href="#1-生成-pyproject-toml-等骨架" class="headerlink" title="1. 生成 pyproject.toml 等骨架"></a>1. 生成 <code>pyproject.toml</code> 等骨架</h2><p>在项目根执行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uv init</span><br></pre></td></tr></table></figure>
+
+<p>会生成（具体以你本机 uv 版本为准）<strong><code>pyproject.toml</code></strong>，部分版本还会生成 <strong><code>.gitignore</code></strong>、<strong><code>README.md</code></strong> 或示例入口文件等。</p>
+<h2 id="2-指定包名（可选）"><a href="#2-指定包名（可选）" class="headerlink" title="2. 指定包名（可选）"></a>2. 指定包名（可选）</h2><p>若希望 <code>pyproject.toml</code> 里项目名与目录名不同，可使用：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uv init --name hello_uv</span><br></pre></td></tr></table></figure>
+
+<p>尚未建目录时也可一步完成：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uv init hello-uv &amp;&amp; <span class="built_in">cd</span> hello-uv</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-常用国内-PyPI-镜像地址（整段复制）"><a href="#3-常用国内-PyPI-镜像地址（整段复制）" class="headerlink" title="3. 常用国内 PyPI 镜像地址（整段复制）"></a>3. 常用国内 PyPI 镜像地址（整段复制）</h2><p>终端里 <strong><code>uv pip install -i &lt;地址&gt;</code></strong>、或在 <strong><code>pyproject.toml</code></strong> 里填 <strong><code>[[tool.uv.index]]</code> 的 <code>url</code></strong> 时，可直接复制下列 <strong>simple</strong> 根地址（末尾一般带 <strong><code>/simple</code></strong>）：</p>
+<ul>
+<li><strong>清华</strong>：<code>https://pypi.tuna.tsinghua.edu.cn/simple</code></li>
+<li><strong>阿里云</strong>：<code>https://mirrors.aliyun.com/pypi/simple</code></li>
+<li><strong>腾讯云</strong>：<code>https://mirrors.cloud.tencent.com/pypi/simple</code></li>
+<li><strong>华为云</strong>：<code>https://repo.huaweicloud.com/repository/pypi/simple</code></li>
+</ul>
+<h2 id="4-在-pyproject-toml-中为-uv-配置默认索引（可选）"><a href="#4-在-pyproject-toml-中为-uv-配置默认索引（可选）" class="headerlink" title="4. 在 pyproject.toml 中为 uv 配置默认索引（可选）"></a>4. 在 <code>pyproject.toml</code> 中为 uv 配置默认索引（可选）</h2><p>在已有 <strong><code>pyproject.toml</code></strong>（<code>uv init</code> 之后）里使用 <strong><code>[[tool.uv.index]]</code></strong>，让 <strong><code>uv sync</code> &#x2F; <code>uv add</code></strong> 等默认走国内源；将 <strong><code>url</code></strong> 换成 <strong>二、§3</strong> 中任一条即可。示例（<strong>阿里云</strong> 为默认索引）：</p>
+<figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[[tool.uv.index]]</span></span><br><span class="line"><span class="attr">url</span> = <span class="string">&quot;https://mirrors.aliyun.com/pypi/simple&quot;</span></span><br><span class="line"><span class="attr">default</span> = <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>需要 <strong>官方 PyPI 作备用</strong> 时，可再加一段 <strong><code>[[tool.uv.index]]</code></strong>，<code>url = &quot;https://pypi.org/simple&quot;</code>，且 <strong><code>default = false</code></strong>（多索引细节以 <a target="_blank" rel="noopener external nofollow noreferrer" href="https://docs.astral.sh/uv/configuration/indexes/">uv 文档</a> 为准）。  </li>
+<li>改完后建议执行 <strong><code>uv lock</code></strong> &#x2F; <strong><code>uv sync</code></strong> 验证能否正常解析依赖。</li>
+</ul>
+<hr>
+<h1 id="三、固定-Python-版本与虚拟环境"><a href="#三、固定-Python-版本与虚拟环境" class="headerlink" title="三、固定 Python 版本与虚拟环境"></a>三、固定 Python 版本与虚拟环境</h1><h2 id="1-安装并固定解释器（可选但推荐）"><a href="#1-安装并固定解释器（可选但推荐）" class="headerlink" title="1. 安装并固定解释器（可选但推荐）"></a>1. 安装并固定解释器（可选但推荐）</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">uv python install 3.14.3</span><br><span class="line">uv python pin 3.14.3</span><br></pre></td></tr></table></figure>
+
+<p>会在项目根写入 <strong><code>.python-version</code></strong>，便于团队与 CI 使用同一 Python 小版本。</p>
+<h2 id="2-创建本地虚拟环境"><a href="#2-创建本地虚拟环境" class="headerlink" title="2. 创建本地虚拟环境"></a>2. 创建本地虚拟环境</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uv venv</span><br></pre></td></tr></table></figure>
+
+<p>默认得到 <strong><code>.venv/</code></strong>。若要与 pin 的版本一致，可显式指定：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uv venv --python 3.14.3</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-激活虚拟环境（可选）"><a href="#3-激活虚拟环境（可选）" class="headerlink" title="3. 激活虚拟环境（可选）"></a>3. 激活虚拟环境（可选）</h2><p>需要与传统工作流一致时再激活：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Linux / macOS</span></span><br><span class="line"><span class="built_in">source</span> .venv/bin/activate</span><br></pre></td></tr></table></figure>
+
+<p>日常更推荐直接用 <strong><code>uv run</code></strong>（见下文），无需每次 <code>activate</code>。</p>
+<hr>
+<h1 id="四、添加依赖并同步"><a href="#四、添加依赖并同步" class="headerlink" title="四、添加依赖并同步"></a>四、添加依赖并同步</h1><h2 id="1-用-uv-add-声明依赖"><a href="#1-用-uv-add-声明依赖" class="headerlink" title="1. 用 uv add 声明依赖"></a>1. 用 <code>uv add</code> 声明依赖</h2><p>例如增加 <strong>requests</strong>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uv add requests</span><br></pre></td></tr></table></figure>
+
+<p><code>uv</code> 会更新 <strong><code>pyproject.toml</code></strong> 中的依赖声明，并维护 <strong><code>uv.lock</code></strong>（锁文件）。若未配置 <strong>二、§4</strong> 的默认索引、且拉包较慢，可临时用 <strong><code>uv pip install -i &lt;镜像&gt;</code></strong>（镜像见 <strong>二、§3</strong>）。</p>
+<h2 id="2-安装锁文件中的依赖（uv-sync）"><a href="#2-安装锁文件中的依赖（uv-sync）" class="headerlink" title="2. 安装锁文件中的依赖（uv sync）"></a>2. 安装锁文件中的依赖（<code>uv sync</code>）</h2><p>在已有 <code>uv.lock</code> 的机器上（含克隆仓库后），在项目根执行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uv <span class="built_in">sync</span></span><br></pre></td></tr></table></figure>
+
+<p>会按锁文件创建或更新 <strong><code>.venv</code></strong> 中的包，保证环境可复现。</p>
+<hr>
+<h1 id="五、编写代码与运行"><a href="#五、编写代码与运行" class="headerlink" title="五、编写代码与运行"></a>五、编写代码与运行</h1><h2 id="1-入口文件"><a href="#1-入口文件" class="headerlink" title="1. 入口文件"></a>1. 入口文件</h2><p>若 <code>uv init</code> 后已有示例 <strong><code>main.py</code></strong>（或你自行创建 <code>main.py</code>），可写入：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">main</span>() -&gt; <span class="literal">None</span>:</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;Hello from uv&quot;</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    main()</span><br></pre></td></tr></table></figure>
+
+<p>实际文件名以你项目为准。</p>
+<h2 id="2-在项目环境中运行"><a href="#2-在项目环境中运行" class="headerlink" title="2. 在项目环境中运行"></a>2. 在项目环境中运行</h2><p>不激活 venv 时，在项目根执行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uv run python main.py</span><br></pre></td></tr></table></figure>
+
+<p>若在 <strong><code>pyproject.toml</code></strong> 的 <strong><code>[project.scripts]</code></strong> 里配置了控制台入口（例如 <code>hello = &quot;hello_uv.cli:main&quot;</code>），安装同步后可按 uv 提示使用 <strong><code>uv run hello</code></strong> 等形式；未配置时只用 <strong><code>uv run python …</code></strong> 即可。</p>
+<hr>
+<h1 id="六、目录与文件速览"><a href="#六、目录与文件速览" class="headerlink" title="六、目录与文件速览"></a>六、目录与文件速览</h1><p>初始化并添加依赖后，常见布局类似：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">hello-uv/</span><br><span class="line">├── .python-version     # uv python pin 生成（若执行过 pin）</span><br><span class="line">├── .venv/              # 本地虚拟环境（勿提交或按需 .gitignore）</span><br><span class="line">├── pyproject.toml      # 项目元数据与依赖声明</span><br><span class="line">├── uv.lock             # 锁文件，建议纳入版本控制</span><br><span class="line">└── main.py             # 或其它源码目录（以实际为准）</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="七、常用命令速查"><a href="#七、常用命令速查" class="headerlink" title="七、常用命令速查"></a>七、常用命令速查</h1><table>
+<thead>
+<tr>
+<th>步骤</th>
+<th>命令</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>初始化</td>
+<td><code>uv init</code>、<code>uv init --name 包名</code></td>
+</tr>
+<tr>
+<td>固定版本</td>
+<td><code>uv python pin 3.14.3</code></td>
+</tr>
+<tr>
+<td>建环境</td>
+<td><code>uv venv</code>、<code>uv venv --python 3.14.3</code></td>
+</tr>
+<tr>
+<td>加依赖</td>
+<td><code>uv add 包名</code></td>
+</tr>
+<tr>
+<td>按锁安装</td>
+<td><code>uv sync</code></td>
+</tr>
+<tr>
+<td>运行</td>
+<td><code>uv run python 脚本.py</code>、<code>uv run 命令</code></td>
+</tr>
+</tbody></table>
+<p>更多子命令与配置见官方文档：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://docs.astral.sh/uv/">uv 文档</a>。</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -391,9 +1280,15 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
-      
 
-      <time title="创建时间：2026-04-30 23:04:21 / 修改时间：23:13:06" itemprop="dateCreated datePublished" datetime="2026-04-30T23:04:21+08:00">2026-04-30</time>
+      <time title="创建时间：2026-04-30 23:04:21" itemprop="dateCreated datePublished" datetime="2026-04-30T23:04:21+08:00">2026-04-30</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-05-01 11:08:50" itemprop="dateModified" datetime="2026-05-01T11:08:50+08:00">2026-05-01</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -494,7 +1389,7 @@
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uv <span class="built_in">sync</span></span><br></pre></td></tr></table></figure>
 
 <p>会按声明安装依赖并维护锁文件（若使用 uv 的 lock 工作流）。</p>
-<h2 id="3-在固定环境中运行命令"><a href="#3-在固定环境中运行命令" class="headerlink" title="3. 在固定环境中运行命令"></a>3. 在固定环境中运行命令</h2><p>无需先 <code>activate</code>，可在项目根使用：</p>
+<h2 id="4-在固定环境中运行命令"><a href="#4-在固定环境中运行命令" class="headerlink" title="4. 在固定环境中运行命令"></a>4. 在固定环境中运行命令</h2><p>无需先 <code>activate</code>，可在项目根使用：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">uv run python main.py</span><br><span class="line">uv run pytest</span><br></pre></td></tr></table></figure>
 
 <p>uv 会按项目配置选择解释器与依赖环境。</p>
@@ -590,9 +1485,15 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
-      
 
-      <time title="创建时间：2026-04-30 20:03:52 / 修改时间：23:05:58" itemprop="dateCreated datePublished" datetime="2026-04-30T20:03:52+08:00">2026-04-30</time>
+      <time title="创建时间：2026-04-30 20:03:52" itemprop="dateCreated datePublished" datetime="2026-04-30T20:03:52+08:00">2026-04-30</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-05-01 11:18:20" itemprop="dateModified" datetime="2026-05-01T11:18:20+08:00">2026-05-01</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -611,14 +1512,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>2k</span>
+      <span>2.5k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>7 分钟</span>
+      <span>8 分钟</span>
     </span>
 </div>
 
@@ -788,9 +1689,35 @@
 <li>内部链接不会加，非常安全</li>
 </ul>
 <hr>
-<h1 id="十、Python-文档目录"><a href="#十、Python-文档目录" class="headerlink" title="十、Python 文档目录"></a>十、Python 文档目录</h1><p>把 Python 相关博文统一放在 <strong><code>source/_posts/Python/</code></strong> 下，便于本地整理；站点上仍由文章的 <code>categories</code>、<code>tags</code> 控制归档与导航。</p>
+<h1 id="十、添加站内搜索（NexT-Local-Search）"><a href="#十、添加站内搜索（NexT-Local-Search）" class="headerlink" title="十、添加站内搜索（NexT + Local Search）"></a>十、添加站内搜索（NexT + Local Search）</h1><p>NexT 自带 <strong>Local Search</strong> 与 <strong>Algolia</strong> 两种对接方式。个人博客常用 <strong>本地搜索</strong>：由 <strong><code>hexo-generator-searchdb</code></strong> 在生成站点时输出检索索引（如 <strong><code>search.xml</code></strong>），主题在侧栏或菜单中加载该文件完成前端检索，无需外网账号。</p>
+<h2 id="1-安装生成索引的插件"><a href="#1-安装生成索引的插件" class="headerlink" title="1. 安装生成索引的插件"></a>1. 安装生成索引的插件</h2><p>在项目根执行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install hexo-generator-searchdb --save</span><br></pre></td></tr></table></figure>
+
+<p>（若 <strong><code>package.json</code></strong> 里已有 <strong><code>hexo-generator-searchdb</code></strong>，可跳过本步。）</p>
+<h2 id="2-配置站点根目录-config-yml"><a href="#2-配置站点根目录-config-yml" class="headerlink" title="2. 配置站点根目录 _config.yml"></a>2. 配置站点根目录 <code>_config.yml</code></h2><p>在 Hexo <strong>根目录</strong> <strong><code>_config.yml</code></strong>（不是主题配置）中增加或核对 <strong><code>search</code></strong> 段，使生成器写出 NexT 可用的索引文件。示例：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">search:</span></span><br><span class="line">  <span class="attr">path:</span> <span class="string">search.xml</span></span><br><span class="line">  <span class="attr">field:</span> <span class="string">post</span></span><br><span class="line">  <span class="attr">content:</span> <span class="literal">true</span></span><br><span class="line">  <span class="attr">format:</span> <span class="string">html</span></span><br><span class="line">  <span class="attr">limit:</span> <span class="number">10000</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong><code>path</code></strong>：输出文件名，需与 NexT 默认约定一致（一般为 <strong><code>search.xml</code></strong>）。  </li>
+<li><strong><code>content: true</code></strong>：索引正文，中文检索更完整，生成体积会变大。<br>修改后执行 <strong><code>hexo clean &amp;&amp; hexo g</code></strong>，确认 <strong><code>public/</code></strong> 下出现 <strong><code>search.xml</code></strong>（或你配置的 <code>path</code>）。</li>
+</ul>
+<h2 id="3-在-config-next-yml-中开启-Local-Search"><a href="#3-在-config-next-yml-中开启-Local-Search" class="headerlink" title="3. 在 _config.next.yml 中开启 Local Search"></a>3. 在 <code>_config.next.yml</code> 中开启 Local Search</h2><p>打开 <strong><code>_config.next.yml</code></strong>，在 <strong>Search Services</strong> 一段将 <strong><code>local_search.enable</code></strong> 设为 <strong><code>true</code></strong>，并按需调整触发方式等，例如：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">local_search:</span></span><br><span class="line">  <span class="attr">enable:</span> <span class="literal">true</span></span><br><span class="line">  <span class="attr">trigger:</span> <span class="string">auto</span>          <span class="comment"># auto：输入即搜；manual：需回车或点按钮</span></span><br><span class="line">  <span class="attr">top_n_per_article:</span> <span class="number">1</span>   <span class="comment"># 每篇文章在结果列表中展示条数</span></span><br><span class="line">  <span class="attr">unescape:</span> <span class="literal">true</span>         <span class="comment"># 建议 true，减轻 HTML 实体导致的中文显示问题</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>Algolia</strong> 为可选方案：在 <strong><code>algolia_search</code></strong> 中填写 <strong><code>applicationID</code> &#x2F; <code>apiKey</code> &#x2F; <code>indexName</code></strong> 等并 <strong><code>enable: true</code></strong>，同时把 <strong><code>local_search.enable</code></strong> 设为 <strong><code>false</code></strong>，避免两套搜索并存（以主题文档为准）。</p>
+<h2 id="4-使主题配置生效"><a href="#4-使主题配置生效" class="headerlink" title="4. 使主题配置生效"></a>4. 使主题配置生效</h2><p>若你采用「将 <strong><code>_config.next.yml</code></strong> 复制到 <strong><code>node_modules/hexo-theme-next/_config.yml</code></strong>」的方式，修改后需再执行一次复制。</p>
+<h2 id="5-生成与预览"><a href="#5-生成与预览" class="headerlink" title="5. 生成与预览"></a>5. 生成与预览</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo clean &amp;&amp; hexo g &amp;&amp; hexo s</span><br></pre></td></tr></table></figure>
+
+<p>在站点上打开搜索入口（常见为侧栏放大镜或菜单 <strong>Search</strong>），输入关键词，应能命中文章标题与正文（若已索引 <strong><code>content</code></strong>）。</p>
+<p>文档：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://theme-next.js.org/docs/third-party-services/search-services">NexT Search Services</a> · <a target="_blank" rel="noopener" href="https://github.com/next-theme/hexo-generator-searchdb">hexo-generator-searchdb</a></p>
+<hr>
+<h1 id="十一、Python-文档目录"><a href="#十一、Python-文档目录" class="headerlink" title="十一、Python 文档目录"></a>十一、Python 文档目录</h1><p>把 Python 相关博文统一放在 <strong><code>source/_posts/Python/</code></strong> 下，便于本地整理；站点上仍由文章的 <code>categories</code>、<code>tags</code> 控制归档与导航。</p>
 <h2 id="1-创建目录（首次）"><a href="#1-创建目录（首次）" class="headerlink" title="1. 创建目录（首次）"></a>1. 创建目录（首次）</h2><p>在项目根目录执行：</p>
-<h2 id="1-在-Python-子目录下新建文章"><a href="#1-在-Python-子目录下新建文章" class="headerlink" title="1. 在 Python 子目录下新建文章"></a>1. 在 <code>Python</code> 子目录下新建文章</h2><p>在<strong>站点根目录</strong>执行（<code>--path</code> 为相对 <code>source/_posts/</code> 的路径，<strong>不要</strong>写 <code>.md</code> 后缀）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">mkdir</span> -p <span class="built_in">source</span>/_posts/Python</span><br></pre></td></tr></table></figure>
+
+<p>若使用下面「带 <code>--path</code> 新建文章」的方式，<strong>首次也可以不手动建目录</strong>，Hexo 会随文章一起创建 <code>Python</code> 文件夹。</p>
+<p>为让 Git 跟踪空目录，可在其中保留占位文件（本仓库可含 <code>source/_posts/Python/.gitkeep</code>，可删可留）。</p>
+<h2 id="2-在-Python-子目录下新建文章"><a href="#2-在-Python-子目录下新建文章" class="headerlink" title="2. 在 Python 子目录下新建文章"></a>2. 在 <code>Python</code> 子目录下新建文章</h2><p>在<strong>站点根目录</strong>执行（<code>--path</code> 为相对 <code>source/_posts/</code> 的路径，<strong>不要</strong>写 <code>.md</code> 后缀）：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo new post <span class="string">&quot;文章显示标题&quot;</span> --path Python/文件基名</span><br></pre></td></tr></table></figure>
 
 <p>示例：</p>
@@ -805,7 +1732,7 @@
 <li><strong><code>--tags</code></strong>：需要多个标签时，<strong>重复写</strong> <code>--tags 标签A --tags 标签B</code>（会生成 YAML 列表）；若只写一个字符串如 <code>--tags &quot;UV,Python&quot;</code>，会落成<strong>单个</strong>标签字符串，通常不如多次 <code>--tags</code> 清晰。</li>
 </ul>
 <p>未在命令行写全的字段，仍可打开 <code>.md</code> 再改。</p>
-<h2 id="生成与预览"><a href="#生成与预览" class="headerlink" title="生成与预览"></a>生成与预览</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo clean &amp;&amp; hexo g &amp;&amp; hexo s</span><br></pre></td></tr></table></figure>
+<h2 id="3-生成与预览"><a href="#3-生成与预览" class="headerlink" title="3. 生成与预览"></a>3. 生成与预览</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo clean &amp;&amp; hexo g &amp;&amp; hexo s</span><br></pre></td></tr></table></figure>
 
 <p>在本地确认文章列表与分类、标签展示是否符合预期后再部署。</p>
 
@@ -846,13 +1773,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">4k</span>
+    <span title="站点总字数">8k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">12 分钟</span>
+    <span title="站点阅读时长">28 分钟</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动
@@ -876,6 +1803,80 @@
 <noscript>
   <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
 </noscript>
+
+<script>
+(function () {
+  function extractFromFigure(fig) {
+    if (!fig) return '';
+    var cell = fig.querySelector('td.code') || fig.querySelector('.code');
+    var block = cell || fig.querySelector('code');
+    if (!block) return '';
+    var pre = block.querySelector('pre');
+    var source = pre || block;
+    return (source.textContent || '').replace(/\u00a0/g, ' ');
+  }
+
+  function extractForCopyBtn(btn) {
+    var fig = btn.closest('figure.highlight');
+    if (fig) return extractFromFigure(fig);
+    var wrap = btn.closest('.code-container');
+    if (wrap) {
+      var innerFig = wrap.querySelector('figure.highlight');
+      if (innerFig) return extractFromFigure(innerFig);
+      var preOnly = wrap.querySelector('pre');
+      if (preOnly) return (preOnly.textContent || '').replace(/\u00a0/g, ' ');
+    }
+    return '';
+  }
+
+  function setCopyIcon(btn, ok) {
+    var i = btn.querySelector('i');
+    if (i) i.className = ok ? 'fa fa-check-circle fa-fw' : 'fa fa-times-circle fa-fw';
+  }
+
+  function writeClipboard(text, btn) {
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(text).then(
+        function () { setCopyIcon(btn, true); },
+        function () { fallbackCopy(text, btn); }
+      );
+    }
+    fallbackCopy(text, btn);
+    return Promise.resolve();
+  }
+
+  function fallbackCopy(text, btn) {
+    try {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed';
+      ta.style.left = '-9999px';
+      document.body.appendChild(ta);
+      ta.select();
+      var ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      setCopyIcon(btn, ok);
+    } catch (e) {
+      setCopyIcon(btn, false);
+    }
+  }
+
+  document.addEventListener(
+    'click',
+    function (e) {
+      var btn = e.target.closest && e.target.closest('.copy-btn');
+      if (!btn) return;
+      if (!btn.closest('figure.highlight') && !btn.closest('.code-container')) return;
+      e.stopPropagation();
+      e.preventDefault();
+      var text = extractForCopyBtn(btn);
+      writeClipboard(text, btn);
+    },
+    true
+  );
+})();
+</script>
 
 </body>
 </html>

@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="本文从空目录开始，用 uv 初始化 Python 项目、固定解释器版本、创建虚拟环境、声明依赖并运行代码。假定你已能使用终端；uv 的安装与全局说明见同栏《Python的UV工具》一文。示例以 Python 3.14.3 为例，可按需改成你本机已安装的版本。  一、准备目录与检查 uv1. 新建项目文件夹1mkdir hello-uv &amp;&amp; cd hello-uv  路径与项目名可">
+<meta property="og:type" content="article">
+<meta property="og:title" content="UV从0到1创建项目">
+<meta property="og:url" content="http://example.com/2026/05/01/Python/UV%E4%BB%8E0%E5%88%B01%E5%88%9B%E5%BB%BA%E9%A1%B9%E7%9B%AE/index.html">
+<meta property="og:site_name" content="my">
+<meta property="og:description" content="本文从空目录开始，用 uv 初始化 Python 项目、固定解释器版本、创建虚拟环境、声明依赖并运行代码。假定你已能使用终端；uv 的安装与全局说明见同栏《Python的UV工具》一文。示例以 Python 3.14.3 为例，可按需改成你本机已安装的版本。  一、准备目录与检查 uv1. 新建项目文件夹1mkdir hello-uv &amp;&amp; cd hello-uv  路径与项目名可">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-05-01T01:58:29.000Z">
+<meta property="article:modified_time" content="2026-05-01T03:03:55.886Z">
+<meta property="article:author" content="miracle">
+<meta property="article:tag" content="Python">
+<meta property="article:tag" content="UV">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/2026/05/01/Python/UV%E4%BB%8E0%E5%88%B01%E5%88%9B%E5%BB%BA%E9%A1%B9%E7%9B%AE/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2026/05/01/Python/UV%E4%BB%8E0%E5%88%B01%E5%88%9B%E5%BB%BA%E9%A1%B9%E7%9B%AE/","path":"2026/05/01/Python/UV从0到1创建项目/","title":"UV从0到1创建项目"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>UV从0到1创建项目 | my</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="my" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">my</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E5%87%86%E5%A4%87%E7%9B%AE%E5%BD%95%E4%B8%8E%E6%A3%80%E6%9F%A5-uv"><span class="nav-number">1.</span> <span class="nav-text">一、准备目录与检查 uv</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E6%96%B0%E5%BB%BA%E9%A1%B9%E7%9B%AE%E6%96%87%E4%BB%B6%E5%A4%B9"><span class="nav-number">1.1.</span> <span class="nav-text">1. 新建项目文件夹</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E7%A1%AE%E8%AE%A4-uv-%E5%8F%AF%E7%94%A8"><span class="nav-number">1.2.</span> <span class="nav-text">2. 确认 uv 可用</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E5%88%9D%E5%A7%8B%E5%8C%96%E9%A1%B9%E7%9B%AE%EF%BC%88uv-init%EF%BC%89"><span class="nav-number">2.</span> <span class="nav-text">二、初始化项目（uv init）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E7%94%9F%E6%88%90-pyproject-toml-%E7%AD%89%E9%AA%A8%E6%9E%B6"><span class="nav-number">2.1.</span> <span class="nav-text">1. 生成 pyproject.toml 等骨架</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E6%8C%87%E5%AE%9A%E5%8C%85%E5%90%8D%EF%BC%88%E5%8F%AF%E9%80%89%EF%BC%89"><span class="nav-number">2.2.</span> <span class="nav-text">2. 指定包名（可选）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E5%B8%B8%E7%94%A8%E5%9B%BD%E5%86%85-PyPI-%E9%95%9C%E5%83%8F%E5%9C%B0%E5%9D%80%EF%BC%88%E6%95%B4%E6%AE%B5%E5%A4%8D%E5%88%B6%EF%BC%89"><span class="nav-number">2.3.</span> <span class="nav-text">3. 常用国内 PyPI 镜像地址（整段复制）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-%E5%9C%A8-pyproject-toml-%E4%B8%AD%E4%B8%BA-uv-%E9%85%8D%E7%BD%AE%E9%BB%98%E8%AE%A4%E7%B4%A2%E5%BC%95%EF%BC%88%E5%8F%AF%E9%80%89%EF%BC%89"><span class="nav-number">2.4.</span> <span class="nav-text">4. 在 pyproject.toml 中为 uv 配置默认索引（可选）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E5%9B%BA%E5%AE%9A-Python-%E7%89%88%E6%9C%AC%E4%B8%8E%E8%99%9A%E6%8B%9F%E7%8E%AF%E5%A2%83"><span class="nav-number">3.</span> <span class="nav-text">三、固定 Python 版本与虚拟环境</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E5%AE%89%E8%A3%85%E5%B9%B6%E5%9B%BA%E5%AE%9A%E8%A7%A3%E9%87%8A%E5%99%A8%EF%BC%88%E5%8F%AF%E9%80%89%E4%BD%86%E6%8E%A8%E8%8D%90%EF%BC%89"><span class="nav-number">3.1.</span> <span class="nav-text">1. 安装并固定解释器（可选但推荐）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E5%88%9B%E5%BB%BA%E6%9C%AC%E5%9C%B0%E8%99%9A%E6%8B%9F%E7%8E%AF%E5%A2%83"><span class="nav-number">3.2.</span> <span class="nav-text">2. 创建本地虚拟环境</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E6%BF%80%E6%B4%BB%E8%99%9A%E6%8B%9F%E7%8E%AF%E5%A2%83%EF%BC%88%E5%8F%AF%E9%80%89%EF%BC%89"><span class="nav-number">3.3.</span> <span class="nav-text">3. 激活虚拟环境（可选）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E6%B7%BB%E5%8A%A0%E4%BE%9D%E8%B5%96%E5%B9%B6%E5%90%8C%E6%AD%A5"><span class="nav-number">4.</span> <span class="nav-text">四、添加依赖并同步</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E7%94%A8-uv-add-%E5%A3%B0%E6%98%8E%E4%BE%9D%E8%B5%96"><span class="nav-number">4.1.</span> <span class="nav-text">1. 用 uv add 声明依赖</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E5%AE%89%E8%A3%85%E9%94%81%E6%96%87%E4%BB%B6%E4%B8%AD%E7%9A%84%E4%BE%9D%E8%B5%96%EF%BC%88uv-sync%EF%BC%89"><span class="nav-number">4.2.</span> <span class="nav-text">2. 安装锁文件中的依赖（uv sync）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E7%BC%96%E5%86%99%E4%BB%A3%E7%A0%81%E4%B8%8E%E8%BF%90%E8%A1%8C"><span class="nav-number">5.</span> <span class="nav-text">五、编写代码与运行</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E5%85%A5%E5%8F%A3%E6%96%87%E4%BB%B6"><span class="nav-number">5.1.</span> <span class="nav-text">1. 入口文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E5%9C%A8%E9%A1%B9%E7%9B%AE%E7%8E%AF%E5%A2%83%E4%B8%AD%E8%BF%90%E8%A1%8C"><span class="nav-number">5.2.</span> <span class="nav-text">2. 在项目环境中运行</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E7%9B%AE%E5%BD%95%E4%B8%8E%E6%96%87%E4%BB%B6%E9%80%9F%E8%A7%88"><span class="nav-number">6.</span> <span class="nav-text">六、目录与文件速览</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%83%E3%80%81%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%E9%80%9F%E6%9F%A5"><span class="nav-number">7.</span> <span class="nav-text">七、常用命令速查</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">miracle</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">8</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/my919" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;my919" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://gitee.com/my919" title="Gitee → https:&#x2F;&#x2F;gitee.com&#x2F;my919" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>Gitee</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:yeal166@163.com" title="E-Mail → mailto:yeal166@163.com" rel="noopener me external nofollow noreferrer" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/Python/UV%E4%BB%8E0%E5%88%B01%E5%88%9B%E5%BB%BA%E9%A1%B9%E7%9B%AE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="UV从0到1创建项目 | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          UV从0到1创建项目
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2026-05-01 09:58:29 / 修改时间：11:03:55" itemprop="dateCreated datePublished" datetime="2026-05-01T09:58:29+08:00">2026-05-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Python/" itemprop="url" rel="index"><span itemprop="name">Python</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>1k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>3 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>本文从<strong>空目录</strong>开始，用 <strong>uv</strong> 初始化 Python 项目、固定解释器版本、创建虚拟环境、声明依赖并运行代码。假定你已能使用终端；<strong>uv 的安装与全局说明</strong>见同栏《Python的UV工具》一文。示例以 <strong>Python 3.14.3</strong> 为例，可按需改成你本机已安装的版本。</p>
+<hr>
+<h1 id="一、准备目录与检查-uv"><a href="#一、准备目录与检查-uv" class="headerlink" title="一、准备目录与检查 uv"></a>一、准备目录与检查 uv</h1><h2 id="1-新建项目文件夹"><a href="#1-新建项目文件夹" class="headerlink" title="1. 新建项目文件夹"></a>1. 新建项目文件夹</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">mkdir</span> hello-uv &amp;&amp; <span class="built_in">cd</span> hello-uv</span><br></pre></td></tr></table></figure>
+
+<p>路径与项目名可自定，下文以当前目录为「项目根」。</p>
+<h2 id="2-确认-uv-可用"><a href="#2-确认-uv-可用" class="headerlink" title="2. 确认 uv 可用"></a>2. 确认 uv 可用</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uv --version</span><br></pre></td></tr></table></figure>
+
+<p>若命令不存在，请先完成 uv 安装后再继续。</p>
+<hr>
+<h1 id="二、初始化项目（uv-init）"><a href="#二、初始化项目（uv-init）" class="headerlink" title="二、初始化项目（uv init）"></a>二、初始化项目（<code>uv init</code>）</h1><h2 id="1-生成-pyproject-toml-等骨架"><a href="#1-生成-pyproject-toml-等骨架" class="headerlink" title="1. 生成 pyproject.toml 等骨架"></a>1. 生成 <code>pyproject.toml</code> 等骨架</h2><p>在项目根执行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uv init</span><br></pre></td></tr></table></figure>
+
+<p>会生成（具体以你本机 uv 版本为准）<strong><code>pyproject.toml</code></strong>，部分版本还会生成 <strong><code>.gitignore</code></strong>、<strong><code>README.md</code></strong> 或示例入口文件等。</p>
+<h2 id="2-指定包名（可选）"><a href="#2-指定包名（可选）" class="headerlink" title="2. 指定包名（可选）"></a>2. 指定包名（可选）</h2><p>若希望 <code>pyproject.toml</code> 里项目名与目录名不同，可使用：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uv init --name hello_uv</span><br></pre></td></tr></table></figure>
+
+<p>尚未建目录时也可一步完成：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uv init hello-uv &amp;&amp; <span class="built_in">cd</span> hello-uv</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-常用国内-PyPI-镜像地址（整段复制）"><a href="#3-常用国内-PyPI-镜像地址（整段复制）" class="headerlink" title="3. 常用国内 PyPI 镜像地址（整段复制）"></a>3. 常用国内 PyPI 镜像地址（整段复制）</h2><p>终端里 <strong><code>uv pip install -i &lt;地址&gt;</code></strong>、或在 <strong><code>pyproject.toml</code></strong> 里填 <strong><code>[[tool.uv.index]]</code> 的 <code>url</code></strong> 时，可直接复制下列 <strong>simple</strong> 根地址（末尾一般带 <strong><code>/simple</code></strong>）：</p>
+<ul>
+<li><strong>清华</strong>：<code>https://pypi.tuna.tsinghua.edu.cn/simple</code></li>
+<li><strong>阿里云</strong>：<code>https://mirrors.aliyun.com/pypi/simple</code></li>
+<li><strong>腾讯云</strong>：<code>https://mirrors.cloud.tencent.com/pypi/simple</code></li>
+<li><strong>华为云</strong>：<code>https://repo.huaweicloud.com/repository/pypi/simple</code></li>
+</ul>
+<h2 id="4-在-pyproject-toml-中为-uv-配置默认索引（可选）"><a href="#4-在-pyproject-toml-中为-uv-配置默认索引（可选）" class="headerlink" title="4. 在 pyproject.toml 中为 uv 配置默认索引（可选）"></a>4. 在 <code>pyproject.toml</code> 中为 uv 配置默认索引（可选）</h2><p>在已有 <strong><code>pyproject.toml</code></strong>（<code>uv init</code> 之后）里使用 <strong><code>[[tool.uv.index]]</code></strong>，让 <strong><code>uv sync</code> &#x2F; <code>uv add</code></strong> 等默认走国内源；将 <strong><code>url</code></strong> 换成 <strong>二、§3</strong> 中任一条即可。示例（<strong>阿里云</strong> 为默认索引）：</p>
+<figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[[tool.uv.index]]</span></span><br><span class="line"><span class="attr">url</span> = <span class="string">&quot;https://mirrors.aliyun.com/pypi/simple&quot;</span></span><br><span class="line"><span class="attr">default</span> = <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>需要 <strong>官方 PyPI 作备用</strong> 时，可再加一段 <strong><code>[[tool.uv.index]]</code></strong>，<code>url = &quot;https://pypi.org/simple&quot;</code>，且 <strong><code>default = false</code></strong>（多索引细节以 <a target="_blank" rel="noopener external nofollow noreferrer" href="https://docs.astral.sh/uv/configuration/indexes/">uv 文档</a> 为准）。  </li>
+<li>改完后建议执行 <strong><code>uv lock</code></strong> &#x2F; <strong><code>uv sync</code></strong> 验证能否正常解析依赖。</li>
+</ul>
+<hr>
+<h1 id="三、固定-Python-版本与虚拟环境"><a href="#三、固定-Python-版本与虚拟环境" class="headerlink" title="三、固定 Python 版本与虚拟环境"></a>三、固定 Python 版本与虚拟环境</h1><h2 id="1-安装并固定解释器（可选但推荐）"><a href="#1-安装并固定解释器（可选但推荐）" class="headerlink" title="1. 安装并固定解释器（可选但推荐）"></a>1. 安装并固定解释器（可选但推荐）</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">uv python install 3.14.3</span><br><span class="line">uv python pin 3.14.3</span><br></pre></td></tr></table></figure>
+
+<p>会在项目根写入 <strong><code>.python-version</code></strong>，便于团队与 CI 使用同一 Python 小版本。</p>
+<h2 id="2-创建本地虚拟环境"><a href="#2-创建本地虚拟环境" class="headerlink" title="2. 创建本地虚拟环境"></a>2. 创建本地虚拟环境</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uv venv</span><br></pre></td></tr></table></figure>
+
+<p>默认得到 <strong><code>.venv/</code></strong>。若要与 pin 的版本一致，可显式指定：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uv venv --python 3.14.3</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-激活虚拟环境（可选）"><a href="#3-激活虚拟环境（可选）" class="headerlink" title="3. 激活虚拟环境（可选）"></a>3. 激活虚拟环境（可选）</h2><p>需要与传统工作流一致时再激活：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Linux / macOS</span></span><br><span class="line"><span class="built_in">source</span> .venv/bin/activate</span><br></pre></td></tr></table></figure>
+
+<p>日常更推荐直接用 <strong><code>uv run</code></strong>（见下文），无需每次 <code>activate</code>。</p>
+<hr>
+<h1 id="四、添加依赖并同步"><a href="#四、添加依赖并同步" class="headerlink" title="四、添加依赖并同步"></a>四、添加依赖并同步</h1><h2 id="1-用-uv-add-声明依赖"><a href="#1-用-uv-add-声明依赖" class="headerlink" title="1. 用 uv add 声明依赖"></a>1. 用 <code>uv add</code> 声明依赖</h2><p>例如增加 <strong>requests</strong>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uv add requests</span><br></pre></td></tr></table></figure>
+
+<p><code>uv</code> 会更新 <strong><code>pyproject.toml</code></strong> 中的依赖声明，并维护 <strong><code>uv.lock</code></strong>（锁文件）。若未配置 <strong>二、§4</strong> 的默认索引、且拉包较慢，可临时用 <strong><code>uv pip install -i &lt;镜像&gt;</code></strong>（镜像见 <strong>二、§3</strong>）。</p>
+<h2 id="2-安装锁文件中的依赖（uv-sync）"><a href="#2-安装锁文件中的依赖（uv-sync）" class="headerlink" title="2. 安装锁文件中的依赖（uv sync）"></a>2. 安装锁文件中的依赖（<code>uv sync</code>）</h2><p>在已有 <code>uv.lock</code> 的机器上（含克隆仓库后），在项目根执行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uv <span class="built_in">sync</span></span><br></pre></td></tr></table></figure>
+
+<p>会按锁文件创建或更新 <strong><code>.venv</code></strong> 中的包，保证环境可复现。</p>
+<hr>
+<h1 id="五、编写代码与运行"><a href="#五、编写代码与运行" class="headerlink" title="五、编写代码与运行"></a>五、编写代码与运行</h1><h2 id="1-入口文件"><a href="#1-入口文件" class="headerlink" title="1. 入口文件"></a>1. 入口文件</h2><p>若 <code>uv init</code> 后已有示例 <strong><code>main.py</code></strong>（或你自行创建 <code>main.py</code>），可写入：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">main</span>() -&gt; <span class="literal">None</span>:</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;Hello from uv&quot;</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    main()</span><br></pre></td></tr></table></figure>
+
+<p>实际文件名以你项目为准。</p>
+<h2 id="2-在项目环境中运行"><a href="#2-在项目环境中运行" class="headerlink" title="2. 在项目环境中运行"></a>2. 在项目环境中运行</h2><p>不激活 venv 时，在项目根执行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uv run python main.py</span><br></pre></td></tr></table></figure>
+
+<p>若在 <strong><code>pyproject.toml</code></strong> 的 <strong><code>[project.scripts]</code></strong> 里配置了控制台入口（例如 <code>hello = &quot;hello_uv.cli:main&quot;</code>），安装同步后可按 uv 提示使用 <strong><code>uv run hello</code></strong> 等形式；未配置时只用 <strong><code>uv run python …</code></strong> 即可。</p>
+<hr>
+<h1 id="六、目录与文件速览"><a href="#六、目录与文件速览" class="headerlink" title="六、目录与文件速览"></a>六、目录与文件速览</h1><p>初始化并添加依赖后，常见布局类似：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">hello-uv/</span><br><span class="line">├── .python-version     # uv python pin 生成（若执行过 pin）</span><br><span class="line">├── .venv/              # 本地虚拟环境（勿提交或按需 .gitignore）</span><br><span class="line">├── pyproject.toml      # 项目元数据与依赖声明</span><br><span class="line">├── uv.lock             # 锁文件，建议纳入版本控制</span><br><span class="line">└── main.py             # 或其它源码目录（以实际为准）</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="七、常用命令速查"><a href="#七、常用命令速查" class="headerlink" title="七、常用命令速查"></a>七、常用命令速查</h1><table>
+<thead>
+<tr>
+<th>步骤</th>
+<th>命令</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>初始化</td>
+<td><code>uv init</code>、<code>uv init --name 包名</code></td>
+</tr>
+<tr>
+<td>固定版本</td>
+<td><code>uv python pin 3.14.3</code></td>
+</tr>
+<tr>
+<td>建环境</td>
+<td><code>uv venv</code>、<code>uv venv --python 3.14.3</code></td>
+</tr>
+<tr>
+<td>加依赖</td>
+<td><code>uv add 包名</code></td>
+</tr>
+<tr>
+<td>按锁安装</td>
+<td><code>uv sync</code></td>
+</tr>
+<tr>
+<td>运行</td>
+<td><code>uv run python 脚本.py</code>、<code>uv run 命令</code></td>
+</tr>
+</tbody></table>
+<p>更多子命令与配置见官方文档：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://docs.astral.sh/uv/">uv 文档</a>。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/UV/" rel="tag"># UV</a>
+              <a href="/tags/Python/" rel="tag"># Python</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/04/30/Node/Node-nvm/" rel="prev" title="Node的nvm工具">
+                  <i class="fa fa-angle-left"></i> Node的nvm工具
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2026/05/01/Python/UV%E9%A1%B9%E7%9B%AE%E5%BC%80%E5%8F%91%E6%B7%BB%E5%8A%A0Ruff/" rel="next" title="UV项目开发添加Ruff">
+                  UV项目开发添加Ruff <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">miracle</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">8k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">28 分钟</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+<script>
+(function () {
+  function extractFromFigure(fig) {
+    if (!fig) return '';
+    var cell = fig.querySelector('td.code') || fig.querySelector('.code');
+    var block = cell || fig.querySelector('code');
+    if (!block) return '';
+    var pre = block.querySelector('pre');
+    var source = pre || block;
+    return (source.textContent || '').replace(/\u00a0/g, ' ');
+  }
+
+  function extractForCopyBtn(btn) {
+    var fig = btn.closest('figure.highlight');
+    if (fig) return extractFromFigure(fig);
+    var wrap = btn.closest('.code-container');
+    if (wrap) {
+      var innerFig = wrap.querySelector('figure.highlight');
+      if (innerFig) return extractFromFigure(innerFig);
+      var preOnly = wrap.querySelector('pre');
+      if (preOnly) return (preOnly.textContent || '').replace(/\u00a0/g, ' ');
+    }
+    return '';
+  }
+
+  function setCopyIcon(btn, ok) {
+    var i = btn.querySelector('i');
+    if (i) i.className = ok ? 'fa fa-check-circle fa-fw' : 'fa fa-times-circle fa-fw';
+  }
+
+  function writeClipboard(text, btn) {
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(text).then(
+        function () { setCopyIcon(btn, true); },
+        function () { fallbackCopy(text, btn); }
+      );
+    }
+    fallbackCopy(text, btn);
+    return Promise.resolve();
+  }
+
+  function fallbackCopy(text, btn) {
+    try {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed';
+      ta.style.left = '-9999px';
+      document.body.appendChild(ta);
+      ta.select();
+      var ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      setCopyIcon(btn, ok);
+    } catch (e) {
+      setCopyIcon(btn, false);
+    }
+  }
+
+  document.addEventListener(
+    'click',
+    function (e) {
+      var btn = e.target.closest && e.target.closest('.copy-btn');
+      if (!btn) return;
+      if (!btn.closest('figure.highlight') && !btn.closest('.code-container')) return;
+      e.stopPropagation();
+      e.preventDefault();
+      var text = extractForCopyBtn(btn);
+      writeClipboard(text, btn);
+    },
+    true
+  );
+})();
+</script>
+
+</body>
+</html>
