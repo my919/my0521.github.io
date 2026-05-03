@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="在已安装 Docker 的环境中，可用 docker run 拉起 1Panel V2（社区镜像 moelin&#x2F;1panel，非 FIT2CLOUD 官方安装包；升级路径与支持策略与官方宿主版可能不同）。镜像说明、标签与环境变量以 Docker Hub：moelin&#x2F;1panel 为准；生产请固定小版本标签（如 moelin&#x2F;1panel:v2.0.6），勿盲目追 latest。官方在线">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Docker 部署 1Panel">
+<meta property="og:url" content="http://example.com/2026/05/02/Cloud/Docker-1Panel/index.html">
+<meta property="og:site_name" content="my">
+<meta property="og:description" content="在已安装 Docker 的环境中，可用 docker run 拉起 1Panel V2（社区镜像 moelin&#x2F;1panel，非 FIT2CLOUD 官方安装包；升级路径与支持策略与官方宿主版可能不同）。镜像说明、标签与环境变量以 Docker Hub：moelin&#x2F;1panel 为准；生产请固定小版本标签（如 moelin&#x2F;1panel:v2.0.6），勿盲目追 latest。官方在线">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-05-01T17:59:40.000Z">
+<meta property="article:modified_time" content="2026-05-02T16:33:50.025Z">
+<meta property="article:author" content="miracle">
+<meta property="article:tag" content="1Panel">
+<meta property="article:tag" content="Docker">
+<meta property="article:tag" content="Docker Desktop">
+<meta property="article:tag" content="Linux">
+<meta property="article:tag" content="WSL">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/2026/05/02/Cloud/Docker-1Panel/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2026/05/02/Cloud/Docker-1Panel/","path":"2026/05/02/Cloud/Docker-1Panel/","title":"Docker 部署 1Panel"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Docker 部署 1Panel | my</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="my" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">my</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B1%E7%94%A8%E5%89%8D%E6%8F%90"><span class="nav-number">1.</span> <span class="nav-text">共用前提</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E7%B1%BB%EF%BC%9AWindows-Docker-Desktop-WSL"><span class="nav-number">2.</span> <span class="nav-text">第一类：Windows + Docker Desktop + WSL</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#WSL-Git-Bash-macOS%EF%BC%88%E8%A1%8C%E6%9C%AB-%E7%BB%AD%E8%A1%8C%EF%BC%89"><span class="nav-number">2.1.</span> <span class="nav-text">WSL &#x2F; Git Bash &#x2F; macOS（行末 \ 续行）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Windows-CMD%EF%BC%88%E8%A1%8C%E6%9C%AB-%E7%BB%AD%E8%A1%8C%EF%BC%89"><span class="nav-number">2.2.</span> <span class="nav-text">Windows CMD（行末 ^ 续行）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%8F%E8%A7%88%E5%99%A8%E8%AE%BF%E9%97%AE%EF%BC%88%E6%9C%AC%E6%9C%BA%EF%BC%89"><span class="nav-number">2.3.</span> <span class="nav-text">浏览器访问（本机）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%AF%E9%80%89%EF%BC%9Adocker-compose%EF%BC%88%E7%AB%AF%E5%8F%A3%E6%98%A0%E5%B0%84%EF%BC%89"><span class="nav-number">2.4.</span> <span class="nav-text">可选：docker compose（端口映射）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E7%B1%BB%EF%BC%9ALinux-Docker-%E4%B8%BB%E6%9C%BA"><span class="nav-number">3.</span> <span class="nav-text">第二类：Linux Docker 主机</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%9A%E8%A1%8C-docker-run%EF%BC%88-network-host%EF%BC%89"><span class="nav-number">3.1.</span> <span class="nav-text">多行 docker run（--network host）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%AF%E9%80%89%EF%BC%9Adocker-compose%EF%BC%88host-%E7%BD%91%E7%BB%9C%EF%BC%89"><span class="nav-number">3.2.</span> <span class="nav-text">可选：docker compose（host 网络）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B8%B8%E7%94%A8%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F%EF%BC%88V2%EF%BC%89"><span class="nav-number">4.</span> <span class="nav-text">常用环境变量（V2）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%BF%E9%97%AE%E4%B8%8E%E6%97%A5%E5%B8%B8%E5%91%BD%E4%BB%A4%EF%BC%88Linux-%E5%85%AC%E7%BD%91%EF%BC%89"><span class="nav-number">5.</span> <span class="nav-text">访问与日常命令（Linux 公网）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%98%E6%96%B9%E8%84%9A%E6%9C%AC%E5%AE%89%E8%A3%85%EF%BC%88%E5%AF%B9%E7%85%A7%EF%BC%89"><span class="nav-number">6.</span> <span class="nav-text">官方脚本安装（对照）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B0%8F%E7%BB%93"><span class="nav-number">7.</span> <span class="nav-text">小结</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">miracle</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">116</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">49</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">128</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/my919" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;my919" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://gitee.com/my919" title="Gitee → https:&#x2F;&#x2F;gitee.com&#x2F;my919" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>Gitee</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:yeal166@163.com" title="E-Mail → mailto:yeal166@163.com" rel="noopener me external nofollow noreferrer" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/02/Cloud/Docker-1Panel/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Docker 部署 1Panel | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Docker 部署 1Panel
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-05-02 01:59:40" itemprop="dateCreated datePublished" datetime="2026-05-02T01:59:40+08:00">2026-05-02</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-05-03 00:33:50" itemprop="dateModified" datetime="2026-05-03T00:33:50+08:00">2026-05-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Cloud/" itemprop="url" rel="index"><span itemprop="name">Cloud</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>1.5k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>5 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>在已安装 <strong>Docker</strong> 的环境中，可用 <strong><code>docker run</code></strong> 拉起 <strong>1Panel V2</strong>（社区镜像 <strong><code>moelin/1panel</code></strong>，非 <strong>FIT2CLOUD</strong> 官方安装包；升级路径与支持策略与官方宿主版可能不同）。镜像说明、标签与环境变量以 <strong><a target="_blank" rel="noopener external nofollow noreferrer" href="https://hub.docker.com/r/moelin/1panel">Docker Hub：moelin&#x2F;1panel</a></strong> 为准；生产请固定<strong>小版本标签</strong>（如 <strong><code>moelin/1panel:v2.0.6</code></strong>），勿盲目追 <strong><code>latest</code></strong>。官方在线安装见：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://1panel.cn/docs/v2/installation/online_installation/">在线安装</a>。</p>
+<p>部署按宿主机与引擎分<strong>两类</strong>，下文<strong>分开写</strong>，勿混用 <strong><code>--network host</code></strong> 与 <strong><code>-p</code></strong>：</p>
+<ol>
+<li><strong>Windows + Docker Desktop + WSL</strong>：在 <strong>WSL</strong>（如 <strong>Rocky Linux 10</strong> 等发行版）或 <strong>Windows CMD</strong> 里执行 <strong><code>docker run</code></strong>，引擎为 <strong>Docker Desktop</strong> 时须用<strong>端口映射</strong>。  </li>
+<li><strong>Linux Docker 主机</strong>：云服务器、物理机或虚拟机内<strong>原生 Docker Engine</strong>，可用 <strong><code>--network host</code></strong>。</li>
+</ol>
+<hr>
+<h2 id="共用前提"><a href="#共用前提" class="headerlink" title="共用前提"></a>共用前提</h2><ul>
+<li><strong><code>docker version</code></strong> 客户端与 <strong>Server</strong> 均正常，能拉取 <strong>Docker Hub</strong>（或已配置镜像加速）。  </li>
+<li>建议内存 <strong>≥ 1GB</strong>；多架构以 <strong>Hub</strong> 页为准。  </li>
+<li>将 <strong><code>PASSWORD</code></strong>、<strong><code>ENTRANCE</code></strong> 等换成自己的值；变量含义见文末 <strong>「常用环境变量」</strong>。</li>
+</ul>
+<hr>
+<h2 id="第一类：Windows-Docker-Desktop-WSL"><a href="#第一类：Windows-Docker-Desktop-WSL" class="headerlink" title="第一类：Windows + Docker Desktop + WSL"></a>第一类：Windows + Docker Desktop + WSL</h2><p><strong>场景</strong>：宿主机为 <strong>Windows</strong>，容器由 <strong>Docker Desktop</strong> 提供引擎；你在 <strong>WSL</strong> 里打开终端（发行版可为 <strong>Rocky Linux 10</strong>、<strong>Ubuntu</strong> 等），<strong><code>docker version</code></strong> 的 <strong>Server</strong> 往往显示 <strong>Docker Desktop</strong> 或上下文为 <strong>desktop-linux</strong>。此时容器里的 <strong><code>host</code></strong> 网络与你在 <strong>WSL</strong> 里访问的 <strong><code>localhost</code></strong> 不是同一概念，<strong>不要</strong>使用 <strong><code>--network host</code></strong>，应使用 <strong><code>-p &lt;PORT&gt;:&lt;PORT&gt;</code></strong>。</p>
+<p>若曾误用 <strong><code>host</code></strong> 建过同名容器，先 <strong><code>docker rm -f 1panel-v2</code></strong> 再按本节重建。</p>
+<h3 id="WSL-Git-Bash-macOS（行末-续行）"><a href="#WSL-Git-Bash-macOS（行末-续行）" class="headerlink" title="WSL &#x2F; Git Bash &#x2F; macOS（行末 \ 续行）"></a>WSL &#x2F; Git Bash &#x2F; macOS（行末 <code>\</code> 续行）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># wsl子系统rocky-10中执行不能正常访问，猜测子系统无ip</span></span><br><span class="line">docker run -d\</span><br><span class="line">  --name 1panel-v2\</span><br><span class="line">  --restart always\</span><br><span class="line">  -p 10086:10086\</span><br><span class="line">  -v /var/run/docker.sock:/var/run/docker.sock\</span><br><span class="line">  -v /opt:/opt\</span><br><span class="line">  -e TZ=Asia/Shanghai\</span><br><span class="line">  -e PORT=10086\</span><br><span class="line">  -e USERNAME=admin\</span><br><span class="line">  -e PASSWORD=<span class="string">&#x27;pi=3.1415&#x27;</span>\</span><br><span class="line">  -e ENTRANCE=<span class="string">&#x27;panel-v2&#x27;</span>\</span><br><span class="line">  -e BASE_DIR=/opt\</span><br><span class="line">  moelin/1panel:v2</span><br></pre></td></tr></table></figure>
+
+<h3 id="Windows-CMD（行末-续行）"><a href="#Windows-CMD（行末-续行）" class="headerlink" title="Windows CMD（行末 ^ 续行）"></a>Windows CMD（行末 <code>^</code> 续行）</h3><p><strong><code>^</code></strong> 须为行末最后一个字符（后无空格），末行不写 <strong><code>^</code></strong>。<strong><code>-e</code></strong> 的值在 <strong>CMD</strong> 里用双引号较稳妥。</p>
+<figure class="highlight bat"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">docker run -d^</span><br><span class="line">  --name <span class="number">1</span>panel-v2^</span><br><span class="line">  --restart always^</span><br><span class="line">  -p <span class="number">10086</span>:<span class="number">10086</span>^</span><br><span class="line">  -v /var/run/docker.sock:/var/run/docker.sock^</span><br><span class="line">  -v /opt:/opt^</span><br><span class="line">  -e TZ=Asia/Shanghai^</span><br><span class="line">  -e PORT=<span class="number">10086</span>^</span><br><span class="line">  -e USERNAME=admin^</span><br><span class="line">  -e PASSWORD=&quot;pi=<span class="number">3</span>.<span class="number">1415</span>&quot;^</span><br><span class="line">  -e ENTRANCE=&quot;panel-v2&quot;^</span><br><span class="line">  -e BASE_DIR=/opt^</span><br><span class="line">  moelin/<span class="number">1</span>panel:v2</span><br></pre></td></tr></table></figure>
+
+<p><strong>卷说明</strong>（与 <strong>Linux</strong> 类一致，路径在 <strong>Docker Desktop</strong> 下仍写 <strong><code>/var/run/docker.sock</code></strong>、<strong><code>/opt</code></strong>，由 <strong>Desktop</strong> 映射到引擎；异常时以当前 <strong>Desktop</strong> 文档为准。若 <strong><code>-v</code></strong> 与 <strong>WSL2 &#x2F; Linux 容器</strong> 后端要求不符，按 <strong>Docker Desktop</strong> 文档调整。）</p>
+<h3 id="浏览器访问（本机）"><a href="#浏览器访问（本机）" class="headerlink" title="浏览器访问（本机）"></a>浏览器访问（本机）</h3><p>多数情况：<strong><code>http://127.0.0.1:10086/&lt;ENTRANCE&gt;</code></strong>（与示例 <strong><code>ENTRANCE</code></strong> 一致时）。在 <strong>WSL</strong> 内若 <strong><code>localhost</code></strong> 仍不通，可试 <strong><code>http://$(grep -m1 &#39;^nameserver&#39; /etc/resolv.conf | awk &#39;{print $2}&#39;):10086/&lt;ENTRANCE&gt;</code></strong>（常为 <strong>WSL2</strong> 下可达的 <strong>Windows</strong> 主机 <strong>IP</strong>，以本机为准）。</p>
+<h3 id="可选：docker-compose（端口映射）"><a href="#可选：docker-compose（端口映射）" class="headerlink" title="可选：docker compose（端口映射）"></a>可选：<code>docker compose</code>（端口映射）</h3><p>将下文保存为同目录下的 <strong><code>compose.yaml</code></strong> 或 <strong><code>docker-compose.yml</code></strong>（二选一即可，<strong>Compose V2</strong> 默认会读取二者）。<strong>Docker Desktop &#x2F; WSL</strong> 使用 <strong><code>ports</code></strong>，<strong>不要</strong>写 <strong><code>network_mode: host</code></strong>。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># compose.yaml（或 docker-compose.yml）</span></span><br><span class="line"><span class="attr">services:</span></span><br><span class="line">  <span class="attr">1panel-v2:</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">1panel-v2</span></span><br><span class="line">    <span class="attr">restart:</span> <span class="string">always</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">moelin/1panel:v2</span></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;10086:10086&quot;</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">/var/run/docker.sock:/var/run/docker.sock</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">/opt:/opt</span></span><br><span class="line">    <span class="attr">environment:</span></span><br><span class="line">      <span class="attr">TZ:</span> <span class="string">Asia/Shanghai</span></span><br><span class="line">      <span class="attr">PORT:</span> <span class="string">&quot;10086&quot;</span></span><br><span class="line">      <span class="attr">USERNAME:</span> <span class="string">admin</span></span><br><span class="line">      <span class="attr">PASSWORD:</span> <span class="string">&quot;请改为强密码&quot;</span></span><br><span class="line">      <span class="attr">ENTRANCE:</span> <span class="string">&quot;请改为安全入口&quot;</span></span><br><span class="line">      <span class="attr">BASE_DIR:</span> <span class="string">/opt</span></span><br></pre></td></tr></table></figure>
+
+<p>在同目录执行 <strong><code>docker compose up -d</code></strong>。</p>
+<hr>
+<h2 id="第二类：Linux-Docker-主机"><a href="#第二类：Linux-Docker-主机" class="headerlink" title="第二类：Linux Docker 主机"></a>第二类：Linux Docker 主机</h2><p><strong>场景</strong>：<strong>Linux</strong> 云服务器、物理机或虚拟机内安装 <strong>Docker Engine</strong>（<strong>非 Docker Desktop</strong> 作为服务端）。可用 <strong><code>--network host</code></strong>，面板监听端口即宿主机端口，与安全组、防火墙规则一致。</p>
+<h3 id="多行-docker-run（-network-host）"><a href="#多行-docker-run（-network-host）" class="headerlink" title="多行 docker run（--network host）"></a>多行 <code>docker run</code>（<code>--network host</code>）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">docker run -d \</span><br><span class="line">  --name 1panel-v2 \</span><br><span class="line">  --restart always \</span><br><span class="line">  --network host \</span><br><span class="line">  -v /var/run/docker.sock:/var/run/docker.sock \</span><br><span class="line">  -v /opt:/opt \</span><br><span class="line">  -e TZ=Asia/Shanghai \</span><br><span class="line">  -e PORT=10086 \</span><br><span class="line">  -e USERNAME=admin \</span><br><span class="line">  -e PASSWORD=<span class="string">&#x27;pi=3.1415&#x27;</span> \</span><br><span class="line">  -e ENTRANCE=<span class="string">&#x27;panel-v2&#x27;</span> \</span><br><span class="line">  -e BASE_DIR=/opt \</span><br><span class="line">  moelin/1panel:v2</span><br></pre></td></tr></table></figure>
+
+<p><strong><code>-v /var/run/docker.sock</code></strong>：面板管理宿主机 <strong>Docker</strong>。<br><strong><code>-v /opt:/opt</code></strong> 与 <strong><code>BASE_DIR=/opt</code></strong>：数据目录可改，须与挂载路径同步。<br><strong><code>moelin/1panel:v2</code></strong>：跟踪 <strong>V2</strong> 最新构建；生产建议改为 <strong>Hub</strong> 具体版本号。</p>
+<h3 id="可选：docker-compose（host-网络）"><a href="#可选：docker-compose（host-网络）" class="headerlink" title="可选：docker compose（host 网络）"></a>可选：<code>docker compose</code>（<code>host</code> 网络）</h3><p>将下文保存为同目录下的 <strong><code>compose.yaml</code></strong> 或 <strong><code>docker-compose.yml</code></strong>。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># compose.yaml（或 docker-compose.yml）</span></span><br><span class="line"><span class="attr">services:</span></span><br><span class="line">  <span class="attr">1panel-v2:</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">1panel-v2</span></span><br><span class="line">    <span class="attr">restart:</span> <span class="string">always</span></span><br><span class="line">    <span class="attr">network_mode:</span> <span class="string">host</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">moelin/1panel:v2</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">/var/run/docker.sock:/var/run/docker.sock</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">/opt:/opt</span></span><br><span class="line">    <span class="attr">environment:</span></span><br><span class="line">      <span class="attr">TZ:</span> <span class="string">Asia/Shanghai</span></span><br><span class="line">      <span class="attr">PORT:</span> <span class="string">&quot;10086&quot;</span></span><br><span class="line">      <span class="attr">USERNAME:</span> <span class="string">admin</span></span><br><span class="line">      <span class="attr">PASSWORD:</span> <span class="string">&quot;请改为强密码&quot;</span></span><br><span class="line">      <span class="attr">ENTRANCE:</span> <span class="string">&quot;请改为安全入口&quot;</span></span><br><span class="line">      <span class="attr">BASE_DIR:</span> <span class="string">/opt</span></span><br></pre></td></tr></table></figure>
+
+<p>在同目录执行 <strong><code>docker compose up -d</code></strong>。</p>
+<hr>
+<h2 id="常用环境变量（V2）"><a href="#常用环境变量（V2）" class="headerlink" title="常用环境变量（V2）"></a>常用环境变量（V2）</h2><table>
+<thead>
+<tr>
+<th>变量</th>
+<th>默认值（未设置时）</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong><code>PORT</code></strong></td>
+<td><strong><code>10086</code></strong></td>
+<td>Web 端口</td>
+</tr>
+<tr>
+<td><strong><code>USERNAME</code></strong></td>
+<td><strong><code>1panel</code></strong></td>
+<td>管理员用户名</td>
+</tr>
+<tr>
+<td><strong><code>PASSWORD</code></strong></td>
+<td>随机或默认（见 <strong>Hub</strong>）</td>
+<td>登录控制台密码，务必改为强密码或从日志读取随机值</td>
+</tr>
+<tr>
+<td><strong><code>ENTRANCE</code></strong></td>
+<td><strong><code>entrance</code></strong></td>
+<td>安全入口的 <strong>URL 路径前缀</strong>（非第二端口），访问 <strong><code>http://IP:PORT/ENTRANCE</code></strong>，用于降低默认路径被扫的概率</td>
+</tr>
+<tr>
+<td><strong><code>BASE_DIR</code></strong></td>
+<td><strong><code>/opt</code></strong></td>
+<td>数据目录，需与 <strong><code>/opt</code></strong> 挂载一致</td>
+</tr>
+<tr>
+<td><strong><code>TZ</code></strong></td>
+<td>常见 <strong><code>Asia/Shanghai</code></strong></td>
+<td>时区</td>
+</tr>
+<tr>
+<td><strong><code>RESET</code></strong></td>
+<td><strong><code>false</code></strong></td>
+<td>置 <strong><code>true</code></strong> 可强制重置配置（慎用）</td>
+</tr>
+</tbody></table>
+<p>完整说明与 <strong>V1</strong>、<strong>Global</strong> 标签见 <strong>Hub</strong> 文档。</p>
+<hr>
+<h2 id="访问与日常命令（Linux-公网）"><a href="#访问与日常命令（Linux-公网）" class="headerlink" title="访问与日常命令（Linux 公网）"></a>访问与日常命令（Linux 公网）</h2><p>浏览器访问（云服务器需在安全组放行 <strong><code>PORT</code></strong>）：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://&lt;服务器 IP&gt;:&lt;PORT&gt;/&lt;ENTRANCE&gt;</span><br></pre></td></tr></table></figure>
+
+<p>首次未显式设置强密码时，镜像可能生成随机密码：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker logs 1panel-v2</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">docker logs -f 1panel-v2</span><br><span class="line">docker restart 1panel-v2</span><br><span class="line">docker <span class="built_in">exec</span> -it 1panel-v2 bash   <span class="comment"># 进入容器后可用 1pctl 等（以镜像内为准）</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>禁止</strong>在容器内随意点面板「更新」覆盖社区镜像行为；升级应 <strong><code>docker pull</code> 新镜像 → 备份数据卷 → 按 <strong>Hub</strong> 说明重建容器</strong>。</p>
+<p><strong>V1 → V2</strong> 不可直接原地升级，须按官方迁移说明：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://1panel.cn/docs/v2/installation/v1_migrate/">V1 迁移到 V2</a>。</p>
+<hr>
+<h2 id="官方脚本安装（对照）"><a href="#官方脚本安装（对照）" class="headerlink" title="官方脚本安装（对照）"></a>官方脚本安装（对照）</h2><p>若希望使用 <strong>FIT2CLOUD</strong> 官方脚本在<strong>宿主机</strong>安装（非本镜像）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bash -c <span class="string">&quot;<span class="subst">$(curl -sSL https://resource.fit2cloud.com/1panel/package/v2/quick_start.sh)</span>&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>与 <strong>Docker</strong> 一键方案二选一，避免同一主机装两套面板。</p>
+<hr>
+<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><table>
+<thead>
+<tr>
+<th>项</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>第一类（Windows + Docker Desktop + WSL）</strong></td>
+<td><strong><code>-p 10086:10086</code></strong>；<strong>WSL</strong> 内 <strong>Bash</strong> 或 <strong>Windows CMD</strong> 见上文；<strong>compose</strong> 用 <strong><code>ports</code></strong>，不用 <strong><code>network_mode: host</code></strong></td>
+</tr>
+<tr>
+<td><strong>第二类（Linux Docker 主机）</strong></td>
+<td><strong><code>--network host</code></strong> 或 <strong>compose</strong> 的 <strong><code>network_mode: host</code></strong>；一条命令见上文</td>
+</tr>
+<tr>
+<td>数据</td>
+<td><strong><code>/opt</code></strong> 与 <strong><code>BASE_DIR</code></strong> 一致；挂载 <strong><code>docker.sock</code></strong> 以便管 <strong>Docker</strong></td>
+</tr>
+<tr>
+<td>访问与安全</td>
+<td><strong><code>http://IP:PORT/ENTRANCE</code></strong>；随机密码 <strong><code>docker logs</code></strong></td>
+</tr>
+<tr>
+<td>参考</td>
+<td><strong><a target="_blank" rel="noopener external nofollow noreferrer" href="https://hub.docker.com/r/moelin/1panel">moelin&#x2F;1panel</a></strong>；官方宿主安装见 <strong>在线安装</strong></td>
+</tr>
+</tbody></table>
+<p>部署前阅读 <strong>Hub</strong> 注意事项与官方迁移文档；生产使用强密码、限制暴露面并做好备份。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Docker/" rel="tag"># Docker</a>
+              <a href="/tags/1Panel/" rel="tag"># 1Panel</a>
+              <a href="/tags/Docker-Desktop/" rel="tag"># Docker Desktop</a>
+              <a href="/tags/WSL/" rel="tag"># WSL</a>
+              <a href="/tags/Linux/" rel="tag"># Linux</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/05/01/Python/Selenium/" rel="prev" title="网页自动化（Python + Selenium）">
+                  <i class="fa fa-angle-left"></i> 网页自动化（Python + Selenium）
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2026/05/03/MySQL/MySQL%E9%94%81%E8%AF%A6%E8%A7%A3/" rel="next" title="MySQL锁详解">
+                  MySQL锁详解 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">miracle</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">58k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">3:14</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+<script>
+(function () {
+  function extractFromFigure(fig) {
+    if (!fig) return '';
+    var cell = fig.querySelector('td.code') || fig.querySelector('.code');
+    var block = cell || fig.querySelector('code');
+    if (!block) return '';
+    var pre = block.querySelector('pre');
+    var source = pre || block;
+    return (source.textContent || '').replace(/\u00a0/g, ' ');
+  }
+
+  function extractForCopyBtn(btn) {
+    var fig = btn.closest('figure.highlight');
+    if (fig) return extractFromFigure(fig);
+    var wrap = btn.closest('.code-container');
+    if (wrap) {
+      var innerFig = wrap.querySelector('figure.highlight');
+      if (innerFig) return extractFromFigure(innerFig);
+      var preOnly = wrap.querySelector('pre');
+      if (preOnly) return (preOnly.textContent || '').replace(/\u00a0/g, ' ');
+    }
+    return '';
+  }
+
+  function setCopyIcon(btn, ok) {
+    var i = btn.querySelector('i');
+    if (i) i.className = ok ? 'fa fa-check-circle fa-fw' : 'fa fa-times-circle fa-fw';
+  }
+
+  function writeClipboard(text, btn) {
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(text).then(
+        function () { setCopyIcon(btn, true); },
+        function () { fallbackCopy(text, btn); }
+      );
+    }
+    fallbackCopy(text, btn);
+    return Promise.resolve();
+  }
+
+  function fallbackCopy(text, btn) {
+    try {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed';
+      ta.style.left = '-9999px';
+      document.body.appendChild(ta);
+      ta.select();
+      var ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      setCopyIcon(btn, ok);
+    } catch (e) {
+      setCopyIcon(btn, false);
+    }
+  }
+
+  document.addEventListener(
+    'click',
+    function (e) {
+      var btn = e.target.closest && e.target.closest('.copy-btn');
+      if (!btn) return;
+      if (!btn.closest('figure.highlight') && !btn.closest('.code-container')) return;
+      e.stopPropagation();
+      e.preventDefault();
+      var text = extractForCopyBtn(btn);
+      writeClipboard(text, btn);
+    },
+    true
+  );
+})();
+</script>
+
+</body>
+</html>

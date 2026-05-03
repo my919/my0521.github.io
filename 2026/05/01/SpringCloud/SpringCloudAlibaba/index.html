@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="Spring Cloud Alibaba（简称 SCA）在 Spring Cloud 之上整合 Nacos、Sentinel、Seata、RocketMQ 等组件，便于做注册发现、配置、限流与分布式事务。本文先说明 版本怎么选，再用 IntelliJ IDEA 创建 Gradle（Kotlin DSL） 工程，按后文替换构建脚本与依赖，得到可启动、可连 Nacos 做服务注册的最小示例；构建工具安">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spring Cloud Alibaba 与 Gradle 从零搭建">
+<meta property="og:url" content="http://example.com/2026/05/01/SpringCloud/SpringCloudAlibaba/index.html">
+<meta property="og:site_name" content="my">
+<meta property="og:description" content="Spring Cloud Alibaba（简称 SCA）在 Spring Cloud 之上整合 Nacos、Sentinel、Seata、RocketMQ 等组件，便于做注册发现、配置、限流与分布式事务。本文先说明 版本怎么选，再用 IntelliJ IDEA 创建 Gradle（Kotlin DSL） 工程，按后文替换构建脚本与依赖，得到可启动、可连 Nacos 做服务注册的最小示例；构建工具安">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-05-01T04:16:10.000Z">
+<meta property="article:modified_time" content="2026-05-02T03:47:38.713Z">
+<meta property="article:author" content="miracle">
+<meta property="article:tag" content="Gradle">
+<meta property="article:tag" content="IntelliJ IDEA">
+<meta property="article:tag" content="Nacos">
+<meta property="article:tag" content="SpringCloud">
+<meta property="article:tag" content="SpringCloudAlibaba">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/2026/05/01/SpringCloud/SpringCloudAlibaba/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2026/05/01/SpringCloud/SpringCloudAlibaba/","path":"2026/05/01/SpringCloud/SpringCloudAlibaba/","title":"Spring Cloud Alibaba 与 Gradle 从零搭建"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Spring Cloud Alibaba 与 Gradle 从零搭建 | my</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="my" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">my</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E5%AE%98%E7%BD%91%E4%B8%8E%E6%96%87%E6%A1%A3"><span class="nav-number">1.</span> <span class="nav-text">一、官网与文档</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E7%89%88%E6%9C%AC%E9%80%89%E5%9E%8B%EF%BC%88%E5%85%88%E5%81%9A%E8%BF%99%E4%B8%80%E6%AD%A5%EF%BC%89"><span class="nav-number">2.</span> <span class="nav-text">二、版本选型（先做这一步）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E5%BD%93%E5%89%8D%E4%B8%A4%E6%9D%A1%E4%B8%BB%E7%BA%BF%EF%BC%88%E6%91%98%E8%87%AA%E5%AE%98%E6%96%B9-README-%E5%88%86%E6%94%AF%E8%AF%B4%E6%98%8E%EF%BC%89"><span class="nav-number">2.1.</span> <span class="nav-text">1. 当前两条主线（摘自官方 README 分支说明）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E6%9C%AC%E6%96%87%E5%9B%BA%E5%AE%9A%E7%BB%84%E5%90%88%EF%BC%88%E4%B8%8E-SCA-2025-1-0-0-%E5%8F%91%E8%A1%8C%E8%AF%B4%E6%98%8E%E4%B8%80%E8%87%B4%EF%BC%89"><span class="nav-number">2.2.</span> <span class="nav-text">2. 本文固定组合（与 SCA 2025.1.0.0 发行说明一致）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E7%8E%AF%E5%A2%83%E4%B8%8E%E5%89%8D%E7%BD%AE"><span class="nav-number">3.</span> <span class="nav-text">三、环境与前置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E7%94%A8-IntelliJ-IDEA-%E5%88%9B%E5%BB%BA%E5%B7%A5%E7%A8%8B%EF%BC%88%E6%9B%BF%E6%8D%A2%E5%8E%9F%E6%89%8B%E5%8A%A8%E5%BB%BA%E7%9B%AE%E5%BD%95%EF%BC%89"><span class="nav-number">4.</span> <span class="nav-text">四、用 IntelliJ IDEA 创建工程（替换原手动建目录）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E6%96%B0%E5%BB%BA%E9%A1%B9%E7%9B%AE%EF%BC%9A%E5%B7%A6%E4%BE%A7%E3%80%8CJava%E3%80%8D-%E6%9E%84%E5%BB%BA%E7%B3%BB%E7%BB%9F%E3%80%8CGradle%E3%80%8D"><span class="nav-number">4.1.</span> <span class="nav-text">1. 新建项目：左侧「Java」+ 构建系统「Gradle」</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E5%88%9B%E5%BB%BA-Java-%E5%8C%85%E4%B8%8E%E6%BA%90%E7%A0%81%E7%9B%AE%E5%BD%95"><span class="nav-number">4.2.</span> <span class="nav-text">2. 创建 Java 包与源码目录</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E8%A6%86%E7%9B%96-Gradle-%E8%84%9A%E6%9C%AC%EF%BC%88%E4%B8%8E%E3%80%8C%E4%BA%94%EF%BD%9E%E4%B8%83%E3%80%8D%E5%AF%B9%E5%BA%94%EF%BC%89"><span class="nav-number">4.3.</span> <span class="nav-text">3. 覆盖 Gradle 脚本（与「五～七」对应）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%94%E3%80%81settings-gradle-kts"><span class="nav-number">5.</span> <span class="nav-text">五、settings.gradle.kts</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%AD%E3%80%81gradle-properties%EF%BC%88%E7%89%88%E6%9C%AC%E9%9B%86%E4%B8%AD%E7%AE%A1%E7%90%86%EF%BC%89"><span class="nav-number">6.</span> <span class="nav-text">六、gradle.properties（版本集中管理）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%83%E3%80%81build-gradle-kts%EF%BC%88Spring-Boot-Cloud-SCA-BOM%EF%BC%89"><span class="nav-number">7.</span> <span class="nav-text">七、build.gradle.kts（Spring Boot + Cloud + SCA BOM）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%AB%E3%80%81%E7%94%9F%E6%88%90-Gradle-Wrapper"><span class="nav-number">8.</span> <span class="nav-text">八、生成 Gradle Wrapper</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B9%9D%E3%80%81%E4%B8%BB%E7%B1%BB%E3%80%81%E6%8E%A5%E5%8F%A3%E4%B8%8E%E9%85%8D%E7%BD%AE"><span class="nav-number">9.</span> <span class="nav-text">九、主类、接口与配置</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E5%90%AF%E5%8A%A8%E7%B1%BB-ScaDemoApplication-java"><span class="nav-number">9.1.</span> <span class="nav-text">1. 启动类 ScaDemoApplication.java</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E7%A4%BA%E4%BE%8B%E6%8E%A5%E5%8F%A3-HelloController-java"><span class="nav-number">9.2.</span> <span class="nav-text">2. 示例接口 HelloController.java</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-application-yaml"><span class="nav-number">9.3.</span> <span class="nav-text">3. application.yaml</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8D%81%E3%80%81%E6%9E%84%E5%BB%BA%E4%B8%8E%E8%BF%90%E8%A1%8C"><span class="nav-number">10.</span> <span class="nav-text">十、构建与运行</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8D%81%E4%B8%80%E3%80%81%E5%B0%8F%E7%BB%93"><span class="nav-number">11.</span> <span class="nav-text">十一、小结</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">miracle</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">116</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">49</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">128</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/my919" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;my919" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://gitee.com/my919" title="Gitee → https:&#x2F;&#x2F;gitee.com&#x2F;my919" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>Gitee</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:yeal166@163.com" title="E-Mail → mailto:yeal166@163.com" rel="noopener me external nofollow noreferrer" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/SpringCloud/SpringCloudAlibaba/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Spring Cloud Alibaba 与 Gradle 从零搭建 | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Spring Cloud Alibaba 与 Gradle 从零搭建
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-05-01 12:16:10" itemprop="dateCreated datePublished" datetime="2026-05-01T12:16:10+08:00">2026-05-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-05-02 11:47:38" itemprop="dateModified" datetime="2026-05-02T11:47:38+08:00">2026-05-02</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/SpringCloud/" itemprop="url" rel="index"><span itemprop="name">SpringCloud</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>1.9k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>6 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>Spring Cloud Alibaba（简称 <strong>SCA</strong>）在 Spring Cloud 之上整合 <strong>Nacos、Sentinel、Seata、RocketMQ</strong> 等组件，便于做注册发现、配置、限流与分布式事务。本文先说明 <strong>版本怎么选</strong>，再用 <strong>IntelliJ IDEA</strong> 创建 <strong>Gradle（Kotlin DSL）</strong> 工程，按后文替换构建脚本与依赖，得到可启动、可连 <strong>Nacos</strong> 做服务注册的最小示例；构建工具安装与镜像加速见站内 <strong><code>gradle.md</code></strong>。</p>
+<hr>
+<h1 id="一、官网与文档"><a href="#一、官网与文档" class="headerlink" title="一、官网与文档"></a>一、官网与文档</h1><ul>
+<li><strong>中文官网</strong>：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://sca.aliyun.com/">https://sca.aliyun.com/</a></li>
+<li><strong>GitHub</strong>：<a target="_blank" rel="noopener" href="https://github.com/alibaba/spring-cloud-alibaba">https://github.com/alibaba/spring-cloud-alibaba</a>  </li>
+<li><strong>版本说明（与 Spring Boot &#x2F; Spring Cloud 对齐关系）</strong>：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://sca.aliyun.com/docs/2025.x/overview/version-explain/">https://sca.aliyun.com/docs/2025.x/overview/version-explain/</a>  </li>
+<li><strong>发行说明与变更</strong>：<a target="_blank" rel="noopener" href="https://github.com/alibaba/spring-cloud-alibaba/releases">https://github.com/alibaba/spring-cloud-alibaba/releases</a></li>
+</ul>
+<hr>
+<h1 id="二、版本选型（先做这一步）"><a href="#二、版本选型（先做这一步）" class="headerlink" title="二、版本选型（先做这一步）"></a>二、版本选型（先做这一步）</h1><p>SCA 以 <strong>BOM 三位版本号</strong>（如 <strong><code>2025.1.0.0</code></strong>）发布，须与 <strong>Spring Boot、Spring Cloud</strong> 同一世代，不能混用旧版 Boot 配新版 SCA。</p>
+<h2 id="1-当前两条主线（摘自官方-README-分支说明）"><a href="#1-当前两条主线（摘自官方-README-分支说明）" class="headerlink" title="1. 当前两条主线（摘自官方 README 分支说明）"></a>1. 当前两条主线（摘自官方 README 分支说明）</h2><table>
+<thead>
+<tr>
+<th>路线</th>
+<th>Spring Boot</th>
+<th>Spring Cloud</th>
+<th>SCA BOM（示例）</th>
+<th>JDK</th>
+<th>适用场景</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>2025.1.x</strong>（<strong>本文采用</strong>）</td>
+<td><strong>4.0.x</strong></td>
+<td><strong>2025.1.x</strong></td>
+<td><strong>2025.1.0.0</strong>（当前 GA）</td>
+<td><strong>17+</strong></td>
+<td>新项目、跟官方最新发布版</td>
+</tr>
+<tr>
+<td><strong>2025.0.x</strong></td>
+<td><strong>3.5.x</strong></td>
+<td><strong>2025.0.x</strong></td>
+<td><strong>2025.0.0.x</strong>（以 Central 为准）</td>
+<td><strong>17+</strong></td>
+<td>暂不升级 Boot 4、存量 Boot 3.5</td>
+</tr>
+</tbody></table>
+<h2 id="2-本文固定组合（与-SCA-2025-1-0-0-发行说明一致）"><a href="#2-本文固定组合（与-SCA-2025-1-0-0-发行说明一致）" class="headerlink" title="2. 本文固定组合（与 SCA 2025.1.0.0 发行说明一致）"></a>2. 本文固定组合（与 SCA <strong>2025.1.0.0</strong> 发行说明一致）</h2><ul>
+<li><strong>Spring Cloud Alibaba BOM</strong>：<strong><code>2025.1.0.0</code></strong>（<code>com.alibaba.cloud:spring-cloud-alibaba-dependencies</code>）  </li>
+<li><strong>Spring Boot</strong>：<strong><code>4.0.4</code></strong>（4.0 线补丁，仍属官方所述 <strong>Boot 4.0.x</strong>）  </li>
+<li><strong>Spring Cloud BOM</strong>：<strong><code>2025.1.0</code></strong>（<code>org.springframework.cloud:spring-cloud-dependencies</code>）  </li>
+<li><strong>JDK</strong>：<strong>17</strong>（官方要求 <strong>17+</strong>，可用 <strong>21</strong>）  </li>
+<li><strong>Gradle</strong>：与 <strong><code>gradle.md</code></strong> 一致，示例 Wrapper 使用 <strong>9.5.0</strong></li>
+</ul>
+<p><strong>2025.1.x</strong> 起 Nacos 配置侧已弱化 <strong><code>bootstrap.yml</code></strong>，推荐 <strong><code>spring.config.import</code></strong> 或直接在 <strong><code>application.yaml</code></strong> 中配置；本文最小示例只用 <strong><code>application.yaml</code> + Nacos 注册发现</strong>。</p>
+<p>升级小版本前请到 <strong>GitHub Releases</strong> 与 <strong>sca.aliyun.com</strong> 核对是否仍有更新的 <strong>2025.1.0.x</strong> 补丁版，并替换下文的 BOM 与 Boot 小版本号。</p>
+<hr>
+<h1 id="三、环境与前置"><a href="#三、环境与前置" class="headerlink" title="三、环境与前置"></a>三、环境与前置</h1><ol>
+<li>安装 <strong>JDK 17+</strong>，终端执行 <strong><code>java -version</code></strong>。  </li>
+<li>安装 <strong>IntelliJ IDEA</strong>（<strong>Community &#x2F; Ultimate</strong> 均可；下文以 <strong>Ultimate</strong> 菜单名为准，社区版对应项名称可能略有差异）。  </li>
+<li>安装 <strong>Gradle</strong>（或使用下文 <strong><code>gradle wrapper</code></strong> 生成 Wrapper，本机需已装 Gradle 一次），参见 <strong><code>source/_posts/Java/gradle.md</code></strong>；亦可在 IDEA 内用自带 <strong>Gradle</strong> 执行同步与 <strong><code>bootRun</code></strong>。  </li>
+<li>若要验证注册发现：本机或服务器已部署 <strong>Nacos 2.x &#x2F; 3.x</strong>（示例地址 <strong><code>127.0.0.1:8848</code></strong>）。无 Nacos 时工程仍可 <strong>编译</strong>；启动后若连不上注册中心，控制台会有连接相关日志。</li>
+</ol>
+<hr>
+<h1 id="四、用-IntelliJ-IDEA-创建工程（替换原手动建目录）"><a href="#四、用-IntelliJ-IDEA-创建工程（替换原手动建目录）" class="headerlink" title="四、用 IntelliJ IDEA 创建工程（替换原手动建目录）"></a>四、用 IntelliJ IDEA 创建工程（替换原手动建目录）</h1><p><strong>不要</strong>使用 <strong>Spring Initializr</strong> 向导直接生成完整 Boot 工程：本文 <strong><code>build.gradle.kts</code></strong> 需手写 <strong>Spring Cloud &#x2F; SCA BOM</strong>，与 Initializr 默认模板不一致。请用 <strong>IDEA「Java + Gradle」向导</strong> 建骨架，<strong>Gradle DSL 必须选 Kotlin</strong>（与 <strong>「五～七」</strong> 文件名一致），再按 <strong>「五～七」</strong> 覆盖脚本。</p>
+<h2 id="1-新建项目：左侧「Java」-构建系统「Gradle」"><a href="#1-新建项目：左侧「Java」-构建系统「Gradle」" class="headerlink" title="1. 新建项目：左侧「Java」+ 构建系统「Gradle」"></a>1. 新建项目：左侧「Java」+ 构建系统「Gradle」</h2><p>与 <strong>IntelliJ IDEA</strong> 新版「新建项目」界面一致（欢迎页 <strong>New Project</strong> &#x2F; 菜单 <strong>File → New → Project</strong>）：</p>
+<ol>
+<li>左侧在 <strong>New Project</strong> 下选 <strong>Java</strong>；右侧 <strong>Build system（构建系统）</strong> 选 <strong>Gradle</strong>（与 <strong>IDEA</strong> 当前「<strong>Java + Gradle</strong>」向导一致）。若你习惯用左侧 <strong>Gradle</strong> 向导，同样必须把 <strong>Gradle DSL</strong> 设为 <strong>Kotlin</strong>，效果等价。  </li>
+<li>右侧 <strong>Name（名称）</strong>：填 <strong><code>sca-nacos-demo</code></strong>（与下文工程名一致）。  </li>
+<li><strong>Location（位置）</strong>：选父目录，<strong>IDEA</strong> 会在其下创建 <strong><code>sca-nacos-demo</code></strong> 文件夹。  </li>
+<li><strong>Create Git repository（创建 Git 仓库）</strong>：按需勾选（团队协同时建议勾选）。  </li>
+<li><strong>Build system（构建系统）</strong>：选 <strong>Gradle</strong>。  </li>
+<li><strong>JDK</strong>：选 <strong>17</strong> 或 <strong>21</strong>（须满足「二」中 <strong>17+</strong>；与 <strong><code>build.gradle.kts</code></strong> 里 <strong><code>JavaLanguageVersion.of(17)</code></strong>  toolchain 一致时，选 <strong>17</strong> 最省事）。  </li>
+<li><strong>Gradle DSL</strong>：<strong>务必选 Kotlin</strong>（生成 <strong><code>build.gradle.kts</code></strong> &#x2F; <strong><code>settings.gradle.kts</code></strong>）。向导默认有时是 <strong>Groovy</strong>（生成 <strong><code>build.gradle</code></strong>），<strong>与本文不符</strong>。若已误选 <strong>Groovy</strong>：最省事是重新 <strong>New Project</strong> 并改选 <strong>Kotlin</strong>；或手动新建 <strong><code>build.gradle.kts</code></strong>、<strong><code>settings.gradle.kts</code></strong>，删除 <strong><code>build.gradle</code></strong>、<strong><code>settings.gradle</code></strong> 后 <strong>Reload Gradle Project</strong>。  </li>
+<li><strong>Add sample code（添加示例代码）</strong>：建议<strong>取消勾选</strong>，减少默认 <strong><code>Main.java</code></strong>；若保留，完成 <strong>「九」</strong> 前删除向导生成的示例类即可。  </li>
+<li>点击 <strong>Create（创建）</strong>。<strong>IDEA</strong> 会生成 <strong><code>src/main/java</code></strong>、<strong><code>src/main/resources</code></strong>、<strong><code>gradle/</code></strong> 等，无需再手动 <strong><code>mkdir</code></strong>。</li>
+</ol>
+<h2 id="2-创建-Java-包与源码目录"><a href="#2-创建-Java-包与源码目录" class="headerlink" title="2. 创建 Java 包与源码目录"></a>2. 创建 Java 包与源码目录</h2><ol>
+<li>在 <strong>Project</strong> 视图中展开 <strong><code>src/main/java</code></strong>。  </li>
+<li>在 <strong><code>java</code></strong> 上右键 → <strong>New → Package</strong>，输入 <strong><code>com.example.sca</code></strong> 并确认。  </li>
+<li>后续 <strong>「九」</strong> 中的 <strong><code>ScaDemoApplication.java</code></strong>、<strong><code>HelloController.java</code></strong> 均建在该包下；<strong><code>application.yaml</code></strong> 放在 <strong><code>src/main/resources/</code></strong>。</li>
+</ol>
+<h2 id="3-覆盖-Gradle-脚本（与「五～七」对应）"><a href="#3-覆盖-Gradle-脚本（与「五～七」对应）" class="headerlink" title="3. 覆盖 Gradle 脚本（与「五～七」对应）"></a>3. 覆盖 Gradle 脚本（与「五～七」对应）</h2><p>向导生成的 <strong><code>settings.gradle.kts</code></strong>、<strong><code>build.gradle.kts</code></strong> 往往带演示性 <strong><code>main</code> 函数</strong>或默认依赖，请打开文件后<strong>整段替换</strong>为 <strong>「五」「七」</strong> 中的内容；新建 <strong><code>gradle.properties</code></strong> 并写入 <strong>「六」</strong>。保存后点击右上角 <strong>Load Gradle Changes</strong>（或 <strong>Gradle</strong> 工具窗口的刷新），等待依赖解析完成。</p>
+<p>下文默认<strong>模块根目录</strong>为 <strong><code>sca-nacos-demo/</code></strong>（即包含 <strong><code>build.gradle.kts</code></strong> 的目录），Java 包名为 <strong><code>com.example.sca</code></strong>。</p>
+<hr>
+<h1 id="五、settings-gradle-kts"><a href="#五、settings-gradle-kts" class="headerlink" title="五、settings.gradle.kts"></a>五、<code>settings.gradle.kts</code></h1><p>在 <strong><code>sca-nacos-demo/settings.gradle.kts</code></strong> 写入：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rootProject.name = <span class="string">&quot;sca-nacos-demo&quot;</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="六、gradle-properties（版本集中管理）"><a href="#六、gradle-properties（版本集中管理）" class="headerlink" title="六、gradle.properties（版本集中管理）"></a>六、<code>gradle.properties</code>（版本集中管理）</h1><p>在 <strong><code>sca-nacos-demo/gradle.properties</code></strong> 写入：</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 与「二、版本选型」一致；升级 Cloud / SCA 时改这里，并与下方 build.gradle.kts 中 Boot 插件版本对齐</span></span><br><span class="line"><span class="attr">springCloudVersion</span>=<span class="string">2025.1.0</span></span><br><span class="line"><span class="attr">springCloudAlibabaVersion</span>=<span class="string">2025.1.0.0</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="七、build-gradle-kts（Spring-Boot-Cloud-SCA-BOM）"><a href="#七、build-gradle-kts（Spring-Boot-Cloud-SCA-BOM）" class="headerlink" title="七、build.gradle.kts（Spring Boot + Cloud + SCA BOM）"></a>七、<code>build.gradle.kts</code>（Spring Boot + Cloud + SCA BOM）</h1><p>在 <strong><code>sca-nacos-demo/build.gradle.kts</code></strong> 写入：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Spring Boot 与「二、版本选型」一致（4.0.x）；小版本升级时请对照 SCA 发行说明</span></span><br><span class="line">plugins &#123;</span><br><span class="line">    java</span><br><span class="line">    id(<span class="string">&quot;org.springframework.boot&quot;</span>) version <span class="string">&quot;4.0.4&quot;</span></span><br><span class="line">    id(<span class="string">&quot;io.spring.dependency-management&quot;</span>) version <span class="string">&quot;1.1.7&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">group = <span class="string">&quot;com.example&quot;</span></span><br><span class="line">version = <span class="string">&quot;0.0.1-SNAPSHOT&quot;</span></span><br><span class="line"></span><br><span class="line">java &#123;</span><br><span class="line">    toolchain &#123;</span><br><span class="line">        languageVersion.<span class="keyword">set</span>(JavaLanguageVersion.of(<span class="number">17</span>))</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">repositories &#123;</span><br><span class="line">    mavenCentral()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">dependencyManagement &#123;</span><br><span class="line">    imports &#123;</span><br><span class="line">        mavenBom(<span class="string">&quot;org.springframework.cloud:spring-cloud-dependencies:<span class="subst">$&#123;property(<span class="string">&quot;springCloudVersion&quot;</span>)&#125;</span>&quot;</span>)</span><br><span class="line">        mavenBom(<span class="string">&quot;com.alibaba.cloud:spring-cloud-alibaba-dependencies:<span class="subst">$&#123;property(<span class="string">&quot;springCloudAlibabaVersion&quot;</span>)&#125;</span>&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">dependencies &#123;</span><br><span class="line">    implementation(<span class="string">&quot;org.springframework.boot:spring-boot-starter-web&quot;</span>)</span><br><span class="line">    implementation(<span class="string">&quot;org.springframework.boot:spring-boot-starter-actuator&quot;</span>)</span><br><span class="line">    implementation(<span class="string">&quot;com.alibaba.cloud:spring-cloud-starter-alibaba-nacos-discovery&quot;</span>)</span><br><span class="line">    testImplementation(<span class="string">&quot;org.springframework.boot:spring-boot-starter-test&quot;</span>)</span><br><span class="line">    testRuntimeOnly(<span class="string">&quot;org.junit.platform:junit-platform-launcher&quot;</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">tasks.withType&lt;Test&gt; &#123;</span><br><span class="line">    useJUnitPlatform()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>说明：</p>
+<ul>
+<li><strong><code>org.springframework.boot</code></strong> 插件会管理 <strong>Spring Boot</strong> 自带依赖版本；<strong><code>spring-cloud-dependencies</code></strong> 与 <strong><code>spring-cloud-alibaba-dependencies</code></strong> 通过 <strong><code>mavenBom</code></strong> 对齐 Cloud 与 SCA。  </li>
+<li>仅 <strong><code>nacos-discovery</code></strong> 即可在 Nacos 控制台看到服务实例；后续若要配置中心，再增加 <strong><code>spring-cloud-starter-alibaba-nacos-config</code></strong> 并按官方文档改用 <strong><code>spring.config.import</code></strong>。</li>
+</ul>
+<hr>
+<h1 id="八、生成-Gradle-Wrapper"><a href="#八、生成-Gradle-Wrapper" class="headerlink" title="八、生成 Gradle Wrapper"></a>八、生成 Gradle Wrapper</h1><p>在 <strong>IDEA</strong> 底部打开 <strong>Terminal</strong>（<strong>View → Tool Windows → Terminal</strong>），确认当前目录为项目根 <strong><code>sca-nacos-demo/</code></strong>（含 <strong><code>build.gradle.kts</code></strong>），执行（版本与 <strong><code>gradle.md</code></strong> 对齐）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gradle wrapper --gradle-version=9.5.0</span><br></pre></td></tr></table></figure>
+
+<p>若未装全局 <strong>Gradle</strong>，可在 <strong>File → Settings → Build, Execution, Deployment → Build Tools → Gradle</strong> 中查看 <strong>Gradle</strong> 分发路径，或在 <strong>Gradle</strong> 工具窗口对 <strong><code>wrapper</code></strong> 任务执行一次（视 IDEA 版本与项目是否已含 <strong>wrapper</strong> 配置而定）；生成 <strong><code>gradlew</code></strong>、<strong><code>gradlew.bat</code></strong> 与 <strong><code>gradle/wrapper/</code></strong> 后，团队可统一用 <strong><code>./gradlew</code></strong>，无需本机全局安装同版本 Gradle。</p>
+<hr>
+<h1 id="九、主类、接口与配置"><a href="#九、主类、接口与配置" class="headerlink" title="九、主类、接口与配置"></a>九、主类、接口与配置</h1><h2 id="1-启动类-ScaDemoApplication-java"><a href="#1-启动类-ScaDemoApplication-java" class="headerlink" title="1. 启动类 ScaDemoApplication.java"></a>1. 启动类 <code>ScaDemoApplication.java</code></h2><p>路径：<strong><code>src/main/java/com/example/sca/ScaDemoApplication.java</code></strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.example.sca;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.springframework.boot.SpringApplication;</span><br><span class="line"><span class="keyword">import</span> org.springframework.boot.autoconfigure.SpringBootApplication;</span><br><span class="line"></span><br><span class="line"><span class="meta">@SpringBootApplication</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ScaDemoApplication</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        SpringApplication.run(ScaDemoApplication.class, args);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-示例接口-HelloController-java"><a href="#2-示例接口-HelloController-java" class="headerlink" title="2. 示例接口 HelloController.java"></a>2. 示例接口 <code>HelloController.java</code></h2><p>路径：<strong><code>src/main/java/com/example/sca/HelloController.java</code></strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.example.sca;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.GetMapping;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.RestController;</span><br><span class="line"></span><br><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">HelloController</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@GetMapping(&quot;/&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">hello</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;Spring Cloud Alibaba + Gradle OK&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-application-yaml"><a href="#3-application-yaml" class="headerlink" title="3. application.yaml"></a>3. <code>application.yaml</code></h2><p>路径：<strong><code>src/main/resources/application.yaml</code></strong></p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">server:</span></span><br><span class="line">  <span class="attr">port:</span> <span class="number">8080</span></span><br><span class="line"></span><br><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">application:</span></span><br><span class="line">    <span class="attr">name:</span> <span class="string">sca-nacos-demo</span></span><br><span class="line">  <span class="attr">cloud:</span></span><br><span class="line">    <span class="attr">nacos:</span></span><br><span class="line">      <span class="attr">discovery:</span></span><br><span class="line">        <span class="attr">server-addr:</span> <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span><span class="string">:8848</span></span><br><span class="line">        <span class="comment"># 多环境可再配置 namespace、group 等，见官方 Nacos 文档</span></span><br><span class="line"></span><br><span class="line"><span class="attr">management:</span></span><br><span class="line">  <span class="attr">endpoints:</span></span><br><span class="line">    <span class="attr">web:</span></span><br><span class="line">      <span class="attr">exposure:</span></span><br><span class="line">        <span class="attr">include:</span> <span class="string">health,info</span></span><br></pre></td></tr></table></figure>
+
+<p>将 <strong><code>server-addr</code></strong> 改成你的 Nacos 地址；若暂无 Nacos，可先注释掉 <strong><code>spring.cloud.nacos</code></strong> 整段，仅验证 Web 与构建（注释后不再向 Nacos 注册）。</p>
+<hr>
+<h1 id="十、构建与运行"><a href="#十、构建与运行" class="headerlink" title="十、构建与运行"></a>十、构建与运行</h1><p><strong>方式一（终端）</strong>：在 <strong>IDEA Terminal</strong> 中于项目根执行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./gradlew clean bootRun</span><br></pre></td></tr></table></figure>
+
+<p><strong>方式二（IDEA）</strong>：右侧 <strong>Gradle</strong> 工具窗口展开 <strong><code>sca-nacos-demo → Tasks → application</code></strong>，双击 <strong><code>bootRun</code></strong>（首次前可先执行 <strong><code>build</code></strong> 或 <strong><code>classes</code></strong> 确认无报错）。</p>
+<p>浏览器访问：<strong><a target="_blank" rel="noopener external nofollow noreferrer" href="http://127.0.0.1:8080/">http://127.0.0.1:8080/</a></strong> ，应看到返回字符串。<br>若已配置 Nacos 且服务正常，在 Nacos 控制台 <strong>「服务管理 → 服务列表」</strong> 中应出现 <strong><code>sca-nacos-demo</code></strong> 实例。</p>
+<p>打包：在终端执行 <strong><code>./gradlew bootJar</code></strong>，或在 <strong>Gradle → Tasks → build → bootJar</strong>。产物在 <strong><code>build/libs/</code></strong> 下。</p>
+<hr>
+<h1 id="十一、小结"><a href="#十一、小结" class="headerlink" title="十一、小结"></a>十一、小结</h1><table>
+<thead>
+<tr>
+<th>项</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>SCA BOM</td>
+<td><strong><code>2025.1.0.0</code></strong>（发布版；升级请看 GitHub Releases）</td>
+</tr>
+<tr>
+<td>Spring Boot &#x2F; Cloud</td>
+<td><strong><code>4.0.4</code></strong> + <strong><code>2025.1.0</code></strong>，与 <strong>2025.1.x</strong> 主线一致</td>
+</tr>
+<tr>
+<td>创建方式</td>
+<td><strong>IntelliJ IDEA</strong>：<strong>Gradle + Kotlin DSL</strong> 向导，再覆盖 <strong>「五～七」</strong> 脚本</td>
+</tr>
+<tr>
+<td>构建</td>
+<td><strong>Gradle Kotlin DSL</strong>，<strong>Wrapper 9.5.0</strong></td>
+</tr>
+<tr>
+<td>注册发现</td>
+<td><strong><code>spring-cloud-starter-alibaba-nacos-discovery</code></strong> + <strong><code>application.yaml</code></strong></td>
+</tr>
+<tr>
+<td>官方文档</td>
+<td><a target="_blank" rel="noopener external nofollow noreferrer" href="https://sca.aliyun.com/">https://sca.aliyun.com/</a> · <a target="_blank" rel="noopener" href="https://github.com/alibaba/spring-cloud-alibaba">https://github.com/alibaba/spring-cloud-alibaba</a></td>
+</tr>
+</tbody></table>
+<p>按上述顺序即可用 <strong>IDEA</strong> 得到可维护的最小 <strong>Spring Cloud Alibaba + Gradle</strong> 工程；需要 <strong>Sentinel &#x2F; Seata &#x2F; RocketMQ</strong> 时在 <strong><code>build.gradle.kts</code></strong> 增加对应 <strong><code>spring-cloud-starter-alibaba-*</code></strong> 依赖，并查阅官网各组件章节继续配置即可。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Gradle/" rel="tag"># Gradle</a>
+              <a href="/tags/SpringCloud/" rel="tag"># SpringCloud</a>
+              <a href="/tags/SpringCloudAlibaba/" rel="tag"># SpringCloudAlibaba</a>
+              <a href="/tags/Nacos/" rel="tag"># Nacos</a>
+              <a href="/tags/IntelliJ-IDEA/" rel="tag"># IntelliJ IDEA</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/05/01/SpringBoot/SpringBoot/" rel="prev" title="Spring Boot">
+                  <i class="fa fa-angle-left"></i> Spring Boot
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2026/05/01/Java/maven/" rel="next" title="Maven 构建工具">
+                  Maven 构建工具 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">miracle</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">58k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">3:14</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+<script>
+(function () {
+  function extractFromFigure(fig) {
+    if (!fig) return '';
+    var cell = fig.querySelector('td.code') || fig.querySelector('.code');
+    var block = cell || fig.querySelector('code');
+    if (!block) return '';
+    var pre = block.querySelector('pre');
+    var source = pre || block;
+    return (source.textContent || '').replace(/\u00a0/g, ' ');
+  }
+
+  function extractForCopyBtn(btn) {
+    var fig = btn.closest('figure.highlight');
+    if (fig) return extractFromFigure(fig);
+    var wrap = btn.closest('.code-container');
+    if (wrap) {
+      var innerFig = wrap.querySelector('figure.highlight');
+      if (innerFig) return extractFromFigure(innerFig);
+      var preOnly = wrap.querySelector('pre');
+      if (preOnly) return (preOnly.textContent || '').replace(/\u00a0/g, ' ');
+    }
+    return '';
+  }
+
+  function setCopyIcon(btn, ok) {
+    var i = btn.querySelector('i');
+    if (i) i.className = ok ? 'fa fa-check-circle fa-fw' : 'fa fa-times-circle fa-fw';
+  }
+
+  function writeClipboard(text, btn) {
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(text).then(
+        function () { setCopyIcon(btn, true); },
+        function () { fallbackCopy(text, btn); }
+      );
+    }
+    fallbackCopy(text, btn);
+    return Promise.resolve();
+  }
+
+  function fallbackCopy(text, btn) {
+    try {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed';
+      ta.style.left = '-9999px';
+      document.body.appendChild(ta);
+      ta.select();
+      var ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      setCopyIcon(btn, ok);
+    } catch (e) {
+      setCopyIcon(btn, false);
+    }
+  }
+
+  document.addEventListener(
+    'click',
+    function (e) {
+      var btn = e.target.closest && e.target.closest('.copy-btn');
+      if (!btn) return;
+      if (!btn.closest('figure.highlight') && !btn.closest('.code-container')) return;
+      e.stopPropagation();
+      e.preventDefault();
+      var text = extractForCopyBtn(btn);
+      writeClipboard(text, btn);
+    },
+    true
+  );
+})();
+</script>
+
+</body>
+</html>

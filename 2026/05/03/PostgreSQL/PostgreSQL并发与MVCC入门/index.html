@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="PostgreSQL 以 MVCC（多版本并发控制） 为主：读写通常不互相阻塞读路径；写与写仍可能因行级锁、唯一约束等冲突。本文偏用法与现象，与 PostgreSQL索引与性能优化.md（EXPLAIN、隔离级别配置）互补。若你熟悉 《MySQL锁详解》（MySQL锁详解.md），可对照：InnoDB RR + 间隙锁 与 PostgreSQL 的快照与谓词锁（SSI） 并非一一对应，勿硬套术语。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PostgreSQL 并发与 MVCC 入门">
+<meta property="og:url" content="http://example.com/2026/05/03/PostgreSQL/PostgreSQL%E5%B9%B6%E5%8F%91%E4%B8%8EMVCC%E5%85%A5%E9%97%A8/index.html">
+<meta property="og:site_name" content="my">
+<meta property="og:description" content="PostgreSQL 以 MVCC（多版本并发控制） 为主：读写通常不互相阻塞读路径；写与写仍可能因行级锁、唯一约束等冲突。本文偏用法与现象，与 PostgreSQL索引与性能优化.md（EXPLAIN、隔离级别配置）互补。若你熟悉 《MySQL锁详解》（MySQL锁详解.md），可对照：InnoDB RR + 间隙锁 与 PostgreSQL 的快照与谓词锁（SSI） 并非一一对应，勿硬套术语。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-05-03T09:10:00.000Z">
+<meta property="article:modified_time" content="2026-05-03T08:39:17.921Z">
+<meta property="article:author" content="miracle">
+<meta property="article:tag" content="MVCC">
+<meta property="article:tag" content="PostgreSQL">
+<meta property="article:tag" content="事务">
+<meta property="article:tag" content="锁">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/2026/05/03/PostgreSQL/PostgreSQL%E5%B9%B6%E5%8F%91%E4%B8%8EMVCC%E5%85%A5%E9%97%A8/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2026/05/03/PostgreSQL/PostgreSQL%E5%B9%B6%E5%8F%91%E4%B8%8EMVCC%E5%85%A5%E9%97%A8/","path":"2026/05/03/PostgreSQL/PostgreSQL并发与MVCC入门/","title":"PostgreSQL 并发与 MVCC 入门"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>PostgreSQL 并发与 MVCC 入门 | my</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="my" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">my</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E5%BF%AB%E7%85%A7%E4%B8%8E%E9%BB%98%E8%AE%A4%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB"><span class="nav-number">1.</span> <span class="nav-text">一、快照与默认隔离级别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E6%98%BE%E5%BC%8F%E8%A1%8C%E9%94%81%EF%BC%9AFOR-UPDATE-FOR-SHARE"><span class="nav-number">2.</span> <span class="nav-text">二、显式行锁：FOR UPDATE &#x2F; FOR SHARE</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81SKIP-LOCKED-%E4%B8%8E-NOWAIT%EF%BC%88%E9%98%9F%E5%88%97%E4%B8%8E%E6%8A%A2%E9%94%81%EF%BC%89"><span class="nav-number">3.</span> <span class="nav-text">三、SKIP LOCKED 与 NOWAIT（队列与抢锁）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E6%AD%BB%E9%94%81%EF%BC%88deadlock-detected%EF%BC%89"><span class="nav-number">4.</span> <span class="nav-text">四、死锁（deadlock detected）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E4%B8%8E-MySQL-InnoDB-%E7%9A%84%E7%B2%97%E5%AF%B9%E7%85%A7%EF%BC%88%E9%98%B2%E6%B7%B7%EF%BC%89"><span class="nav-number">5.</span> <span class="nav-text">五、与 MySQL InnoDB 的粗对照（防混）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E5%BB%B6%E4%BC%B8%E9%98%85%E8%AF%BB"><span class="nav-number">6.</span> <span class="nav-text">六、延伸阅读</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">miracle</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">116</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">49</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">128</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/my919" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;my919" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://gitee.com/my919" title="Gitee → https:&#x2F;&#x2F;gitee.com&#x2F;my919" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>Gitee</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:yeal166@163.com" title="E-Mail → mailto:yeal166@163.com" rel="noopener me external nofollow noreferrer" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/03/PostgreSQL/PostgreSQL%E5%B9%B6%E5%8F%91%E4%B8%8EMVCC%E5%85%A5%E9%97%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="PostgreSQL 并发与 MVCC 入门 | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          PostgreSQL 并发与 MVCC 入门
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2026-05-03 17:10:00 / 修改时间：16:39:17" itemprop="dateCreated datePublished" datetime="2026-05-03T17:10:00+08:00">2026-05-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/PostgreSQL/" itemprop="url" rel="index"><span itemprop="name">PostgreSQL</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>576</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>2 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p><strong>PostgreSQL</strong> 以 <strong>MVCC（多版本并发控制）</strong> 为主：读写通常不互相阻塞读路径；写与写仍可能因<strong>行级锁</strong>、<strong>唯一约束</strong>等冲突。本文偏<strong>用法与现象</strong>，与 <strong><code>PostgreSQL索引与性能优化.md</code></strong>（<strong><code>EXPLAIN</code>、隔离级别配置</strong>）互补。若你熟悉 <strong>《MySQL锁详解》</strong>（<strong><code>MySQL锁详解.md</code></strong>），可对照：<strong>InnoDB RR + 间隙锁</strong> 与 <strong>PostgreSQL</strong> 的<strong>快照与谓词锁（SSI）</strong> 并非一一对应，勿硬套术语。</p>
+<hr>
+<h2 id="一、快照与默认隔离级别"><a href="#一、快照与默认隔离级别" class="headerlink" title="一、快照与默认隔离级别"></a>一、快照与默认隔离级别</h2><ul>
+<li>默认 <strong><code>READ COMMITTED</code></strong>：单条 <strong>SQL</strong> 内看到<strong>语句开始时</strong>已提交的数据版本。  </li>
+<li><strong><code>REPEATABLE READ</code></strong>：事务内<strong>首条 SQL</strong> 建立快照，后续读一致。  </li>
+<li><strong><code>SERIALIZABLE</code></strong>：可检测读写依赖，失败时返回 <strong><code>40001 serialization_failure</code></strong>，应用应<strong>重试</strong>。</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SHOW</span> transaction_isolation;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="二、显式行锁：FOR-UPDATE-FOR-SHARE"><a href="#二、显式行锁：FOR-UPDATE-FOR-SHARE" class="headerlink" title="二、显式行锁：FOR UPDATE &#x2F; FOR SHARE"></a>二、显式行锁：<code>FOR UPDATE</code> &#x2F; <code>FOR SHARE</code></h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">BEGIN</span>;</span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> accounts <span class="keyword">WHERE</span> id <span class="operator">=</span> <span class="number">1</span> <span class="keyword">FOR</span> <span class="keyword">UPDATE</span>;</span><br><span class="line"><span class="comment">-- 其他事务对同一行的 FOR UPDATE / 写操作会阻塞或失败（视 NOWAIT）</span></span><br><span class="line"><span class="keyword">COMMIT</span>;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong><code>FOR UPDATE</code></strong>：排他行锁，用于「先读后改」的临界区。  </li>
+<li><strong><code>FOR SHARE</code></strong>：共享行锁，允许他人<strong>并发读</strong>，阻塞<strong>写</strong>。</li>
+</ul>
+<hr>
+<h2 id="三、SKIP-LOCKED-与-NOWAIT（队列与抢锁）"><a href="#三、SKIP-LOCKED-与-NOWAIT（队列与抢锁）" class="headerlink" title="三、SKIP LOCKED 与 NOWAIT（队列与抢锁）"></a>三、<code>SKIP LOCKED</code> 与 <code>NOWAIT</code>（队列与抢锁）</h2><p><strong><code>SKIP LOCKED</code></strong>：跳过已被其他事务锁定的行，取下一批可用行——常用于<strong>任务队列</strong>、<strong>公平抢单</strong>。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">BEGIN</span>;</span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> jobs</span><br><span class="line"><span class="keyword">WHERE</span> status <span class="operator">=</span> <span class="string">&#x27;pending&#x27;</span></span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> id</span><br><span class="line"><span class="keyword">FOR</span> <span class="keyword">UPDATE</span> <span class="keyword">SKIP</span> LOCKED</span><br><span class="line">LIMIT <span class="number">1</span>;</span><br><span class="line"><span class="comment">-- 抢到则更新为 processing，再 COMMIT</span></span><br></pre></td></tr></table></figure>
+
+<p><strong><code>NOWAIT</code></strong>：若不能立即加锁则<strong>立刻报错</strong>，适合避免长时间等待（由应用捕获错误后重试或放弃）。</p>
+<hr>
+<h2 id="四、死锁（deadlock-detected）"><a href="#四、死锁（deadlock-detected）" class="headerlink" title="四、死锁（deadlock detected）"></a>四、死锁（<code>deadlock detected</code>）</h2><p><strong>PostgreSQL</strong> 会自动检测<strong>事务间循环等待</strong>，回滚<strong>其中一个事务</strong>（报错 <strong><code>40P01 deadlock_detected</code></strong>）。<br>规避思路与 <strong>MySQL</strong> 类似：<strong>固定加锁顺序</strong>、<strong>缩短事务</strong>、<strong>避免无关长耗时</strong>在事务内执行。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 排障时常看（需权限）</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> pg_locks <span class="keyword">WHERE</span> <span class="keyword">NOT</span> granted;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="五、与-MySQL-InnoDB-的粗对照（防混）"><a href="#五、与-MySQL-InnoDB-的粗对照（防混）" class="headerlink" title="五、与 MySQL InnoDB 的粗对照（防混）"></a>五、与 <strong>MySQL InnoDB</strong> 的粗对照（防混）</h2><table>
+<thead>
+<tr>
+<th>话题</th>
+<th>MySQL InnoDB（见 <strong><code>MySQL锁详解.md</code></strong>）</th>
+<th>PostgreSQL（入门记法）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>默认隔离</td>
+<td>常为 <strong>RR</strong></td>
+<td><strong>RC</strong></td>
+</tr>
+<tr>
+<td>幻读与范围锁</td>
+<td><strong>间隙锁 &#x2F; Next-Key</strong> 叙述多</td>
+<td><strong>SSI &#x2F; 谓词锁</strong> 等在 <strong>SERIALIZABLE</strong> 下讨论多</td>
+</tr>
+<tr>
+<td>队列抢任务</td>
+<td><strong><code>FOR UPDATE</code></strong> + 设计索引</td>
+<td><strong><code>FOR UPDATE SKIP LOCKED</code></strong> 一等公民</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="六、延伸阅读"><a href="#六、延伸阅读" class="headerlink" title="六、延伸阅读"></a>六、延伸阅读</h2><ul>
+<li><strong><code>PostgreSQL索引与性能优化.md</code></strong>：<code>EXPLAIN</code>、<strong><code>VACUUM</code></strong>、慢语句。  </li>
+<li><strong><code>PostgreSQL-Docker.md</code></strong>：实例与卷、连接串。  </li>
+<li><strong><code>PostgreSQL高级查询.md</code></strong>：复杂只读查询。</li>
+</ul>
+<p>线上问题请结合 <strong><code>pg_stat_activity</code></strong>、<strong><code>pg_locks</code></strong>、日志与监控，本文不替代完整 <strong>DBA Runbook</strong>。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E4%BA%8B%E5%8A%A1/" rel="tag"># 事务</a>
+              <a href="/tags/PostgreSQL/" rel="tag"># PostgreSQL</a>
+              <a href="/tags/MVCC/" rel="tag"># MVCC</a>
+              <a href="/tags/%E9%94%81/" rel="tag"># 锁</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/05/03/PostgreSQL/PostgreSQL%E7%B4%A2%E5%BC%95%E4%B8%8E%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/" rel="prev" title="PostgreSQL 索引与性能优化">
+                  <i class="fa fa-angle-left"></i> PostgreSQL 索引与性能优化
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2026/05/03/Redis/String%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E3%80%81%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%E5%8F%8A%E6%A1%88%E4%BE%8B/" rel="next" title="Redis String 数据类型、应用场景及案例">
+                  Redis String 数据类型、应用场景及案例 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">miracle</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">58k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">3:14</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+<script>
+(function () {
+  function extractFromFigure(fig) {
+    if (!fig) return '';
+    var cell = fig.querySelector('td.code') || fig.querySelector('.code');
+    var block = cell || fig.querySelector('code');
+    if (!block) return '';
+    var pre = block.querySelector('pre');
+    var source = pre || block;
+    return (source.textContent || '').replace(/\u00a0/g, ' ');
+  }
+
+  function extractForCopyBtn(btn) {
+    var fig = btn.closest('figure.highlight');
+    if (fig) return extractFromFigure(fig);
+    var wrap = btn.closest('.code-container');
+    if (wrap) {
+      var innerFig = wrap.querySelector('figure.highlight');
+      if (innerFig) return extractFromFigure(innerFig);
+      var preOnly = wrap.querySelector('pre');
+      if (preOnly) return (preOnly.textContent || '').replace(/\u00a0/g, ' ');
+    }
+    return '';
+  }
+
+  function setCopyIcon(btn, ok) {
+    var i = btn.querySelector('i');
+    if (i) i.className = ok ? 'fa fa-check-circle fa-fw' : 'fa fa-times-circle fa-fw';
+  }
+
+  function writeClipboard(text, btn) {
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(text).then(
+        function () { setCopyIcon(btn, true); },
+        function () { fallbackCopy(text, btn); }
+      );
+    }
+    fallbackCopy(text, btn);
+    return Promise.resolve();
+  }
+
+  function fallbackCopy(text, btn) {
+    try {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed';
+      ta.style.left = '-9999px';
+      document.body.appendChild(ta);
+      ta.select();
+      var ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      setCopyIcon(btn, ok);
+    } catch (e) {
+      setCopyIcon(btn, false);
+    }
+  }
+
+  document.addEventListener(
+    'click',
+    function (e) {
+      var btn = e.target.closest && e.target.closest('.copy-btn');
+      if (!btn) return;
+      if (!btn.closest('figure.highlight') && !btn.closest('.code-container')) return;
+      e.stopPropagation();
+      e.preventDefault();
+      var text = extractForCopyBtn(btn);
+      writeClipboard(text, btn);
+    },
+    true
+  );
+})();
+</script>
+
+</body>
+</html>

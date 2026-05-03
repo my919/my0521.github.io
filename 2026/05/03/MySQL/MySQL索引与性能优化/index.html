@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="面向业务开发与日常运维：能看懂执行计划、会选隔离级别、会开慢日志、知道备份与按时间点恢复在说什么。与 《MySQL锁详解》（MySQL锁详解.md，偏 InnoDB 锁原理与双会话实验）互补；容器内备份与卷持久化可对照 《Docker 部署 MySQL》（MySQL-Docker.md）中的数据卷与实例启停。  一、索引在干什么：B+ 树直觉（够用版）InnoDB 里，表数据按主键组织成一棵 B+">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL 索引与性能优化">
+<meta property="og:url" content="http://example.com/2026/05/03/MySQL/MySQL%E7%B4%A2%E5%BC%95%E4%B8%8E%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/index.html">
+<meta property="og:site_name" content="my">
+<meta property="og:description" content="面向业务开发与日常运维：能看懂执行计划、会选隔离级别、会开慢日志、知道备份与按时间点恢复在说什么。与 《MySQL锁详解》（MySQL锁详解.md，偏 InnoDB 锁原理与双会话实验）互补；容器内备份与卷持久化可对照 《Docker 部署 MySQL》（MySQL-Docker.md）中的数据卷与实例启停。  一、索引在干什么：B+ 树直觉（够用版）InnoDB 里，表数据按主键组织成一棵 B+">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/images/mysql/innodb-bplus-tree.png">
+<meta property="article:published_time" content="2026-05-03T06:00:00.000Z">
+<meta property="article:modified_time" content="2026-05-03T08:31:54.085Z">
+<meta property="article:author" content="miracle">
+<meta property="article:tag" content="EXPLAIN">
+<meta property="article:tag" content="MySQL">
+<meta property="article:tag" content="事务">
+<meta property="article:tag" content="性能优化">
+<meta property="article:tag" content="索引">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/images/mysql/innodb-bplus-tree.png">
+
+
+<link rel="canonical" href="http://example.com/2026/05/03/MySQL/MySQL%E7%B4%A2%E5%BC%95%E4%B8%8E%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2026/05/03/MySQL/MySQL%E7%B4%A2%E5%BC%95%E4%B8%8E%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/","path":"2026/05/03/MySQL/MySQL索引与性能优化/","title":"MySQL 索引与性能优化"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>MySQL 索引与性能优化 | my</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="my" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">my</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E7%B4%A2%E5%BC%95%E5%9C%A8%E5%B9%B2%E4%BB%80%E4%B9%88%EF%BC%9AB-%E6%A0%91%E7%9B%B4%E8%A7%89%EF%BC%88%E5%A4%9F%E7%94%A8%E7%89%88%EF%BC%89"><span class="nav-number">1.</span> <span class="nav-text">一、索引在干什么：B+ 树直觉（够用版）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E8%81%94%E5%90%88%E7%B4%A2%E5%BC%95%E4%B8%8E%E6%9C%80%E5%B7%A6%E5%89%8D%E7%BC%80"><span class="nav-number">2.</span> <span class="nav-text">二、联合索引与最左前缀</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E8%A6%86%E7%9B%96%E7%B4%A2%E5%BC%95%EF%BC%88Using-index%EF%BC%89"><span class="nav-number">3.</span> <span class="nav-text">三、覆盖索引（Using index）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E7%B4%A2%E5%BC%95%E6%9D%A1%E4%BB%B6%E4%B8%8B%E6%8E%A8-ICP%EF%BC%88%E4%B8%80%E7%9C%BC%E5%B8%A6%E8%BF%87%EF%BC%89"><span class="nav-number">4.</span> <span class="nav-text">四、索引条件下推 ICP（一眼带过）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E6%80%8E%E4%B9%88%E7%9C%8B-EXPLAIN%EF%BC%88%E6%89%A7%E8%A1%8C%E8%AE%A1%E5%88%92%EF%BC%89"><span class="nav-number">5.</span> <span class="nav-text">五、怎么看 EXPLAIN（执行计划）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%9F%BA%E6%9C%AC%E7%94%A8%E6%B3%95"><span class="nav-number">5.1.</span> <span class="nav-text">1. 基本用法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E5%BB%BA%E8%AE%AE%E4%BC%98%E5%85%88%E7%9B%AF%E7%9A%84%E5%88%97%EF%BC%88%E5%85%A5%E9%97%A8%E5%A4%9F%E7%94%A8%EF%BC%89"><span class="nav-number">5.2.</span> <span class="nav-text">2. 建议优先盯的列（入门够用）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E5%AE%9E%E6%93%8D%E4%B9%A0%E6%83%AF"><span class="nav-number">5.3.</span> <span class="nav-text">3. 实操习惯</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E4%BA%8B%E5%8A%A1%E4%B8%8E%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%EF%BC%88%E5%86%99%E6%B3%95%E4%B8%8E%E9%80%89%E5%9E%8B%EF%BC%89"><span class="nav-number">6.</span> <span class="nav-text">六、事务与隔离级别（写法与选型）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-autocommit-%E4%B8%8E%E6%98%BE%E5%BC%8F%E4%BA%8B%E5%8A%A1"><span class="nav-number">6.1.</span> <span class="nav-text">1. autocommit 与显式事务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-READ-COMMITTED%EF%BC%88RC%EF%BC%89-%E4%B8%8E-REPEATABLE-READ%EF%BC%88RR%EF%BC%89"><span class="nav-number">6.2.</span> <span class="nav-text">2. READ COMMITTED（RC） 与 REPEATABLE READ（RR）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E4%BC%9A%E8%AF%9D%E7%BA%A7%E4%BF%AE%E6%94%B9%EF%BC%88%E7%A4%BA%E4%BE%8B%EF%BC%89"><span class="nav-number">6.3.</span> <span class="nav-text">3. 会话级修改（示例）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%83%E3%80%81%E6%85%A2%E6%9F%A5%E8%AF%A2%E4%B8%8E%E8%BF%90%E7%BB%B4%E3%80%8C%E4%B8%89%E6%9D%BF%E6%96%A7%E3%80%8D%EF%BC%88%E7%82%B9%E5%88%B0%E4%B8%BA%E6%AD%A2%EF%BC%89"><span class="nav-number">7.</span> <span class="nav-text">七、慢查询与运维「三板斧」（点到为止）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E6%89%93%E5%BC%80%E6%85%A2%E6%9F%A5%E8%AF%A2%E6%97%A5%E5%BF%97"><span class="nav-number">7.1.</span> <span class="nav-text">1. 打开慢查询日志</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-mysqldumpslow%EF%BC%88%E9%9A%8F-MySQL-%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%B7%A5%E5%85%B7%E5%88%86%E5%8F%91%EF%BC%89"><span class="nav-number">7.2.</span> <span class="nav-text">2. mysqldumpslow（随 MySQL 客户端工具分发）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-pt-query-digest%EF%BC%88Percona-Toolkit%EF%BC%89"><span class="nav-number">7.3.</span> <span class="nav-text">3. pt-query-digest（Percona Toolkit）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AB%E3%80%81%E5%A4%87%E4%BB%BD%E6%81%A2%E5%A4%8D%E4%B8%8E-PITR-%E6%A6%82%E5%BF%B5"><span class="nav-number">8.</span> <span class="nav-text">八、备份恢复与 PITR 概念</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E9%80%BB%E8%BE%91%E5%A4%87%E4%BB%BD%EF%BC%88mysqldump%EF%BC%89"><span class="nav-number">8.1.</span> <span class="nav-text">1. 逻辑备份（mysqldump）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E7%89%A9%E7%90%86%E5%A4%87%E4%BB%BD%E4%B8%8E%E5%BF%AB%E7%85%A7"><span class="nav-number">8.2.</span> <span class="nav-text">2. 物理备份与快照</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-PITR%EF%BC%88Point-in-Time-Recovery%EF%BC%8C%E6%8C%89%E6%97%B6%E9%97%B4%E7%82%B9%E6%81%A2%E5%A4%8D%EF%BC%89"><span class="nav-number">8.3.</span> <span class="nav-text">3. PITR（Point-in-Time Recovery，按时间点恢复）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B9%9D%E3%80%81%E6%9C%AC%E7%AF%87%E4%B8%8E%E5%A7%8A%E5%A6%B9%E6%96%87%E5%85%B3%E7%B3%BB%EF%BC%88%E9%80%9F%E8%AE%B0%EF%BC%89"><span class="nav-number">9.</span> <span class="nav-text">九、本篇与姊妹文关系（速记）</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">miracle</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">116</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">49</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">128</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/my919" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;my919" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://gitee.com/my919" title="Gitee → https:&#x2F;&#x2F;gitee.com&#x2F;my919" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>Gitee</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:yeal166@163.com" title="E-Mail → mailto:yeal166@163.com" rel="noopener me external nofollow noreferrer" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/03/MySQL/MySQL%E7%B4%A2%E5%BC%95%E4%B8%8E%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="MySQL 索引与性能优化 | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          MySQL 索引与性能优化
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2026-05-03 14:00:00 / 修改时间：16:31:54" itemprop="dateCreated datePublished" datetime="2026-05-03T14:00:00+08:00">2026-05-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>2k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>7 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>面向<strong>业务开发与日常运维</strong>：能看懂<strong>执行计划</strong>、会选<strong>隔离级别</strong>、会开<strong>慢日志</strong>、知道<strong>备份与按时间点恢复</strong>在说什么。与 <strong>《MySQL锁详解》</strong>（<strong><code>MySQL锁详解.md</code></strong>，偏 <strong>InnoDB</strong> 锁原理与双会话实验）互补；容器内备份与卷持久化可对照 <strong>《Docker 部署 MySQL》</strong>（<strong><code>MySQL-Docker.md</code></strong>）中的数据卷与实例启停。</p>
+<hr>
+<h2 id="一、索引在干什么：B-树直觉（够用版）"><a href="#一、索引在干什么：B-树直觉（够用版）" class="headerlink" title="一、索引在干什么：B+ 树直觉（够用版）"></a>一、索引在干什么：B+ 树直觉（够用版）</h2><p><strong>InnoDB</strong> 里，表数据按<strong>主键</strong>组织成一棵 <strong>B+ 树</strong>（<strong>聚簇索引</strong>）：叶子节点存「主键 + 整行数据」。<br><strong>二级索引</strong>（你建的 <strong><code>INDEX</code> &#x2F; <code>UNIQUE</code></strong>）叶子节点存「索引列 + <strong>主键</strong>」，需要整行时往往要<strong>再回表</strong>到聚簇索引取数据。</p>
+<p>下图便于建立直觉（<strong>示意</strong>：键值与层数为教学简化，与真实页大小、填充率无关）。</p>
+<p><img src="/images/mysql/innodb-bplus-tree.png" alt="InnoDB B+ 树：聚簇索引与二级索引、叶子链表与回表（示意）"></p>
+<p><strong>读图要点</strong>：上层结点只存<strong>分界键</strong>与<strong>子树指针</strong>；<strong>最底层叶子</strong>由<strong>双向链表</strong>串起，方便<strong>范围扫描</strong>；<strong>聚簇索引</strong>叶子是<strong>主键 + 行数据</strong>；<strong>二级索引</strong>叶子多一步<strong>按主键回表</strong>读完整行。</p>
+<p>直觉：</p>
+<ul>
+<li><strong>等值 &#x2F; 范围</strong>命中索引列 → 树高度低、少读页 → <strong>随机 I&#x2F;O</strong> 变少。  </li>
+<li><strong>全表扫</strong> → 叶子链顺序读，数据量一大就慢。  </li>
+<li>索引<strong>不是越多越好</strong>：每次 <strong><code>INSERT/UPDATE/DELETE</code></strong> 都可能维护多棵索引树。</li>
+</ul>
+<hr>
+<h2 id="二、联合索引与最左前缀"><a href="#二、联合索引与最左前缀" class="headerlink" title="二、联合索引与最左前缀"></a>二、联合索引与最左前缀</h2><p>联合索引 <strong><code>KEY idx_abc (a, b, c)</code></strong> 的排序语义是：先按 <strong><code>a</code></strong>，再 <strong><code>a</code> 相同</strong>时按 <strong><code>b</code></strong>，再按 <strong><code>c</code></strong>。</p>
+<p><strong>能较好利用该索引</strong>的典型条件（示意）：</p>
+<ul>
+<li><strong><code>WHERE a = ?</code></strong>  </li>
+<li><strong><code>WHERE a = ? AND b = ?</code></strong>  </li>
+<li><strong><code>WHERE a = ? AND b BETWEEN ? AND ?</code></strong></li>
+</ul>
+<p><strong>容易用不上或只用一截</strong>的情况：</p>
+<ul>
+<li><strong><code>WHERE b = ? AND c = ?</code></strong>（缺 <strong><code>a</code></strong>，与「最左」不一致）  </li>
+<li><strong><code>WHERE a = ? OR d = ?</code></strong>（<strong><code>OR</code></strong> 另一侧常走另一条路径，易优化成 <strong>UNION</strong> 或改写法）  </li>
+<li>对 <strong><code>a</code></strong> 做函数&#x2F;隐式类型转换导致<strong>无法走树</strong>（例如 <strong><code>WHERE DATE(a_col) = ...</code></strong>）。</li>
+</ul>
+<p>设计经验：把<strong>区分度高、过滤性大</strong>的列尽量放左侧；把<strong>范围查询</strong>列放联合索引<strong>右侧</strong>更常见（仍要结合 <strong><code>EXPLAIN</code></strong> 验证）。</p>
+<hr>
+<h2 id="三、覆盖索引（Using-index）"><a href="#三、覆盖索引（Using-index）" class="headerlink" title="三、覆盖索引（Using index）"></a>三、覆盖索引（<strong><code>Using index</code></strong>）</h2><p>若 <strong><code>SELECT</code></strong> 里出现的列都能从<strong>某条二级索引</strong>的叶子直接凑齐（含 <strong><code>WHERE</code></strong> 用到的索引列），<strong>InnoDB</strong> 可能<strong>只扫索引、不回表</strong>，<strong><code>EXPLAIN</code></strong> 的 <strong><code>Extra</code></strong> 常见 <strong><code>Using index</code></strong>。</p>
+<p>典型收益：大宽表上只查少数列 + 条件列恰好在同一联合索引上，<strong>I&#x2F;O</strong> 明显下降。</p>
+<hr>
+<h2 id="四、索引条件下推-ICP（一眼带过）"><a href="#四、索引条件下推-ICP（一眼带过）" class="headerlink" title="四、索引条件下推 ICP（一眼带过）"></a>四、索引条件下推 <strong>ICP</strong>（一眼带过）</h2><p><strong>Index Condition Pushdown</strong>：把部分 <strong><code>WHERE</code></strong> 条件下推到存储引擎层，在<strong>索引扫描过程中</strong>就过滤，少回表。<br>在 <strong><code>EXPLAIN</code></strong> 里常见 <strong><code>Using index condition</code></strong>（与 <strong><code>Using index</code></strong> 不同：后者多为覆盖索引）。不必一次讲透优化器细节，看到术语知道「在索引层多干了一点过滤」即可。</p>
+<hr>
+<h2 id="五、怎么看-EXPLAIN（执行计划）"><a href="#五、怎么看-EXPLAIN（执行计划）" class="headerlink" title="五、怎么看 EXPLAIN（执行计划）"></a>五、怎么看 <strong><code>EXPLAIN</code></strong>（执行计划）</h2><h3 id="1-基本用法"><a href="#1-基本用法" class="headerlink" title="1. 基本用法"></a>1. 基本用法</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">EXPLAIN <span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> your_table <span class="keyword">WHERE</span> id <span class="operator">=</span> <span class="number">1</span>;</span><br><span class="line"><span class="comment">-- MySQL 8.0+ 可看优化器树（可选）</span></span><br><span class="line"><span class="comment">-- EXPLAIN FORMAT=TREE SELECT ...</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="2-建议优先盯的列（入门够用）"><a href="#2-建议优先盯的列（入门够用）" class="headerlink" title="2. 建议优先盯的列（入门够用）"></a>2. 建议优先盯的列（入门够用）</h3><table>
+<thead>
+<tr>
+<th>列 &#x2F; 信息</th>
+<th>大致含义（入门）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong><code>type</code></strong></td>
+<td>访问类型，从差到好常见：<strong><code>ALL</code></strong>（全表扫）→ <strong><code>index</code></strong>（扫整棵二级索引树）→ <strong><code>range</code></strong> → <strong><code>ref</code></strong> → <strong><code>eq_ref</code></strong> → <strong><code>const</code></strong>。出现 <strong><code>ALL</code></strong> 且行很大时要警惕。</td>
+</tr>
+<tr>
+<td><strong><code>key</code></strong></td>
+<td>实际选用的索引名；<strong><code>NULL</code></strong> 表示未用索引。</td>
+</tr>
+<tr>
+<td><strong><code>rows</code></strong></td>
+<td>预估扫描行数（越小通常越好，<strong>预估值</strong>不等于真实值）。</td>
+</tr>
+<tr>
+<td><strong><code>Extra</code></strong></td>
+<td><strong><code>Using index</code></strong> 覆盖索引；<strong><code>Using where</code></strong> 在引擎返回后再过滤；<strong><code>Using filesort</code></strong> &#x2F; <strong><code>Using temporary</code></strong> 常与排序、分组有关，数据大时要关注。</td>
+</tr>
+</tbody></table>
+<h3 id="3-实操习惯"><a href="#3-实操习惯" class="headerlink" title="3. 实操习惯"></a>3. 实操习惯</h3><ol>
+<li>对<strong>慢 SQL</strong>先 <strong><code>EXPLAIN</code></strong>，确认是否走了预期 <strong><code>key</code></strong>。  </li>
+<li><strong><code>SELECT *</code></strong> 易阻碍覆盖索引；列表接口尽量<strong>只查需要的列</strong>。  </li>
+<li>改完索引或统计信息后，可 <strong><code>ANALYZE TABLE tbl;</code></strong>（视版本与权限）帮助优化器更新统计信息。</li>
+</ol>
+<hr>
+<h2 id="六、事务与隔离级别（写法与选型）"><a href="#六、事务与隔离级别（写法与选型）" class="headerlink" title="六、事务与隔离级别（写法与选型）"></a>六、事务与隔离级别（写法与选型）</h2><h3 id="1-autocommit-与显式事务"><a href="#1-autocommit-与显式事务" class="headerlink" title="1. autocommit 与显式事务"></a>1. <strong><code>autocommit</code> 与显式事务</strong></h3><ul>
+<li>默认 <strong><code>autocommit = 1</code></strong>：每条语句单独一事务，执行完即提交。  </li>
+<li>显式事务：</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SET</span> autocommit <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line"><span class="keyword">START</span> TRANSACTION;  <span class="comment">-- 或 BEGIN;</span></span><br><span class="line"><span class="comment">-- 多条 DML</span></span><br><span class="line"><span class="keyword">COMMIT</span>;</span><br><span class="line"><span class="comment">-- 或 ROLLBACK;</span></span><br><span class="line"><span class="keyword">SET</span> autocommit <span class="operator">=</span> <span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+
+<p>业务代码里常用连接池 + <strong>ORM</strong>：仍要清楚「一次请求里是否包在一个事务里」，避免<strong>长事务</strong>占锁（与 <strong><code>MySQL锁详解.md</code></strong> 中的死锁、锁等待分析衔接）。</p>
+<h3 id="2-READ-COMMITTED（RC）-与-REPEATABLE-READ（RR）"><a href="#2-READ-COMMITTED（RC）-与-REPEATABLE-READ（RR）" class="headerlink" title="2. READ COMMITTED（RC） 与 REPEATABLE READ（RR）"></a>2. <strong><code>READ COMMITTED</code>（RC）</strong> 与 <strong><code>REPEATABLE READ</code>（RR）</strong></h3><table>
+<thead>
+<tr>
+<th>维度</th>
+<th><strong>RC</strong></th>
+<th><strong>RR</strong>（<strong>InnoDB</strong> 默认）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>读行为</td>
+<td>每次读可见<strong>已提交</strong>最新数据</td>
+<td>同一事务内<strong>可重复读</strong>快照（简化理解）</td>
+</tr>
+<tr>
+<td>锁与幻读</td>
+<td>间隙锁较少场景（仍与语句、索引有关）</td>
+<td>更易出现<strong>间隙锁 &#x2F; 临键锁</strong>相关阻塞，利于抑制幻读</td>
+</tr>
+<tr>
+<td>常见选型</td>
+<td>报表、强一致读最新、部分<strong>Oracle</strong> 迁移习惯</td>
+<td><strong>MySQL</strong> 默认；与多数 ORM 默认一致</td>
+</tr>
+</tbody></table>
+<p><strong>选型建议（粗线条）</strong>：无特殊要求可先保持 <strong>RR</strong>；若已确认<strong>锁竞争 &#x2F; 插入阻塞</strong>与隔离级别强相关，再在测试环境评估 <strong>RC</strong>，并同步应用是否接受<strong>不可重复读 &#x2F; 幻读</strong>语义。<strong>锁细节、实验复现</strong>见 <strong><code>MySQL锁详解.md</code></strong>。</p>
+<h3 id="3-会话级修改（示例）"><a href="#3-会话级修改（示例）" class="headerlink" title="3. 会话级修改（示例）"></a>3. 会话级修改（示例）</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 仅当前会话（连接断开即失效，具体以版本与权限为准）</span></span><br><span class="line"><span class="keyword">SET</span> SESSION transaction_isolation <span class="operator">=</span> <span class="string">&#x27;READ-COMMITTED&#x27;</span>;</span><br><span class="line"><span class="comment">-- 或</span></span><br><span class="line"><span class="keyword">SET</span> SESSION transaction_isolation <span class="operator">=</span> <span class="string">&#x27;REPEATABLE-READ&#x27;</span>;</span><br></pre></td></tr></table></figure>
+
+<p>全局默认值在 <strong><code>my.cnf</code></strong> &#x2F; <strong><code>mysqld</code></strong> 启动参数中配置；生产改全局需评估全业务影响。</p>
+<hr>
+<h2 id="七、慢查询与运维「三板斧」（点到为止）"><a href="#七、慢查询与运维「三板斧」（点到为止）" class="headerlink" title="七、慢查询与运维「三板斧」（点到为止）"></a>七、慢查询与运维「三板斧」（点到为止）</h2><h3 id="1-打开慢查询日志"><a href="#1-打开慢查询日志" class="headerlink" title="1. 打开慢查询日志"></a>1. 打开慢查询日志</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SET</span> <span class="keyword">GLOBAL</span> slow_query_log <span class="operator">=</span> <span class="keyword">ON</span>;</span><br><span class="line"><span class="keyword">SET</span> <span class="keyword">GLOBAL</span> long_query_time <span class="operator">=</span> <span class="number">1</span>;       <span class="comment">-- 秒，按环境调</span></span><br><span class="line"><span class="keyword">SET</span> <span class="keyword">GLOBAL</span> log_queries_not_using_indexes <span class="operator">=</span> OFF;  <span class="comment">-- 慎用，易刷爆磁盘</span></span><br></pre></td></tr></table></figure>
+
+<p>持久化应写配置文件并重启或通过运维平台下发；<strong><code>SET GLOBAL</code></strong> 需相应权限。</p>
+<h3 id="2-mysqldumpslow（随-MySQL-客户端工具分发）"><a href="#2-mysqldumpslow（随-MySQL-客户端工具分发）" class="headerlink" title="2. mysqldumpslow（随 MySQL 客户端工具分发）"></a>2. <strong><code>mysqldumpslow</code></strong>（随 <strong>MySQL</strong> 客户端工具分发）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysqldumpslow -s t -t 10 /path/to/slow.log</span><br></pre></td></tr></table></figure>
+
+<p>常见含义：<strong><code>-s t</code></strong> 按累计总时间排序，<strong><code>-t 10</code></strong> 看前 <strong>10</strong> 条。各发行版路径、包名略有差异。</p>
+<h3 id="3-pt-query-digest（Percona-Toolkit）"><a href="#3-pt-query-digest（Percona-Toolkit）" class="headerlink" title="3. pt-query-digest（Percona Toolkit）"></a>3. <strong><code>pt-query-digest</code></strong>（<strong>Percona Toolkit</strong>）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pt-query-digest /path/to/slow.log &gt; report.txt</span><br></pre></td></tr></table></figure>
+
+<p>适合日志量大时做<strong>聚合报告</strong>；安装与权限属运维范畴，此处不展开。</p>
+<p><strong>落地顺序</strong>：开慢日志 → 用工具抓 <strong>Top SQL</strong> → <strong><code>EXPLAIN</code></strong> → 改索引或改写法 → 再对比慢日志。</p>
+<hr>
+<h2 id="八、备份恢复与-PITR-概念"><a href="#八、备份恢复与-PITR-概念" class="headerlink" title="八、备份恢复与 PITR 概念"></a>八、备份恢复与 <strong>PITR</strong> 概念</h2><h3 id="1-逻辑备份（mysqldump）"><a href="#1-逻辑备份（mysqldump）" class="headerlink" title="1. 逻辑备份（mysqldump）"></a>1. 逻辑备份（<strong><code>mysqldump</code></strong>）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mysqldump -h127.0.0.1 -uroot -p --single-transaction --routines --triggers \</span><br><span class="line">  --databases your_db &gt; backup.sql</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong><code>--single-transaction</code></strong>：<strong>InnoDB</strong> 下用一致性读做导出，<strong>尽量避免 <code>FLUSH TABLES WITH READ LOCK</code> 式全库只读</strong>（与全局锁备份对比，见 <strong><code>MySQL锁详解.md</code></strong> 中「全局锁 + <strong><code>mysqldump --single-transaction</code></strong>」相关说明）。  </li>
+<li>恢复：<code>mysql -uroot -p &lt; backup.sql</code>（注意字符集与目标实例版本）。</li>
+</ul>
+<h3 id="2-物理备份与快照"><a href="#2-物理备份与快照" class="headerlink" title="2. 物理备份与快照"></a>2. 物理备份与快照</h3><p>对大数据量，常用<strong>物理热备</strong>（厂商工具或存储快照）+ <strong>binlog</strong>；与 <strong>Docker</strong> 场景结合时，<strong>数据在卷上</strong>，备份策略要在「卷快照 &#x2F; 容器外 <strong><code>mysqldump</code></strong>」之间选一种或组合，并做<strong>恢复演练</strong>（参见 <strong><code>MySQL-Docker.md</code></strong> 中数据卷与持久化思路）。</p>
+<h3 id="3-PITR（Point-in-Time-Recovery，按时间点恢复）"><a href="#3-PITR（Point-in-Time-Recovery，按时间点恢复）" class="headerlink" title="3. PITR（Point-in-Time Recovery，按时间点恢复）"></a>3. <strong>PITR（Point-in-Time Recovery，按时间点恢复）</strong></h3><p>含义：不只恢复到「昨晚整库备份」，而是恢复到<strong>某事故前一秒</strong>。通常需要：</p>
+<ol>
+<li><strong>周期全量 &#x2F; 增量</strong>（逻辑或物理）；  </li>
+<li><strong>连续归档的 binlog<code>**（**</code>log_bin&#96;</strong> 打开，并安全保存 <strong>binlog</strong> 文件）；  </li>
+<li>恢复时：先还原备份到某一时刻，再<strong>重放 binlog</strong> 到目标时间点（具体命令与工具因版本与平台而异，属 DBA 操作手册级）。</li>
+</ol>
+<p><strong>可靠性</strong>＝备份自动化 + <strong>定期恢复演练</strong> + <strong>binlog</strong> 留存策略；开发至少要懂「为什么不能只靠一台机子从不备份」。</p>
+<hr>
+<h2 id="九、本篇与姊妹文关系（速记）"><a href="#九、本篇与姊妹文关系（速记）" class="headerlink" title="九、本篇与姊妹文关系（速记）"></a>九、本篇与姊妹文关系（速记）</h2><table>
+<thead>
+<tr>
+<th>主题</th>
+<th>本文</th>
+<th>延伸阅读</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>锁、间隙锁、死锁实验</td>
+<td>点到为止</td>
+<td><strong><code>MySQL锁详解.md</code></strong></td>
+</tr>
+<tr>
+<td>容器卷、实例启停</td>
+<td>备份落地要结合环境</td>
+<td><strong><code>MySQL-Docker.md</code></strong></td>
+</tr>
+<tr>
+<td>表结构、索引 <strong>DDL</strong></td>
+<td>建索引语句</td>
+<td><strong><code>MySQL.md</code></strong></td>
+</tr>
+<tr>
+<td>复杂 <strong>SELECT</strong></td>
+<td>写法与窗口函数等</td>
+<td><strong><code>MySQL高级查询.md</code></strong></td>
+</tr>
+</tbody></table>
+<p>生产环境请叠加：<strong>监控告警</strong>、<strong>变更窗口</strong>、<strong>只读副本延迟</strong>、<strong>连接数与超时</strong>等，本篇不替代完整 <strong>DBA</strong> 规范。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/MySQL/" rel="tag"># MySQL</a>
+              <a href="/tags/%E7%B4%A2%E5%BC%95/" rel="tag"># 索引</a>
+              <a href="/tags/EXPLAIN/" rel="tag"># EXPLAIN</a>
+              <a href="/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/" rel="tag"># 性能优化</a>
+              <a href="/tags/%E4%BA%8B%E5%8A%A1/" rel="tag"># 事务</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/05/03/MySQL/MySQL%E9%AB%98%E7%BA%A7%E6%9F%A5%E8%AF%A2/" rel="prev" title="MySQL 高级查询示例">
+                  <i class="fa fa-angle-left"></i> MySQL 高级查询示例
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2026/05/03/MySQL/MySQL%E5%BC%95%E6%93%8E/" rel="next" title="MySQL 存储引擎概览">
+                  MySQL 存储引擎概览 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">miracle</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">58k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">3:14</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+<script>
+(function () {
+  function extractFromFigure(fig) {
+    if (!fig) return '';
+    var cell = fig.querySelector('td.code') || fig.querySelector('.code');
+    var block = cell || fig.querySelector('code');
+    if (!block) return '';
+    var pre = block.querySelector('pre');
+    var source = pre || block;
+    return (source.textContent || '').replace(/\u00a0/g, ' ');
+  }
+
+  function extractForCopyBtn(btn) {
+    var fig = btn.closest('figure.highlight');
+    if (fig) return extractFromFigure(fig);
+    var wrap = btn.closest('.code-container');
+    if (wrap) {
+      var innerFig = wrap.querySelector('figure.highlight');
+      if (innerFig) return extractFromFigure(innerFig);
+      var preOnly = wrap.querySelector('pre');
+      if (preOnly) return (preOnly.textContent || '').replace(/\u00a0/g, ' ');
+    }
+    return '';
+  }
+
+  function setCopyIcon(btn, ok) {
+    var i = btn.querySelector('i');
+    if (i) i.className = ok ? 'fa fa-check-circle fa-fw' : 'fa fa-times-circle fa-fw';
+  }
+
+  function writeClipboard(text, btn) {
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(text).then(
+        function () { setCopyIcon(btn, true); },
+        function () { fallbackCopy(text, btn); }
+      );
+    }
+    fallbackCopy(text, btn);
+    return Promise.resolve();
+  }
+
+  function fallbackCopy(text, btn) {
+    try {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed';
+      ta.style.left = '-9999px';
+      document.body.appendChild(ta);
+      ta.select();
+      var ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      setCopyIcon(btn, ok);
+    } catch (e) {
+      setCopyIcon(btn, false);
+    }
+  }
+
+  document.addEventListener(
+    'click',
+    function (e) {
+      var btn = e.target.closest && e.target.closest('.copy-btn');
+      if (!btn) return;
+      if (!btn.closest('figure.highlight') && !btn.closest('.code-container')) return;
+      e.stopPropagation();
+      e.preventDefault();
+      var text = extractForCopyBtn(btn);
+      writeClipboard(text, btn);
+    },
+    true
+  );
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="Seata 提供分布式事务（AT &#x2F; TCC &#x2F; Saga 等）；在 Spring Cloud Alibaba 中通过 spring-cloud-starter-alibaba-seata 接入。SCA 2025.1.0.0 BOM 将 Seata 客户端对齐到 2.5.0，Server 大版本应与之一致。工程骨架与 BOM 见 Spring Cloud Alibaba 与 G">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spring Cloud Alibaba 接入 Seata（SCA 2025.1.x 与 Server 2.5）">
+<meta property="og:url" content="http://example.com/2026/05/01/SpringCloud/Seata/index.html">
+<meta property="og:site_name" content="my">
+<meta property="og:description" content="Seata 提供分布式事务（AT &#x2F; TCC &#x2F; Saga 等）；在 Spring Cloud Alibaba 中通过 spring-cloud-starter-alibaba-seata 接入。SCA 2025.1.0.0 BOM 将 Seata 客户端对齐到 2.5.0，Server 大版本应与之一致。工程骨架与 BOM 见 Spring Cloud Alibaba 与 G">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-05-01T06:56:51.000Z">
+<meta property="article:modified_time" content="2026-05-02T03:22:26.856Z">
+<meta property="article:author" content="miracle">
+<meta property="article:tag" content="Docker">
+<meta property="article:tag" content="MySQL">
+<meta property="article:tag" content="Nacos">
+<meta property="article:tag" content="Seata">
+<meta property="article:tag" content="SpringCloud">
+<meta property="article:tag" content="SpringCloudAlibaba">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/2026/05/01/SpringCloud/Seata/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2026/05/01/SpringCloud/Seata/","path":"2026/05/01/SpringCloud/Seata/","title":"Spring Cloud Alibaba 接入 Seata（SCA 2025.1.x 与 Server 2.5）"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Spring Cloud Alibaba 接入 Seata（SCA 2025.1.x 与 Server 2.5） | my</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="my" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">my</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8E-Spring-Cloud-Alibaba-%E7%9A%84%E7%89%88%E6%9C%AC%E5%85%B3%E7%B3%BB"><span class="nav-number">1.</span> <span class="nav-text">与 Spring Cloud Alibaba 的版本关系</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%98%E6%96%B9%E6%96%87%E6%A1%A3%E4%B8%8E%E7%A4%BA%E4%BE%8B"><span class="nav-number">2.</span> <span class="nav-text">官方文档与示例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BE%9D%E8%B5%96%EF%BC%88Gradle-Kotlin-DSL%EF%BC%89"><span class="nav-number">3.</span> <span class="nav-text">依赖（Gradle Kotlin DSL）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AT-%E6%A8%A1%E5%BC%8F%EF%BC%9A%E4%B8%9A%E5%8A%A1%E5%BA%93-undo-log"><span class="nav-number">4.</span> <span class="nav-text">AT 模式：业务库 undo_log</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Seata-Server-%E5%BF%AB%E9%80%9F%E5%90%AF%E5%8A%A8%EF%BC%88%E6%9C%AC%E5%9C%B0%E9%AA%8C%E8%AF%81%EF%BC%89"><span class="nav-number">5.</span> <span class="nav-text">Seata Server 快速启动（本地验证）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%8D%95%E6%9C%BA%E6%96%87%E4%BB%B6%E5%AD%98%E5%82%A8%EF%BC%88%E6%9C%80%E7%AE%80%E5%8D%95%EF%BC%89"><span class="nav-number">5.1.</span> <span class="nav-text">1. 单机文件存储（最简单）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-db-%E6%A8%A1%E5%BC%8F-Nacos%EF%BC%88%E4%B8%8E%E5%AE%98%E6%96%B9%E7%A4%BA%E4%BE%8B%E4%B8%80%E8%87%B4%EF%BC%89"><span class="nav-number">5.2.</span> <span class="nav-text">2. db 模式 + Nacos（与官方示例一致）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BA%94%E7%94%A8%E4%BE%A7%E6%9C%80%E5%B0%8F%E9%85%8D%E7%BD%AE%EF%BC%88application-yaml%EF%BC%89"><span class="nav-number">6.</span> <span class="nav-text">应用侧最小配置（application.yaml）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8E-Nacos-%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83%EF%BC%88%E5%AE%98%E6%96%B9%E7%A4%BA%E4%BE%8B%E8%B7%AF%E5%BE%84%EF%BC%89"><span class="nav-number">7.</span> <span class="nav-text">与 Nacos 配置中心（官方示例路径）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%81%94%E8%B0%83%E6%A3%80%E6%9F%A5"><span class="nav-number">8.</span> <span class="nav-text">联调检查</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="nav-number">9.</span> <span class="nav-text">参考链接</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">miracle</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">116</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">49</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">128</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/my919" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;my919" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://gitee.com/my919" title="Gitee → https:&#x2F;&#x2F;gitee.com&#x2F;my919" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>Gitee</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:yeal166@163.com" title="E-Mail → mailto:yeal166@163.com" rel="noopener me external nofollow noreferrer" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/SpringCloud/Seata/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Spring Cloud Alibaba 接入 Seata（SCA 2025.1.x 与 Server 2.5） | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Spring Cloud Alibaba 接入 Seata（SCA 2025.1.x 与 Server 2.5）
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-05-01 14:56:51" itemprop="dateCreated datePublished" datetime="2026-05-01T14:56:51+08:00">2026-05-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-05-02 11:22:26" itemprop="dateModified" datetime="2026-05-02T11:22:26+08:00">2026-05-02</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/SpringCloud/" itemprop="url" rel="index"><span itemprop="name">SpringCloud</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>988</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>3 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p><strong>Seata</strong> 提供分布式事务（<strong>AT &#x2F; TCC &#x2F; Saga</strong> 等）；在 <strong>Spring Cloud Alibaba</strong> 中通过 <strong><code>spring-cloud-starter-alibaba-seata</code></strong> 接入。<strong>SCA 2025.1.0.0</strong> BOM 将 <strong>Seata</strong> 客户端对齐到 <strong>2.5.0</strong>，<strong>Server</strong> 大版本应与之一致。工程骨架与 BOM 见 <a href="/2026/05/01/SpringCloudAlibaba/">Spring Cloud Alibaba 与 Gradle 从零搭建</a>；注册与配置中心常用 <strong>Nacos</strong>，部署参考 <a href="/2026/05/01/Nacos/">Nacos 版本选型与容器化部署</a>。</p>
+<hr>
+<h2 id="与-Spring-Cloud-Alibaba-的版本关系"><a href="#与-Spring-Cloud-Alibaba-的版本关系" class="headerlink" title="与 Spring Cloud Alibaba 的版本关系"></a>与 Spring Cloud Alibaba 的版本关系</h2><table>
+<thead>
+<tr>
+<th>项</th>
+<th>建议</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>SCA BOM</strong></td>
+<td><strong>2025.1.0.0</strong></td>
+<td><a target="_blank" rel="noopener" href="https://github.com/alibaba/spring-cloud-alibaba/releases">Releases</a></td>
+</tr>
+<tr>
+<td><strong>Seata Client（BOM）</strong></td>
+<td><strong>2.5.0</strong></td>
+<td><strong><code>spring-cloud-alibaba-dependencies</code></strong> 中 <strong><code>seata.version</code></strong></td>
+</tr>
+<tr>
+<td><strong>Seata Server</strong></td>
+<td><strong>2.5.x</strong>（与客户端同世代）</td>
+<td>镜像示例：<strong><code>seataio/seata-server:2.5.0</code></strong>；发行包见 <a target="_blank" rel="noopener" href="https://github.com/seata/seata/releases">Seata Releases</a></td>
+</tr>
+<tr>
+<td><strong>业务库（AT）</strong></td>
+<td>每库 <strong><code>undo_log</code></strong></td>
+<td><strong>InnoDB</strong>；脚本见 <a target="_blank" rel="noopener" href="https://github.com/seata/seata/tree/develop/script/client">Seata script&#x2F;client</a> 下对应数据库</td>
+</tr>
+<tr>
+<td><strong>Server 存事务元数据（db）</strong></td>
+<td><strong><code>global_table</code> &#x2F; <code>branch_table</code> &#x2F; <code>lock_table</code> &#x2F; <code>distributed_lock</code></strong></td>
+<td>见 <a target="_blank" rel="noopener" href="https://github.com/seata/seata/tree/develop/script/server/db">Seata script&#x2F;server&#x2F;db</a></td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="官方文档与示例"><a href="#官方文档与示例" class="headerlink" title="官方文档与示例"></a>官方文档与示例</h2><ul>
+<li><strong>SCA 2025.x Seata 快速开始</strong>：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://sca.aliyun.com/docs/2025.x/user-guide/seata/quick-start/">https://sca.aliyun.com/docs/2025.x/user-guide/seata/quick-start/</a>  </li>
+<li><strong>Seata</strong> 官网：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://seata.io/">https://seata.io/</a>  </li>
+<li><strong>多服务示例</strong>：<a target="_blank" rel="noopener" href="https://github.com/alibaba/spring-cloud-alibaba/tree/2025.1.x/spring-cloud-alibaba-examples/seata-example">https://github.com/alibaba/spring-cloud-alibaba/tree/2025.1.x/spring-cloud-alibaba-examples/seata-example</a></li>
+</ul>
+<hr>
+<h2 id="依赖（Gradle-Kotlin-DSL）"><a href="#依赖（Gradle-Kotlin-DSL）" class="headerlink" title="依赖（Gradle Kotlin DSL）"></a>依赖（Gradle Kotlin DSL）</h2><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">dependencies &#123;</span><br><span class="line">    implementation(<span class="string">&quot;com.alibaba.cloud:spring-cloud-starter-alibaba-seata&quot;</span>)</span><br><span class="line">    <span class="comment">// 若使用 JDBC 数据源参与 AT，按需增加 spring-jdbc / 连接池 / 驱动</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="AT-模式：业务库-undo-log"><a href="#AT-模式：业务库-undo-log" class="headerlink" title="AT 模式：业务库 undo_log"></a>AT 模式：业务库 <code>undo_log</code></h2><p>在参与 <strong>AT</strong> 分支的<strong>每个业务库</strong>执行官方 <strong><code>undo_log</code></strong> 建表脚本（引擎 <strong>InnoDB</strong>）。<strong>SCA</strong> 快速开始中有示例 <strong>DDL</strong>；升级 <strong>Seata</strong> 大版本时请对照发行说明是否调整表结构。</p>
+<hr>
+<h2 id="Seata-Server-快速启动（本地验证）"><a href="#Seata-Server-快速启动（本地验证）" class="headerlink" title="Seata Server 快速启动（本地验证）"></a>Seata Server 快速启动（本地验证）</h2><h3 id="1-单机文件存储（最简单）"><a href="#1-单机文件存储（最简单）" class="headerlink" title="1. 单机文件存储（最简单）"></a>1. 单机文件存储（最简单）</h3><p>适合本机联调：<strong>元数据</strong>存 <strong>Server</strong> 本地文件，不配外置库。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">docker run -d --name seata-server \</span><br><span class="line">  -p 8091:8091 -p 7091:7091 \</span><br><span class="line">  seataio/seata-server:2.5.0</span><br></pre></td></tr></table></figure>
+
+<p><strong>说明</strong>：镜像标签以 <a target="_blank" rel="noopener external nofollow noreferrer" href="https://hub.docker.com/r/seataio/seata-server/tags">Docker Hub seataio&#x2F;seata-server</a> 为准；若无对应 <strong>patch</strong> 标签，可改用同 <strong>2.5.x</strong> 已发布标签，或直接使用 <a target="_blank" rel="noopener" href="https://github.com/seata/seata/releases">Seata Releases</a> 中的 <strong><code>seata-server</code></strong> 发行包启动。</p>
+<ul>
+<li><strong>TC</strong> 默认端口 <strong>8091</strong>；控制台常见 <strong>7091</strong>（以镜像说明为准）。  </li>
+<li>客户端 <strong><code>tx-service-group</code></strong> 与 <strong><code>service.vgroupMapping.*</code></strong> 必须与 <strong>Server</strong> 侧 <strong><code>registry</code></strong> 可见的 <strong><code>cluster</code></strong> 一致（见下文 <strong><code>application.yaml</code></strong>）。</li>
+</ul>
+<h3 id="2-db-模式-Nacos（与官方示例一致）"><a href="#2-db-模式-Nacos（与官方示例一致）" class="headerlink" title="2. db 模式 + Nacos（与官方示例一致）"></a>2. db 模式 + Nacos（与官方示例一致）</h3><p>生产或多人环境：在 <strong>MySQL</strong> 中导入 <strong>Server</strong> 侧表结构；<strong>Server</strong> 使用 <strong><code>store.mode: db</code></strong>；注册与配置使用 <strong>Nacos</strong>（<strong><code>dataId</code></strong> 如 <strong><code>seataServer.properties</code></strong>、<strong><code>seata.properties</code></strong> 等按运维规范）。步骤与 <strong>SQL</strong> 汇总见 <strong>SCA 快速开始</strong> 与 <strong>Seata</strong> 部署文档。</p>
+<hr>
+<h2 id="应用侧最小配置（application-yaml）"><a href="#应用侧最小配置（application-yaml）" class="headerlink" title="应用侧最小配置（application.yaml）"></a>应用侧最小配置（<code>application.yaml</code>）</h2><p>以下演示 <strong>客户端</strong> 指向本机 <strong>TC</strong>，<strong><code>registry.type: file</code></strong> 且通过 <strong><code>grouplist</code></strong> 指定 <strong>TC</strong> 地址（与单机 <strong>Docker</strong> 对应）。<strong>生产</strong>请改为 <strong>Nacos &#x2F; Etcd</strong> 等与 <strong>Server</strong> 一致的注册、配置方式。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">seata:</span></span><br><span class="line">  <span class="attr">enabled:</span> <span class="literal">true</span></span><br><span class="line">  <span class="attr">tx-service-group:</span> <span class="string">demo_tx_group</span></span><br><span class="line">  <span class="attr">service:</span></span><br><span class="line">    <span class="attr">vgroup-mapping:</span></span><br><span class="line">      <span class="attr">demo_tx_group:</span> <span class="string">default</span></span><br><span class="line">    <span class="attr">grouplist:</span></span><br><span class="line">      <span class="attr">default:</span> <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span><span class="string">:8091</span></span><br><span class="line">  <span class="attr">registry:</span></span><br><span class="line">    <span class="attr">type:</span> <span class="string">file</span></span><br><span class="line">  <span class="attr">config:</span></span><br><span class="line">    <span class="attr">type:</span> <span class="string">file</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong><code>tx-service-group</code></strong>：与 <strong>Seata Server</strong>、<strong>Nacos</strong> 中 <strong><code>service.vgroupMapping.&lt;your-group&gt;=default</code></strong> 等资源一致。  </li>
+<li><strong><code>@GlobalTransactional</code></strong> 或 <strong>TCC &#x2F; Saga</strong> API 标注在业务入口方法上；<strong>RestTemplate &#x2F; Feign</strong> 与 <strong>SCA</strong> 组合时 <strong>XID</strong> 传播由 starter 处理（详见官方「对 Spring Cloud 支持点」）。</li>
+</ul>
+<p>将 <strong><code>grouplist.default</code></strong> 换成你的 <strong>TC</strong> 可达地址；若 <strong>TC</strong> 在 <strong>Docker</strong> 而应用在宿主机，一般为 <strong><code>127.0.0.1:8091</code></strong>。</p>
+<hr>
+<h2 id="与-Nacos-配置中心（官方示例路径）"><a href="#与-Nacos-配置中心（官方示例路径）" class="headerlink" title="与 Nacos 配置中心（官方示例路径）"></a>与 Nacos 配置中心（官方示例路径）</h2><p>使用 <strong>Nacos</strong> 托管 <strong>Seata</strong> 规则时，常见做法是在 <strong>Nacos</strong> 创建 <strong><code>seata.properties</code></strong>（或按 <strong>Server 2.5</strong> 文档拆分多 <strong>dataId</strong>），并包含 <strong><code>service.vgroupMapping.&lt;应用tx-group&gt;=default</code></strong> 等项；<strong>Server</strong> 与业务应用均指向同一 <strong>Nacos</strong> 地址与命名空间。具体 <strong>Key</strong> 列表可参考 <strong>Seata</strong> 仓库 <strong><code>script/config-center/config.txt</code></strong> 并结合当前 <strong>Server</strong> 版本说明裁剪。</p>
+<hr>
+<h2 id="联调检查"><a href="#联调检查" class="headerlink" title="联调检查"></a>联调检查</h2><ol>
+<li><strong>日志</strong>：发起全局事务时，各参与服务日志中 <strong>XID</strong> 应一致且随请求变化。  </li>
+<li><strong>数据</strong>：模拟下游失败后，<strong>AT</strong> 应回滚业务表与 <strong><code>undo_log</code></strong> 状态符合预期。  </li>
+<li><strong>控制台</strong>：<strong>Server 2.x</strong> 控制台可观察全局事务与锁（端口以实际镜像&#x2F;启动参数为准）。</li>
+</ol>
+<hr>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ul>
+<li><strong>SCA 版本说明</strong>：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://sca.aliyun.com/docs/2025.x/overview/version-explain/">https://sca.aliyun.com/docs/2025.x/overview/version-explain/</a>  </li>
+<li><strong>Seata 部署指南</strong>：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://seata.io/zh-cn/docs/ops/deploy-guide-beginner.html">https://seata.io/zh-cn/docs/ops/deploy-guide-beginner.html</a>  </li>
+<li><strong>SCA 2025.1.0.0 Release</strong>：<a target="_blank" rel="noopener" href="https://github.com/alibaba/spring-cloud-alibaba/releases/tag/2025.1.0.0">https://github.com/alibaba/spring-cloud-alibaba/releases/tag/2025.1.0.0</a></li>
+</ul>
+<p><strong>SCA 2025.1.0.0</strong> + <strong>Seata 2.5.0</strong> 组合下，先完成 <strong><code>undo_log</code></strong> 与 <strong>Server</strong> 可达地址，再配 <strong><code>tx-service-group</code> &#x2F; <code>vgroup-mapping</code></strong>，即可在微服务中验证 <strong>AT</strong>；上生产前请完成 <strong>db 模式</strong>、高可用 <strong>TC</strong> 与 <strong>Nacos</strong> 配置评审。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Docker/" rel="tag"># Docker</a>
+              <a href="/tags/MySQL/" rel="tag"># MySQL</a>
+              <a href="/tags/SpringCloud/" rel="tag"># SpringCloud</a>
+              <a href="/tags/SpringCloudAlibaba/" rel="tag"># SpringCloudAlibaba</a>
+              <a href="/tags/Nacos/" rel="tag"># Nacos</a>
+              <a href="/tags/Seata/" rel="tag"># Seata</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/05/01/SpringCloud/Sentinel/" rel="prev" title="Spring Cloud Alibaba 接入 Sentinel（SCA 2025.1.x 与控制台）">
+                  <i class="fa fa-angle-left"></i> Spring Cloud Alibaba 接入 Sentinel（SCA 2025.1.x 与控制台）
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2026/05/01/SpringCloud/RocketMQ/" rel="next" title="Spring Cloud Alibaba 接入 RocketMQ（SCA 2025.1.x 与 Spring Cloud Stream）">
+                  Spring Cloud Alibaba 接入 RocketMQ（SCA 2025.1.x 与 Spring Cloud Stream） <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">miracle</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">58k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">3:14</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+<script>
+(function () {
+  function extractFromFigure(fig) {
+    if (!fig) return '';
+    var cell = fig.querySelector('td.code') || fig.querySelector('.code');
+    var block = cell || fig.querySelector('code');
+    if (!block) return '';
+    var pre = block.querySelector('pre');
+    var source = pre || block;
+    return (source.textContent || '').replace(/\u00a0/g, ' ');
+  }
+
+  function extractForCopyBtn(btn) {
+    var fig = btn.closest('figure.highlight');
+    if (fig) return extractFromFigure(fig);
+    var wrap = btn.closest('.code-container');
+    if (wrap) {
+      var innerFig = wrap.querySelector('figure.highlight');
+      if (innerFig) return extractFromFigure(innerFig);
+      var preOnly = wrap.querySelector('pre');
+      if (preOnly) return (preOnly.textContent || '').replace(/\u00a0/g, ' ');
+    }
+    return '';
+  }
+
+  function setCopyIcon(btn, ok) {
+    var i = btn.querySelector('i');
+    if (i) i.className = ok ? 'fa fa-check-circle fa-fw' : 'fa fa-times-circle fa-fw';
+  }
+
+  function writeClipboard(text, btn) {
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(text).then(
+        function () { setCopyIcon(btn, true); },
+        function () { fallbackCopy(text, btn); }
+      );
+    }
+    fallbackCopy(text, btn);
+    return Promise.resolve();
+  }
+
+  function fallbackCopy(text, btn) {
+    try {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed';
+      ta.style.left = '-9999px';
+      document.body.appendChild(ta);
+      ta.select();
+      var ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      setCopyIcon(btn, ok);
+    } catch (e) {
+      setCopyIcon(btn, false);
+    }
+  }
+
+  document.addEventListener(
+    'click',
+    function (e) {
+      var btn = e.target.closest && e.target.closest('.copy-btn');
+      if (!btn) return;
+      if (!btn.closest('figure.highlight') && !btn.closest('.code-container')) return;
+      e.stopPropagation();
+      e.preventDefault();
+      var text = extractForCopyBtn(btn);
+      writeClipboard(text, btn);
+    },
+    true
+  );
+})();
+</script>
+
+</body>
+</html>
