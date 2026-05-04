@@ -20,25 +20,30 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
 
-    <meta property="og:type" content="article">
-<meta property="og:title" content="DNS">
+    <meta name="description" content="DNS（Domain Name System）是分布式数据库，把域名映射为 IP 地址、邮件交换子域等 RR（Resource Record）；应用访问 HTTP 前几乎总要先解析域名。下面从「分层与解析原理 → 报文与传输（UDP&#x2F;TCP） → 常见记录类型 → 加密 DNS → dig &#x2F; Python 示例」顺序写清楚。  一、分层与解析原理1. 角色   角色 作用">
+<meta property="og:type" content="article">
+<meta property="og:title" content="DNS 详解：解析原理、记录类型与命令&#x2F;代码示例">
 <meta property="og:url" content="http://example.com/2026/05/01/Protocol/DNS/index.html">
 <meta property="og:site_name" content="my">
+<meta property="og:description" content="DNS（Domain Name System）是分布式数据库，把域名映射为 IP 地址、邮件交换子域等 RR（Resource Record）；应用访问 HTTP 前几乎总要先解析域名。下面从「分层与解析原理 → 报文与传输（UDP&#x2F;TCP） → 常见记录类型 → 加密 DNS → dig &#x2F; Python 示例」顺序写清楚。  一、分层与解析原理1. 角色   角色 作用">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-05-01T04:49:45.000Z">
-<meta property="article:modified_time" content="2026-05-01T04:49:45.413Z">
+<meta property="article:modified_time" content="2026-05-04T07:03:12.259Z">
 <meta property="article:author" content="miracle">
 <meta property="article:tag" content="DNS">
+<meta property="article:tag" content="Protocol">
+<meta property="article:tag" content="安全">
+<meta property="article:tag" content="网络">
 <meta name="twitter:card" content="summary">
 
 
 <link rel="canonical" href="http://example.com/2026/05/01/Protocol/DNS/">
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2026/05/01/Protocol/DNS/","path":"2026/05/01/Protocol/DNS/","title":"DNS"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2026/05/01/Protocol/DNS/","path":"2026/05/01/Protocol/DNS/","title":"DNS 详解：解析原理、记录类型与命令/代码示例"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>DNS | my</title>
+<title>DNS 详解：解析原理、记录类型与命令/代码示例 | my</title>
   
 
 
@@ -144,7 +149,7 @@
   
   <aside class="sidebar">
 
-    <div class="sidebar-inner sidebar-overview-active">
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
       <ul class="sidebar-nav">
         <li class="sidebar-nav-toc">
           文章目录
@@ -157,6 +162,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E5%88%86%E5%B1%82%E4%B8%8E%E8%A7%A3%E6%9E%90%E5%8E%9F%E7%90%86"><span class="nav-number">1.</span> <span class="nav-text">一、分层与解析原理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E8%A7%92%E8%89%B2"><span class="nav-number">1.1.</span> <span class="nav-text">1. 角色</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E9%80%92%E5%BD%92%E8%A7%A3%E6%9E%90%E8%BF%87%E7%A8%8B%EF%BC%88%E6%A6%82%E5%BF%B5%EF%BC%89"><span class="nav-number">1.2.</span> <span class="nav-text">2. 递归解析过程（概念）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E6%8A%A5%E6%96%87%E4%B8%8E%E4%BC%A0%E8%BE%93%EF%BC%88%E5%8E%9F%E7%90%86%EF%BC%89"><span class="nav-number">2.</span> <span class="nav-text">二、报文与传输（原理）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E5%B8%B8%E8%A7%81%E8%AE%B0%E5%BD%95%E7%B1%BB%E5%9E%8B%EF%BC%88%E4%BD%9C%E7%94%A8%EF%BC%89"><span class="nav-number">3.</span> <span class="nav-text">三、常见记录类型（作用）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E3%80%81DoT-DoH%EF%BC%88%E5%8A%A0%E5%AF%86%E4%B8%8E%E4%BC%A0%E8%BE%93%EF%BC%89"><span class="nav-number">4.</span> <span class="nav-text">四、DoT &#x2F; DoH（加密与传输）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E5%91%BD%E4%BB%A4%E7%A4%BA%E4%BE%8B%EF%BC%9Adig"><span class="nav-number">5.</span> <span class="nav-text">五、命令示例：dig</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E4%BB%A3%E7%A0%81%E7%A4%BA%E4%BE%8B%EF%BC%9APython-%E5%8F%91-UDP-%E6%9F%A5%E8%AF%A2%EF%BC%88%E6%95%99%E5%AD%A6%E5%90%91%E6%9E%81%E7%AE%80%EF%BC%89"><span class="nav-number">6.</span> <span class="nav-text">六、代码示例：Python 发 UDP 查询（教学向极简）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%83%E3%80%81%E5%B0%8F%E7%BB%93"><span class="nav-number">7.</span> <span class="nav-text">七、小结</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -169,18 +175,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">116</span>
+          <span class="site-state-item-count">120</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">49</span>
+        <span class="site-state-item-count">36</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">128</span>
+        <span class="site-state-item-count">142</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -231,12 +237,12 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="DNS | my">
+      <meta itemprop="name" content="DNS 详解：解析原理、记录类型与命令&#x2F;代码示例 | my">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          DNS
+          DNS 详解：解析原理、记录类型与命令/代码示例
         </h1>
 
         <div class="post-meta-container">
@@ -248,6 +254,13 @@
       <span class="post-meta-item-text">发表于</span>
 
       <time title="创建时间：2026-05-01 12:49:45" itemprop="dateCreated datePublished" datetime="2026-05-01T12:49:45+08:00">2026-05-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-05-04 15:03:12" itemprop="dateModified" datetime="2026-05-04T15:03:12+08:00">2026-05-04</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -266,14 +279,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>0</span>
+      <span>748</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>1 分钟</span>
+      <span>2 分钟</span>
     </span>
 </div>
 
@@ -283,7 +296,121 @@
     
     
     
-    <div class="post-body" itemprop="articleBody">
+    <div class="post-body" itemprop="articleBody"><p><strong>DNS</strong>（<strong>Domain Name System</strong>）是分布式数据库，把<strong>域名</strong>映射为 <a href="/2026/05/01/IP/">IP</a> 地址、邮件交换子域等 <strong>RR（Resource Record）</strong>；应用访问 <a href="/2026/05/01/HTTP/">HTTP</a> 前几乎总要先解析域名。下面从「<strong>分层与解析原理</strong> → <strong>报文与传输（UDP&#x2F;TCP）</strong> → <strong>常见记录类型</strong> → <strong>加密 DNS</strong> → <strong><code>dig</code> &#x2F; Python 示例</strong>」顺序写清楚。</p>
+<hr>
+<h1 id="一、分层与解析原理"><a href="#一、分层与解析原理" class="headerlink" title="一、分层与解析原理"></a>一、分层与解析原理</h1><h2 id="1-角色"><a href="#1-角色" class="headerlink" title="1. 角色"></a>1. 角色</h2><table>
+<thead>
+<tr>
+<th>角色</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Stub resolver</strong></td>
+<td>运行在终端或系统库内，把查询发给<strong>递归解析器</strong></td>
+</tr>
+<tr>
+<td><strong>Recursive resolver</strong></td>
+<td>代客户端迭代问根、<strong>TLD</strong>、<strong>权威</strong> 直到拿到答案并<strong>缓存 TTL</strong></td>
+</tr>
+<tr>
+<td><strong>Authoritative server</strong></td>
+<td>对某区（<strong>zone</strong>）拥有权威数据（<strong>NS</strong> 委派链终点）</td>
+</tr>
+</tbody></table>
+<h2 id="2-递归解析过程（概念）"><a href="#2-递归解析过程（概念）" class="headerlink" title="2. 递归解析过程（概念）"></a>2. 递归解析过程（概念）</h2><p>查询 <strong><code>www.example.com.</code></strong>（末尾点表示根）时，递归器从<strong>根</strong>得到 <strong><code>.com</code></strong> 的 <strong>NS</strong>，再问 <strong><code>.com</code></strong> 得到 <strong><code>example.com</code></strong> 的 <strong>NS</strong>，最后问 <strong><code>example.com</code></strong> 权威得到 <strong><code>www</code></strong> 的 <strong>A &#x2F; AAAA</strong>。结果按 <strong>TTL</strong> 缓存，命中则直接返回。</p>
+<hr>
+<h1 id="二、报文与传输（原理）"><a href="#二、报文与传输（原理）" class="headerlink" title="二、报文与传输（原理）"></a>二、报文与传输（原理）</h1><ul>
+<li><strong>传统 53 端口</strong>：多数查询用 <a href="/2026/05/01/UDP/">UDP</a>，报文小、往返少。  </li>
+<li><strong>响应过大或区域传送等</strong>：回退 <a href="/2026/05/01/TCP/">TCP</a>（<strong>TCP&#x2F;53</strong>）。  </li>
+<li><strong>DNS 消息结构</strong>（概念）：<strong>Header</strong>（<strong>ID</strong>、<strong>flags</strong>、各计数器）+ <strong>Question</strong> + <strong>Answer &#x2F; Authority &#x2F; Additional</strong>。</li>
+</ul>
+<p><strong>ID</strong> 用于匹配请求与响应；客户端应随机化 <strong>ID</strong> 与源端口以降低<strong>投毒</strong>风险（实现依赖系统解析器）。</p>
+<hr>
+<h1 id="三、常见记录类型（作用）"><a href="#三、常见记录类型（作用）" class="headerlink" title="三、常见记录类型（作用）"></a>三、常见记录类型（作用）</h1><table>
+<thead>
+<tr>
+<th>类型</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>A</strong></td>
+<td>主机名 → <strong>IPv4</strong></td>
+</tr>
+<tr>
+<td><strong>AAAA</strong></td>
+<td>主机名 → <strong>IPv6</strong></td>
+</tr>
+<tr>
+<td><strong>CNAME</strong></td>
+<td>别名到另一域名（继续解析目标名）</td>
+</tr>
+<tr>
+<td><strong>MX</strong></td>
+<td>邮件交换：优先级 + 目标主机</td>
+</tr>
+<tr>
+<td><strong>NS</strong></td>
+<td>某区的权威服务器</td>
+</tr>
+<tr>
+<td><strong>TXT</strong></td>
+<td>任意文本（<strong>SPF</strong>、<strong>DKIM</strong>、域名验证等）</td>
+</tr>
+<tr>
+<td><strong>PTR</strong></td>
+<td><strong>IP</strong> → 主机名（反向解析）</td>
+</tr>
+</tbody></table>
+<hr>
+<h1 id="四、DoT-DoH（加密与传输）"><a href="#四、DoT-DoH（加密与传输）" class="headerlink" title="四、DoT &#x2F; DoH（加密与传输）"></a>四、DoT &#x2F; DoH（加密与传输）</h1><ul>
+<li><strong>DoT</strong>（<strong>DNS over TLS</strong>）：<strong>853&#x2F;tcp</strong>，整流加密。  </li>
+<li><strong>DoH</strong>（<strong>DNS over HTTPS</strong>）：封装在 <a href="/2026/05/01/HTTPS/">HTTPS</a> 内，常走 <strong>443</strong>，与网页流量形态相近。</li>
+</ul>
+<p>二者可防<strong>链路窃听</strong>，但递归器仍能看到查询内容；信任模型与日志策略需单独评审。</p>
+<hr>
+<h1 id="五、命令示例：dig"><a href="#五、命令示例：dig" class="headerlink" title="五、命令示例：dig"></a>五、命令示例：<code>dig</code></h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">dig +short example.com A</span><br><span class="line">dig +short example.com AAAA</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dig +trace example.com A</span><br></pre></td></tr></table></figure>
+
+<p>查看 <strong>DNSSEC</strong>（若部署）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dig +dnssec example.com A</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="六、代码示例：Python-发-UDP-查询（教学向极简）"><a href="#六、代码示例：Python-发-UDP-查询（教学向极简）" class="headerlink" title="六、代码示例：Python 发 UDP 查询（教学向极简）"></a>六、代码示例：<strong>Python</strong> 发 <strong>UDP</strong> 查询（教学向极简）</h1><p>下列示例<strong>仅用于理解「自己拼 DNS 问包」的思路</strong>；生产请用 <strong><code>dnspython</code></strong> 或系统 <strong><code>getaddrinfo</code></strong>。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> random</span><br><span class="line"><span class="keyword">import</span> socket</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">build_query_qname</span>(<span class="params">hostname: <span class="built_in">str</span></span>) -&gt; <span class="built_in">bytes</span>:</span><br><span class="line">    parts = hostname.rstrip(<span class="string">&quot;.&quot;</span>).split(<span class="string">&quot;.&quot;</span>)</span><br><span class="line">    qname = <span class="string">b&quot;&quot;</span>.join(<span class="built_in">bytes</span>([<span class="built_in">len</span>(p)]) + p.encode() <span class="keyword">for</span> p <span class="keyword">in</span> parts) + <span class="string">b&quot;\x00&quot;</span></span><br><span class="line">    tid = random.randint(<span class="number">0</span>, <span class="number">0xFFFF</span>)</span><br><span class="line">    flags = <span class="number">0x0100</span>  <span class="comment"># 标准查询，递归期望</span></span><br><span class="line">    header = tid.to_bytes(<span class="number">2</span>, <span class="string">&quot;big&quot;</span>) + flags.to_bytes(<span class="number">2</span>, <span class="string">&quot;big&quot;</span>)</span><br><span class="line">    header += (<span class="number">1</span>).to_bytes(<span class="number">2</span>, <span class="string">&quot;big&quot;</span>)  <span class="comment"># QDCOUNT</span></span><br><span class="line">    header += (<span class="number">0</span>).to_bytes(<span class="number">2</span>, <span class="string">&quot;big&quot;</span>)  <span class="comment"># ANCOUNT</span></span><br><span class="line">    header += (<span class="number">0</span>).to_bytes(<span class="number">2</span>, <span class="string">&quot;big&quot;</span>)  <span class="comment"># NSCOUNT</span></span><br><span class="line">    header += (<span class="number">0</span>).to_bytes(<span class="number">2</span>, <span class="string">&quot;big&quot;</span>)  <span class="comment"># ARCOUNT</span></span><br><span class="line">    qtype = (<span class="number">1</span>).to_bytes(<span class="number">2</span>, <span class="string">&quot;big&quot;</span>)   <span class="comment"># A</span></span><br><span class="line">    qclass = (<span class="number">1</span>).to_bytes(<span class="number">2</span>, <span class="string">&quot;big&quot;</span>)  <span class="comment"># IN</span></span><br><span class="line">    <span class="keyword">return</span> header + qname + qtype + qclass</span><br><span class="line"></span><br><span class="line">sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)</span><br><span class="line">sock.settimeout(<span class="number">3</span>)</span><br><span class="line">msg = build_query_qname(<span class="string">&quot;example.com&quot;</span>)</span><br><span class="line">sock.sendto(msg, (<span class="string">&quot;8.8.8.8&quot;</span>, <span class="number">53</span>))</span><br><span class="line">resp, _ = sock.recvfrom(<span class="number">512</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;response length&quot;</span>, <span class="built_in">len</span>(resp))</span><br></pre></td></tr></table></figure>
+
+<p>解析 <strong>Answer</strong> 需按 <strong>RFC 1035</strong> 继续偏移指针，教学上更推荐：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> socket</span><br><span class="line"><span class="built_in">print</span>(socket.getaddrinfo(<span class="string">&quot;example.com&quot;</span>, <span class="number">443</span>, <span class="built_in">type</span>=socket.SOCK_STREAM))</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="七、小结"><a href="#七、小结" class="headerlink" title="七、小结"></a>七、小结</h1><table>
+<thead>
+<tr>
+<th>项</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>原理</td>
+<td>分层委派 + 缓存 <strong>TTL</strong>；<strong>UDP&#x2F;TCP 53</strong></td>
+</tr>
+<tr>
+<td>作用</td>
+<td>名字 ↔ <strong>RR</strong>；支撑几乎所有 <strong>Web</strong> 访问</td>
+</tr>
+<tr>
+<td>命令</td>
+<td><strong><code>dig</code></strong>、<code>**+trace**</code></td>
+</tr>
+<tr>
+<td>代码</td>
+<td><strong><code>getaddrinfo</code></strong> 或 <strong><code>dnspython</code></strong></td>
+</tr>
+</tbody></table>
+<p>生产关注：<strong>权威与递归分离</strong>、<strong>防缓存投毒</strong>、<strong>限速</strong>、<strong>DNSSEC</strong> 策略与 <strong>TLS</strong> 证书透明度。</p>
+
     </div>
 
     
@@ -292,20 +419,23 @@
 
     <footer class="post-footer">
           <div class="post-tags">
+              <a href="/tags/Protocol/" rel="tag"># Protocol</a>
               <a href="/tags/DNS/" rel="tag"># DNS</a>
+              <a href="/tags/%E7%BD%91%E7%BB%9C/" rel="tag"># 网络</a>
+              <a href="/tags/%E5%AE%89%E5%85%A8/" rel="tag"># 安全</a>
           </div>
 
         
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2026/05/01/Protocol/SSH/" rel="prev" title="SSH">
-                  <i class="fa fa-angle-left"></i> SSH
+                <a href="/2026/05/01/Protocol/SSH/" rel="prev" title="SSH 详解：加密远程登录、密钥与端口转发示例">
+                  <i class="fa fa-angle-left"></i> SSH 详解：加密远程登录、密钥与端口转发示例
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2026/05/01/Protocol/WebSocket/" rel="next" title="WebSocket">
-                  WebSocket <i class="fa fa-angle-right"></i>
+                <a href="/2026/05/01/Protocol/WebSocket/" rel="next" title="WebSocket 详解：握手、帧与 Python 示例">
+                  WebSocket 详解：握手、帧与 Python 示例 <i class="fa fa-angle-right"></i>
                 </a>
             </div>
           </div>
@@ -337,13 +467,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">58k</span>
+    <span title="站点总字数">77k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">3:14</span>
+    <span title="站点阅读时长">4:18</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

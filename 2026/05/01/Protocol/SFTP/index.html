@@ -20,25 +20,30 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
 
-    <meta property="og:type" content="article">
-<meta property="og:title" content="SFTP">
+    <meta name="description" content="SFTP（SSH File Transfer Protocol）在 SSH 加密通道上提供文件列表、上传、下载、权限修改等能力；与 FTP 的双连接明文模型无关，也不等于 FTPS（FTP+TLS）。下面从「作用与协议栈 → 与 SCP 区别 → 交互与批处理示例 → ssh 管道技巧」顺序写清楚。  一、作用与协议栈（原理）1234567[ SFTP 子系统：文件操作 PDU ]">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SFTP 详解：SSH 子系统、协议栈与 sftp 示例">
 <meta property="og:url" content="http://example.com/2026/05/01/Protocol/SFTP/index.html">
 <meta property="og:site_name" content="my">
+<meta property="og:description" content="SFTP（SSH File Transfer Protocol）在 SSH 加密通道上提供文件列表、上传、下载、权限修改等能力；与 FTP 的双连接明文模型无关，也不等于 FTPS（FTP+TLS）。下面从「作用与协议栈 → 与 SCP 区别 → 交互与批处理示例 → ssh 管道技巧」顺序写清楚。  一、作用与协议栈（原理）1234567[ SFTP 子系统：文件操作 PDU ]">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-05-01T04:49:04.000Z">
-<meta property="article:modified_time" content="2026-05-01T04:49:04.640Z">
+<meta property="article:modified_time" content="2026-05-04T07:03:12.258Z">
 <meta property="article:author" content="miracle">
+<meta property="article:tag" content="Protocol">
 <meta property="article:tag" content="SFTP">
+<meta property="article:tag" content="SSH">
+<meta property="article:tag" content="文件传输">
 <meta name="twitter:card" content="summary">
 
 
 <link rel="canonical" href="http://example.com/2026/05/01/Protocol/SFTP/">
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2026/05/01/Protocol/SFTP/","path":"2026/05/01/Protocol/SFTP/","title":"SFTP"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2026/05/01/Protocol/SFTP/","path":"2026/05/01/Protocol/SFTP/","title":"SFTP 详解：SSH 子系统、协议栈与 sftp 示例"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>SFTP | my</title>
+<title>SFTP 详解：SSH 子系统、协议栈与 sftp 示例 | my</title>
   
 
 
@@ -144,7 +149,7 @@
   
   <aside class="sidebar">
 
-    <div class="sidebar-inner sidebar-overview-active">
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
       <ul class="sidebar-nav">
         <li class="sidebar-nav-toc">
           文章目录
@@ -157,6 +162,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E4%BD%9C%E7%94%A8%E4%B8%8E%E5%8D%8F%E8%AE%AE%E6%A0%88%EF%BC%88%E5%8E%9F%E7%90%86%EF%BC%89"><span class="nav-number">1.</span> <span class="nav-text">一、作用与协议栈（原理）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E4%B8%8E-SCP%E3%80%81rsync-over-SSH-%E7%9A%84%E5%8F%96%E8%88%8D"><span class="nav-number">2.</span> <span class="nav-text">二、与 SCP、rsync over SSH 的取舍</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E4%BA%A4%E4%BA%92%E5%BC%8F-sftp"><span class="nav-number">3.</span> <span class="nav-text">三、交互式 sftp</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E6%89%B9%E5%A4%84%E7%90%86%EF%BC%9A-b-%E8%84%9A%E6%9C%AC%E6%96%87%E4%BB%B6"><span class="nav-number">4.</span> <span class="nav-text">四、批处理：-b 脚本文件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E4%B8%8E-SSH-%E5%AF%86%E9%92%A5%EF%BC%88%E9%85%8D%E5%90%88%E4%BD%9C%E7%94%A8%EF%BC%89"><span class="nav-number">5.</span> <span class="nav-text">五、与 SSH 密钥（配合作用）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E5%B0%8F%E7%BB%93"><span class="nav-number">6.</span> <span class="nav-text">六、小结</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -169,18 +175,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">116</span>
+          <span class="site-state-item-count">120</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">49</span>
+        <span class="site-state-item-count">36</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">128</span>
+        <span class="site-state-item-count">142</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -231,12 +237,12 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="SFTP | my">
+      <meta itemprop="name" content="SFTP 详解：SSH 子系统、协议栈与 sftp 示例 | my">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          SFTP
+          SFTP 详解：SSH 子系统、协议栈与 sftp 示例
         </h1>
 
         <div class="post-meta-container">
@@ -248,6 +254,13 @@
       <span class="post-meta-item-text">发表于</span>
 
       <time title="创建时间：2026-05-01 12:49:04" itemprop="dateCreated datePublished" datetime="2026-05-01T12:49:04+08:00">2026-05-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-05-04 15:03:12" itemprop="dateModified" datetime="2026-05-04T15:03:12+08:00">2026-05-04</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -266,7 +279,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>0</span>
+      <span>377</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -283,7 +296,75 @@
     
     
     
-    <div class="post-body" itemprop="articleBody">
+    <div class="post-body" itemprop="articleBody"><p><strong>SFTP</strong>（<strong>SSH File Transfer Protocol</strong>）在 <a href="/2026/05/01/SSH/">SSH</a> 加密通道上提供文件列表、上传、下载、权限修改等能力；与 <a href="/2026/05/01/FTP/">FTP</a> 的<strong>双连接明文模型</strong>无关，也<strong>不等于 FTPS（FTP+TLS）</strong>。下面从「<strong>作用与协议栈</strong> → <strong>与 SCP 区别</strong> → <strong>交互与批处理示例</strong> → <strong><code>ssh</code> 管道技巧</strong>」顺序写清楚。</p>
+<hr>
+<h1 id="一、作用与协议栈（原理）"><a href="#一、作用与协议栈（原理）" class="headerlink" title="一、作用与协议栈（原理）"></a>一、作用与协议栈（原理）</h1><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[ SFTP 子系统：文件操作 PDU ]</span><br><span class="line">            ↓</span><br><span class="line">[ SSH 传输层：加密、完整性、压缩(可选) ]</span><br><span class="line">            ↓</span><br><span class="line">[ TCP ]</span><br><span class="line">            ↓</span><br><span class="line">[ IP ]</span><br></pre></td></tr></table></figure>
+
+<p><strong>SFTP</strong> 是 <strong>SSH</strong> 协议族中的<strong>子系统</strong>，与 <strong>shell</strong> 会话可并存于同一 <strong>SSH</strong> 连接实现上（由服务器策略决定）。</p>
+<hr>
+<h1 id="二、与-SCP、rsync-over-SSH-的取舍"><a href="#二、与-SCP、rsync-over-SSH-的取舍" class="headerlink" title="二、与 SCP、rsync over SSH 的取舍"></a>二、与 <strong>SCP</strong>、<strong>rsync over SSH</strong> 的取舍</h1><table>
+<thead>
+<tr>
+<th>工具</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>SFTP</strong></td>
+<td>交互浏览目录、断点续传能力依客户端而定</td>
+</tr>
+<tr>
+<td><strong>scp</strong></td>
+<td>单次拷贝简单文件</td>
+</tr>
+<tr>
+<td><strong>rsync -e ssh</strong></td>
+<td>增量同步目录，底层仍是 <strong>SSH</strong> 隧道，协议不等同于 <strong>SFTP</strong></td>
+</tr>
+</tbody></table>
+<hr>
+<h1 id="三、交互式-sftp"><a href="#三、交互式-sftp" class="headerlink" title="三、交互式 sftp"></a>三、交互式 <code>sftp</code></h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sftp user@example.com</span><br></pre></td></tr></table></figure>
+
+<p>常用子命令：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">ls</span><br><span class="line">cd remote_dir</span><br><span class="line">lcd local_dir</span><br><span class="line">get remote.txt</span><br><span class="line">put local.txt</span><br><span class="line">mkdir newdir</span><br><span class="line">bye</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="四、批处理：-b-脚本文件"><a href="#四、批处理：-b-脚本文件" class="headerlink" title="四、批处理：-b 脚本文件"></a>四、批处理：<code>-b</code> 脚本文件</h1><p><strong><code>batch.txt</code></strong>：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">cd incoming</span><br><span class="line">put /local/path/report.csv</span><br><span class="line">ls -l</span><br><span class="line">bye</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sftp -b batch.txt user@example.com</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="五、与-SSH-密钥（配合作用）"><a href="#五、与-SSH-密钥（配合作用）" class="headerlink" title="五、与 SSH 密钥（配合作用）"></a>五、与 <strong>SSH 密钥</strong>（配合作用）</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519 -N <span class="string">&quot;&quot;</span></span><br><span class="line">ssh-copy-id user@example.com</span><br><span class="line">sftp user@example.com</span><br></pre></td></tr></table></figure>
+
+<p>私钥权限过宽时 <strong>OpenSSH</strong> 会拒绝加载（<strong><code>chmod 600 ~/.ssh/id_ed25519</code></strong>）。</p>
+<hr>
+<h1 id="六、小结"><a href="#六、小结" class="headerlink" title="六、小结"></a>六、小结</h1><table>
+<thead>
+<tr>
+<th>项</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>原理</td>
+<td><strong>SSH</strong> 隧道上的 <strong>SFTP</strong> 子系统</td>
+</tr>
+<tr>
+<td>作用</td>
+<td>安全文件传输与远程目录管理</td>
+</tr>
+<tr>
+<td>示例</td>
+<td><strong><code>sftp</code></strong>、<strong><code>-b</code> 批处理</strong></td>
+</tr>
+<tr>
+<td>对比</td>
+<td><a href="/2026/05/01/FTP/">FTP</a> 明文双连接 · <strong>FTPS</strong> 仍双连接</td>
+</tr>
+</tbody></table>
+<p>服务端 <strong>chroot</strong>、<strong>ForceCommand</strong>、<strong>AllowUsers</strong> 等以 <strong><code>sshd_config</code></strong> 与发行版文档为准。</p>
+
     </div>
 
     
@@ -292,20 +373,23 @@
 
     <footer class="post-footer">
           <div class="post-tags">
+              <a href="/tags/Protocol/" rel="tag"># Protocol</a>
+              <a href="/tags/%E6%96%87%E4%BB%B6%E4%BC%A0%E8%BE%93/" rel="tag"># 文件传输</a>
               <a href="/tags/SFTP/" rel="tag"># SFTP</a>
+              <a href="/tags/SSH/" rel="tag"># SSH</a>
           </div>
 
         
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2026/05/01/Protocol/FTP/" rel="prev" title="FTP">
-                  <i class="fa fa-angle-left"></i> FTP
+                <a href="/2026/05/01/Protocol/FTP/" rel="prev" title="FTP 详解：双连接模型、主动&#x2F;被动与 lftp 示例">
+                  <i class="fa fa-angle-left"></i> FTP 详解：双连接模型、主动/被动与 lftp 示例
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2026/05/01/Protocol/SSH/" rel="next" title="SSH">
-                  SSH <i class="fa fa-angle-right"></i>
+                <a href="/2026/05/01/Protocol/SSH/" rel="next" title="SSH 详解：加密远程登录、密钥与端口转发示例">
+                  SSH 详解：加密远程登录、密钥与端口转发示例 <i class="fa fa-angle-right"></i>
                 </a>
             </div>
           </div>
@@ -337,13 +421,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">58k</span>
+    <span title="站点总字数">77k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">3:14</span>
+    <span title="站点阅读时长">4:18</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

@@ -20,25 +20,30 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
 
-    <meta property="og:type" content="article">
-<meta property="og:title" content="Redis">
+    <meta name="description" content="Redis 是内存型数据结构存储，常用作缓存、会话、排行榜、消息流与分布式锁等；单线程执行命令模型简单，但持久化、主从与集群仍须按业务规划。下面从「官网与概念 → 安装验证 → 启动与 redis-cli → 常用数据类型 → 持久化与安全要点 → 与容器部署的关系」顺序写清楚；命令在 Linux &#x2F; macOS 终端或 Windows WSL 中均可使用（生产环境请固定版本并限制暴露面">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redis 入门：安装、CLI 与数据类型">
 <meta property="og:url" content="http://example.com/2026/05/01/Redis/Redis/index.html">
 <meta property="og:site_name" content="my">
+<meta property="og:description" content="Redis 是内存型数据结构存储，常用作缓存、会话、排行榜、消息流与分布式锁等；单线程执行命令模型简单，但持久化、主从与集群仍须按业务规划。下面从「官网与概念 → 安装验证 → 启动与 redis-cli → 常用数据类型 → 持久化与安全要点 → 与容器部署的关系」顺序写清楚；命令在 Linux &#x2F; macOS 终端或 Windows WSL 中均可使用（生产环境请固定版本并限制暴露面">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-05-01T04:22:28.000Z">
-<meta property="article:modified_time" content="2026-05-01T04:22:28.482Z">
+<meta property="article:modified_time" content="2026-05-04T04:03:47.746Z">
 <meta property="article:author" content="miracle">
+<meta property="article:tag" content="NoSQL">
 <meta property="article:tag" content="Redis">
+<meta property="article:tag" content="redis-cli">
+<meta property="article:tag" content="缓存">
 <meta name="twitter:card" content="summary">
 
 
 <link rel="canonical" href="http://example.com/2026/05/01/Redis/Redis/">
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2026/05/01/Redis/Redis/","path":"2026/05/01/Redis/Redis/","title":"Redis"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2026/05/01/Redis/Redis/","path":"2026/05/01/Redis/Redis/","title":"Redis 入门：安装、CLI 与数据类型"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>Redis | my</title>
+<title>Redis 入门：安装、CLI 与数据类型 | my</title>
   
 
 
@@ -144,7 +149,7 @@
   
   <aside class="sidebar">
 
-    <div class="sidebar-inner sidebar-overview-active">
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
       <ul class="sidebar-nav">
         <li class="sidebar-nav-toc">
           文章目录
@@ -157,6 +162,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E5%AE%98%E7%BD%91%E4%B8%8E%E5%AE%9A%E4%BD%8D"><span class="nav-number">1.</span> <span class="nav-text">一、官网与定位</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E5%AE%89%E8%A3%85%E4%B8%8E%E9%AA%8C%E8%AF%81"><span class="nav-number">2.</span> <span class="nav-text">二、安装与验证</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-Linux%EF%BC%88%E5%8C%85%E7%AE%A1%E7%90%86%E5%99%A8%EF%BC%8C%E9%80%82%E5%90%88%E5%BF%AB%E9%80%9F%E4%BD%93%E9%AA%8C%EF%BC%89"><span class="nav-number">2.1.</span> <span class="nav-text">1. Linux（包管理器，适合快速体验）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-macOS%EF%BC%88Homebrew%EF%BC%89"><span class="nav-number">2.2.</span> <span class="nav-text">2. macOS（Homebrew）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-Windows-%E4%B8%8E%E5%AE%B9%E5%99%A8"><span class="nav-number">2.3.</span> <span class="nav-text">3. Windows 与容器</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E5%90%AF%E5%8A%A8%E6%9C%8D%E5%8A%A1%E4%B8%8E-redis-cli"><span class="nav-number">3.</span> <span class="nav-text">三、启动服务与 redis-cli</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E5%89%8D%E5%8F%B0-%E5%90%8E%E5%8F%B0%E5%90%AF%E5%8A%A8%EF%BC%88Linux-%E5%8C%85%E5%AE%89%E8%A3%85%E5%B8%B8%E8%A7%81%E8%B7%AF%E5%BE%84%EF%BC%89"><span class="nav-number">3.1.</span> <span class="nav-text">1. 前台 &#x2F; 后台启动（Linux 包安装常见路径）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E8%BF%9E%E6%8E%A5%E4%B8%8E%E6%8E%A2%E6%B5%8B"><span class="nav-number">3.2.</span> <span class="nav-text">2. 连接与探测</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E4%B8%A4%E6%9D%A1%E6%9C%80%E5%B8%B8%E7%94%A8%E8%AF%BB%E5%86%99%E5%91%BD%E4%BB%A4"><span class="nav-number">3.3.</span> <span class="nav-text">3. 两条最常用读写命令</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E5%B8%B8%E7%94%A8%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%EF%BC%88%E9%80%9F%E8%A7%88%EF%BC%89"><span class="nav-number">4.</span> <span class="nav-text">四、常用数据类型（速览）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E6%8C%81%E4%B9%85%E5%8C%96%EF%BC%9ARDB-%E4%B8%8E-AOF"><span class="nav-number">5.</span> <span class="nav-text">五、持久化：RDB 与 AOF</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E5%AE%89%E5%85%A8%E4%B8%8E%E7%BD%91%E7%BB%9C%E8%A6%81%E7%82%B9"><span class="nav-number">6.</span> <span class="nav-text">六、安全与网络要点</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%83%E3%80%81%E5%B0%8F%E7%BB%93"><span class="nav-number">7.</span> <span class="nav-text">七、小结</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -169,18 +175,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">116</span>
+          <span class="site-state-item-count">120</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">49</span>
+        <span class="site-state-item-count">36</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">128</span>
+        <span class="site-state-item-count">142</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -231,12 +237,12 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="Redis | my">
+      <meta itemprop="name" content="Redis 入门：安装、CLI 与数据类型 | my">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          Redis
+          Redis 入门：安装、CLI 与数据类型
         </h1>
 
         <div class="post-meta-container">
@@ -248,6 +254,13 @@
       <span class="post-meta-item-text">发表于</span>
 
       <time title="创建时间：2026-05-01 12:22:28" itemprop="dateCreated datePublished" datetime="2026-05-01T12:22:28+08:00">2026-05-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-05-04 12:03:47" itemprop="dateModified" datetime="2026-05-04T12:03:47+08:00">2026-05-04</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -266,14 +279,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>0</span>
+      <span>964</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>1 分钟</span>
+      <span>3 分钟</span>
     </span>
 </div>
 
@@ -283,7 +296,133 @@
     
     
     
-    <div class="post-body" itemprop="articleBody">
+    <div class="post-body" itemprop="articleBody"><p><strong>Redis</strong> 是内存型数据结构存储，常用作<strong>缓存</strong>、<strong>会话</strong>、<strong>排行榜</strong>、<strong>消息流</strong>与<strong>分布式锁</strong>等；单线程执行命令模型简单，但<strong>持久化</strong>、<strong>主从</strong>与<strong>集群</strong>仍须按业务规划。下面从「<strong>官网与概念</strong> → <strong>安装验证</strong> → <strong>启动与 <code>redis-cli</code></strong> → <strong>常用数据类型</strong> → <strong>持久化与安全要点</strong> → <strong>与容器部署的关系</strong>」顺序写清楚；命令在 <strong>Linux &#x2F; macOS</strong> 终端或 <strong>Windows WSL</strong> 中均可使用（生产环境请固定版本并限制暴露面）。</p>
+<hr>
+<h1 id="一、官网与定位"><a href="#一、官网与定位" class="headerlink" title="一、官网与定位"></a>一、官网与定位</h1><ul>
+<li><strong>Redis 文档（当前产品站）</strong>：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://redis.io/docs/">https://redis.io/docs/</a>  </li>
+<li><strong>下载与发行说明</strong>：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://redis.io/downloads/">https://redis.io/downloads/</a>  </li>
+<li><strong>命令参考</strong>：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://redis.io/commands/">https://redis.io/commands/</a></li>
+</ul>
+<p><strong>Redis</strong> 以<strong>键值</strong>为核心，值支持多种<strong>数据类型</strong>（字符串、哈希、列表等）；默认监听 <strong><code>6379</code></strong>。与关系型数据库不同，数据主要在内存中，须结合<strong>淘汰策略</strong>、<strong>持久化</strong>与<strong>备份</strong>设计，避免单点丢数。</p>
+<hr>
+<h1 id="二、安装与验证"><a href="#二、安装与验证" class="headerlink" title="二、安装与验证"></a>二、安装与验证</h1><h2 id="1-Linux（包管理器，适合快速体验）"><a href="#1-Linux（包管理器，适合快速体验）" class="headerlink" title="1. Linux（包管理器，适合快速体验）"></a>1. Linux（包管理器，适合快速体验）</h2><p><strong>Debian &#x2F; Ubuntu</strong> 示例：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> apt update</span><br><span class="line"><span class="built_in">sudo</span> apt install -y redis-server</span><br><span class="line">redis-server --version</span><br></pre></td></tr></table></figure>
+
+<p><strong>RHEL &#x2F; Rocky &#x2F; Fedora</strong> 可使用 <strong><code>dnf install redis</code></strong>（包名以发行版仓库为准）。</p>
+<h2 id="2-macOS（Homebrew）"><a href="#2-macOS（Homebrew）" class="headerlink" title="2. macOS（Homebrew）"></a>2. macOS（Homebrew）</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">brew install redis</span><br><span class="line">redis-server --version</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-Windows-与容器"><a href="#3-Windows-与容器" class="headerlink" title="3. Windows 与容器"></a>3. Windows 与容器</h2><p><strong>Redis</strong> 官方以 <strong>Linux</strong> 为主要运行环境；<strong>Windows</strong> 本地开发常见做法是 <strong>WSL2</strong>、虚拟机或 <strong>Docker</strong>。若希望用 <strong>Docker Compose &#x2F; Kubernetes</strong> 一键起栈、配置 <strong><code>requirepass</code></strong> 与卷，见站内 <a href="/2026/05/01/Redis-Docker/">Docker 部署 Redis</a>。</p>
+<hr>
+<h1 id="三、启动服务与-redis-cli"><a href="#三、启动服务与-redis-cli" class="headerlink" title="三、启动服务与 redis-cli"></a>三、启动服务与 <code>redis-cli</code></h1><h2 id="1-前台-后台启动（Linux-包安装常见路径）"><a href="#1-前台-后台启动（Linux-包安装常见路径）" class="headerlink" title="1. 前台 &#x2F; 后台启动（Linux 包安装常见路径）"></a>1. 前台 &#x2F; 后台启动（Linux 包安装常见路径）</h2><p>前台调试（终端占用，<strong>Ctrl+C</strong> 结束）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">redis-server</span><br></pre></td></tr></table></figure>
+
+<p>或使用发行版提供的 <strong>systemd</strong> 服务（名称可能是 <strong><code>redis</code></strong> 或 <strong><code>redis-server</code></strong>）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> systemctl <span class="built_in">enable</span> --now redis-server</span><br><span class="line"><span class="built_in">sudo</span> systemctl status redis-server</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-连接与探测"><a href="#2-连接与探测" class="headerlink" title="2. 连接与探测"></a>2. 连接与探测</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">redis-cli ping</span><br></pre></td></tr></table></figure>
+
+<p>返回 <strong><code>PONG</code></strong> 表示服务端已响应。指定主机与端口：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">redis-cli -h 127.0.0.1 -p 6379 ping</span><br></pre></td></tr></table></figure>
+
+<p>若启用了密码（见下文「六」），需 <strong><code>AUTH &lt;密码&gt;</code></strong> 或 <strong><code>redis-cli -a &lt;密码&gt;</code></strong>（<strong><code>-a</code> 可能进 shell 历史，生产慎用</strong>）。</p>
+<h2 id="3-两条最常用读写命令"><a href="#3-两条最常用读写命令" class="headerlink" title="3. 两条最常用读写命令"></a>3. 两条最常用读写命令</h2><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:6379&gt; SET mykey &quot;hello&quot;</span><br><span class="line">OK</span><br><span class="line">127.0.0.1:6379&gt; GET mykey</span><br><span class="line">&quot;hello&quot;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="四、常用数据类型（速览）"><a href="#四、常用数据类型（速览）" class="headerlink" title="四、常用数据类型（速览）"></a>四、常用数据类型（速览）</h1><table>
+<thead>
+<tr>
+<th>类型</th>
+<th>典型用途</th>
+<th>命令示例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>String</strong></td>
+<td>缓存、计数器</td>
+<td><strong><code>SET</code> &#x2F; <code>GET</code> &#x2F; <code>INCR</code></strong></td>
+</tr>
+<tr>
+<td><strong>Hash</strong></td>
+<td>对象字段</td>
+<td><strong><code>HSET</code> &#x2F; <code>HGET</code> &#x2F; <code>HGETALL</code></strong></td>
+</tr>
+<tr>
+<td><strong>List</strong></td>
+<td>队列、时间线</td>
+<td><strong><code>LPUSH</code> &#x2F; <code>RPOP</code> &#x2F; <code>LRANGE</code></strong></td>
+</tr>
+<tr>
+<td><strong>Set</strong></td>
+<td>去重集合</td>
+<td><strong><code>SADD</code> &#x2F; <code>SMEMBERS</code> &#x2F; <code>SISMEMBER</code></strong></td>
+</tr>
+<tr>
+<td><strong>Sorted Set</strong></td>
+<td>排行榜</td>
+<td><strong><code>ZADD</code> &#x2F; <code>ZRANGE</code> &#x2F; <code>ZRANK</code></strong></td>
+</tr>
+<tr>
+<td><strong>Stream</strong></td>
+<td>消息流、消费者组</td>
+<td><strong><code>XADD</code> &#x2F; <code>XREADGROUP</code></strong></td>
+</tr>
+</tbody></table>
+<p>更多语义与复杂度见官方 <strong>Commands</strong> 文档；<strong><code>KEYS *</code></strong> 在生产大库上可能阻塞，排查键名请优先 <strong><code>SCAN</code></strong>。</p>
+<hr>
+<h1 id="五、持久化：RDB-与-AOF"><a href="#五、持久化：RDB-与-AOF" class="headerlink" title="五、持久化：RDB 与 AOF"></a>五、持久化：RDB 与 AOF</h1><table>
+<thead>
+<tr>
+<th>方式</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>RDB</strong></td>
+<td>按策略生成<strong>时间点快照</strong>（<strong><code>.rdb</code></strong>），恢复快、可能丢失最后一次快照后的写入</td>
+</tr>
+<tr>
+<td><strong>AOF</strong></td>
+<td>追加写日志（<strong><code>.aof</code></strong>），可配置 <strong><code>fsync</code></strong> 频率，<strong>更耐久</strong>、文件通常更大</td>
+</tr>
+</tbody></table>
+<p>配置在 <strong><code>redis.conf</code></strong> 中（包安装路径因发行版而异，常见 <strong><code>/etc/redis/redis.conf</code></strong>）。<strong>Docker</strong> 场景下常通过 <strong><code>redis-server</code> 参数</strong> 或挂载配置覆盖，与 <a href="/2026/05/01/Redis-Docker/">Docker 部署 Redis</a> 中 <strong><code>--appendonly</code></strong> 等示例对照即可。</p>
+<hr>
+<h1 id="六、安全与网络要点"><a href="#六、安全与网络要点" class="headerlink" title="六、安全与网络要点"></a>六、安全与网络要点</h1><ol>
+<li><strong>默认无密码</strong>时，只要网络能连上 <strong><code>6379</code></strong> 即可读写，<strong>仅允许本机或可信内网</strong>；公网暴露须配 <strong><code>requirepass</code></strong> 与 <strong>Redis ACL</strong>，并配合防火墙、<strong>TLS</strong>（视版本与部署形态）。  </li>
+<li><strong><code>bind</code></strong>：默认若监听 <strong><code>0.0.0.0</code></strong>，表示所有网卡可连；缩小监听地址可减少误暴露。  </li>
+<li><strong>危险命令</strong>：<strong><code>FLUSHALL</code></strong>、<strong><code>CONFIG</code></strong> 等在生产应通过 <strong><code>rename-command</code></strong> 禁用或限制执行身份。</li>
+</ol>
+<hr>
+<h1 id="七、小结"><a href="#七、小结" class="headerlink" title="七、小结"></a>七、小结</h1><table>
+<thead>
+<tr>
+<th>场景</th>
+<th>做法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>安装验证</td>
+<td><strong><code>redis-server --version</code></strong>；<strong><code>redis-cli ping</code></strong></td>
+</tr>
+<tr>
+<td>本地读写</td>
+<td><strong><code>SET</code> &#x2F; <code>GET</code></strong>；按业务选 <strong>Hash &#x2F; List &#x2F; ZSet</strong> 等</td>
+</tr>
+<tr>
+<td>持久化</td>
+<td><strong><code>redis.conf</code></strong> 中 <strong>RDB &#x2F; AOF</strong> 策略；容器见 <strong>Redis-Docker</strong> 文</td>
+</tr>
+<tr>
+<td>安全</td>
+<td><strong>密码 &#x2F; ACL</strong> + 网络隔离；避免公网裸 <strong><code>6379</code></strong></td>
+</tr>
+<tr>
+<td>容器与编排</td>
+<td><a href="/2026/05/01/Redis-Docker/">Docker 部署 Redis</a></td>
+</tr>
+</tbody></table>
+<p>更深入的<strong>主从复制</strong>、<strong>Sentinel 高可用</strong>、<strong>Cluster 分片</strong>与客户端连接池调优，请以当前 <strong>Redis</strong> 大版本官方文档为准，并与业务 <strong>RPO&#x2F;RTO</strong> 一起评审。</p>
+
     </div>
 
     
@@ -293,14 +432,17 @@
     <footer class="post-footer">
           <div class="post-tags">
               <a href="/tags/Redis/" rel="tag"># Redis</a>
+              <a href="/tags/%E7%BC%93%E5%AD%98/" rel="tag"># 缓存</a>
+              <a href="/tags/NoSQL/" rel="tag"># NoSQL</a>
+              <a href="/tags/redis-cli/" rel="tag"># redis-cli</a>
           </div>
 
         
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2026/05/01/Java/MyBatis/" rel="prev" title="MyBatis">
-                  <i class="fa fa-angle-left"></i> MyBatis
+                <a href="/2026/05/01/Java/MyBatis/" rel="prev" title="MyBatis-Plus">
+                  <i class="fa fa-angle-left"></i> MyBatis-Plus
                 </a>
             </div>
             <div class="post-nav-item">
@@ -337,13 +479,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">58k</span>
+    <span title="站点总字数">77k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">3:14</span>
+    <span title="站点阅读时长">4:18</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

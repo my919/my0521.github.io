@@ -20,25 +20,30 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
 
-    <meta property="og:type" content="article">
-<meta property="og:title" content="UDP">
+    <meta name="description" content="UDP（User Datagram Protocol）在 IP 之上提供无连接的**数据报（datagram）**服务：不保证送达、不保证顺序、不维护连接状态，协议头开销小。下面从「设计目标 → UDP 首部与校验和 → 报文边界与 MTU → 典型应用场景 → 与 TCP&#x2F;QUIC 对比 → 编程与 ping 示例」顺序写清楚。  一、设计目标与作用1. 解决什么问题 低延迟：无握手、">
+<meta property="og:type" content="article">
+<meta property="og:title" content="UDP 协议详解：数据报语义、MTU 与示例代码">
 <meta property="og:url" content="http://example.com/2026/05/01/Protocol/UDP/index.html">
 <meta property="og:site_name" content="my">
+<meta property="og:description" content="UDP（User Datagram Protocol）在 IP 之上提供无连接的**数据报（datagram）**服务：不保证送达、不保证顺序、不维护连接状态，协议头开销小。下面从「设计目标 → UDP 首部与校验和 → 报文边界与 MTU → 典型应用场景 → 与 TCP&#x2F;QUIC 对比 → 编程与 ping 示例」顺序写清楚。  一、设计目标与作用1. 解决什么问题 低延迟：无握手、">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-05-01T04:47:45.000Z">
-<meta property="article:modified_time" content="2026-05-01T04:47:45.476Z">
+<meta property="article:modified_time" content="2026-05-04T07:03:12.259Z">
 <meta property="article:author" content="miracle">
+<meta property="article:tag" content="Protocol">
+<meta property="article:tag" content="Socket">
 <meta property="article:tag" content="UDP">
+<meta property="article:tag" content="传输层">
 <meta name="twitter:card" content="summary">
 
 
 <link rel="canonical" href="http://example.com/2026/05/01/Protocol/UDP/">
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2026/05/01/Protocol/UDP/","path":"2026/05/01/Protocol/UDP/","title":"UDP"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2026/05/01/Protocol/UDP/","path":"2026/05/01/Protocol/UDP/","title":"UDP 协议详解：数据报语义、MTU 与示例代码"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>UDP | my</title>
+<title>UDP 协议详解：数据报语义、MTU 与示例代码 | my</title>
   
 
 
@@ -144,7 +149,7 @@
   
   <aside class="sidebar">
 
-    <div class="sidebar-inner sidebar-overview-active">
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
       <ul class="sidebar-nav">
         <li class="sidebar-nav-toc">
           文章目录
@@ -157,6 +162,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E8%AE%BE%E8%AE%A1%E7%9B%AE%E6%A0%87%E4%B8%8E%E4%BD%9C%E7%94%A8"><span class="nav-number">1.</span> <span class="nav-text">一、设计目标与作用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E8%A7%A3%E5%86%B3%E4%BB%80%E4%B9%88%E9%97%AE%E9%A2%98"><span class="nav-number">1.1.</span> <span class="nav-text">1. 解决什么问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E4%B8%8E-TCP-%E7%9A%84%E6%9C%AC%E8%B4%A8%E5%B7%AE%E5%BC%82"><span class="nav-number">1.2.</span> <span class="nav-text">2. 与 TCP 的本质差异</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81UDP-%E9%A6%96%E9%83%A8%E4%B8%8E%E6%A0%A1%E9%AA%8C%E5%92%8C%EF%BC%88%E5%8E%9F%E7%90%86%EF%BC%89"><span class="nav-number">2.</span> <span class="nav-text">二、UDP 首部与校验和（原理）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81MTU-%E4%B8%8E%E5%88%86%E7%89%87%EF%BC%88%E4%B8%BA%E4%BD%95%E8%A6%81%E6%B3%A8%E6%84%8F%E6%8A%A5%E6%96%87%E9%95%BF%E5%BA%A6%EF%BC%89"><span class="nav-number">3.</span> <span class="nav-text">三、MTU 与分片（为何要注意报文长度）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E5%85%B8%E5%9E%8B%E5%BA%94%E7%94%A8"><span class="nav-number">4.</span> <span class="nav-text">四、典型应用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E7%BC%96%E7%A8%8B%E7%A4%BA%E4%BE%8B%EF%BC%9APython-UDP-%E5%9B%9E%E6%98%BE"><span class="nav-number">5.</span> <span class="nav-text">五、编程示例：Python UDP 回显</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#udp-echo-py%EF%BC%88%E6%9C%8D%E5%8A%A1%E7%AB%AF%EF%BC%89"><span class="nav-number">5.1.</span> <span class="nav-text">udp_echo.py（服务端）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#udp-client-py"><span class="nav-number">5.2.</span> <span class="nav-text">udp_client.py</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E5%B0%8F%E7%BB%93"><span class="nav-number">6.</span> <span class="nav-text">六、小结</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -169,18 +175,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">116</span>
+          <span class="site-state-item-count">120</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">49</span>
+        <span class="site-state-item-count">36</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">128</span>
+        <span class="site-state-item-count">142</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -231,12 +237,12 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="UDP | my">
+      <meta itemprop="name" content="UDP 协议详解：数据报语义、MTU 与示例代码 | my">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          UDP
+          UDP 协议详解：数据报语义、MTU 与示例代码
         </h1>
 
         <div class="post-meta-container">
@@ -248,6 +254,13 @@
       <span class="post-meta-item-text">发表于</span>
 
       <time title="创建时间：2026-05-01 12:47:45" itemprop="dateCreated datePublished" datetime="2026-05-01T12:47:45+08:00">2026-05-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-05-04 15:03:12" itemprop="dateModified" datetime="2026-05-04T15:03:12+08:00">2026-05-04</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -266,14 +279,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>0</span>
+      <span>673</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>1 分钟</span>
+      <span>2 分钟</span>
     </span>
 </div>
 
@@ -283,7 +296,100 @@
     
     
     
-    <div class="post-body" itemprop="articleBody">
+    <div class="post-body" itemprop="articleBody"><p><strong>UDP</strong>（<strong>User Datagram Protocol</strong>）在 <a href="/2026/05/01/IP/">IP</a> 之上提供<strong>无连接</strong>的**数据报（datagram）**服务：<strong>不保证送达、不保证顺序、不维护连接状态</strong>，协议头开销小。下面从「<strong>设计目标</strong> → <strong>UDP 首部与校验和</strong> → <strong>报文边界与 MTU</strong> → <strong>典型应用场景</strong> → <strong>与 TCP&#x2F;QUIC 对比</strong> → <strong>编程与 ping 示例</strong>」顺序写清楚。</p>
+<hr>
+<h1 id="一、设计目标与作用"><a href="#一、设计目标与作用" class="headerlink" title="一、设计目标与作用"></a>一、设计目标与作用</h1><h2 id="1-解决什么问题"><a href="#1-解决什么问题" class="headerlink" title="1. 解决什么问题"></a>1. 解决什么问题</h2><ul>
+<li><strong>低延迟</strong>：无握手、无连接状态机，首包即可发数据。  </li>
+<li><strong>保留报文边界</strong>：一次 <strong><code>sendto</code></strong> 对应一个 <strong>UDP</strong> 数据报；对端 <strong><code>recvfrom</code></strong> 通常一次收到完整数据报（受缓冲区限制）。  </li>
+<li><strong>实现简单</strong>：适合 DNS、实时音视频、指标上报；<strong>可靠性</strong>由应用或 <a href="/2026/05/01/QUIC/">QUIC</a> 等在 <strong>UDP</strong> 之上补充。</li>
+</ul>
+<h2 id="2-与-TCP-的本质差异"><a href="#2-与-TCP-的本质差异" class="headerlink" title="2. 与 TCP 的本质差异"></a>2. 与 TCP 的本质差异</h2><table>
+<thead>
+<tr>
+<th>维度</th>
+<th><strong>UDP</strong></th>
+<th><a href="/2026/05/01/TCP/">TCP</a></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>连接</td>
+<td>无</td>
+<td>有</td>
+</tr>
+<tr>
+<td>交付</td>
+<td>尽力，可能丢、乱序</td>
+<td>可靠有序（重传隐藏丢包）</td>
+</tr>
+<tr>
+<td>语义</td>
+<td><strong>保留消息边界</strong></td>
+<td><strong>字节流</strong>（无消息边界）</td>
+</tr>
+</tbody></table>
+<hr>
+<h1 id="二、UDP-首部与校验和（原理）"><a href="#二、UDP-首部与校验和（原理）" class="headerlink" title="二、UDP 首部与校验和（原理）"></a>二、UDP 首部与校验和（原理）</h1><p><strong>UDP</strong> 首部固定 <strong>8 字节</strong>：源端口、目的端口、长度、校验和。<strong>IPv6</strong> 下 <strong>UDP</strong> 校验和<strong>必填</strong>；<strong>IPv4</strong> 允许为 <strong>0</strong>（表示未使用校验和，实践中少见）。校验覆盖<strong>伪首部</strong>（含 <strong>IP</strong> 地址与协议号）+ <strong>UDP 首部</strong> + <strong>数据</strong>，用于检测传输错误。</p>
+<hr>
+<h1 id="三、MTU-与分片（为何要注意报文长度）"><a href="#三、MTU-与分片（为何要注意报文长度）" class="headerlink" title="三、MTU 与分片（为何要注意报文长度）"></a>三、MTU 与分片（为何要注意报文长度）</h1><p>以太网常见 <strong>MTU 1500</strong>，扣掉 <strong>IP</strong> 首部后 <strong>UDP</strong> 载荷不宜过大，否则触发 <strong>IP 分片</strong>：任一片丢失常导致<strong>整组重组失败</strong>，丢包代价被放大。应用层常将 <strong>UDP</strong> 报文控制在 <strong>1200 字节左右</strong>以下（穿越未知路径更稳），或自行分片与重传。</p>
+<p><strong>Linux</strong> 探测路径 <strong>MTU</strong>（示例）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ping -M <span class="keyword">do</span> -s 1472 -c 1 8.8.8.8</span><br></pre></td></tr></table></figure>
+
+<p><strong><code>-M do</code></strong> 设置 <strong>DF（Don’t Fragment）</strong>，逐步调整 <strong><code>-s</code></strong> 可粗测路径能通过的<strong>最大未分片载荷</strong>（与 <strong>ICMP</strong> 实现有关，解读需谨慎）。</p>
+<hr>
+<h1 id="四、典型应用"><a href="#四、典型应用" class="headerlink" title="四、典型应用"></a>四、典型应用</h1><table>
+<thead>
+<tr>
+<th>应用</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="/2026/05/01/DNS/">DNS</a></td>
+<td>传统 <strong>UDP&#x2F;53</strong>；响应过大时回退 <strong>TCP</strong></td>
+</tr>
+<tr>
+<td>实时音视频</td>
+<td>丢旧帧比重传更有意义</td>
+</tr>
+<tr>
+<td><a href="/2026/05/01/QUIC/">QUIC</a> &#x2F; <strong>HTTP&#x2F;3</strong></td>
+<td>在 <strong>UDP</strong> 上重建可靠与加密</td>
+</tr>
+</tbody></table>
+<hr>
+<h1 id="五、编程示例：Python-UDP-回显"><a href="#五、编程示例：Python-UDP-回显" class="headerlink" title="五、编程示例：Python UDP 回显"></a>五、编程示例：<strong>Python</strong> <strong>UDP</strong> 回显</h1><h2 id="udp-echo-py（服务端）"><a href="#udp-echo-py（服务端）" class="headerlink" title="udp_echo.py（服务端）"></a><code>udp_echo.py</code>（服务端）</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> socket</span><br><span class="line"></span><br><span class="line">HOST = <span class="string">&quot;127.0.0.1&quot;</span></span><br><span class="line">PORT = <span class="number">9001</span></span><br><span class="line"></span><br><span class="line">sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)</span><br><span class="line">sock.bind((HOST, PORT))</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;UDP echo on&quot;</span>, PORT)</span><br><span class="line"><span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">    data, addr = sock.recvfrom(<span class="number">2048</span>)</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> data:</span><br><span class="line">        <span class="keyword">continue</span></span><br><span class="line">    sock.sendto(<span class="string">b&quot;echo: &quot;</span> + data, addr)</span><br></pre></td></tr></table></figure>
+
+<h2 id="udp-client-py"><a href="#udp-client-py" class="headerlink" title="udp_client.py"></a><code>udp_client.py</code></h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> socket</span><br><span class="line"></span><br><span class="line">HOST = <span class="string">&quot;127.0.0.1&quot;</span></span><br><span class="line">PORT = <span class="number">9001</span></span><br><span class="line"></span><br><span class="line">sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)</span><br><span class="line">sock.sendto(<span class="string">b&quot;hello UDP\n&quot;</span>, (HOST, PORT))</span><br><span class="line"><span class="built_in">print</span>(sock.recvfrom(<span class="number">2048</span>)[<span class="number">0</span>].decode(), end=<span class="string">&quot;&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">python udp_echo.py &amp;</span><br><span class="line">python udp_client.py</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="六、小结"><a href="#六、小结" class="headerlink" title="六、小结"></a>六、小结</h1><table>
+<thead>
+<tr>
+<th>项</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>原理</td>
+<td>无连接；<strong>校验和</strong>；<strong>报文边界</strong></td>
+</tr>
+<tr>
+<td>作用</td>
+<td>低延迟、简单；与 <strong>IP</strong> 分片策略强相关</td>
+</tr>
+<tr>
+<td>示例</td>
+<td><strong><code>ping -M do</code></strong>、<strong><code>socket.SOCK_DGRAM</code></strong></td>
+</tr>
+<tr>
+<td>延伸</td>
+<td><a href="/2026/05/01/DNS/">DNS</a> · <a href="/2026/05/01/QUIC/">QUIC</a></td>
+</tr>
+</tbody></table>
+<p>公网服务须防 <strong>UDP 反射放大</strong> 与滥用；配合 <strong>ACL</strong>、<strong>速率限制</strong> 与合法来源校验。</p>
+
     </div>
 
     
@@ -292,20 +398,23 @@
 
     <footer class="post-footer">
           <div class="post-tags">
+              <a href="/tags/Protocol/" rel="tag"># Protocol</a>
               <a href="/tags/UDP/" rel="tag"># UDP</a>
+              <a href="/tags/%E4%BC%A0%E8%BE%93%E5%B1%82/" rel="tag"># 传输层</a>
+              <a href="/tags/Socket/" rel="tag"># Socket</a>
           </div>
 
         
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2026/05/01/Protocol/HTTPS/" rel="prev" title="HTTPS">
-                  <i class="fa fa-angle-left"></i> HTTPS
+                <a href="/2026/05/01/Protocol/HTTPS/" rel="prev" title="HTTPS 详解：TLS 握手、证书与 openssl&#x2F;curl 示例">
+                  <i class="fa fa-angle-left"></i> HTTPS 详解：TLS 握手、证书与 openssl/curl 示例
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2026/05/01/Protocol/IP/" rel="next" title="IP">
-                  IP <i class="fa fa-angle-right"></i>
+                <a href="/2026/05/01/Protocol/IP/" rel="next" title="IP 协议详解：原理、编址与排障示例">
+                  IP 协议详解：原理、编址与排障示例 <i class="fa fa-angle-right"></i>
                 </a>
             </div>
           </div>
@@ -337,13 +446,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">58k</span>
+    <span title="站点总字数">77k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">3:14</span>
+    <span title="站点阅读时长">4:18</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

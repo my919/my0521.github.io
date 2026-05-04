@@ -20,25 +20,31 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
 
-    <meta property="og:type" content="article">
-<meta property="og:title" content="IP">
+    <meta name="description" content="IP（Internet Protocol，互联网协议）工作在 OSI 第三层（网络层），向上为 TCP、UDP 等传输层协议提供**主机到主机（host-to-host）**的分组投递服务。下面从「作用与设计目标 → IPv4 报文与编址原理 → 转发与路由 → IPv6 差异要点 → 与 DNS&#x2F;TCP 的关系 → Linux 排障命令示例」顺序写清楚；命令在 Linux 终端演示为主">
+<meta property="og:type" content="article">
+<meta property="og:title" content="IP 协议详解：原理、编址与排障示例">
 <meta property="og:url" content="http://example.com/2026/05/01/Protocol/IP/index.html">
 <meta property="og:site_name" content="my">
+<meta property="og:description" content="IP（Internet Protocol，互联网协议）工作在 OSI 第三层（网络层），向上为 TCP、UDP 等传输层协议提供**主机到主机（host-to-host）**的分组投递服务。下面从「作用与设计目标 → IPv4 报文与编址原理 → 转发与路由 → IPv6 差异要点 → 与 DNS&#x2F;TCP 的关系 → Linux 排障命令示例」顺序写清楚；命令在 Linux 终端演示为主">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-05-01T04:48:09.000Z">
-<meta property="article:modified_time" content="2026-05-01T04:48:09.940Z">
+<meta property="article:modified_time" content="2026-05-04T07:03:12.258Z">
 <meta property="article:author" content="miracle">
 <meta property="article:tag" content="IP">
+<meta property="article:tag" content="IPv4">
+<meta property="article:tag" content="IPv6">
+<meta property="article:tag" content="Protocol">
+<meta property="article:tag" content="网络">
 <meta name="twitter:card" content="summary">
 
 
 <link rel="canonical" href="http://example.com/2026/05/01/Protocol/IP/">
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2026/05/01/Protocol/IP/","path":"2026/05/01/Protocol/IP/","title":"IP"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2026/05/01/Protocol/IP/","path":"2026/05/01/Protocol/IP/","title":"IP 协议详解：原理、编址与排障示例"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>IP | my</title>
+<title>IP 协议详解：原理、编址与排障示例 | my</title>
   
 
 
@@ -144,7 +150,7 @@
   
   <aside class="sidebar">
 
-    <div class="sidebar-inner sidebar-overview-active">
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
       <ul class="sidebar-nav">
         <li class="sidebar-nav-toc">
           文章目录
@@ -157,6 +163,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E4%BD%9C%E7%94%A8%E4%B8%8E%E8%AE%BE%E8%AE%A1%E7%9B%AE%E6%A0%87"><span class="nav-number">1.</span> <span class="nav-text">一、作用与设计目标</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-IP-%E8%A7%A3%E5%86%B3%E4%BB%80%E4%B9%88%E9%97%AE%E9%A2%98"><span class="nav-number">1.1.</span> <span class="nav-text">1. IP 解决什么问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E4%B8%8E%E4%B8%8A%E4%B8%8B%E5%B1%82%E7%9A%84%E5%85%B3%E7%B3%BB%EF%BC%88%E7%AE%80%E5%9B%BE%EF%BC%89"><span class="nav-number">1.2.</span> <span class="nav-text">2. 与上下层的关系（简图）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81IPv4-%E6%8A%A5%E6%96%87%E4%B8%8E%E7%BC%96%E5%9D%80%E5%8E%9F%E7%90%86%EF%BC%88%E6%A6%82%E5%BF%B5%EF%BC%89"><span class="nav-number">2.</span> <span class="nav-text">二、IPv4 报文与编址原理（概念）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-IPv4-%E9%A6%96%E9%83%A8%E5%85%B3%E9%94%AE%E5%AD%97%E6%AE%B5%EF%BC%88%E7%90%86%E8%A7%A3%E6%8E%92%E9%9A%9C%EF%BC%89"><span class="nav-number">2.1.</span> <span class="nav-text">1. IPv4 首部关键字段（理解排障）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E5%AD%90%E7%BD%91%E4%B8%8E-CIDR"><span class="nav-number">2.2.</span> <span class="nav-text">2. 子网与 CIDR</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E8%BD%AC%E5%8F%91%E4%B8%8E%E8%B7%AF%E7%94%B1%EF%BC%88%E5%8E%9F%E7%90%86%EF%BC%89"><span class="nav-number">3.</span> <span class="nav-text">三、转发与路由（原理）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E3%80%81IPv6-%E8%A6%81%E7%82%B9%EF%BC%88%E4%B8%8E-IPv4-%E5%AF%B9%E7%85%A7%EF%BC%89"><span class="nav-number">4.</span> <span class="nav-text">四、IPv6 要点（与 IPv4 对照）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E4%B8%8E-TCP%E3%80%81UDP%E3%80%81DNS-%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="nav-number">5.</span> <span class="nav-text">五、与 TCP、UDP、DNS 的关系</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E4%BB%A3%E7%A0%81%E4%B8%8E%E5%91%BD%E4%BB%A4%E7%A4%BA%E4%BE%8B"><span class="nav-number">6.</span> <span class="nav-text">六、代码与命令示例</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E6%9F%A5%E7%9C%8B%E6%9C%AC%E6%9C%BA-IP-%E4%B8%8E%E8%B7%AF%E7%94%B1%EF%BC%88Linux%EF%BC%89"><span class="nav-number">6.1.</span> <span class="nav-text">1. 查看本机 IP 与路由（Linux）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E8%BF%9E%E9%80%9A%E6%80%A7%EF%BC%9A-ping%EF%BC%88ICMP-%E4%BE%9D%E8%B5%96-IP%EF%BC%89"><span class="nav-number">6.2.</span> <span class="nav-text">2. 连通性： ping（ICMP 依赖 IP）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-Python%EF%BC%9A%E8%A7%A3%E6%9E%90%E5%9F%9F%E5%90%8D%E5%88%B0-A-AAAA%EF%BC%88%E8%B0%83%E7%94%A8%E7%B3%BB%E7%BB%9F%E8%A7%A3%E6%9E%90%E5%99%A8%EF%BC%89"><span class="nav-number">6.3.</span> <span class="nav-text">3. Python：解析域名到 A &#x2F; AAAA（调用系统解析器）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-traceroute%EF%BC%88%E8%B7%AF%E5%BE%84%E6%8E%A2%E6%B5%8B%EF%BC%8C%E5%AE%9E%E7%8E%B0%E5%9B%A0%E7%B3%BB%E7%BB%9F%E8%80%8C%E5%BC%82%EF%BC%89"><span class="nav-number">6.4.</span> <span class="nav-text">4. traceroute（路径探测，实现因系统而异）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%83%E3%80%81%E5%B0%8F%E7%BB%93"><span class="nav-number">7.</span> <span class="nav-text">七、小结</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -169,18 +176,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">116</span>
+          <span class="site-state-item-count">120</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">49</span>
+        <span class="site-state-item-count">36</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">128</span>
+        <span class="site-state-item-count">142</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -231,12 +238,12 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="IP | my">
+      <meta itemprop="name" content="IP 协议详解：原理、编址与排障示例 | my">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          IP
+          IP 协议详解：原理、编址与排障示例
         </h1>
 
         <div class="post-meta-container">
@@ -248,6 +255,13 @@
       <span class="post-meta-item-text">发表于</span>
 
       <time title="创建时间：2026-05-01 12:48:09" itemprop="dateCreated datePublished" datetime="2026-05-01T12:48:09+08:00">2026-05-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-05-04 15:03:12" itemprop="dateModified" datetime="2026-05-04T15:03:12+08:00">2026-05-04</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -266,14 +280,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>0</span>
+      <span>958</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>1 分钟</span>
+      <span>3 分钟</span>
     </span>
 </div>
 
@@ -283,7 +297,113 @@
     
     
     
-    <div class="post-body" itemprop="articleBody">
+    <div class="post-body" itemprop="articleBody"><p><strong>IP</strong>（<strong>Internet Protocol</strong>，互联网协议）工作在 <strong>OSI</strong> 第三层（网络层），向上为 <a href="/2026/05/01/TCP/">TCP</a>、<a href="/2026/05/01/UDP/">UDP</a> 等传输层协议提供**主机到主机（host-to-host）**的分组投递服务。下面从「<strong>作用与设计目标</strong> → <strong>IPv4 报文与编址原理</strong> → <strong>转发与路由</strong> → <strong>IPv6 差异要点</strong> → <strong>与 DNS&#x2F;TCP 的关系</strong> → <strong>Linux 排障命令示例</strong>」顺序写清楚；命令在 <strong>Linux</strong> 终端演示为主，<strong>macOS</strong> 多数可类比。</p>
+<hr>
+<h1 id="一、作用与设计目标"><a href="#一、作用与设计目标" class="headerlink" title="一、作用与设计目标"></a>一、作用与设计目标</h1><h2 id="1-IP-解决什么问题"><a href="#1-IP-解决什么问题" class="headerlink" title="1. IP 解决什么问题"></a>1. IP 解决什么问题</h2><ul>
+<li><strong>统一寻址</strong>：给互联网上每台参与通信的主机接口分配 <strong>IP 地址</strong>，使跨网段寻址成为可能。  </li>
+<li><strong>无连接、尽力交付（best-effort）</strong>：<strong>IP</strong> 不保证分组一定到达、不保证顺序、不负责重传；<strong>可靠性</strong>由上层（如 <a href="/2026/05/01/TCP/">TCP</a>）或应用自行实现。  </li>
+<li><strong>多路复用下层链路</strong>：无论是以太网、<strong>Wi‑Fi</strong> 还是隧道，都可承载 <strong>IP</strong> 分组。</li>
+</ul>
+<h2 id="2-与上下层的关系（简图）"><a href="#2-与上下层的关系（简图）" class="headerlink" title="2. 与上下层的关系（简图）"></a>2. 与上下层的关系（简图）</h2><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[ 应用层 HTTP / DNS 客户端 … ]</span><br><span class="line">        ↓</span><br><span class="line">[ 传输层 TCP / UDP ]  ← 端口号区分进程</span><br><span class="line">        ↓</span><br><span class="line">[ 网络层 IP ]         ← 本文：逻辑寻址与分组</span><br><span class="line">        ↓</span><br><span class="line">[ 链路层 以太网 … ]   ← MAC 帧、交换机</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="二、IPv4-报文与编址原理（概念）"><a href="#二、IPv4-报文与编址原理（概念）" class="headerlink" title="二、IPv4 报文与编址原理（概念）"></a>二、IPv4 报文与编址原理（概念）</h1><h2 id="1-IPv4-首部关键字段（理解排障）"><a href="#1-IPv4-首部关键字段（理解排障）" class="headerlink" title="1. IPv4 首部关键字段（理解排障）"></a>1. IPv4 首部关键字段（理解排障）</h2><table>
+<thead>
+<tr>
+<th>字段（概念）</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>源 &#x2F; 目的地址</strong></td>
+<td>各 <strong>32 bit</strong>，点分十进制如 <strong><code>192.168.1.10</code></strong></td>
+</tr>
+<tr>
+<td><strong>TTL</strong></td>
+<td>每经路由器减 <strong>1</strong>，到 <strong>0</strong> 丢弃，防路由环路</td>
+</tr>
+<tr>
+<td><strong>协议号</strong></td>
+<td>指示载荷是 <strong>TCP(6)</strong>、<strong>UDP(17)</strong>、<strong>ICMP(1)</strong> 等</td>
+</tr>
+<tr>
+<td><strong>总长度 &#x2F; 分片相关</strong></td>
+<td>超过链路 <strong>MTU</strong> 时可能触发 <strong>IP 分片</strong>（<strong>IPv6</strong> 主要在源端处理）</td>
+</tr>
+</tbody></table>
+<h2 id="2-子网与-CIDR"><a href="#2-子网与-CIDR" class="headerlink" title="2. 子网与 CIDR"></a>2. 子网与 CIDR</h2><p><strong>IP 地址 &#x3D; 网络前缀 + 主机号</strong>。<strong><code>/24</code></strong> 表示前 <strong>24 bit</strong> 为网络部分，主机部分 <strong>8 bit</strong>，共 <strong>256</strong> 个地址（含网络地址与广播地址用法依场景而定）。同一二层广播域内主机须在<strong>同一子网</strong>才能「直连」互通；跨子网则须走<strong>默认网关</strong>（路由器）。</p>
+<p><strong>RFC 1918 私有地址</strong>（内网常用）：</p>
+<ul>
+<li><strong><code>10.0.0.0/8</code></strong>、<strong><code>172.16.0.0/12</code></strong>、<strong><code>192.168.0.0/16</code></strong></li>
+</ul>
+<hr>
+<h1 id="三、转发与路由（原理）"><a href="#三、转发与路由（原理）" class="headerlink" title="三、转发与路由（原理）"></a>三、转发与路由（原理）</h1><p>路由器根据<strong>路由表</strong>最长前缀匹配决定下一跳；主机则主要使用<strong>默认路由</strong>（<strong><code>0.0.0.0/0</code></strong>）把非本子网流量交给网关。<strong>NAT</strong> 可在私网与公网之间改写地址&#x2F;端口，但 <strong>NAT</strong> 不是传输层协议；端到端排障仍要区分 <strong>「IP 层是否可达」</strong> 与 <strong>「端口映射&#x2F;防火墙策略」</strong>。</p>
+<hr>
+<h1 id="四、IPv6-要点（与-IPv4-对照）"><a href="#四、IPv6-要点（与-IPv4-对照）" class="headerlink" title="四、IPv6 要点（与 IPv4 对照）"></a>四、IPv6 要点（与 IPv4 对照）</h1><ul>
+<li><strong>128 bit</strong> 地址，冒号十六进制表示；存在<strong>链路本地</strong>、<strong>唯一本地</strong>、<strong>全局单播</strong> 等范围。  </li>
+<li><strong>邻居发现（NDP）</strong> 承担类似 <strong>IPv4 ARP</strong> 的链路地址解析角色。  </li>
+<li>双栈环境下 <a href="/2026/05/01/DNS/">DNS</a> 常同时返回 <strong>A</strong> 与 <strong>AAAA</strong>，应用与运维需同时考虑两条路径的防火墙与 <strong>MTU</strong>（<strong>IPv6</strong> 最小 <strong>MTU</strong> 要求为 <strong>1280</strong>）。</li>
+</ul>
+<hr>
+<h1 id="五、与-TCP、UDP、DNS-的关系"><a href="#五、与-TCP、UDP、DNS-的关系" class="headerlink" title="五、与 TCP、UDP、DNS 的关系"></a>五、与 TCP、UDP、DNS 的关系</h1><table>
+<thead>
+<tr>
+<th>上层协议</th>
+<th>如何使用 <strong>IP</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="/2026/05/01/TCP/">TCP</a></td>
+<td>在 <strong>IP</strong> 分组载荷中放 <strong>TCP 段</strong>（含端口、序号等）</td>
+</tr>
+<tr>
+<td><a href="/2026/05/01/UDP/">UDP</a></td>
+<td>载荷为 <strong>UDP 数据报</strong></td>
+</tr>
+<tr>
+<td><a href="/2026/05/01/DNS/">DNS</a></td>
+<td>查询&#x2F;响应封装在 <strong>UDP</strong> 或 <strong>TCP</strong> 中，再封装进 <strong>IP</strong></td>
+</tr>
+</tbody></table>
+<hr>
+<h1 id="六、代码与命令示例"><a href="#六、代码与命令示例" class="headerlink" title="六、代码与命令示例"></a>六、代码与命令示例</h1><h2 id="1-查看本机-IP-与路由（Linux）"><a href="#1-查看本机-IP-与路由（Linux）" class="headerlink" title="1. 查看本机 IP 与路由（Linux）"></a>1. 查看本机 <strong>IP</strong> 与路由（Linux）</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ip -4 addr show</span><br><span class="line">ip -4 route show</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ip -6 addr show</span><br><span class="line">ip -6 route show</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-连通性：-ping（ICMP-依赖-IP）"><a href="#2-连通性：-ping（ICMP-依赖-IP）" class="headerlink" title="2. 连通性： ping（ICMP 依赖 IP）"></a>2. 连通性： <strong>ping</strong>（<strong>ICMP</strong> 依赖 <strong>IP</strong>）</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ping -c 4 223.5.5.5</span><br><span class="line">ping -c 4 2400:3200::1</span><br></pre></td></tr></table></figure>
+
+<p>若 <strong>ping</strong> 通 <strong>IP</strong> 但域名不通，优先查 <a href="/2026/05/01/DNS/">DNS</a> 与 <strong><code>/etc/resolv.conf</code></strong>。</p>
+<h2 id="3-Python：解析域名到-A-AAAA（调用系统解析器）"><a href="#3-Python：解析域名到-A-AAAA（调用系统解析器）" class="headerlink" title="3. Python：解析域名到 A &#x2F; AAAA（调用系统解析器）"></a>3. <strong>Python</strong>：解析域名到 <strong>A &#x2F; AAAA</strong>（调用系统解析器）</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> socket</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> family, kind, proto, canon, sockaddr <span class="keyword">in</span> socket.getaddrinfo(</span><br><span class="line">    <span class="string">&quot;example.com&quot;</span>, <span class="number">443</span>, <span class="built_in">type</span>=socket.SOCK_STREAM</span><br><span class="line">):</span><br><span class="line">    <span class="built_in">print</span>(family, sockaddr)  <span class="comment"># AF_INET / AF_INET6 与 (ip, port)</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="4-traceroute（路径探测，实现因系统而异）"><a href="#4-traceroute（路径探测，实现因系统而异）" class="headerlink" title="4. traceroute（路径探测，实现因系统而异）"></a>4. <strong>traceroute</strong>（路径探测，实现因系统而异）</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">traceroute -4 -n 8.8.8.8</span><br><span class="line">tracepath -n 2400:3200::1</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="七、小结"><a href="#七、小结" class="headerlink" title="七、小结"></a>七、小结</h1><table>
+<thead>
+<tr>
+<th>项</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>原理</td>
+<td><strong>无连接</strong>、<strong>尽力交付</strong>；<strong>TTL</strong>、<strong>分片</strong>、<strong>协议号</strong></td>
+</tr>
+<tr>
+<td>作用</td>
+<td>全局寻址与跨网段转发基础</td>
+</tr>
+<tr>
+<td>编址</td>
+<td><strong>IPv4 &#x2F; IPv6</strong> + <strong>CIDR</strong>；私网 <strong>RFC 1918</strong></td>
+</tr>
+<tr>
+<td>上层</td>
+<td><a href="/2026/05/01/TCP/">TCP</a> · <a href="/2026/05/01/UDP/">UDP</a> · <a href="/2026/05/01/DNS/">DNS</a></td>
+</tr>
+</tbody></table>
+<p>更深入主题（<strong>策略路由</strong>、<strong>Anycast</strong>、<strong>IPsec</strong>）以 <strong>RFC</strong> 与发行版 <strong>Networking</strong> 文档为准。</p>
+
     </div>
 
     
@@ -292,20 +412,24 @@
 
     <footer class="post-footer">
           <div class="post-tags">
+              <a href="/tags/Protocol/" rel="tag"># Protocol</a>
+              <a href="/tags/%E7%BD%91%E7%BB%9C/" rel="tag"># 网络</a>
               <a href="/tags/IP/" rel="tag"># IP</a>
+              <a href="/tags/IPv4/" rel="tag"># IPv4</a>
+              <a href="/tags/IPv6/" rel="tag"># IPv6</a>
           </div>
 
         
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2026/05/01/Protocol/UDP/" rel="prev" title="UDP">
-                  <i class="fa fa-angle-left"></i> UDP
+                <a href="/2026/05/01/Protocol/UDP/" rel="prev" title="UDP 协议详解：数据报语义、MTU 与示例代码">
+                  <i class="fa fa-angle-left"></i> UDP 协议详解：数据报语义、MTU 与示例代码
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2026/05/01/Protocol/FTP/" rel="next" title="FTP">
-                  FTP <i class="fa fa-angle-right"></i>
+                <a href="/2026/05/01/Protocol/FTP/" rel="next" title="FTP 详解：双连接模型、主动&#x2F;被动与 lftp 示例">
+                  FTP 详解：双连接模型、主动/被动与 lftp 示例 <i class="fa fa-angle-right"></i>
                 </a>
             </div>
           </div>
@@ -337,13 +461,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">58k</span>
+    <span title="站点总字数">77k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">3:14</span>
+    <span title="站点阅读时长">4:18</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

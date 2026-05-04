@@ -166,18 +166,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">116</span>
+          <span class="site-state-item-count">120</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">49</span>
+        <span class="site-state-item-count">36</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">128</span>
+        <span class="site-state-item-count">142</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -205,6 +205,656 @@
     </div>
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/Protocol/HTTPS/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/05/01/Protocol/HTTPS/" class="post-title-link" itemprop="url">HTTPS 详解：TLS 握手、证书与 openssl/curl 示例</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-05-01 12:47:22" itemprop="dateCreated datePublished" datetime="2026-05-01T12:47:22+08:00">2026-05-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-05-04 15:03:12" itemprop="dateModified" datetime="2026-05-04T15:03:12+08:00">2026-05-04</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Protocol/" itemprop="url" rel="index"><span itemprop="name">Protocol</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>617</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>2 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p><strong>HTTPS</strong> &#x3D; <a href="/2026/05/01/HTTP/">HTTP</a> + <strong>TLS</strong>（<strong>Transport Layer Security</strong>）：在 <strong>TCP</strong> 连接建立后先做 <strong>TLS</strong> 握手，再在加密记录层上传输 <strong>HTTP</strong> 语义。默认端口 <strong>443</strong>。下面从「<strong>作用与威胁模型</strong> → <strong>TLS 握手与密钥派生（原理）</strong> → <strong>证书链与主机名校验</strong> → <strong>ALPN 与 HTTP&#x2F;2、HTTP&#x2F;3</strong> → <strong>openssl &#x2F; curl 示例</strong>」顺序写清楚；<strong>HTTP&#x2F;3</strong> 传输见 <a href="/2026/05/01/QUIC/">QUIC</a>。</p>
+<hr>
+<h1 id="一、作用与威胁模型"><a href="#一、作用与威胁模型" class="headerlink" title="一、作用与威胁模型"></a>一、作用与威胁模型</h1><h2 id="1-TLS-提供什么"><a href="#1-TLS-提供什么" class="headerlink" title="1. TLS 提供什么"></a>1. <strong>TLS</strong> 提供什么</h2><ul>
+<li><strong>机密性</strong>：对称加密载荷，防窃听。  </li>
+<li><strong>完整性</strong>：<strong>MAC</strong> &#x2F; <strong>AEAD</strong> 防篡改。  </li>
+<li><strong>身份认证</strong>：服务端（可选客户端）<strong>X.509</strong> 证书链。</li>
+</ul>
+<h2 id="2-不解决什么"><a href="#2-不解决什么" class="headerlink" title="2. 不解决什么"></a>2. 不解决什么</h2><p><strong>TLS</strong> 不能替代应用层鉴权与输入校验；<strong><code>https://</code></strong> 也不等于站点无 <strong>XSS&#x2F;CSRF</strong> 等业务漏洞。</p>
+<hr>
+<h1 id="二、TLS-1-2-1-3-握手（原理简述）"><a href="#二、TLS-1-2-1-3-握手（原理简述）" class="headerlink" title="二、TLS 1.2 &#x2F; 1.3 握手（原理简述）"></a>二、TLS 1.2 &#x2F; 1.3 握手（原理简述）</h1><h2 id="1-共同目标"><a href="#1-共同目标" class="headerlink" title="1. 共同目标"></a>1. 共同目标</h2><p>客户端与服务端协商出<strong>对称会话密钥</strong>，后续 <strong>HTTP</strong> 记录用对称算法加密以获得性能。</p>
+<h2 id="2-TLS-1-3-特点（相对-1-2）"><a href="#2-TLS-1-3-特点（相对-1-2）" class="headerlink" title="2. TLS 1.3 特点（相对 1.2）"></a>2. <strong>TLS 1.3</strong> 特点（相对 1.2）</h2><ul>
+<li>常 <strong>1-RTT</strong> 完成握手（<strong>0-RTT</strong> 可选，有<strong>重放</strong>风险，敏感操作应禁用或二次校验）。  </li>
+<li>废弃一批不安全算法；<strong>Hello</strong> 中即携带密钥共享材料。</li>
+</ul>
+<hr>
+<h1 id="三、证书链与主机名（作用）"><a href="#三、证书链与主机名（作用）" class="headerlink" title="三、证书链与主机名（作用）"></a>三、证书链与主机名（作用）</h1><p>浏览器&#x2F;客户端会校验：</p>
+<ol>
+<li>证书是否由受信任 <strong>CA</strong> 签发，链是否完整。  </li>
+<li><strong>Subject Alternative Name（SAN）</strong> 或兼容字段是否覆盖当前访问主机名。  </li>
+<li>有效期、吊销信息（<strong>OCSP Stapling</strong> 等）。</li>
+</ol>
+<p>自签名证书仅适合内网或开发，公网须使用可信 <strong>CA</strong> 或组织内 <strong>PKI</strong>。</p>
+<hr>
+<h1 id="四、ALPN"><a href="#四、ALPN" class="headerlink" title="四、ALPN"></a>四、ALPN</h1><p>在 <strong>TLS</strong> 握手中通过 <strong>ALPN</strong> 协商应用层协议：<strong><code>h2</code></strong> 表示后续走 <strong>HTTP&#x2F;2</strong> 帧；<strong><code>h3</code></strong> 与 <a href="/2026/05/01/QUIC/">QUIC</a> &#x2F; <strong>HTTP&#x2F;3</strong> 相关（<strong>QUIC</strong> 内含 <strong>TLS 1.3</strong> 集成握手）。</p>
+<hr>
+<h1 id="五、命令示例：openssl-s-client"><a href="#五、命令示例：openssl-s-client" class="headerlink" title="五、命令示例：openssl s_client"></a>五、命令示例：<code>openssl s_client</code></h1><p>查看证书链与协商结果：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl s_client -connect example.com:443 -servername example.com &lt;/dev/null 2&gt;/dev/null | openssl x509 -noout -dates -subject -issuer</span><br></pre></td></tr></table></figure>
+
+<p>交互式观察握手（输入 <strong><code>Q</code></strong> 退出）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl s_client -connect example.com:443 -servername example.com</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="六、命令示例：curl-与-TLS-版本"><a href="#六、命令示例：curl-与-TLS-版本" class="headerlink" title="六、命令示例：curl 与 TLS 版本"></a>六、命令示例：<code>curl</code> 与 <strong>TLS</strong> 版本</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -v --tlsv1.3 https://example.com/ -o /dev/null</span><br></pre></td></tr></table></figure>
+
+<p>指定 <strong>cipher</strong>（调试用）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -v https://example.com/ --tls-max 1.2 -o /dev/null</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="七、示例：Python-发起-HTTPS-并校验证书（默认校验）"><a href="#七、示例：Python-发起-HTTPS-并校验证书（默认校验）" class="headerlink" title="七、示例：Python 发起 HTTPS 并校验证书（默认校验）"></a>七、示例：<strong>Python</strong> 发起 <strong>HTTPS</strong> 并校验证书（默认校验）</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> ssl</span><br><span class="line"><span class="keyword">import</span> urllib.request</span><br><span class="line"></span><br><span class="line">ctx = ssl.create_default_context()</span><br><span class="line">req = urllib.request.Request(<span class="string">&quot;https://example.com/&quot;</span>)</span><br><span class="line"><span class="keyword">with</span> urllib.request.urlopen(req, context=ctx, timeout=<span class="number">10</span>) <span class="keyword">as</span> r:</span><br><span class="line">    <span class="built_in">print</span>(r.status, r.getpeercert()[<span class="string">&quot;subject&quot;</span>])</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="八、小结"><a href="#八、小结" class="headerlink" title="八、小结"></a>八、小结</h1><table>
+<thead>
+<tr>
+<th>项</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>原理</td>
+<td><strong>TLS</strong> 握手 → 对称加密传输 <a href="/2026/05/01/HTTP/">HTTP</a></td>
+</tr>
+<tr>
+<td>作用</td>
+<td>机密性、完整性、服务端身份</td>
+</tr>
+<tr>
+<td>工具</td>
+<td><strong><code>openssl s_client</code></strong>、<strong><code>curl -v</code></strong></td>
+</tr>
+<tr>
+<td>延伸</td>
+<td><strong>HSTS</strong>、<strong>OCSP</strong>、<a href="/2026/05/01/QUIC/">QUIC</a> <strong>HTTP&#x2F;3</strong></td>
+</tr>
+</tbody></table>
+<p>生产部署关注：<strong>证书续期</strong>、<strong>链完整性</strong>、<strong>中间件 SNI</strong>、<strong>TLS 终止位置</strong>（网关 vs 应用）。</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/Protocol/HTTP/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/05/01/Protocol/HTTP/" class="post-title-link" itemprop="url">HTTP 详解：报文、方法、版本与 curl/nc 示例</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-05-01 12:46:50" itemprop="dateCreated datePublished" datetime="2026-05-01T12:46:50+08:00">2026-05-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-05-04 15:03:12" itemprop="dateModified" datetime="2026-05-04T15:03:12+08:00">2026-05-04</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Protocol/" itemprop="url" rel="index"><span itemprop="name">Protocol</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>652</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>2 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p><strong>HTTP</strong>（<strong>Hypertext Transfer Protocol</strong>）是 <strong>Web</strong> 的应用层协议：基于<strong>请求 &#x2F; 响应</strong>模型，在语义层使用<strong>方法、URI、首部与可选正文</strong>表达操作。下面从「<strong>无状态与资源模型</strong> → <strong>报文结构原理</strong> → <strong>方法与幂等</strong> → <strong>状态码</strong> → <strong>HTTP&#x2F;1.1 与 HTTP&#x2F;2</strong> → <strong>curl 与原始报文示例</strong>」顺序写清楚；传输层默认依赖 <a href="/2026/05/01/TCP/">TCP</a>，安全传输见 <a href="/2026/05/01/HTTPS/">HTTPS</a>，全双工见 <a href="/2026/05/01/WebSocket/">WebSocket</a>，<strong>HTTP&#x2F;3</strong> 见 <a href="/2026/05/01/QUIC/">QUIC</a>。</p>
+<hr>
+<h1 id="一、无状态与资源模型（原理）"><a href="#一、无状态与资源模型（原理）" class="headerlink" title="一、无状态与资源模型（原理）"></a>一、无状态与资源模型（原理）</h1><p><strong>HTTP</strong> 本身<strong>无状态</strong>：服务器默认不记住「上一次请求」；会话常靠 <strong>Cookie</strong>、<strong>Token</strong>、服务端会话存储实现。<strong>REST</strong> 风格强调用 <strong>URI</strong> 表示<strong>资源</strong>，用 <strong>HTTP 方法</strong>表达操作（与 <a href="/2026/05/01/RPC/">RPC</a> 风格对照）。</p>
+<hr>
+<h1 id="二、报文结构（作用）"><a href="#二、报文结构（作用）" class="headerlink" title="二、报文结构（作用）"></a>二、报文结构（作用）</h1><h2 id="1-请求"><a href="#1-请求" class="headerlink" title="1. 请求"></a>1. 请求</h2><figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">GET</span> <span class="string">/path</span> <span class="meta">HTTP/1.1</span></span><br><span class="line"><span class="attribute">Host</span><span class="punctuation">: </span>example.com</span><br><span class="line"><span class="attribute">User-Agent</span><span class="punctuation">: </span>demo</span><br><span class="line"><span class="attribute">Accept</span><span class="punctuation">: </span>*/*</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>请求行</strong>：方法、<strong>请求目标</strong>（路径或绝对 <strong>URI</strong>）、版本。  </li>
+<li><strong>首部</strong>：<strong><code>Host</code></strong> 在 <strong>HTTP&#x2F;1.1</strong> 中语义必填；<strong><code>Content-Length</code></strong> &#x2F; <strong><code>Transfer-Encoding: chunked</code></strong> 控制正文边界。</li>
+</ul>
+<h2 id="2-响应"><a href="#2-响应" class="headerlink" title="2. 响应"></a>2. 响应</h2><figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">HTTP/1.1</span> <span class="number">200</span> OK</span><br><span class="line"><span class="attribute">Content-Type</span><span class="punctuation">: </span>text/plain; charset=utf-8</span><br><span class="line"><span class="attribute">Content-Length</span><span class="punctuation">: </span>5</span><br><span class="line"></span><br><span class="line"><span class="language-ebnf"><span class="attribute">hello</span></span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="三、常用方法与幂等（原理）"><a href="#三、常用方法与幂等（原理）" class="headerlink" title="三、常用方法与幂等（原理）"></a>三、常用方法与幂等（原理）</h1><table>
+<thead>
+<tr>
+<th>方法</th>
+<th>典型语义</th>
+<th>幂等</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>GET</strong></td>
+<td>读取资源</td>
+<td>是</td>
+</tr>
+<tr>
+<td><strong>POST</strong></td>
+<td>创建 &#x2F; 提交</td>
+<td>否</td>
+</tr>
+<tr>
+<td><strong>PUT</strong></td>
+<td>整体替换</td>
+<td>是</td>
+</tr>
+<tr>
+<td><strong>PATCH</strong></td>
+<td>部分更新</td>
+<td>视实现</td>
+</tr>
+<tr>
+<td><strong>DELETE</strong></td>
+<td>删除</td>
+<td>是</td>
+</tr>
+<tr>
+<td><strong>HEAD</strong></td>
+<td>同 <strong>GET</strong> 无正文</td>
+<td>是</td>
+</tr>
+<tr>
+<td><strong>OPTIONS</strong></td>
+<td>探测支持的方法</td>
+<td>是</td>
+</tr>
+</tbody></table>
+<p><strong>幂等</strong>：多次执行相同请求<strong>不应</strong>带来额外副作用（仍可能每次返回相同结果）。</p>
+<hr>
+<h1 id="四、状态码（分类）"><a href="#四、状态码（分类）" class="headerlink" title="四、状态码（分类）"></a>四、状态码（分类）</h1><table>
+<thead>
+<tr>
+<th>范围</th>
+<th>含义</th>
+<th>例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>2xx</strong></td>
+<td>成功</td>
+<td><strong>200</strong>、<strong>201</strong>、<strong>204</strong></td>
+</tr>
+<tr>
+<td><strong>3xx</strong></td>
+<td>重定向</td>
+<td><strong>301</strong>、<strong>302</strong>、<strong>304</strong></td>
+</tr>
+<tr>
+<td><strong>4xx</strong></td>
+<td>客户端错误</td>
+<td><strong>400</strong>、<strong>401</strong>、<strong>403</strong>、<strong>404</strong></td>
+</tr>
+<tr>
+<td><strong>5xx</strong></td>
+<td>服务器错误</td>
+<td><strong>500</strong>、<strong>502</strong>、<strong>503</strong></td>
+</tr>
+</tbody></table>
+<hr>
+<h1 id="五、HTTP-1-1-与-HTTP-2（演进）"><a href="#五、HTTP-1-1-与-HTTP-2（演进）" class="headerlink" title="五、HTTP&#x2F;1.1 与 HTTP&#x2F;2（演进）"></a>五、HTTP&#x2F;1.1 与 HTTP&#x2F;2（演进）</h1><ul>
+<li><strong>HTTP&#x2F;1.1</strong>（<strong>RFC 9112</strong>）：文本形态；<strong>Keep-Alive</strong> 复用连接；<strong>队头阻塞</strong>限制并发效率。  </li>
+<li><strong>HTTP&#x2F;2</strong>（<strong>RFC 9113</strong>）：二进制<strong>帧</strong>；<strong>单连接多路复用</strong>；<strong>HPACK</strong> 压缩首部；浏览器场景几乎总与 <strong>TLS</strong> 同用。  </li>
+<li><strong>HTTP&#x2F;3</strong>（<strong>RFC 9114</strong>）：基于 <a href="/2026/05/01/QUIC/">QUIC</a>（<a href="/2026/05/01/UDP/">UDP</a>）。</li>
+</ul>
+<hr>
+<h1 id="六、示例：curl-观察报文"><a href="#六、示例：curl-观察报文" class="headerlink" title="六、示例：curl 观察报文"></a>六、示例：<code>curl</code> 观察报文</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -v --http1.1 https://example.com/ -o /dev/null</span><br></pre></td></tr></table></figure>
+
+<p>查看 <strong>TLS</strong> 与 <strong>HTTP&#x2F;2</strong>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -v --http2 https://example.com/ -o /dev/null</span><br></pre></td></tr></table></figure>
+
+<p>仅看响应头：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -sI https://example.com/</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="七、示例：用-nc-发送最小-HTTP-1-1-请求（明文）"><a href="#七、示例：用-nc-发送最小-HTTP-1-1-请求（明文）" class="headerlink" title="七、示例：用 nc 发送最小 HTTP&#x2F;1.1 请求（明文）"></a>七、示例：用 <strong>nc</strong> 发送最小 <strong>HTTP&#x2F;1.1</strong> 请求（明文）</h1><p><strong>仅用于本地实验</strong>（对端须是明文 <strong>HTTP</strong>）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">printf</span> <span class="string">&#x27;GET / HTTP/1.1\r\nHost: example.com\r\nConnection: close\r\n\r\n&#x27;</span> | nc example.com 80 | <span class="built_in">head</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="八、示例：Python-3-最小-HTTP-客户端（标准库）"><a href="#八、示例：Python-3-最小-HTTP-客户端（标准库）" class="headerlink" title="八、示例：Python 3 最小 HTTP 客户端（标准库）"></a>八、示例：<strong>Python 3</strong> 最小 <strong>HTTP</strong> 客户端（标准库）</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> urllib.request</span><br><span class="line"></span><br><span class="line">req = urllib.request.Request(<span class="string">&quot;https://example.com/&quot;</span>, headers=&#123;<span class="string">&quot;User-Agent&quot;</span>: <span class="string">&quot;demo&quot;</span>&#125;)</span><br><span class="line"><span class="keyword">with</span> urllib.request.urlopen(req, timeout=<span class="number">10</span>) <span class="keyword">as</span> resp:</span><br><span class="line">    <span class="built_in">print</span>(resp.status, resp.getheader(<span class="string">&quot;Content-Type&quot;</span>))</span><br><span class="line">    <span class="built_in">print</span>(resp.read(<span class="number">200</span>))</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="九、小结"><a href="#九、小结" class="headerlink" title="九、小结"></a>九、小结</h1><table>
+<thead>
+<tr>
+<th>项</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>原理</td>
+<td><strong>请求&#x2F;响应</strong>、<strong>无状态</strong>、<strong>URI + 方法</strong></td>
+</tr>
+<tr>
+<td>作用</td>
+<td><strong>Web</strong> 与 <strong>API</strong> 的基础语义层</td>
+</tr>
+<tr>
+<td>工具</td>
+<td><strong><code>curl -v</code></strong>、<strong><code>nc</code></strong>、<strong><code>urllib</code></strong></td>
+</tr>
+<tr>
+<td>延伸</td>
+<td><a href="/2026/05/01/HTTPS/">HTTPS</a> · <a href="/2026/05/01/WebSocket/">WebSocket</a> · <a href="/2026/05/01/QUIC/">QUIC</a></td>
+</tr>
+</tbody></table>
+<p>缓存与条件请求（<strong><code>ETag</code></strong>、<strong><code>If-None-Match</code></strong>）见 <strong>RFC 9110</strong> 缓存章节。</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/Protocol/TCP/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/05/01/Protocol/TCP/" class="post-title-link" itemprop="url">TCP 协议详解：连接、可靠传输与编程示例</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-05-01 12:46:14" itemprop="dateCreated datePublished" datetime="2026-05-01T12:46:14+08:00">2026-05-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-05-04 15:03:12" itemprop="dateModified" datetime="2026-05-04T15:03:12+08:00">2026-05-04</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Protocol/" itemprop="url" rel="index"><span itemprop="name">Protocol</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>772</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>3 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p><strong>TCP</strong>（<strong>Transmission Control Protocol</strong>）在 <a href="/2026/05/01/IP/">IP</a> 之上提供<strong>面向连接</strong>的、<strong>可靠的</strong>、<strong>按序</strong>的字节流抽象，是 <a href="/2026/05/01/HTTP/">HTTP</a>、<a href="/2026/05/01/HTTPS/">HTTPS</a>、<a href="/2026/05/01/SSH/">SSH</a> 等协议的主要载体。下面从「<strong>设计目标</strong> → <strong>连接状态与握手&#x2F;挥手原理</strong> → <strong>可靠性与拥塞控制概念</strong> → <strong>端口与套接字</strong> → <strong>抓包与编程示例</strong>」顺序写清楚。</p>
+<hr>
+<h1 id="一、设计目标与作用"><a href="#一、设计目标与作用" class="headerlink" title="一、设计目标与作用"></a>一、设计目标与作用</h1><h2 id="1-解决什么问题"><a href="#1-解决什么问题" class="headerlink" title="1. 解决什么问题"></a>1. 解决什么问题</h2><ul>
+<li><strong>进程到进程</strong>：仅靠 <a href="/2026/05/01/IP/">IP</a> 只能定位到主机；<strong>TCP</strong> 用<strong>源端口 &#x2F; 目的端口</strong>区分同一主机上的不同应用。  </li>
+<li><strong>可靠有序字节流</strong>：通过<strong>序号（Sequence）</strong>、<strong>确认（ACK）</strong>、<strong>重传</strong>、<strong>按序重组</strong>隐藏丢包与乱序。  </li>
+<li><strong>流量控制与拥塞控制</strong>：用<strong>接收窗口</strong>限制发送端速率；用<strong>拥塞窗口</strong>与多种算法（<strong>Cubic</strong>、<strong>BBR</strong> 等，依系统）减轻网络拥塞。</li>
+</ul>
+<h2 id="2-与-UDP-的取舍"><a href="#2-与-UDP-的取舍" class="headerlink" title="2. 与 UDP 的取舍"></a>2. 与 UDP 的取舍</h2><p>需要<strong>稳定管道</strong>、<strong>文件传输</strong>、<strong>远程登录</strong>时选 <strong>TCP</strong>；可容忍丢包、强实时见 <a href="/2026/05/01/UDP/">UDP</a> 与 <a href="/2026/05/01/QUIC/">QUIC</a>。</p>
+<hr>
+<h1 id="二、连接：三次握手与四次挥手（原理）"><a href="#二、连接：三次握手与四次挥手（原理）" class="headerlink" title="二、连接：三次握手与四次挥手（原理）"></a>二、连接：三次握手与四次挥手（原理）</h1><h2 id="1-建立连接（简化）"><a href="#1-建立连接（简化）" class="headerlink" title="1. 建立连接（简化）"></a>1. 建立连接（简化）</h2><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">客户端                         服务端</span><br><span class="line">   |    SYN (seq=x)              |</span><br><span class="line">   |---------------------------&gt;|</span><br><span class="line">   |  SYN-ACK (ack=x+1, seq=y)  |</span><br><span class="line">   |&lt;---------------------------|</span><br><span class="line">   |    ACK (ack=y+1)           |</span><br><span class="line">   |---------------------------&gt;|</span><br><span class="line">   |        已建立 ESTABLISHED    |</span><br></pre></td></tr></table></figure>
+
+<p><strong>SYN</strong> 洪泛、<strong>半连接队列</strong>长度与 <strong>SYN Cookie</strong> 属于安全与调优范畴。</p>
+<h2 id="2-关闭连接（简化）"><a href="#2-关闭连接（简化）" class="headerlink" title="2. 关闭连接（简化）"></a>2. 关闭连接（简化）</h2><p>任一方发送 <strong>FIN</strong> 表示本方向不再发送数据；双方都可能 <strong>FIN</strong>，经过 <strong>TIME_WAIT</strong>（约 <strong>2MSL</strong>）状态以便旧报文从网络中消散。<strong>RST</strong> 表示异常复位。</p>
+<hr>
+<h1 id="三、可靠性与窗口（原理要点）"><a href="#三、可靠性与窗口（原理要点）" class="headerlink" title="三、可靠性与窗口（原理要点）"></a>三、可靠性与窗口（原理要点）</h1><ul>
+<li><strong>字节序号</strong>：每个方向独立编号；<strong>ACK</strong> 表示「期望收到的下一个序号」。  </li>
+<li><strong>滑动窗口</strong>：已发送未确认的字节不能无限堆积；窗口大小受<strong>接收方通告</strong>与<strong>拥塞算法</strong>共同约束。  </li>
+<li><strong>Nagle 与延迟 ACK</strong>：小报文合并与确认延迟可能增加交互延迟；低延迟场景可在套接字层关闭 <strong>Nagle</strong>（<strong><code>TCP_NODELAY</code></strong>），需权衡带宽。</li>
+</ul>
+<hr>
+<h1 id="四、四元组与套接字"><a href="#四、四元组与套接字" class="headerlink" title="四、四元组与套接字"></a>四、四元组与套接字</h1><p>唯一确定一条 <strong>TCP</strong> 连接：<strong>（源 IP，源端口，目的 IP，目的端口）</strong>。服务端 <strong><code>LISTEN</code></strong> 在固定端口（如 <strong>80</strong>），客户端端口通常由内核临时分配。</p>
+<hr>
+<h1 id="五、抓包示例（观察握手）"><a href="#五、抓包示例（观察握手）" class="headerlink" title="五、抓包示例（观察握手）"></a>五、抓包示例（观察握手）</h1><p>在 <strong>Linux</strong> 上（需装 <strong><code>tcpdump</code></strong>）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> tcpdump -n -i any tcp port 80 and host example.com</span><br></pre></td></tr></table></figure>
+
+<p>用浏览器访问 <strong><code>http://example.com</code></strong>，可看到 <strong>SYN &#x2F; SYN-ACK &#x2F; ACK</strong> 与后续 <strong>PSH-ACK</strong> 数据段。<strong>Wireshark</strong> 的 <strong>「Follow → TCP Stream」</strong> 便于学习报文序列。</p>
+<hr>
+<h1 id="六、编程示例：最小-Python-回显服务端与客户端"><a href="#六、编程示例：最小-Python-回显服务端与客户端" class="headerlink" title="六、编程示例：最小 Python 回显服务端与客户端"></a>六、编程示例：最小 <strong>Python</strong> 回显服务端与客户端</h1><h2 id="1-服务端-server-py"><a href="#1-服务端-server-py" class="headerlink" title="1. 服务端 server.py"></a>1. 服务端 <code>server.py</code></h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> socket</span><br><span class="line"></span><br><span class="line">HOST = <span class="string">&quot;127.0.0.1&quot;</span></span><br><span class="line">PORT = <span class="number">9000</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">with</span> socket.socket(socket.AF_INET, socket.SOCK_STREAM) <span class="keyword">as</span> s:</span><br><span class="line">    s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, <span class="number">1</span>)</span><br><span class="line">    s.bind((HOST, PORT))</span><br><span class="line">    s.listen(<span class="number">1</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;listening on&quot;</span>, PORT)</span><br><span class="line">    conn, addr = s.accept()</span><br><span class="line">    <span class="keyword">with</span> conn:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;connected from&quot;</span>, addr)</span><br><span class="line">        <span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">            data = conn.recv(<span class="number">1024</span>)</span><br><span class="line">            <span class="keyword">if</span> <span class="keyword">not</span> data:</span><br><span class="line">                <span class="keyword">break</span></span><br><span class="line">            conn.sendall(<span class="string">b&quot;echo: &quot;</span> + data)</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-客户端-client-py"><a href="#2-客户端-client-py" class="headerlink" title="2. 客户端 client.py"></a>2. 客户端 <code>client.py</code></h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> socket</span><br><span class="line"></span><br><span class="line">HOST = <span class="string">&quot;127.0.0.1&quot;</span></span><br><span class="line">PORT = <span class="number">9000</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">with</span> socket.socket(socket.AF_INET, socket.SOCK_STREAM) <span class="keyword">as</span> s:</span><br><span class="line">    s.connect((HOST, PORT))</span><br><span class="line">    s.sendall(<span class="string">b&quot;hello TCP\n&quot;</span>)</span><br><span class="line">    <span class="built_in">print</span>(s.recv(<span class="number">1024</span>).decode(), end=<span class="string">&quot;&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">python server.py &amp;</span><br><span class="line">python client.py</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="七、小结"><a href="#七、小结" class="headerlink" title="七、小结"></a>七、小结</h1><table>
+<thead>
+<tr>
+<th>项</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>原理</td>
+<td><strong>连接</strong>、<strong>序号&#x2F;ACK&#x2F;重传</strong>、<strong>窗口</strong></td>
+</tr>
+<tr>
+<td>作用</td>
+<td>可靠有序字节流；进程寻址靠<strong>端口</strong></td>
+</tr>
+<tr>
+<td>依赖</td>
+<td><a href="/2026/05/01/IP/">IP</a></td>
+</tr>
+<tr>
+<td>示例</td>
+<td><strong><code>tcpdump</code></strong>、<strong>Python <code>socket.SOCK_STREAM</code></strong></td>
+</tr>
+</tbody></table>
+<p>调优与内核参数（<strong><code>tcp_tw_reuse</code></strong> 等）以发行版文档为准，避免盲目改生产默认值。</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/BigData/Kafka/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/05/01/BigData/Kafka/" class="post-title-link" itemprop="url">Kafka</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-05-01 12:44:15" itemprop="dateCreated datePublished" datetime="2026-05-01T12:44:15+08:00">2026-05-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/BigData/" itemprop="url" rel="index"><span itemprop="name">BigData</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>0</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>1 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -758,473 +1408,6 @@
 
 
 
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/Node/TypeScript/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="miracle">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="my">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | my">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/05/01/Node/TypeScript/" class="post-title-link" itemprop="url">TypeScript</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2026-05-01 12:36:39" itemprop="dateCreated datePublished" datetime="2026-05-01T12:36:39+08:00">2026-05-01</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Node/" itemprop="url" rel="index"><span itemprop="name">Node</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>0</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>1 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/Rust/Rust/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="miracle">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="my">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | my">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/05/01/Rust/Rust/" class="post-title-link" itemprop="url">Rust</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2026-05-01 12:34:05" itemprop="dateCreated datePublished" datetime="2026-05-01T12:34:05+08:00">2026-05-01</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Rust/" itemprop="url" rel="index"><span itemprop="name">Rust</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>0</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>1 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/Netty/Netty/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="miracle">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="my">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | my">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/05/01/Netty/Netty/" class="post-title-link" itemprop="url">Netty</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2026-05-01 12:33:20" itemprop="dateCreated datePublished" datetime="2026-05-01T12:33:20+08:00">2026-05-01</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Netty/" itemprop="url" rel="index"><span itemprop="name">Netty</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>0</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>1 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/Netty/Netty%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="miracle">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="my">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | my">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/05/01/Netty/Netty%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8/" class="post-title-link" itemprop="url">Netty 多路复用</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2026-05-01 12:33:20" itemprop="dateCreated datePublished" datetime="2026-05-01T12:33:20+08:00">2026-05-01</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-02 00:14:11" itemprop="dateModified" datetime="2026-05-02T00:14:11+08:00">2026-05-02</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Netty/" itemprop="url" rel="index"><span itemprop="name">Netty</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>1.5k</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>5 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p><strong>I&#x2F;O 多路复用</strong>指用<strong>少量线程</strong>通过 <strong><code>Selector</code>（Linux 上常为 Epoll）</strong> 同时<strong>监视大量 <code>Channel</code></strong>，只在<strong>有就绪事件</strong>时读写，而不是「一线程一连接」。<strong>Netty</strong> 把 <strong>Java NIO</strong> 封装成 <strong><code>EventLoop</code> + <code>Pipeline</code></strong> 的 <strong>Reactor</strong> 风格，便于高并发网络程序。下面先给 <strong>Maven &#x2F; Gradle</strong> 依赖，再讲概念、<strong>Boss &#x2F; Worker</strong> 线程模型、<strong>Echo</strong> 示例与系统侧注意点。</p>
-<hr>
-<h1 id="一、先把三个概念说清楚"><a href="#一、先把三个概念说清楚" class="headerlink" title="一、先把三个概念说清楚"></a>一、先把三个概念说清楚</h1><h2 id="1-「很多连接」≠「每条连接占满一条线程」"><a href="#1-「很多连接」≠「每条连接占满一条线程」" class="headerlink" title="1. 「很多连接」≠「每条连接占满一条线程」"></a>1. 「很多连接」≠「每条连接占满一条线程」</h2><ul>
-<li><strong>大量长连接</strong>：例如推送、网关、<strong>IM</strong> 在线，许多连接<strong>长时间无读写</strong>，适合交给<strong>一个 <code>Selector</code></strong> 统一等就绪。  </li>
-<li><strong>高 QPS 短连接</strong>：瓶颈常在 <strong>CPU</strong>、<strong>GC</strong>、<strong>协议栈</strong>，与「单 <code>Selector</code> 挂很多空闲连接」不是同一维度的问题。</li>
-</ul>
-<h2 id="2-NIO-多路复用在干什么"><a href="#2-NIO-多路复用在干什么" class="headerlink" title="2. NIO 多路复用在干什么"></a>2. <strong>NIO</strong> 多路复用在干什么</h2><p>一条线程调用 <strong><code>Selector.select()</code></strong> 阻塞等待，直到<strong>一批</strong> <strong>Channel</strong> 上<strong>有就绪的 I&#x2F;O 事件</strong>（可读、可写等），再<strong>依次分发</strong>处理。这样<strong>一条线程可以注册并监视成千上万个连接</strong>，而不是为每个连接各开一条阻塞线程。</p>
-<h2 id="3-Netty-扮演的角色"><a href="#3-Netty-扮演的角色" class="headerlink" title="3. Netty 扮演的角色"></a>3. <strong>Netty</strong> 扮演的角色</h2><p><strong>Netty</strong> 在 <strong>Java NIO &#x2F; Epoll（Linux）</strong> 之上封装了 <strong>Reactor</strong> 风格的 <strong><code>EventLoop</code></strong>、<strong><code>Pipeline</code></strong>、内存与缓冲策略，让你用<strong>少量 <code>EventLoop</code> 线程</strong>管理<strong>大量 <code>Channel</code></strong>，并把编解码、业务入 <strong><code>ChannelPipeline</code></strong>。</p>
-<hr>
-<h1 id="二、依赖示例（Maven-Gradle）"><a href="#二、依赖示例（Maven-Gradle）" class="headerlink" title="二、依赖示例（Maven &#x2F; Gradle）"></a>二、依赖示例（Maven &#x2F; Gradle）</h1><p><strong><code>&lt;version&gt;</code> &#x2F; 版本号</strong> 请换成当前 <strong>4.1.x</strong> 稳定版，与团队对齐。</p>
-<h2 id="1-Maven（pom-xml）"><a href="#1-Maven（pom-xml）" class="headerlink" title="1. Maven（pom.xml）"></a>1. Maven（<code>pom.xml</code>）</h2><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>io.netty<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>netty-all<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">version</span>&gt;</span>4.1.115.Final<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="2-Gradle（Groovy，build-gradle）"><a href="#2-Gradle（Groovy，build-gradle）" class="headerlink" title="2. Gradle（Groovy，build.gradle）"></a>2. Gradle（Groovy，<code>build.gradle</code>）</h2><figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">dependencies</span> &#123;</span><br><span class="line">    implementation <span class="string">&#x27;io.netty:netty-all:4.1.115.Final&#x27;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="3-Gradle（Kotlin-DSL，build-gradle-kts）"><a href="#3-Gradle（Kotlin-DSL，build-gradle-kts）" class="headerlink" title="3. Gradle（Kotlin DSL，build.gradle.kts）"></a>3. Gradle（Kotlin DSL，<code>build.gradle.kts</code>）</h2><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">dependencies &#123;</span><br><span class="line">    implementation(<span class="string">&quot;io.netty:netty-all:4.1.115.Final&quot;</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>官方仓库与版本列表：<strong><a target="_blank" rel="noopener external nofollow noreferrer" href="https://netty.io/">https://netty.io/</a></strong> · <strong><a target="_blank" rel="noopener" href="https://github.com/netty/netty">https://github.com/netty/netty</a></strong></p>
-<hr>
-<h1 id="三、Netty-常见线程模型（Boss-Worker）"><a href="#三、Netty-常见线程模型（Boss-Worker）" class="headerlink" title="三、Netty 常见线程模型（Boss &#x2F; Worker）"></a>三、Netty 常见线程模型（Boss &#x2F; Worker）</h1><h2 id="1-典型服务端写法（概念）"><a href="#1-典型服务端写法（概念）" class="headerlink" title="1. 典型服务端写法（概念）"></a>1. 典型服务端写法（概念）</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">EventLoopGroup</span> <span class="variable">bossGroup</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">NioEventLoopGroup</span>(<span class="number">1</span>);   <span class="comment">// 常 1：只负责接入</span></span><br><span class="line"><span class="type">EventLoopGroup</span> <span class="variable">workerGroup</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">NioEventLoopGroup</span>(); <span class="comment">// 默认：CPU×2 等，负责已连接通道的 I/O</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><strong><code>bossGroup</code></strong>：线程数常为 <strong>1</strong>（也可更多），负责<strong>接受新连接</strong>并把 <strong><code>SocketChannel</code></strong> 注册进 <strong><code>workerGroup</code></strong> 中某个 <strong><code>EventLoop</code></strong> 的 <strong><code>Selector</code></strong>。  </li>
-<li><strong><code>workerGroup</code></strong>：每个 <strong><code>NioEventLoop</code></strong> 内<strong>一条线程 + 一个 <code>Selector</code></strong>，<strong>多路复用</strong>其上的所有 <strong><code>Channel</code></strong> 的读&#x2F;写就绪事件。整体是<strong>少量线程 + 大量连接</strong>，业务逻辑仍在 <strong><code>Pipeline</code></strong> 里按事件触发执行。</li>
-</ul>
-<h2 id="2-一张逻辑关系（文字版）"><a href="#2-一张逻辑关系（文字版）" class="headerlink" title="2. 一张逻辑关系（文字版）"></a>2. 一张逻辑关系（文字版）</h2><table>
-<thead>
-<tr>
-<th>角色</th>
-<th>大致职责</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>Boss <code>EventLoop</code></strong></td>
-<td><strong><code>accept</code></strong>，建 <strong><code>Channel</code></strong>，注册到某个 <strong>Worker</strong></td>
-</tr>
-<tr>
-<td><strong>Worker <code>EventLoop</code></strong></td>
-<td>已连接 <strong><code>Channel</code></strong> 的读&#x2F;写就绪事件、入站出站 <strong>Pipeline</strong></td>
-</tr>
-</tbody></table>
-<p>业务若<strong>阻塞</strong>（重度 <strong>CPU</strong>、同步 <strong>JDBC</strong>、大 <strong><code>Thread.sleep</code></strong>），会占满该 <strong><code>EventLoop</code></strong> 上的所有 <strong><code>Channel</code></strong>，拖慢整组连接——因此<strong>阻塞操作</strong>应丢到<strong>业务线程池</strong>或异步组件，这是多路复用能发挥作用的<strong>前提</strong>。</p>
-<hr>
-<h1 id="四、示例代码：最小-Echo-服务端（可运行）"><a href="#四、示例代码：最小-Echo-服务端（可运行）" class="headerlink" title="四、示例代码：最小 Echo 服务端（可运行）"></a>四、示例代码：最小 Echo 服务端（可运行）</h1><p>下面是一个<strong>单文件可跑</strong>的 <strong>Echo</strong>：客户端发来多少字节，服务端原样写回（<strong>Boss&#x3D;1</strong>、<strong>Worker</strong> 默认线程数由 <strong>Netty</strong> 按 <strong>CPU</strong> 推算）。包名可按你的工程修改；需已引入 <strong><code>netty-all</code></strong>（<strong>Maven</strong> 见 <strong><code>pom.xml</code></strong>，<strong>Gradle</strong> 见 <strong><code>build.gradle</code> &#x2F; <code>build.gradle.kts</code></strong>，均见上文 <strong>二、依赖示例</strong>）。</p>
-<h2 id="1-EchoServer-java"><a href="#1-EchoServer-java" class="headerlink" title="1. EchoServer.java"></a>1. <code>EchoServer.java</code></h2><p>将类放到任意 <strong><code>src/main/java</code></strong> 包路径下（示例包名 <strong><code>example.netty</code></strong>），与 <strong><code>pom.xml</code></strong> 中 <strong><code>mainClass</code></strong> 或 <strong>IDE</strong> 运行入口一致即可。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> example.netty;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> io.netty.bootstrap.ServerBootstrap;</span><br><span class="line"><span class="keyword">import</span> io.netty.channel.*;</span><br><span class="line"><span class="keyword">import</span> io.netty.channel.nio.NioEventLoopGroup;</span><br><span class="line"><span class="keyword">import</span> io.netty.channel.socket.SocketChannel;</span><br><span class="line"><span class="keyword">import</span> io.netty.channel.socket.nio.NioServerSocketChannel;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 最小 Echo：读入的字节原样写回。默认端口 8000，也可传入参数：8080。</span></span><br><span class="line"><span class="comment"> * 验证：nc 127.0.0.1 8000</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">class</span> <span class="title class_">EchoServer</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">port</span> <span class="operator">=</span> (args.length &gt; <span class="number">0</span>) ? Integer.parseInt(args[<span class="number">0</span>]) : <span class="number">8000</span>;</span><br><span class="line"></span><br><span class="line">        <span class="type">EventLoopGroup</span> <span class="variable">bossGroup</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">NioEventLoopGroup</span>(<span class="number">1</span>);</span><br><span class="line">        <span class="type">EventLoopGroup</span> <span class="variable">workerGroup</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">NioEventLoopGroup</span>();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="type">ServerBootstrap</span> <span class="variable">b</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ServerBootstrap</span>();</span><br><span class="line">            b.group(bossGroup, workerGroup)</span><br><span class="line">                    .channel(NioServerSocketChannel.class)</span><br><span class="line">                    .childHandler(<span class="keyword">new</span> <span class="title class_">ChannelInitializer</span>&lt;SocketChannel&gt;() &#123;</span><br><span class="line">                        <span class="meta">@Override</span></span><br><span class="line">                        <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">initChannel</span><span class="params">(SocketChannel ch)</span> &#123;</span><br><span class="line">                            ch.pipeline().addLast(<span class="keyword">new</span> <span class="title class_">ChannelInboundHandlerAdapter</span>() &#123;</span><br><span class="line">                                <span class="meta">@Override</span></span><br><span class="line">                                <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">channelRead</span><span class="params">(ChannelHandlerContext ctx, Object msg)</span> &#123;</span><br><span class="line">                                    ctx.write(msg);</span><br><span class="line">                                &#125;</span><br><span class="line"></span><br><span class="line">                                <span class="meta">@Override</span></span><br><span class="line">                                <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">channelReadComplete</span><span class="params">(ChannelHandlerContext ctx)</span> &#123;</span><br><span class="line">                                    ctx.flush();</span><br><span class="line">                                &#125;</span><br><span class="line"></span><br><span class="line">                                <span class="meta">@Override</span></span><br><span class="line">                                <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">exceptionCaught</span><span class="params">(ChannelHandlerContext ctx, Throwable cause)</span> &#123;</span><br><span class="line">                                    cause.printStackTrace();</span><br><span class="line">                                    ctx.close();</span><br><span class="line">                                &#125;</span><br><span class="line">                            &#125;);</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;);</span><br><span class="line"></span><br><span class="line">            <span class="type">ChannelFuture</span> <span class="variable">f</span> <span class="operator">=</span> b.bind(port).sync();</span><br><span class="line">            System.out.println(<span class="string">&quot;Echo 监听端口 &quot;</span> + port + <span class="string">&quot;，终端执行: nc 127.0.0.1 &quot;</span> + port);</span><br><span class="line">            f.channel().closeFuture().sync();</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            bossGroup.shutdownGracefully();</span><br><span class="line">            workerGroup.shutdownGracefully();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="2-用-nc-或-Netty-客户端自测"><a href="#2-用-nc-或-Netty-客户端自测" class="headerlink" title="2. 用 nc 或 Netty 客户端自测"></a>2. 用 <code>nc</code> 或 <strong>Netty</strong> 客户端自测</h2><p>另开终端：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nc 127.0.0.1 8000</span><br></pre></td></tr></table></figure>
-
-<p>随意输入几行文字；服务端把同一字节流写回，<strong><code>nc</code></strong> 侧应看到<strong>回显</strong>。按 <strong><code>Ctrl+C</code></strong> 结束 <strong><code>nc</code></strong>；停止服务端在运行 <strong>Echo</strong> 的终端 <strong><code>Ctrl+C</code></strong> 或结束进程。</p>
-<h2 id="3-可选：EchoClient-java（本机连本机）"><a href="#3-可选：EchoClient-java（本机连本机）" class="headerlink" title="3. 可选：EchoClient.java（本机连本机）"></a>3. 可选：<code>EchoClient.java</code>（本机连本机）</h2><p>与上节同一 <strong><code>package</code></strong> 下再加一类，先启动 <strong><code>EchoServer</code></strong>，再运行 <strong><code>EchoClient</code></strong>；客户端连上后发送一行 <strong><code>hello</code></strong>，控制台打印读到的字节数（即回显长度）。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> example.netty;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> io.netty.bootstrap.Bootstrap;</span><br><span class="line"><span class="keyword">import</span> io.netty.buffer.ByteBuf;</span><br><span class="line"><span class="keyword">import</span> io.netty.channel.*;</span><br><span class="line"><span class="keyword">import</span> io.netty.channel.nio.NioEventLoopGroup;</span><br><span class="line"><span class="keyword">import</span> io.netty.channel.socket.SocketChannel;</span><br><span class="line"><span class="keyword">import</span> io.netty.channel.socket.nio.NioSocketChannel;</span><br><span class="line"><span class="keyword">import</span> io.netty.util.CharsetUtil;</span><br><span class="line"><span class="keyword">import</span> io.netty.util.ReferenceCountUtil;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">class</span> <span class="title class_">EchoClient</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="type">String</span> <span class="variable">host</span> <span class="operator">=</span> (args.length &gt; <span class="number">0</span>) ? args[<span class="number">0</span>] : <span class="string">&quot;127.0.0.1&quot;</span>;</span><br><span class="line">        <span class="type">int</span> <span class="variable">port</span> <span class="operator">=</span> (args.length &gt; <span class="number">1</span>) ? Integer.parseInt(args[<span class="number">1</span>]) : <span class="number">8000</span>;</span><br><span class="line"></span><br><span class="line">        <span class="type">EventLoopGroup</span> <span class="variable">group</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">NioEventLoopGroup</span>();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="type">Bootstrap</span> <span class="variable">b</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Bootstrap</span>();</span><br><span class="line">            b.group(group)</span><br><span class="line">                    .channel(NioSocketChannel.class)</span><br><span class="line">                    .handler(<span class="keyword">new</span> <span class="title class_">ChannelInitializer</span>&lt;SocketChannel&gt;() &#123;</span><br><span class="line">                        <span class="meta">@Override</span></span><br><span class="line">                        <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">initChannel</span><span class="params">(SocketChannel ch)</span> &#123;</span><br><span class="line">                            ch.pipeline().addLast(<span class="keyword">new</span> <span class="title class_">ChannelInboundHandlerAdapter</span>() &#123;</span><br><span class="line">                                <span class="meta">@Override</span></span><br><span class="line">                                <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">channelActive</span><span class="params">(ChannelHandlerContext ctx)</span> &#123;</span><br><span class="line">                                    <span class="type">ByteBuf</span> <span class="variable">buf</span> <span class="operator">=</span> ctx.alloc().buffer();</span><br><span class="line">                                    buf.writeBytes(<span class="string">&quot;hello\n&quot;</span>.getBytes(CharsetUtil.UTF_8));</span><br><span class="line">                                    ctx.writeAndFlush(buf);</span><br><span class="line">                                &#125;</span><br><span class="line"></span><br><span class="line">                                <span class="meta">@Override</span></span><br><span class="line">                                <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">channelRead</span><span class="params">(ChannelHandlerContext ctx, Object msg)</span> &#123;</span><br><span class="line">                                    <span class="type">ByteBuf</span> <span class="variable">in</span> <span class="operator">=</span> (ByteBuf) msg;</span><br><span class="line">                                    <span class="keyword">try</span> &#123;</span><br><span class="line">                                        System.out.println(<span class="string">&quot;收到回显，可读字节: &quot;</span> + in.readableBytes());</span><br><span class="line">                                    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">                                        ReferenceCountUtil.release(msg);</span><br><span class="line">                                    &#125;</span><br><span class="line">                                &#125;</span><br><span class="line"></span><br><span class="line">                                <span class="meta">@Override</span></span><br><span class="line">                                <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">exceptionCaught</span><span class="params">(ChannelHandlerContext ctx, Throwable cause)</span> &#123;</span><br><span class="line">                                    cause.printStackTrace();</span><br><span class="line">                                    ctx.close();</span><br><span class="line">                                &#125;</span><br><span class="line">                            &#125;);</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;);</span><br><span class="line"></span><br><span class="line">            <span class="type">ChannelFuture</span> <span class="variable">f</span> <span class="operator">=</span> b.connect(host, port).sync();</span><br><span class="line">            f.channel().closeFuture().sync();</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            group.shutdownGracefully();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>说明</strong>：真实协议一般要在 <strong><code>Pipeline</code></strong> 里加<strong>粘包&#x2F;拆包</strong>（如 <strong><code>LineBasedFrameDecoder</code></strong>、长度域），这里刻意最简，只对应「线程模型 + 读写回显」演示。</p>
-<hr>
-<h1 id="五、大量连接下的系统侧（简述）"><a href="#五、大量连接下的系统侧（简述）" class="headerlink" title="五、大量连接下的系统侧（简述）"></a>五、大量连接下的系统侧（简述）</h1><p>要把<strong>多路复用</strong>撑到<strong>很大连接数</strong>，通常还要：</p>
-<ol>
-<li><strong>进程最大打开文件数</strong>（<strong><code>ulimit -n</code></strong>）调到足够大。  </li>
-<li><strong>Linux</strong> 上 <strong>TCP</strong>、<strong>端口范围</strong>、<strong><code>somaxconn</code></strong> 等与接入能力相关的内核参数按运维规范调整。  </li>
-<li><strong>堆外内存</strong>、<strong>直接内存</strong>、<strong><code>-Xmx</code></strong> 与 <strong>Netty</strong> 的 <strong>ByteBuf</strong> 分配策略匹配业务量，避免 <strong>OOM</strong>。</li>
-</ol>
-<p>这些属于<strong>容量规划</strong>与<strong>运维</strong>，单靠应用层多路复用无法替代。</p>
-<hr>
-<h1 id="六、小结"><a href="#六、小结" class="headerlink" title="六、小结"></a>六、小结</h1><table>
-<thead>
-<tr>
-<th>说法</th>
-<th>更稳妥的理解</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>Maven &#x2F; Gradle</strong></td>
-<td><strong>二</strong>：坐标 <strong><code>io.netty:netty-all</code></strong>；<strong>Maven</strong> 用 <strong><code>&lt;dependency&gt;</code></strong>；<strong>Gradle</strong> 用 <strong><code>implementation</code></strong>（<strong>Groovy</strong> 或 <strong>Kotlin DSL</strong>）。版本与团队对齐。</td>
-</tr>
-<tr>
-<td><strong>I&#x2F;O 多路复用</strong></td>
-<td><strong><code>Selector</code></strong> 一批 <strong><code>Channel</code></strong> 上就绪事件再处理；<strong>Netty</strong> 用 <strong><code>EventLoop</code></strong> 封装这一模型。</td>
-</tr>
-<tr>
-<td><strong>Netty</strong> 与线程</td>
-<td><strong>Boss</strong> 接入、<strong>Worker</strong> 做已连通道的 <strong>I&#x2F;O</strong> 与 <strong><code>Pipeline</code></strong>；<strong>少量线程</strong>对应<strong>大量连接</strong>（连接多空闲、业务非阻塞时更匹配）。</td>
-</tr>
-<tr>
-<td>示例代码</td>
-<td><strong>四</strong>：<strong><code>EchoServer</code></strong> + <strong><code>nc</code></strong>；可选 <strong><code>EchoClient</code></strong>。依赖声明见 <strong>二</strong>。</td>
-</tr>
-<tr>
-<td>要上量</td>
-<td><strong>连接模型</strong>、<strong>业务是否阻塞</strong>、<strong>FD &#x2F; 内核 &#x2F; 内存</strong> 一起评估。</td>
-</tr>
-</tbody></table>
-<p>进一步阅读：<strong>《Netty 实战》</strong>、官方 <strong>User guide</strong>；进阶可看 <strong>Epoll</strong>、<strong>零拷贝（<code>FileRegion</code> &#x2F; <code>sendfile</code>）</strong>、<strong>内存池</strong>与 <strong><code>PooledByteBufAllocator</code></strong>。</p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
   <nav class="pagination">
     <a class="extend prev" rel="prev" title="上一页" aria-label="上一页" href="/page/8/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><span class="page-number current">9</span><a class="page-number" href="/page/10/">10</a><span class="space">&hellip;</span><a class="page-number" href="/page/12/">12</a><a class="extend next" rel="next" title="下一页" aria-label="下一页" href="/page/10/"><i class="fa fa-angle-right"></i></a>
   </nav>
@@ -1248,13 +1431,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">58k</span>
+    <span title="站点总字数">77k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">3:14</span>
+    <span title="站点阅读时长">4:18</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

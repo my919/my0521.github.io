@@ -166,18 +166,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">116</span>
+          <span class="site-state-item-count">120</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">49</span>
+        <span class="site-state-item-count">36</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">128</span>
+        <span class="site-state-item-count">142</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -205,6 +205,732 @@
     </div>
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/03/Redis/List%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E3%80%81%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%E5%8F%8A%E6%A1%88%E4%BE%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/05/03/Redis/List%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E3%80%81%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%E5%8F%8A%E6%A1%88%E4%BE%8B/" class="post-title-link" itemprop="url">Redis List 数据类型、应用场景及案例</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2026-05-03 17:30:10 / 修改时间：17:39:01" itemprop="dateCreated datePublished" datetime="2026-05-03T17:30:10+08:00">2026-05-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Redis/" itemprop="url" rel="index"><span itemprop="name">Redis</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>484</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>2 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p><strong>Redis List</strong> 是<strong>双向链表</strong>上的字符串元素序列，按下标与范围访问，两端 <strong><code>LPUSH</code> &#x2F; <code>RPUSH</code> &#x2F; <code>LPOP</code> &#x2F; <code>RPOP</code></strong> 时间复杂度多为 <strong>O(1)</strong>。适合<strong>队列、栈、最新 N 条动态</strong>等场景。写法对齐同仓库 <strong>Hexo</strong> 教程：<strong>小节 + 命令表 + 可复制示例</strong>。部署见 <strong><code>Redis-Docker.md</code></strong>。</p>
+<hr>
+<h1 id="一、List-是什么"><a href="#一、List-是什么" class="headerlink" title="一、List 是什么"></a>一、List 是什么</h1><ol>
+<li><strong>有序</strong>、<strong>可重复</strong>；同一 <strong>value</strong> 可出现多次。  </li>
+<li><strong><code>TYPE key</code></strong> 为 <strong><code>list</code></strong>。  </li>
+<li><strong>中间插入&#x2F;删除</strong>代价高于两端（需遍历指针）；设计时尽量<strong>从两头消费</strong>。</li>
+</ol>
+<hr>
+<h1 id="二、常用命令（必会子集）"><a href="#二、常用命令（必会子集）" class="headerlink" title="二、常用命令（必会子集）"></a>二、常用命令（必会子集）</h1><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong><code>LPUSH</code> &#x2F; <code>RPUSH</code></strong></td>
+<td>左&#x2F;右入队</td>
+</tr>
+<tr>
+<td><strong><code>LPOP</code> &#x2F; <code>RPOP</code></strong></td>
+<td>左&#x2F;右出队</td>
+</tr>
+<tr>
+<td><strong><code>LRANGE key start stop</code></strong></td>
+<td>闭区间下标范围（<strong><code>-1</code></strong> 表末尾）</td>
+</tr>
+<tr>
+<td><strong><code>LLEN</code></strong></td>
+<td>长度</td>
+</tr>
+<tr>
+<td><strong><code>LINDEX</code> &#x2F; <code>LSET</code></strong></td>
+<td>按下标读 &#x2F; 写</td>
+</tr>
+<tr>
+<td><strong><code>BLPOP</code> &#x2F; <code>BRPOP</code></strong></td>
+<td>阻塞出队（<strong>简单队列</strong>常用）</td>
+</tr>
+</tbody></table>
+<p><strong>说明</strong>：高版本提供 <strong><code>LMOVE</code> &#x2F; <code>BLMOVE</code></strong> 等，用于<strong>安全队列</strong>迁移元素；与已废弃的 <strong><code>BRPOPLPUSH</code></strong> 同类需求可查当前版本文档。</p>
+<hr>
+<h1 id="三、典型应用场景"><a href="#三、典型应用场景" class="headerlink" title="三、典型应用场景"></a>三、典型应用场景</h1><ol>
+<li><strong>FIFO 队列</strong>：<strong><code>RPUSH</code> + <code>LPOP</code></strong>（或反向一对）。  </li>
+<li><strong>最新消息流</strong>：<strong><code>LPUSH</code> + <code>LTRIM key 0 99</code></strong> 保留最近 <strong>100</strong> 条。  </li>
+<li><strong>阻塞消费</strong>：<strong><code>BLPOP</code></strong> 多个 <strong>key</strong> 时按顺序等待，可做<strong>简单任务队列</strong>（复杂语义建议 <strong>Stream</strong> 或专业消息中间件）。</li>
+</ol>
+<hr>
+<h1 id="四、综合案例（redis-cli）"><a href="#四、综合案例（redis-cli）" class="headerlink" title="四、综合案例（redis-cli）"></a>四、综合案例（<code>redis-cli</code>）</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">redis-cli DEL mq:email</span><br><span class="line">redis-cli RPUSH mq:email <span class="string">&quot;job1&quot;</span> <span class="string">&quot;job2&quot;</span></span><br><span class="line">redis-cli LPOP mq:email</span><br><span class="line"></span><br><span class="line">redis-cli LPUSH feed:user:1 <span class="string">&quot;msg3&quot;</span> <span class="string">&quot;msg2&quot;</span> <span class="string">&quot;msg1&quot;</span></span><br><span class="line">redis-cli LRANGE feed:user:1 0 9</span><br><span class="line">redis-cli LTRIM feed:user:1 0 19</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="五、注意事项"><a href="#五、注意事项" class="headerlink" title="五、注意事项"></a>五、注意事项</h1><ol>
+<li><strong>消费者崩溃</strong>：<strong><code>LPOP</code></strong> 后数据即丢，需业务<strong>确认机制</strong>或改用 <strong><code>BRPOP</code> + 处理完再 ack&#96;</strong> 等模式；严肃场景评估 <strong>Stream</strong>、<strong>RabbitMQ</strong> 等。  </li>
+<li><strong>长列表</strong>：<strong><code>LRANGE 0 -1</code></strong> 大列表慎用；分页用 <strong><code>LRANGE</code></strong> 分段。  </li>
+<li><strong>与 Set&#x2F;ZSet 区别</strong>：<strong>List 有序可重复</strong>；<strong>Set 无序唯一</strong>；<strong>ZSet 有序唯一带分值</strong>。</li>
+</ol>
+<hr>
+<h1 id="六、延伸阅读"><a href="#六、延伸阅读" class="headerlink" title="六、延伸阅读"></a>六、延伸阅读</h1><table>
+<thead>
+<tr>
+<th>文档</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong><code>Set数据类型、应用场景及案例.md</code></strong> &#x2F; <strong><code>ZSet数据类型、应用场景及案例.md</code></strong></td>
+<td>去重集合、排行榜</td>
+</tr>
+<tr>
+<td><strong><code>Redis-Docker.md</code></strong></td>
+<td>连接与安全</td>
+</tr>
+</tbody></table>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/03/Redis/String%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E3%80%81%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%E5%8F%8A%E6%A1%88%E4%BE%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/05/03/Redis/String%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E3%80%81%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%E5%8F%8A%E6%A1%88%E4%BE%8B/" class="post-title-link" itemprop="url">Redis String 数据类型、应用场景及案例</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2026-05-03 17:28:32 / 修改时间：17:44:32" itemprop="dateCreated datePublished" datetime="2026-05-03T17:28:32+08:00">2026-05-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Redis/" itemprop="url" rel="index"><span itemprop="name">Redis</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>1.1k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>4 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p><strong>Redis String</strong> 是最常用的类型：本质是<strong>二进制安全</strong>的字节序列（可存文本、<strong>JSON</strong>、序列化对象、图片片段等），单值上限约 <strong>512MB</strong>（实际业务应远小于该上限）。下文按「命令 → 场景 → <strong><code>redis-cli</code></strong> 案例 → 注意点」组织，部署见 <strong><code>Redis-Docker.md</code></strong>。</p>
+<hr>
+<h1 id="一、String-是什么（和「键」的关系）"><a href="#一、String-是什么（和「键」的关系）" class="headerlink" title="一、String 是什么（和「键」的关系）"></a>一、String 是什么（和「键」的关系）</h1><ol>
+<li><strong>Redis</strong> 是 <strong>KV</strong> 模型：<strong>键（key）</strong> 永远是字符串；<strong>值（value）</strong> 可以是 <strong>String &#x2F; Hash &#x2F; List</strong> 等类型之一。  </li>
+<li>本文说的 <strong>String</strong> 指 <strong>value 的类型</strong>为 <strong>string</strong>（<strong><code>TYPE key</code></strong> 显示 <strong><code>string</code></strong>）。  </li>
+<li><strong>编码</strong>：底层可能为 <strong><code>int</code></strong>、<strong><code>embstr</code></strong>、<strong><code>raw</code></strong> 等（<strong><code>OBJECT ENCODING key</code></strong> 可查看），对使用者多数时候<strong>透明</strong>，选型时更关心<strong>语义与命令</strong>。</li>
+</ol>
+<hr>
+<h1 id="二、常用命令（必会子集）"><a href="#二、常用命令（必会子集）" class="headerlink" title="二、常用命令（必会子集）"></a>二、常用命令（必会子集）</h1><h2 id="1-读写与删除"><a href="#1-读写与删除" class="headerlink" title="1. 读写与删除"></a>1. 读写与删除</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">redis-cli SET user:1001 <span class="string">&quot;Alice&quot;</span></span><br><span class="line">redis-cli GET user:1001</span><br><span class="line">redis-cli DEL user:1001</span><br></pre></td></tr></table></figure>
+
+<p><strong><code>MSET</code> &#x2F; <code>MGET</code></strong>：一次多键，减少往返（注意原子性与键命名规范）。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">redis-cli MSET a 1 b 2 c 3</span><br><span class="line">redis-cli MGET a b c</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-带条件的写入与过期（业务高频）"><a href="#2-带条件的写入与过期（业务高频）" class="headerlink" title="2. 带条件的写入与过期（业务高频）"></a>2. 带条件的写入与过期（业务高频）</h2><p><strong><code>SET</code></strong> 常用选项（<strong>Redis 2.6+</strong> 语法，具体以你版本文档为准）：</p>
+<table>
+<thead>
+<tr>
+<th>选项</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong><code>EX 秒</code> &#x2F; <code>PX 毫秒</code></strong></td>
+<td>设置<strong>过期时间</strong>（<strong>TTL</strong>）</td>
+</tr>
+<tr>
+<td><strong><code>NX</code></strong></td>
+<td>仅当 <strong>key 不存在</strong> 时写入（常用于<strong>抢锁占位</strong>）</td>
+</tr>
+<tr>
+<td><strong><code>XX</code></strong></td>
+<td>仅当 <strong>key 已存在</strong> 时覆盖</td>
+</tr>
+</tbody></table>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">redis-cli SET session:abc <span class="string">&quot;uid=1001&quot;</span> EX 3600 NX</span><br><span class="line">redis-cli TTL session:abc</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-计数器：INCR-DECR-INCRBY"><a href="#3-计数器：INCR-DECR-INCRBY" class="headerlink" title="3. 计数器：INCR &#x2F; DECR &#x2F; INCRBY"></a>3. 计数器：<code>INCR</code> &#x2F; <code>DECR</code> &#x2F; <code>INCRBY</code></h2><p><strong><code>INCR</code></strong> 在<strong>值可解析为整数</strong>时原子自增；不存在时按 <strong>0</strong> 开始。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">redis-cli SET article:42:views 0</span><br><span class="line">redis-cli INCR article:42:views</span><br><span class="line">redis-cli INCRBY article:42:views 10</span><br></pre></td></tr></table></figure>
+
+<h2 id="4-其它实用命令"><a href="#4-其它实用命令" class="headerlink" title="4. 其它实用命令"></a>4. 其它实用命令</h2><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong><code>APPEND</code></strong></td>
+<td>尾部追加字节</td>
+</tr>
+<tr>
+<td><strong><code>STRLEN</code></strong></td>
+<td>返回字节长度</td>
+</tr>
+<tr>
+<td><strong><code>GETRANGE</code> &#x2F; <code>SETRANGE</code></strong></td>
+<td>按偏移读写子串（仍整体是 <strong>String</strong>）</td>
+</tr>
+<tr>
+<td><strong><code>GETSET</code></strong></td>
+<td>读旧值并写新值（单原子操作，适合简单状态切换）</td>
+</tr>
+</tbody></table>
+<hr>
+<h1 id="三、典型应用场景"><a href="#三、典型应用场景" class="headerlink" title="三、典型应用场景"></a>三、典型应用场景</h1><ol>
+<li><strong>缓存整页或对象</strong>：值存 <strong>JSON</strong> 字符串，配合 <strong><code>EX</code></strong> 做<strong>短期缓存</strong>；更新数据库后<strong>删键</strong>或<strong>覆盖</strong>避免脏读。  </li>
+<li><strong>会话 &#x2F; 登录态</strong>：<strong><code>SET … EX …</code></strong> 存 <strong>token → 用户信息</strong>；过期自动消失。  </li>
+<li><strong>计数与限流</strong>：<strong><code>INCR</code></strong> 做浏览量、接口调用次数；与<strong>滑动窗口</strong>等逻辑配合（复杂限流可再引入 <strong>Hash</strong> &#x2F; <strong>ZSet</strong>）。  </li>
+<li><strong>分布式锁（谨慎）</strong>：<strong><code>SET key token NX PX ttl</code></strong> 仅占位；完整锁需<strong>唯一 token</strong>、<strong>Lua 校验身份释放</strong>、<strong>续期</strong>、<strong>Redlock 争议</strong>等专题，本文只给<strong>入门占位</strong>思路。  </li>
+<li><strong>配置与功能开关</strong>：<strong><code>SET feature:x:enabled 1</code></strong>，读时 <strong><code>GET</code></strong> 转布尔。</li>
+</ol>
+<hr>
+<h1 id="四、综合案例（redis-cli-可直接敲）"><a href="#四、综合案例（redis-cli-可直接敲）" class="headerlink" title="四、综合案例（redis-cli 可直接敲）"></a>四、综合案例（<code>redis-cli</code> 可直接敲）</h1><p>以下默认本机 <strong><code>redis-cli</code></strong> 无密码；若启用了 <strong><code>requirepass</code></strong>，请加 <strong><code>-a &lt;密码&gt;</code></strong>（见 <strong><code>Redis-Docker.md</code></strong>）。</p>
+<h2 id="1-用户信息缓存（带过期）"><a href="#1-用户信息缓存（带过期）" class="headerlink" title="1. 用户信息缓存（带过期）"></a>1. 用户信息缓存（带过期）</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">redis-cli SET user:1001 <span class="string">&quot;&#123;\&quot;name\&quot;:\&quot;Alice\&quot;,\&quot;vip\&quot;:1&#125;&quot;</span> EX 300</span><br><span class="line">redis-cli GET user:1001</span><br><span class="line">redis-cli TTL user:1001</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-文章阅读量"><a href="#2-文章阅读量" class="headerlink" title="2. 文章阅读量"></a>2. 文章阅读量</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">redis-cli SET post:7:views 0</span><br><span class="line">redis-cli INCR post:7:views</span><br><span class="line">redis-cli GET post:7:views</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-简单「占位锁」（演示用，生产请用成熟方案）"><a href="#3-简单「占位锁」（演示用，生产请用成熟方案）" class="headerlink" title="3. 简单「占位锁」（演示用，生产请用成熟方案）"></a>3. 简单「占位锁」（演示用，生产请用成熟方案）</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 占坑成功返回 OK；重复执行因 NX 失败返回 (nil)</span></span><br><span class="line">redis-cli SET lock:order:8899 <span class="string">&quot;worker-1&quot;</span> NX EX 30</span><br><span class="line">redis-cli GET lock:order:8899</span><br><span class="line">redis-cli DEL lock:order:8899</span><br></pre></td></tr></table></figure>
+
+<h2 id="4-条件更新：仅存在时改"><a href="#4-条件更新：仅存在时改" class="headerlink" title="4. 条件更新：仅存在时改"></a>4. 条件更新：仅存在时改</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">redis-cli SET config:site:title <span class="string">&quot;旧标题&quot;</span></span><br><span class="line">redis-cli SET config:site:title <span class="string">&quot;新标题&quot;</span> XX</span><br><span class="line">redis-cli GET config:site:title</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="五、注意事项与选型"><a href="#五、注意事项与选型" class="headerlink" title="五、注意事项与选型"></a>五、注意事项与选型</h1><ol>
+<li><strong>大 value</strong>：单 <strong>String</strong> 过大占用内存与网络带宽，<strong>序列化大对象</strong>可评估 <strong>Hash 分字段</strong>或<strong>拆 key</strong>。  </li>
+<li><strong>热 key</strong>：同一 <strong>key</strong> 超高并发时，<strong>单线程处理</strong>该 <strong>key</strong> 易成瓶颈，需业务侧<strong>分片</strong>或换结构。  </li>
+<li><strong>KEY 命名</strong>：建议 <strong><code>业务:实体:id:属性&gt;</code></strong> 一类可读前缀，避免<strong>全局 <code>KEYS *</code></strong> 在生产使用（用 <strong><code>SCAN</code></strong>）。  </li>
+<li><strong>持久化与丢失</strong>：<strong>String</strong> 在内存里，是否落盘取决于 <strong>RDB&#x2F;AOF</strong> 与策略；<strong>缓存≠数据库</strong>，关键数据以<strong>库</strong>为准并设计<strong>降级</strong>。  </li>
+<li><strong>字符集</strong>：<strong>Redis String</strong> 是<strong>字节</strong>；<strong>UTF-8</strong> 文本由客户端编码&#x2F;解码，不要在服务端假设「一定是中文几个字符」与<strong>字节长度</strong>一一对应。</li>
+</ol>
+<hr>
+<h1 id="六、延伸阅读"><a href="#六、延伸阅读" class="headerlink" title="六、延伸阅读"></a>六、延伸阅读</h1><table>
+<thead>
+<tr>
+<th>文档</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong><code>Hash数据类型、应用场景及案例.md</code></strong></td>
+<td>字段级对象</td>
+</tr>
+<tr>
+<td><strong><code>List数据类型、应用场景及案例.md</code></strong></td>
+<td>队列 &#x2F; 栈</td>
+</tr>
+<tr>
+<td><strong><code>Set数据类型、应用场景及案例.md</code></strong></td>
+<td>去重集合</td>
+</tr>
+<tr>
+<td><strong><code>ZSet数据类型、应用场景及案例.md</code></strong></td>
+<td>排行榜 &#x2F; 延时队列</td>
+</tr>
+<tr>
+<td><strong><code>HyperLogLog数据类型、应用场景及案例.md</code></strong></td>
+<td>近似 <strong>UV</strong></td>
+</tr>
+<tr>
+<td><strong><code>Bitmap数据类型、应用场景及案例.md</code></strong></td>
+<td>位图签到等</td>
+</tr>
+<tr>
+<td><strong><code>Geospatial数据类型、应用场景及案例.md</code></strong></td>
+<td><strong>LBS</strong></td>
+</tr>
+<tr>
+<td><strong><code>Redis-Docker.md</code></strong></td>
+<td>容器启动、<strong><code>requirepass</code></strong>、<strong>AOF</strong> 卷</td>
+</tr>
+<tr>
+<td><strong><code>Redis.md</code></strong></td>
+<td>总览（可后续补充）</td>
+</tr>
+</tbody></table>
+<p>更复杂的消费组、持久化流等，可另文写 <strong>Stream</strong> 等类型。</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/03/PostgreSQL/PostgreSQL%E5%B9%B6%E5%8F%91%E4%B8%8EMVCC%E5%85%A5%E9%97%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/05/03/PostgreSQL/PostgreSQL%E5%B9%B6%E5%8F%91%E4%B8%8EMVCC%E5%85%A5%E9%97%A8/" class="post-title-link" itemprop="url">PostgreSQL 并发与 MVCC 入门</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2026-05-03 17:10:00 / 修改时间：16:39:17" itemprop="dateCreated datePublished" datetime="2026-05-03T17:10:00+08:00">2026-05-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/PostgreSQL/" itemprop="url" rel="index"><span itemprop="name">PostgreSQL</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>576</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>2 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p><strong>PostgreSQL</strong> 以 <strong>MVCC（多版本并发控制）</strong> 为主：读写通常不互相阻塞读路径；写与写仍可能因<strong>行级锁</strong>、<strong>唯一约束</strong>等冲突。本文偏<strong>用法与现象</strong>，与 <strong><code>PostgreSQL索引与性能优化.md</code></strong>（<strong><code>EXPLAIN</code>、隔离级别配置</strong>）互补。若你熟悉 <strong>《MySQL锁详解》</strong>（<strong><code>MySQL锁详解.md</code></strong>），可对照：<strong>InnoDB RR + 间隙锁</strong> 与 <strong>PostgreSQL</strong> 的<strong>快照与谓词锁（SSI）</strong> 并非一一对应，勿硬套术语。</p>
+<hr>
+<h2 id="一、快照与默认隔离级别"><a href="#一、快照与默认隔离级别" class="headerlink" title="一、快照与默认隔离级别"></a>一、快照与默认隔离级别</h2><ul>
+<li>默认 <strong><code>READ COMMITTED</code></strong>：单条 <strong>SQL</strong> 内看到<strong>语句开始时</strong>已提交的数据版本。  </li>
+<li><strong><code>REPEATABLE READ</code></strong>：事务内<strong>首条 SQL</strong> 建立快照，后续读一致。  </li>
+<li><strong><code>SERIALIZABLE</code></strong>：可检测读写依赖，失败时返回 <strong><code>40001 serialization_failure</code></strong>，应用应<strong>重试</strong>。</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SHOW</span> transaction_isolation;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="二、显式行锁：FOR-UPDATE-FOR-SHARE"><a href="#二、显式行锁：FOR-UPDATE-FOR-SHARE" class="headerlink" title="二、显式行锁：FOR UPDATE &#x2F; FOR SHARE"></a>二、显式行锁：<code>FOR UPDATE</code> &#x2F; <code>FOR SHARE</code></h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">BEGIN</span>;</span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> accounts <span class="keyword">WHERE</span> id <span class="operator">=</span> <span class="number">1</span> <span class="keyword">FOR</span> <span class="keyword">UPDATE</span>;</span><br><span class="line"><span class="comment">-- 其他事务对同一行的 FOR UPDATE / 写操作会阻塞或失败（视 NOWAIT）</span></span><br><span class="line"><span class="keyword">COMMIT</span>;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong><code>FOR UPDATE</code></strong>：排他行锁，用于「先读后改」的临界区。  </li>
+<li><strong><code>FOR SHARE</code></strong>：共享行锁，允许他人<strong>并发读</strong>，阻塞<strong>写</strong>。</li>
+</ul>
+<hr>
+<h2 id="三、SKIP-LOCKED-与-NOWAIT（队列与抢锁）"><a href="#三、SKIP-LOCKED-与-NOWAIT（队列与抢锁）" class="headerlink" title="三、SKIP LOCKED 与 NOWAIT（队列与抢锁）"></a>三、<code>SKIP LOCKED</code> 与 <code>NOWAIT</code>（队列与抢锁）</h2><p><strong><code>SKIP LOCKED</code></strong>：跳过已被其他事务锁定的行，取下一批可用行——常用于<strong>任务队列</strong>、<strong>公平抢单</strong>。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">BEGIN</span>;</span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> jobs</span><br><span class="line"><span class="keyword">WHERE</span> status <span class="operator">=</span> <span class="string">&#x27;pending&#x27;</span></span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> id</span><br><span class="line"><span class="keyword">FOR</span> <span class="keyword">UPDATE</span> <span class="keyword">SKIP</span> LOCKED</span><br><span class="line">LIMIT <span class="number">1</span>;</span><br><span class="line"><span class="comment">-- 抢到则更新为 processing，再 COMMIT</span></span><br></pre></td></tr></table></figure>
+
+<p><strong><code>NOWAIT</code></strong>：若不能立即加锁则<strong>立刻报错</strong>，适合避免长时间等待（由应用捕获错误后重试或放弃）。</p>
+<hr>
+<h2 id="四、死锁（deadlock-detected）"><a href="#四、死锁（deadlock-detected）" class="headerlink" title="四、死锁（deadlock detected）"></a>四、死锁（<code>deadlock detected</code>）</h2><p><strong>PostgreSQL</strong> 会自动检测<strong>事务间循环等待</strong>，回滚<strong>其中一个事务</strong>（报错 <strong><code>40P01 deadlock_detected</code></strong>）。<br>规避思路与 <strong>MySQL</strong> 类似：<strong>固定加锁顺序</strong>、<strong>缩短事务</strong>、<strong>避免无关长耗时</strong>在事务内执行。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 排障时常看（需权限）</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> pg_locks <span class="keyword">WHERE</span> <span class="keyword">NOT</span> granted;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="五、与-MySQL-InnoDB-的粗对照（防混）"><a href="#五、与-MySQL-InnoDB-的粗对照（防混）" class="headerlink" title="五、与 MySQL InnoDB 的粗对照（防混）"></a>五、与 <strong>MySQL InnoDB</strong> 的粗对照（防混）</h2><table>
+<thead>
+<tr>
+<th>话题</th>
+<th>MySQL InnoDB（见 <strong><code>MySQL锁详解.md</code></strong>）</th>
+<th>PostgreSQL（入门记法）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>默认隔离</td>
+<td>常为 <strong>RR</strong></td>
+<td><strong>RC</strong></td>
+</tr>
+<tr>
+<td>幻读与范围锁</td>
+<td><strong>间隙锁 &#x2F; Next-Key</strong> 叙述多</td>
+<td><strong>SSI &#x2F; 谓词锁</strong> 等在 <strong>SERIALIZABLE</strong> 下讨论多</td>
+</tr>
+<tr>
+<td>队列抢任务</td>
+<td><strong><code>FOR UPDATE</code></strong> + 设计索引</td>
+<td><strong><code>FOR UPDATE SKIP LOCKED</code></strong> 一等公民</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="六、延伸阅读"><a href="#六、延伸阅读" class="headerlink" title="六、延伸阅读"></a>六、延伸阅读</h2><ul>
+<li><strong><code>PostgreSQL索引与性能优化.md</code></strong>：<code>EXPLAIN</code>、<strong><code>VACUUM</code></strong>、慢语句。  </li>
+<li><strong><code>PostgreSQL-Docker.md</code></strong>：实例与卷、连接串。  </li>
+<li><strong><code>PostgreSQL高级查询.md</code></strong>：复杂只读查询。</li>
+</ul>
+<p>线上问题请结合 <strong><code>pg_stat_activity</code></strong>、<strong><code>pg_locks</code></strong>、日志与监控，本文不替代完整 <strong>DBA Runbook</strong>。</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/03/PostgreSQL/PostgreSQL%E7%B4%A2%E5%BC%95%E4%B8%8E%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/05/03/PostgreSQL/PostgreSQL%E7%B4%A2%E5%BC%95%E4%B8%8E%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/" class="post-title-link" itemprop="url">PostgreSQL 索引与性能优化</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2026-05-03 17:05:00 / 修改时间：16:39:05" itemprop="dateCreated datePublished" datetime="2026-05-03T17:05:00+08:00">2026-05-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/PostgreSQL/" itemprop="url" rel="index"><span itemprop="name">PostgreSQL</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>1.1k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>4 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>面向<strong>业务开发与日常运维</strong>：能读 <strong><code>EXPLAIN</code></strong>、理解<strong>默认隔离级别</strong>、会开<strong>慢语句日志</strong>、知道<strong>逻辑备份与 WAL &#x2F; PITR</strong>在说什么。与 <strong><code>PostgreSQL并发与MVCC入门.md</code></strong>（行锁、<strong><code>SKIP LOCKED</code></strong>、死锁与快照）互补；部署与数据卷见 <strong><code>PostgreSQL-Docker.md</code></strong>。</p>
+<hr>
+<h2 id="一、索引在干什么：B-Tree-直觉（默认）"><a href="#一、索引在干什么：B-Tree-直觉（默认）" class="headerlink" title="一、索引在干什么：B-Tree 直觉（默认）"></a>一、索引在干什么：B-Tree 直觉（默认）</h2><p><strong>PostgreSQL</strong> 默认 <strong><code>CREATE INDEX</code></strong> 多为 <strong>B-Tree</strong>（<strong><code>USING btree</code></strong>，可省略）。<br>直觉与 <strong>MySQL InnoDB</strong> 二级索引类似：以<strong>平衡树</strong>组织键，<strong>等值 &#x2F; 范围</strong>查询减少随机读；<strong>主键 &#x2F; 唯一</strong>约束底层也会建索引。</p>
+<p>其他索引类型（<strong>点到为止</strong>）：<strong><code>GIN</code></strong>（全文、<strong><code>jsonb</code></strong> 含键）、<strong><code>GiST</code></strong>（地理、范围类型）、<strong><code>BRIN</code></strong>（超大顺序相关表）等，选型需读官方文档与压测。</p>
+<hr>
+<h2 id="二、联合索引与最左前缀"><a href="#二、联合索引与最左前缀" class="headerlink" title="二、联合索引与最左前缀"></a>二、联合索引与最左前缀</h2><p>联合索引 <strong><code>CREATE INDEX idx_abc ON t (a, b, c);</code></strong> 的排序语义仍是<strong>先 <code>a</code> 再 <code>b</code> 再 <code>c</code></strong>。<br><strong><code>WHERE a = ? AND b = ?</code></strong> 易命中；仅 <strong><code>WHERE b = ?</code></strong> 往往<strong>用不上</strong>该索引（与 <strong>MySQL</strong> 同款直觉）。<br><strong>函数包裹列</strong>（如 <strong><code>WHERE lower(email) = ?</code></strong>）常导致<strong>无法走 btree</strong>，需<strong>表达式索引</strong>（<strong><code>CREATE INDEX ON t ((lower(email)))</code></strong>）或改写法。</p>
+<hr>
+<h2 id="三、仅索引扫描（Index-Only-Scan）"><a href="#三、仅索引扫描（Index-Only-Scan）" class="headerlink" title="三、仅索引扫描（Index Only Scan）"></a>三、仅索引扫描（Index Only Scan）</h2><p>若查询列均可由<strong>某索引</strong>覆盖，且<strong>可见性映射（VM）<strong>允许优化器认为</strong>堆页全可见</strong>，<strong><code>EXPLAIN</code></strong> 可能出现 <strong><code>Index Only Scan</code></strong>。<br>与 <strong>MySQL</strong> 的 <strong><code>Using index</code></strong> 类似但不等价；仍以 <strong><code>EXPLAIN (ANALYZE, BUFFERS)</code></strong> 实测为准。</p>
+<hr>
+<h2 id="四、怎么看执行计划：EXPLAIN-EXPLAIN-ANALYZE"><a href="#四、怎么看执行计划：EXPLAIN-EXPLAIN-ANALYZE" class="headerlink" title="四、怎么看执行计划：EXPLAIN &#x2F; EXPLAIN ANALYZE"></a>四、怎么看执行计划：<code>EXPLAIN</code> &#x2F; <code>EXPLAIN ANALYZE</code></h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">EXPLAIN <span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> emp <span class="keyword">WHERE</span> dept_id <span class="operator">=</span> <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">EXPLAIN (ANALYZE, BUFFERS, VERBOSE)</span><br><span class="line"><span class="keyword">SELECT</span> e.name, <span class="built_in">SUM</span>(o.amount)</span><br><span class="line"><span class="keyword">FROM</span> emp e</span><br><span class="line"><span class="keyword">JOIN</span> orders o <span class="keyword">ON</span> o.emp_id <span class="operator">=</span> e.id</span><br><span class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span> e.id, e.name;</span><br></pre></td></tr></table></figure>
+
+<p>入门优先看：</p>
+<table>
+<thead>
+<tr>
+<th>字段 &#x2F; 标记</th>
+<th>含义（入门）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong><code>Seq Scan</code></strong></td>
+<td>顺序扫表，大表 + 高 <strong><code>rows</code></strong> 要警惕</td>
+</tr>
+<tr>
+<td><strong><code>Index Scan</code> &#x2F; <code>Index Only Scan</code></strong></td>
+<td>走索引访问</td>
+</tr>
+<tr>
+<td><strong><code>Nested Loop</code> &#x2F; <code>Hash Join</code> &#x2F; <code>Merge Join</code></strong></td>
+<td>连接策略</td>
+</tr>
+<tr>
+<td><strong><code>ANALYZE</code></strong> 的 <strong><code>actual time</code></strong>、<strong><code>rows</code></strong></td>
+<td>真实耗时与行数（与<strong>统计信息</strong>、缓存有关）</td>
+</tr>
+<tr>
+<td><strong><code>BUFFERS</code></strong></td>
+<td>读了多少<strong>共享缓冲区</strong>（判断是否 I&#x2F;O 重）</td>
+</tr>
+</tbody></table>
+<p>统计信息维护：<strong><code>ANALYZE tbl;</code></strong>（<strong><code>VACUUM ANALYZE</code></strong> 亦可），大变更后应跑。</p>
+<hr>
+<h2 id="五、事务与隔离级别（用法向）"><a href="#五、事务与隔离级别（用法向）" class="headerlink" title="五、事务与隔离级别（用法向）"></a>五、事务与隔离级别（用法向）</h2><h3 id="1-基本写法"><a href="#1-基本写法" class="headerlink" title="1. 基本写法"></a>1. 基本写法</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">BEGIN</span>;</span><br><span class="line"><span class="comment">-- DML 多条</span></span><br><span class="line"><span class="keyword">COMMIT</span>;</span><br><span class="line"><span class="comment">-- 或 ROLLBACK;</span></span><br></pre></td></tr></table></figure>
+
+<p>默认 <strong><code>READ COMMITTED</code></strong>：每条语句看到<strong>语句开始时</strong>已提交的快照（简化理解）。<br><strong><code>REPEATABLE READ</code></strong>：事务内<strong>第一条语句</strong>建立快照，读一致性更强。<br><strong><code>SERIALIZABLE</code></strong>：最强，可能出现 <strong><code>serialization_failure</code></strong>，应用需<strong>重试</strong>。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SHOW</span> transaction_isolation;</span><br><span class="line"><span class="keyword">SET</span> SESSION CHARACTERISTICS <span class="keyword">AS</span> TRANSACTION ISOLATION LEVEL REPEATABLE READ;</span><br></pre></td></tr></table></figure>
+
+<p>与 <strong>MySQL InnoDB 默认 RR</strong> 不同：<strong>PostgreSQL 默认 RC</strong>；跨库迁移时注意语义差异。行级锁、<strong><code>FOR UPDATE</code></strong>、死锁见 <strong><code>PostgreSQL并发与MVCC入门.md</code></strong>。</p>
+<hr>
+<h2 id="六、慢语句与观测「三板斧」（点到为止）"><a href="#六、慢语句与观测「三板斧」（点到为止）" class="headerlink" title="六、慢语句与观测「三板斧」（点到为止）"></a>六、慢语句与观测「三板斧」（点到为止）</h2><h3 id="1-日志：log-min-duration-statement"><a href="#1-日志：log-min-duration-statement" class="headerlink" title="1. 日志：log_min_duration_statement"></a>1. 日志：<code>log_min_duration_statement</code></h3><p>在 <strong><code>postgresql.conf</code></strong> 或 <strong><code>ALTER SYSTEM</code></strong>（需 reload）中设置，例如记录超过 <strong>200ms</strong> 的语句（数值按环境调）。</p>
+<h3 id="2-pg-stat-statements（扩展）"><a href="#2-pg-stat-statements（扩展）" class="headerlink" title="2. pg_stat_statements（扩展）"></a>2. <strong><code>pg_stat_statements</code></strong>（扩展）</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> EXTENSION IF <span class="keyword">NOT</span> <span class="keyword">EXISTS</span> pg_stat_statements;</span><br><span class="line"><span class="keyword">SELECT</span> query, calls, mean_exec_time</span><br><span class="line"><span class="keyword">FROM</span> pg_stat_statements</span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> mean_exec_time <span class="keyword">DESC</span></span><br><span class="line">LIMIT <span class="number">10</span>;</span><br></pre></td></tr></table></figure>
+
+<p>需 <strong><code>shared_preload_libraries</code></strong> 预加载（运维配置），此处不展开。</p>
+<h3 id="3-auto-explain（扩展）"><a href="#3-auto-explain（扩展）" class="headerlink" title="3. auto_explain（扩展）"></a>3. <strong><code>auto_explain</code></strong>（扩展）</h3><p>自动对超时语句打计划，适合测试环境；生产按规范启用。</p>
+<p><strong>落地顺序</strong>：先<strong>慢日志</strong>或 <strong><code>pg_stat_statements</code></strong> 抓 <strong>Top SQL</strong> → <strong><code>EXPLAIN (ANALYZE, BUFFERS)</code></strong> → 改索引或改写法 → <strong><code>VACUUM ANALYZE</code></strong>。</p>
+<hr>
+<h2 id="七、VACUUM-与膨胀（可靠性常识）"><a href="#七、VACUUM-与膨胀（可靠性常识）" class="headerlink" title="七、VACUUM 与膨胀（可靠性常识）"></a>七、<code>VACUUM</code> 与<strong>膨胀</strong>（可靠性常识）</h2><p><strong>PostgreSQL</strong> 的 <strong>MVCC</strong> 会使更新&#x2F;删除留下<strong>死元组</strong>；<strong><code>VACUUM</code></strong>（通常由 <strong>autovacuum</strong> 自动跑）回收空间、更新统计信息。<strong>长期不 vacuum</strong> 会导致<strong>表膨胀</strong>、性能变差。<br>日常开发：大批量导入&#x2F;更新后，测试库可手动 <strong><code>VACUUM ANALYZE</code></strong>；生产依赖 <strong>autovacuum</strong> 参数与监控。</p>
+<hr>
+<h2 id="八、备份恢复与-PITR-概念"><a href="#八、备份恢复与-PITR-概念" class="headerlink" title="八、备份恢复与 PITR 概念"></a>八、备份恢复与 <strong>PITR</strong> 概念</h2><h3 id="1-逻辑备份-pg-dump-pg-restore"><a href="#1-逻辑备份-pg-dump-pg-restore" class="headerlink" title="1. 逻辑备份 pg_dump &#x2F; pg_restore"></a>1. 逻辑备份 <strong><code>pg_dump</code> &#x2F; <code>pg_restore</code></strong></h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">pg_dump -h 127.0.0.1 -U app -d appdb -Fc -f appdb.dump</span><br><span class="line">pg_restore -h 127.0.0.1 -U app -d appdb_new -Fc appdb.dump</span><br></pre></td></tr></table></figure>
+
+<p><strong><code>-Fc</code></strong> 为自定义目录格式，便于并行恢复；纯 <strong>SQL</strong> 可用 <strong><code>-Fp</code></strong>。</p>
+<h3 id="2-物理与-WAL"><a href="#2-物理与-WAL" class="headerlink" title="2. 物理与 WAL"></a>2. 物理与 <strong>WAL</strong></h3><p><strong>PITR</strong> 依赖：<strong>基础备份</strong>（文件系统级或 <strong><code>pg_basebackup</code></strong>）+ <strong>连续归档的 WAL</strong> + <strong>恢复目标时间</strong>。与 <strong>MySQL binlog</strong> 地位类似的是 <strong>PostgreSQL WAL</strong>；具体恢复命令属 <strong>DBA</strong> 手册级。</p>
+<h3 id="3-与-Docker-的关系"><a href="#3-与-Docker-的关系" class="headerlink" title="3. 与 Docker 的关系"></a>3. 与 <strong>Docker</strong> 的关系</h3><p>容器内 <strong><code>$PGDATA</code></strong> 一般在卷上（见 <strong><code>PostgreSQL-Docker.md</code></strong>）；备份策略要约定「从宿主机 <strong><code>pg_dump</code></strong> 连容器端口」还是「卷快照 + <strong>WAL</strong> 归档」，并做<strong>恢复演练</strong>。</p>
+<hr>
+<h2 id="九、姊妹文索引"><a href="#九、姊妹文索引" class="headerlink" title="九、姊妹文索引"></a>九、姊妹文索引</h2><table>
+<thead>
+<tr>
+<th>文档</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong><code>PostgreSQL.md</code></strong></td>
+<td><strong>DDL</strong>、<strong><code>SCHEMA</code></strong>、约束</td>
+</tr>
+<tr>
+<td><strong><code>PostgreSQL高级查询.md</code></strong></td>
+<td><strong>CTE</strong>、窗口、<strong><code>DISTINCT ON</code></strong>、<strong><code>FILTER</code></strong></td>
+</tr>
+<tr>
+<td><strong><code>PostgreSQL并发与MVCC入门.md</code></strong></td>
+<td><strong><code>FOR UPDATE</code></strong>、死锁、快照</td>
+</tr>
+<tr>
+<td><strong><code>PostgreSQL-Docker.md</code></strong></td>
+<td><strong>Docker &#x2F; Compose &#x2F; K8s</strong> 部署</td>
+</tr>
+</tbody></table>
+<p>生产请叠加：<strong>连接池</strong>、<strong>监控</strong>、<strong>TLS</strong>、<strong>只读副本延迟</strong>与<strong>变更规范</strong>。</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -2556,825 +3282,6 @@
 
 
 
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/02/Cloud/Docker-1Panel/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="miracle">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="my">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | my">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/05/02/Cloud/Docker-1Panel/" class="post-title-link" itemprop="url">Docker 部署 1Panel</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2026-05-02 01:59:40" itemprop="dateCreated datePublished" datetime="2026-05-02T01:59:40+08:00">2026-05-02</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-03 00:33:50" itemprop="dateModified" datetime="2026-05-03T00:33:50+08:00">2026-05-03</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Cloud/" itemprop="url" rel="index"><span itemprop="name">Cloud</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>1.5k</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>5 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>在已安装 <strong>Docker</strong> 的环境中，可用 <strong><code>docker run</code></strong> 拉起 <strong>1Panel V2</strong>（社区镜像 <strong><code>moelin/1panel</code></strong>，非 <strong>FIT2CLOUD</strong> 官方安装包；升级路径与支持策略与官方宿主版可能不同）。镜像说明、标签与环境变量以 <strong><a target="_blank" rel="noopener external nofollow noreferrer" href="https://hub.docker.com/r/moelin/1panel">Docker Hub：moelin&#x2F;1panel</a></strong> 为准；生产请固定<strong>小版本标签</strong>（如 <strong><code>moelin/1panel:v2.0.6</code></strong>），勿盲目追 <strong><code>latest</code></strong>。官方在线安装见：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://1panel.cn/docs/v2/installation/online_installation/">在线安装</a>。</p>
-<p>部署按宿主机与引擎分<strong>两类</strong>，下文<strong>分开写</strong>，勿混用 <strong><code>--network host</code></strong> 与 <strong><code>-p</code></strong>：</p>
-<ol>
-<li><strong>Windows + Docker Desktop + WSL</strong>：在 <strong>WSL</strong>（如 <strong>Rocky Linux 10</strong> 等发行版）或 <strong>Windows CMD</strong> 里执行 <strong><code>docker run</code></strong>，引擎为 <strong>Docker Desktop</strong> 时须用<strong>端口映射</strong>。  </li>
-<li><strong>Linux Docker 主机</strong>：云服务器、物理机或虚拟机内<strong>原生 Docker Engine</strong>，可用 <strong><code>--network host</code></strong>。</li>
-</ol>
-<hr>
-<h2 id="共用前提"><a href="#共用前提" class="headerlink" title="共用前提"></a>共用前提</h2><ul>
-<li><strong><code>docker version</code></strong> 客户端与 <strong>Server</strong> 均正常，能拉取 <strong>Docker Hub</strong>（或已配置镜像加速）。  </li>
-<li>建议内存 <strong>≥ 1GB</strong>；多架构以 <strong>Hub</strong> 页为准。  </li>
-<li>将 <strong><code>PASSWORD</code></strong>、<strong><code>ENTRANCE</code></strong> 等换成自己的值；变量含义见文末 <strong>「常用环境变量」</strong>。</li>
-</ul>
-<hr>
-<h2 id="第一类：Windows-Docker-Desktop-WSL"><a href="#第一类：Windows-Docker-Desktop-WSL" class="headerlink" title="第一类：Windows + Docker Desktop + WSL"></a>第一类：Windows + Docker Desktop + WSL</h2><p><strong>场景</strong>：宿主机为 <strong>Windows</strong>，容器由 <strong>Docker Desktop</strong> 提供引擎；你在 <strong>WSL</strong> 里打开终端（发行版可为 <strong>Rocky Linux 10</strong>、<strong>Ubuntu</strong> 等），<strong><code>docker version</code></strong> 的 <strong>Server</strong> 往往显示 <strong>Docker Desktop</strong> 或上下文为 <strong>desktop-linux</strong>。此时容器里的 <strong><code>host</code></strong> 网络与你在 <strong>WSL</strong> 里访问的 <strong><code>localhost</code></strong> 不是同一概念，<strong>不要</strong>使用 <strong><code>--network host</code></strong>，应使用 <strong><code>-p &lt;PORT&gt;:&lt;PORT&gt;</code></strong>。</p>
-<p>若曾误用 <strong><code>host</code></strong> 建过同名容器，先 <strong><code>docker rm -f 1panel-v2</code></strong> 再按本节重建。</p>
-<h3 id="WSL-Git-Bash-macOS（行末-续行）"><a href="#WSL-Git-Bash-macOS（行末-续行）" class="headerlink" title="WSL &#x2F; Git Bash &#x2F; macOS（行末 \ 续行）"></a>WSL &#x2F; Git Bash &#x2F; macOS（行末 <code>\</code> 续行）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># wsl子系统rocky-10中执行不能正常访问，猜测子系统无ip</span></span><br><span class="line">docker run -d\</span><br><span class="line">  --name 1panel-v2\</span><br><span class="line">  --restart always\</span><br><span class="line">  -p 10086:10086\</span><br><span class="line">  -v /var/run/docker.sock:/var/run/docker.sock\</span><br><span class="line">  -v /opt:/opt\</span><br><span class="line">  -e TZ=Asia/Shanghai\</span><br><span class="line">  -e PORT=10086\</span><br><span class="line">  -e USERNAME=admin\</span><br><span class="line">  -e PASSWORD=<span class="string">&#x27;pi=3.1415&#x27;</span>\</span><br><span class="line">  -e ENTRANCE=<span class="string">&#x27;panel-v2&#x27;</span>\</span><br><span class="line">  -e BASE_DIR=/opt\</span><br><span class="line">  moelin/1panel:v2</span><br></pre></td></tr></table></figure>
-
-<h3 id="Windows-CMD（行末-续行）"><a href="#Windows-CMD（行末-续行）" class="headerlink" title="Windows CMD（行末 ^ 续行）"></a>Windows CMD（行末 <code>^</code> 续行）</h3><p><strong><code>^</code></strong> 须为行末最后一个字符（后无空格），末行不写 <strong><code>^</code></strong>。<strong><code>-e</code></strong> 的值在 <strong>CMD</strong> 里用双引号较稳妥。</p>
-<figure class="highlight bat"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">docker run -d^</span><br><span class="line">  --name <span class="number">1</span>panel-v2^</span><br><span class="line">  --restart always^</span><br><span class="line">  -p <span class="number">10086</span>:<span class="number">10086</span>^</span><br><span class="line">  -v /var/run/docker.sock:/var/run/docker.sock^</span><br><span class="line">  -v /opt:/opt^</span><br><span class="line">  -e TZ=Asia/Shanghai^</span><br><span class="line">  -e PORT=<span class="number">10086</span>^</span><br><span class="line">  -e USERNAME=admin^</span><br><span class="line">  -e PASSWORD=&quot;pi=<span class="number">3</span>.<span class="number">1415</span>&quot;^</span><br><span class="line">  -e ENTRANCE=&quot;panel-v2&quot;^</span><br><span class="line">  -e BASE_DIR=/opt^</span><br><span class="line">  moelin/<span class="number">1</span>panel:v2</span><br></pre></td></tr></table></figure>
-
-<p><strong>卷说明</strong>（与 <strong>Linux</strong> 类一致，路径在 <strong>Docker Desktop</strong> 下仍写 <strong><code>/var/run/docker.sock</code></strong>、<strong><code>/opt</code></strong>，由 <strong>Desktop</strong> 映射到引擎；异常时以当前 <strong>Desktop</strong> 文档为准。若 <strong><code>-v</code></strong> 与 <strong>WSL2 &#x2F; Linux 容器</strong> 后端要求不符，按 <strong>Docker Desktop</strong> 文档调整。）</p>
-<h3 id="浏览器访问（本机）"><a href="#浏览器访问（本机）" class="headerlink" title="浏览器访问（本机）"></a>浏览器访问（本机）</h3><p>多数情况：<strong><code>http://127.0.0.1:10086/&lt;ENTRANCE&gt;</code></strong>（与示例 <strong><code>ENTRANCE</code></strong> 一致时）。在 <strong>WSL</strong> 内若 <strong><code>localhost</code></strong> 仍不通，可试 <strong><code>http://$(grep -m1 &#39;^nameserver&#39; /etc/resolv.conf | awk &#39;{print $2}&#39;):10086/&lt;ENTRANCE&gt;</code></strong>（常为 <strong>WSL2</strong> 下可达的 <strong>Windows</strong> 主机 <strong>IP</strong>，以本机为准）。</p>
-<h3 id="可选：docker-compose（端口映射）"><a href="#可选：docker-compose（端口映射）" class="headerlink" title="可选：docker compose（端口映射）"></a>可选：<code>docker compose</code>（端口映射）</h3><p>将下文保存为同目录下的 <strong><code>compose.yaml</code></strong> 或 <strong><code>docker-compose.yml</code></strong>（二选一即可，<strong>Compose V2</strong> 默认会读取二者）。<strong>Docker Desktop &#x2F; WSL</strong> 使用 <strong><code>ports</code></strong>，<strong>不要</strong>写 <strong><code>network_mode: host</code></strong>。</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># compose.yaml（或 docker-compose.yml）</span></span><br><span class="line"><span class="attr">services:</span></span><br><span class="line">  <span class="attr">1panel-v2:</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">1panel-v2</span></span><br><span class="line">    <span class="attr">restart:</span> <span class="string">always</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">moelin/1panel:v2</span></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;10086:10086&quot;</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">/var/run/docker.sock:/var/run/docker.sock</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">/opt:/opt</span></span><br><span class="line">    <span class="attr">environment:</span></span><br><span class="line">      <span class="attr">TZ:</span> <span class="string">Asia/Shanghai</span></span><br><span class="line">      <span class="attr">PORT:</span> <span class="string">&quot;10086&quot;</span></span><br><span class="line">      <span class="attr">USERNAME:</span> <span class="string">admin</span></span><br><span class="line">      <span class="attr">PASSWORD:</span> <span class="string">&quot;请改为强密码&quot;</span></span><br><span class="line">      <span class="attr">ENTRANCE:</span> <span class="string">&quot;请改为安全入口&quot;</span></span><br><span class="line">      <span class="attr">BASE_DIR:</span> <span class="string">/opt</span></span><br></pre></td></tr></table></figure>
-
-<p>在同目录执行 <strong><code>docker compose up -d</code></strong>。</p>
-<hr>
-<h2 id="第二类：Linux-Docker-主机"><a href="#第二类：Linux-Docker-主机" class="headerlink" title="第二类：Linux Docker 主机"></a>第二类：Linux Docker 主机</h2><p><strong>场景</strong>：<strong>Linux</strong> 云服务器、物理机或虚拟机内安装 <strong>Docker Engine</strong>（<strong>非 Docker Desktop</strong> 作为服务端）。可用 <strong><code>--network host</code></strong>，面板监听端口即宿主机端口，与安全组、防火墙规则一致。</p>
-<h3 id="多行-docker-run（-network-host）"><a href="#多行-docker-run（-network-host）" class="headerlink" title="多行 docker run（--network host）"></a>多行 <code>docker run</code>（<code>--network host</code>）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">docker run -d \</span><br><span class="line">  --name 1panel-v2 \</span><br><span class="line">  --restart always \</span><br><span class="line">  --network host \</span><br><span class="line">  -v /var/run/docker.sock:/var/run/docker.sock \</span><br><span class="line">  -v /opt:/opt \</span><br><span class="line">  -e TZ=Asia/Shanghai \</span><br><span class="line">  -e PORT=10086 \</span><br><span class="line">  -e USERNAME=admin \</span><br><span class="line">  -e PASSWORD=<span class="string">&#x27;pi=3.1415&#x27;</span> \</span><br><span class="line">  -e ENTRANCE=<span class="string">&#x27;panel-v2&#x27;</span> \</span><br><span class="line">  -e BASE_DIR=/opt \</span><br><span class="line">  moelin/1panel:v2</span><br></pre></td></tr></table></figure>
-
-<p><strong><code>-v /var/run/docker.sock</code></strong>：面板管理宿主机 <strong>Docker</strong>。<br><strong><code>-v /opt:/opt</code></strong> 与 <strong><code>BASE_DIR=/opt</code></strong>：数据目录可改，须与挂载路径同步。<br><strong><code>moelin/1panel:v2</code></strong>：跟踪 <strong>V2</strong> 最新构建；生产建议改为 <strong>Hub</strong> 具体版本号。</p>
-<h3 id="可选：docker-compose（host-网络）"><a href="#可选：docker-compose（host-网络）" class="headerlink" title="可选：docker compose（host 网络）"></a>可选：<code>docker compose</code>（<code>host</code> 网络）</h3><p>将下文保存为同目录下的 <strong><code>compose.yaml</code></strong> 或 <strong><code>docker-compose.yml</code></strong>。</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># compose.yaml（或 docker-compose.yml）</span></span><br><span class="line"><span class="attr">services:</span></span><br><span class="line">  <span class="attr">1panel-v2:</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">1panel-v2</span></span><br><span class="line">    <span class="attr">restart:</span> <span class="string">always</span></span><br><span class="line">    <span class="attr">network_mode:</span> <span class="string">host</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">moelin/1panel:v2</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">/var/run/docker.sock:/var/run/docker.sock</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">/opt:/opt</span></span><br><span class="line">    <span class="attr">environment:</span></span><br><span class="line">      <span class="attr">TZ:</span> <span class="string">Asia/Shanghai</span></span><br><span class="line">      <span class="attr">PORT:</span> <span class="string">&quot;10086&quot;</span></span><br><span class="line">      <span class="attr">USERNAME:</span> <span class="string">admin</span></span><br><span class="line">      <span class="attr">PASSWORD:</span> <span class="string">&quot;请改为强密码&quot;</span></span><br><span class="line">      <span class="attr">ENTRANCE:</span> <span class="string">&quot;请改为安全入口&quot;</span></span><br><span class="line">      <span class="attr">BASE_DIR:</span> <span class="string">/opt</span></span><br></pre></td></tr></table></figure>
-
-<p>在同目录执行 <strong><code>docker compose up -d</code></strong>。</p>
-<hr>
-<h2 id="常用环境变量（V2）"><a href="#常用环境变量（V2）" class="headerlink" title="常用环境变量（V2）"></a>常用环境变量（V2）</h2><table>
-<thead>
-<tr>
-<th>变量</th>
-<th>默认值（未设置时）</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong><code>PORT</code></strong></td>
-<td><strong><code>10086</code></strong></td>
-<td>Web 端口</td>
-</tr>
-<tr>
-<td><strong><code>USERNAME</code></strong></td>
-<td><strong><code>1panel</code></strong></td>
-<td>管理员用户名</td>
-</tr>
-<tr>
-<td><strong><code>PASSWORD</code></strong></td>
-<td>随机或默认（见 <strong>Hub</strong>）</td>
-<td>登录控制台密码，务必改为强密码或从日志读取随机值</td>
-</tr>
-<tr>
-<td><strong><code>ENTRANCE</code></strong></td>
-<td><strong><code>entrance</code></strong></td>
-<td>安全入口的 <strong>URL 路径前缀</strong>（非第二端口），访问 <strong><code>http://IP:PORT/ENTRANCE</code></strong>，用于降低默认路径被扫的概率</td>
-</tr>
-<tr>
-<td><strong><code>BASE_DIR</code></strong></td>
-<td><strong><code>/opt</code></strong></td>
-<td>数据目录，需与 <strong><code>/opt</code></strong> 挂载一致</td>
-</tr>
-<tr>
-<td><strong><code>TZ</code></strong></td>
-<td>常见 <strong><code>Asia/Shanghai</code></strong></td>
-<td>时区</td>
-</tr>
-<tr>
-<td><strong><code>RESET</code></strong></td>
-<td><strong><code>false</code></strong></td>
-<td>置 <strong><code>true</code></strong> 可强制重置配置（慎用）</td>
-</tr>
-</tbody></table>
-<p>完整说明与 <strong>V1</strong>、<strong>Global</strong> 标签见 <strong>Hub</strong> 文档。</p>
-<hr>
-<h2 id="访问与日常命令（Linux-公网）"><a href="#访问与日常命令（Linux-公网）" class="headerlink" title="访问与日常命令（Linux 公网）"></a>访问与日常命令（Linux 公网）</h2><p>浏览器访问（云服务器需在安全组放行 <strong><code>PORT</code></strong>）：</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://&lt;服务器 IP&gt;:&lt;PORT&gt;/&lt;ENTRANCE&gt;</span><br></pre></td></tr></table></figure>
-
-<p>首次未显式设置强密码时，镜像可能生成随机密码：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker logs 1panel-v2</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">docker logs -f 1panel-v2</span><br><span class="line">docker restart 1panel-v2</span><br><span class="line">docker <span class="built_in">exec</span> -it 1panel-v2 bash   <span class="comment"># 进入容器后可用 1pctl 等（以镜像内为准）</span></span><br></pre></td></tr></table></figure>
-
-<p><strong>禁止</strong>在容器内随意点面板「更新」覆盖社区镜像行为；升级应 <strong><code>docker pull</code> 新镜像 → 备份数据卷 → 按 <strong>Hub</strong> 说明重建容器</strong>。</p>
-<p><strong>V1 → V2</strong> 不可直接原地升级，须按官方迁移说明：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://1panel.cn/docs/v2/installation/v1_migrate/">V1 迁移到 V2</a>。</p>
-<hr>
-<h2 id="官方脚本安装（对照）"><a href="#官方脚本安装（对照）" class="headerlink" title="官方脚本安装（对照）"></a>官方脚本安装（对照）</h2><p>若希望使用 <strong>FIT2CLOUD</strong> 官方脚本在<strong>宿主机</strong>安装（非本镜像）：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bash -c <span class="string">&quot;<span class="subst">$(curl -sSL https://resource.fit2cloud.com/1panel/package/v2/quick_start.sh)</span>&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>与 <strong>Docker</strong> 一键方案二选一，避免同一主机装两套面板。</p>
-<hr>
-<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><table>
-<thead>
-<tr>
-<th>项</th>
-<th>内容</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>第一类（Windows + Docker Desktop + WSL）</strong></td>
-<td><strong><code>-p 10086:10086</code></strong>；<strong>WSL</strong> 内 <strong>Bash</strong> 或 <strong>Windows CMD</strong> 见上文；<strong>compose</strong> 用 <strong><code>ports</code></strong>，不用 <strong><code>network_mode: host</code></strong></td>
-</tr>
-<tr>
-<td><strong>第二类（Linux Docker 主机）</strong></td>
-<td><strong><code>--network host</code></strong> 或 <strong>compose</strong> 的 <strong><code>network_mode: host</code></strong>；一条命令见上文</td>
-</tr>
-<tr>
-<td>数据</td>
-<td><strong><code>/opt</code></strong> 与 <strong><code>BASE_DIR</code></strong> 一致；挂载 <strong><code>docker.sock</code></strong> 以便管 <strong>Docker</strong></td>
-</tr>
-<tr>
-<td>访问与安全</td>
-<td><strong><code>http://IP:PORT/ENTRANCE</code></strong>；随机密码 <strong><code>docker logs</code></strong></td>
-</tr>
-<tr>
-<td>参考</td>
-<td><strong><a target="_blank" rel="noopener external nofollow noreferrer" href="https://hub.docker.com/r/moelin/1panel">moelin&#x2F;1panel</a></strong>；官方宿主安装见 <strong>在线安装</strong></td>
-</tr>
-</tbody></table>
-<p>部署前阅读 <strong>Hub</strong> 注意事项与官方迁移文档；生产使用强密码、限制暴露面并做好备份。</p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/Python/Selenium/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="miracle">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="my">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | my">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/05/01/Python/Selenium/" class="post-title-link" itemprop="url">网页自动化（Python + Selenium）</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-      
-
-      <time title="创建时间：2026-05-01 22:17:58 / 修改时间：22:47:23" itemprop="dateCreated datePublished" datetime="2026-05-01T22:17:58+08:00">2026-05-01</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Python/" itemprop="url" rel="index"><span itemprop="name">Python</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>935</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>3 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p><strong>Selenium</strong> 用代码驱动真实浏览器做点击、填表、截图与回归验证，是 <strong>Python</strong> 里最常见的网页自动化方案之一。下面按「准备环境 → 安装库 → 浏览器与驱动 → 第一个脚本 → 无头与常用选项 → 等待与定位要点」顺序写清楚；版本以 <strong>Selenium 4.x</strong> 与 <strong>Python 3</strong> 为准。</p>
-<hr>
-<h1 id="一、环境准备（必须）"><a href="#一、环境准备（必须）" class="headerlink" title="一、环境准备（必须）"></a>一、环境准备（必须）</h1><ol>
-<li><strong>Python 3.14.3</strong>（本站 <strong>Python</strong> 栏统一版本；<strong>Selenium</strong> 亦兼容 <strong>3.10+</strong>）：终端能执行 <strong><code>python3 -V</code></strong> 与 <strong><code>pip --version</code></strong>。  </li>
-<li><strong>Google Chrome</strong> 或 <strong>Microsoft Edge</strong>（<strong>Chromium</strong> 系）或 <strong>Mozilla Firefox</strong> 之一，用于本地实际打开页面。  </li>
-<li><strong>编辑器</strong>：<strong>VS Code</strong>、<strong>PyCharm</strong> 等任选其一。</li>
-</ol>
-<p>验证：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">python3 -V</span><br><span class="line">pip3 --version</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h1 id="二、安装-Selenium"><a href="#二、安装-Selenium" class="headerlink" title="二、安装 Selenium"></a>二、安装 Selenium</h1><h2 id="1-建议先建虚拟环境（可选）"><a href="#1-建议先建虚拟环境（可选）" class="headerlink" title="1. 建议先建虚拟环境（可选）"></a>1. 建议先建虚拟环境（可选）</h2><p>在项目目录执行：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">python3 -m venv .venv</span><br><span class="line"><span class="built_in">source</span> .venv/bin/activate   <span class="comment"># Windows CMD: .venv\Scripts\activate.bat</span></span><br></pre></td></tr></table></figure>
-
-<p>提示符前出现 <strong><code>(.venv)</code></strong> 即表示已进入虚拟环境。</p>
-<h2 id="2-用-pip-安装"><a href="#2-用-pip-安装" class="headerlink" title="2. 用 pip 安装"></a>2. 用 pip 安装</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">pip install -U pip</span><br><span class="line">pip install selenium</span><br></pre></td></tr></table></figure>
-
-<p>国内下载慢可临时指定镜像（示例为清华源）：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install selenium -i https://pypi.tuna.tsinghua.edu.cn/simple</span><br></pre></td></tr></table></figure>
-
-<h2 id="3-确认版本"><a href="#3-确认版本" class="headerlink" title="3. 确认版本"></a>3. 确认版本</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python3 -c <span class="string">&quot;import selenium; print(selenium.__version__)&quot;</span></span><br></pre></td></tr></table></figure>
-
-<hr>
-<h1 id="三、浏览器与驱动"><a href="#三、浏览器与驱动" class="headerlink" title="三、浏览器与驱动"></a>三、浏览器与驱动</h1><h2 id="1-Selenium-Manager（推荐，Selenium-4-6-）"><a href="#1-Selenium-Manager（推荐，Selenium-4-6-）" class="headerlink" title="1. Selenium Manager（推荐，Selenium 4.6+）"></a>1. Selenium Manager（推荐，Selenium 4.6+）</h2><p><strong>Selenium 4.6</strong> 起内置 <strong>Selenium Manager</strong>，在常见环境下会自动解析本机已安装的 <strong>Chrome &#x2F; Edge &#x2F; Firefox</strong> 并匹配驱动，<strong>多数情况无需再手动下载 <code>chromedriver</code></strong>。若启动报错，先升级 <strong>Selenium</strong> 与浏览器到较新版本。</p>
-<h2 id="2-仍失败时的排查顺序"><a href="#2-仍失败时的排查顺序" class="headerlink" title="2. 仍失败时的排查顺序"></a>2. 仍失败时的排查顺序</h2><ol>
-<li>浏览器是否已安装且能手动打开。  </li>
-<li><strong><code>pip install -U selenium</code></strong> 是否已升级到当前 <strong>4.x</strong> 最新补丁版。  </li>
-<li><strong>Linux</strong> 无图形界面时是否已使用下文「无头」方式，或已配置 <strong>Xvfb</strong> 等显示环境。  </li>
-<li>企业环境若禁止自动拉驱动，再按官方文档改为<strong>显式指定驱动路径</strong>或使用自带浏览器的容器镜像。</li>
-</ol>
-<p>官方文档：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://www.selenium.dev/documentation/">https://www.selenium.dev/documentation/</a>  </p>
-<hr>
-<h1 id="四、第一个脚本（打开网页并打印标题）"><a href="#四、第一个脚本（打开网页并打印标题）" class="headerlink" title="四、第一个脚本（打开网页并打印标题）"></a>四、第一个脚本（打开网页并打印标题）</h1><p>在任意目录新建 <strong><code>demo_selenium.py</code></strong>，写入：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> selenium <span class="keyword">import</span> webdriver</span><br><span class="line"><span class="keyword">from</span> selenium.webdriver.chrome.options <span class="keyword">import</span> Options</span><br><span class="line"></span><br><span class="line">options = Options()</span><br><span class="line"><span class="comment"># 如需无头，取消下一行注释</span></span><br><span class="line"><span class="comment"># options.add_argument(&quot;--headless=new&quot;)</span></span><br><span class="line"></span><br><span class="line">driver = webdriver.Chrome(options=options)</span><br><span class="line"><span class="keyword">try</span>:</span><br><span class="line">    driver.get(<span class="string">&quot;https://example.com&quot;</span>)</span><br><span class="line">    <span class="built_in">print</span>(driver.title)</span><br><span class="line"><span class="keyword">finally</span>:</span><br><span class="line">    driver.quit()</span><br></pre></td></tr></table></figure>
-
-<p>运行：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python3 demo_selenium.py</span><br></pre></td></tr></table></figure>
-
-<p>终端应打印 <strong><code>Example Domain</code></strong>（或当前页面 <strong><code>&lt;title&gt;</code></strong>）。若报错 <strong><code>SessionNotCreatedException</code></strong>，优先按 <strong><code># 三</code></strong> 升级 <strong>Selenium</strong> 与浏览器。</p>
-<hr>
-<h1 id="五、无头模式与常用启动参数"><a href="#五、无头模式与常用启动参数" class="headerlink" title="五、无头模式与常用启动参数"></a>五、无头模式与常用启动参数</h1><h2 id="1-Chrome-Edge-无头（Chromium-系）"><a href="#1-Chrome-Edge-无头（Chromium-系）" class="headerlink" title="1. Chrome &#x2F; Edge 无头（Chromium 系）"></a>1. Chrome &#x2F; Edge 无头（Chromium 系）</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">options = Options()</span><br><span class="line">options.add_argument(<span class="string">&quot;--headless=new&quot;</span>)</span><br><span class="line">options.add_argument(<span class="string">&quot;--no-sandbox&quot;</span>)          <span class="comment"># 部分 CI / 容器环境需要</span></span><br><span class="line">options.add_argument(<span class="string">&quot;--disable-dev-shm-usage&quot;</span>)</span><br></pre></td></tr></table></figure>
-
-<h2 id="2-窗口大小（无头时避免布局与真实用户差异过大）"><a href="#2-窗口大小（无头时避免布局与真实用户差异过大）" class="headerlink" title="2. 窗口大小（无头时避免布局与真实用户差异过大）"></a>2. 窗口大小（无头时避免布局与真实用户差异过大）</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">options.add_argument(<span class="string">&quot;--window-size=1280,900&quot;</span>)</span><br></pre></td></tr></table></figure>
-
-<h2 id="3-Firefox-无头（若使用-webdriver-Firefox）"><a href="#3-Firefox-无头（若使用-webdriver-Firefox）" class="headerlink" title="3. Firefox 无头（若使用 webdriver.Firefox）"></a>3. Firefox 无头（若使用 <code>webdriver.Firefox</code>）</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> selenium.webdriver <span class="keyword">import</span> FirefoxOptions</span><br><span class="line"></span><br><span class="line">ff = FirefoxOptions()</span><br><span class="line">ff.add_argument(<span class="string">&quot;-headless&quot;</span>)</span><br><span class="line">driver = webdriver.Firefox(options=ff)</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h1 id="六、等待与元素定位（避免「找不到元素」）"><a href="#六、等待与元素定位（避免「找不到元素」）" class="headerlink" title="六、等待与元素定位（避免「找不到元素」）"></a>六、等待与元素定位（避免「找不到元素」）</h1><p>页面加载有异步请求时，<strong>固定 <code>sleep</code></strong> 不稳，建议：</p>
-<ol>
-<li><strong>显式等待</strong>：<strong><code>WebDriverWait</code></strong> + <strong><code>expected_conditions</code></strong>，在超时时间内轮询条件。  </li>
-<li><strong>定位方式</strong>：优先 <strong><code>id</code> &#x2F; <code>data-testid</code> &#x2F; 稳定 <code>name</code></strong>；少用绝对 <strong>XPath</strong>。  </li>
-<li><strong>点击被挡</strong>：先滚动到视区 <strong><code>element.location_once_scrolled_into_view</code></strong>，或等待浮层消失。</li>
-</ol>
-<p>示例（点击「可点击」的按钮）：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> selenium.webdriver.common.by <span class="keyword">import</span> By</span><br><span class="line"><span class="keyword">from</span> selenium.webdriver.support <span class="keyword">import</span> expected_conditions <span class="keyword">as</span> EC</span><br><span class="line"><span class="keyword">from</span> selenium.webdriver.support.ui <span class="keyword">import</span> WebDriverWait</span><br><span class="line"></span><br><span class="line">wait = WebDriverWait(driver, <span class="number">10</span>)</span><br><span class="line">btn = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, <span class="string">&quot;button.submit&quot;</span>)))</span><br><span class="line">btn.click()</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h1 id="七、与-pytest-搭配（可选）"><a href="#七、与-pytest-搭配（可选）" class="headerlink" title="七、与 pytest 搭配（可选）"></a>七、与 pytest 搭配（可选）</h1><ol>
-<li>安装：<strong><code>pip install pytest</code></strong>。  </li>
-<li>测试文件命名 <strong><code>test_*.py</code></strong>，用 <strong><code>assert</code></strong> 断言页面结果。  </li>
-<li>每个用例结束务必 <strong><code>driver.quit()</code></strong>，或用 <strong><code>pytest</code> fixture</strong> 统一创建与销毁浏览器，避免僵尸进程。</li>
-</ol>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pytest -q</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h1 id="八、小结"><a href="#八、小结" class="headerlink" title="八、小结"></a>八、小结</h1><table>
-<thead>
-<tr>
-<th>步骤</th>
-<th>内容</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>环境</td>
-<td><strong>Python 3</strong> + 浏览器 + <strong>pip</strong></td>
-</tr>
-<tr>
-<td>安装</td>
-<td><strong><code>pip install selenium</code></strong>（建议虚拟环境）</td>
-</tr>
-<tr>
-<td>驱动</td>
-<td><strong>Selenium 4.6+</strong> 优先依赖 <strong>Selenium Manager</strong></td>
-</tr>
-<tr>
-<td>入门</td>
-<td><strong><code>webdriver.Chrome()</code></strong> + <strong><code>get</code> &#x2F; <code>title</code> &#x2F; <code>quit</code></strong></td>
-</tr>
-<tr>
-<td>稳定</td>
-<td><strong>显式等待</strong> + 稳定定位 + 无头参数按需配置</td>
-</tr>
-</tbody></table>
-<p>更复杂的录制回放、分布式 <strong>Grid</strong>、与 <strong>CI</strong> 集成等，可在掌握上述流程后查阅 <strong>Selenium</strong> 官方文档按场景扩展。</p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/MQ/RocketMQ-Docker/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="miracle">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="my">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | my">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/05/01/MQ/RocketMQ-Docker/" class="post-title-link" itemprop="url">Docker 部署 RocketMQ</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-      
-
-      <time title="创建时间：2026-05-01 22:06:51 / 修改时间：22:09:25" itemprop="dateCreated datePublished" datetime="2026-05-01T22:06:51+08:00">2026-05-01</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/MQ/" itemprop="url" rel="index"><span itemprop="name">MQ</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>1.6k</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>5 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p><strong>Apache RocketMQ</strong> 在 <strong>Docker</strong> 中至少需要 <strong>NameServer</strong> 与 <strong>Broker</strong> 两个进程（常见为两个容器）。下文给出<strong>镜像选型</strong>、<strong>三条命令起最小栈</strong>、<strong>Compose 一键起栈</strong>与<strong>一份多文档 K8s 清单</strong>；<strong>Broker</strong> 监听与 <strong><code>brokerIP1</code></strong> 等请按部署环境调整，勿把生产敏感配置提交进仓库。</p>
-<hr>
-<h1 id="一、前置条件"><a href="#一、前置条件" class="headerlink" title="一、前置条件"></a>一、前置条件</h1><p>本机已安装 <strong><code>docker</code></strong>，并能使用 <strong><code>docker compose</code></strong>（<strong>Compose V2</strong> 插件，命令为 <strong><code>docker compose</code></strong>；若仍使用旧版独立程序，则将下文中的 <strong><code>docker compose</code></strong> 换成 <strong><code>docker-compose</code></strong>）。</p>
-<p>验证：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker version</span><br><span class="line">docker compose version</span><br></pre></td></tr></table></figure>
-
-<p>满足即可，与宿主机操作系统无关。</p>
-<hr>
-<h1 id="二、RocketMQ-镜像选择"><a href="#二、RocketMQ-镜像选择" class="headerlink" title="二、RocketMQ 镜像选择"></a>二、RocketMQ 镜像选择</h1><h2 id="1-官方镜像（推荐）"><a href="#1-官方镜像（推荐）" class="headerlink" title="1. 官方镜像（推荐）"></a>1. 官方镜像（推荐）</h2><ul>
-<li><strong>仓库</strong>：<strong><code>apache/rocketmq</code></strong>（Docker Hub：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://hub.docker.com/r/apache/rocketmq/tags">https://hub.docker.com/r/apache/rocketmq/tags</a>），与 <strong>Apache RocketMQ</strong> 发行版本对应。  </li>
-<li><strong>常用标签</strong>：如 <strong><code>apache/rocketmq:5.3.2</code></strong>（下文以此为例；升级时请同时核对容器内 <strong><code>ROCKETMQ_HOME</code></strong> 下 <strong><code>conf</code></strong> 路径是否随版本变化）。  </li>
-<li><strong>生产建议</strong>：固定补丁级标签或记录 <strong>digest</strong>，避免 <strong><code>latest</code></strong> 漂移。</li>
-</ul>
-<h2 id="2-角色与端口（开发常用）"><a href="#2-角色与端口（开发常用）" class="headerlink" title="2. 角色与端口（开发常用）"></a>2. 角色与端口（开发常用）</h2><table>
-<thead>
-<tr>
-<th>组件</th>
-<th>说明</th>
-<th>常见映射端口（示例）</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>NameServer</strong></td>
-<td>路由注册与发现</td>
-<td><strong>9876</strong></td>
-</tr>
-<tr>
-<td><strong>Broker</strong></td>
-<td>消息存储与转发</td>
-<td><strong>10909</strong>、<strong>10911</strong>、<strong>10912</strong> 等（与 <strong><code>broker.conf</code></strong> &#x2F; 启动参数有关）</td>
-</tr>
-<tr>
-<td><strong>Proxy</strong>（<strong>5.x</strong> 可选）</td>
-<td><strong>gRPC</strong> 接入等（官方 <strong>Docker</strong> 快速入门常与 <strong><code>--enable-proxy</code></strong> 一并启用）</td>
-<td><strong>8080</strong>、<strong>8081</strong> 等</td>
-</tr>
-</tbody></table>
-<h2 id="3-与官方「Broker-Proxy」快速入门的关系"><a href="#3-与官方「Broker-Proxy」快速入门的关系" class="headerlink" title="3. 与官方「Broker + Proxy」快速入门的关系"></a>3. 与官方「Broker + Proxy」快速入门的关系</h2><p><strong>Apache</strong> 文档推荐挂载 <strong><code>broker.conf</code></strong> 并执行 <strong><code>mqbroker --enable-proxy</code></strong>（见 <a target="_blank" rel="noopener external nofollow noreferrer" href="https://rocketmq.apache.org/docs/quickStart/02quickstartWithDocker/">Run RocketMQ in Docker</a>）。下文 <strong>Compose</strong> 提供<strong>带 Proxy</strong> 的完整示例；若仅需经典 <strong>Remoting</strong> 客户端，可将 <strong>Broker</strong> 的 <strong><code>command</code></strong> 改为 <strong><code>sh mqbroker -n &lt;namesrv&gt;:9876</code></strong> 并去掉 <strong>Proxy</strong> 相关端口（需自行验证与客户端版本匹配）。</p>
-<h2 id="4-资源与持久化"><a href="#4-资源与持久化" class="headerlink" title="4. 资源与持久化"></a>4. 资源与持久化</h2><p><strong>Broker</strong> 磁盘与堆内存占用随主题、队列与流量增长较快；<strong>Compose</strong> 与 <strong>K8s</strong> 中为 <strong>Broker</strong> 数据目录挂载卷，并酌情提高 <strong><code>limits</code></strong>。</p>
-<hr>
-<h1 id="三、最少命令启动（NameServer-Broker）"><a href="#三、最少命令启动（NameServer-Broker）" class="headerlink" title="三、最少命令启动（NameServer + Broker）"></a>三、最少命令启动（NameServer + Broker）</h1><p><strong>RocketMQ</strong> 无单容器一体运行官方形态，下面用<strong>三条命令</strong>完成最小栈（与 <a target="_blank" rel="noopener external nofollow noreferrer" href="https://rocketmq.apache.org/docs/quickStart/02quickstartWithDocker/">官方 Docker 快速入门</a> 思路一致：<strong>网络 → NameServer → Broker+Proxy</strong>）。</p>
-<h2 id="1-准备网络与-broker-conf（当前目录）"><a href="#1-准备网络与-broker-conf（当前目录）" class="headerlink" title="1. 准备网络与 broker.conf（当前目录）"></a>1. 准备网络与 <code>broker.conf</code>（当前目录）</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker network create rocketmq</span><br><span class="line"><span class="built_in">printf</span> <span class="string">&#x27;%s\n&#x27;</span> <span class="string">&#x27;brokerClusterName=DefaultCluster&#x27;</span> <span class="string">&#x27;brokerName=broker-a&#x27;</span> <span class="string">&#x27;brokerId=0&#x27;</span> <span class="string">&#x27;deleteWhen=04&#x27;</span> <span class="string">&#x27;fileReservedTime=48&#x27;</span> <span class="string">&#x27;brokerRole=ASYNC_MASTER&#x27;</span> <span class="string">&#x27;flushDiskType=ASYNC_FLUSH&#x27;</span> <span class="string">&#x27;brokerIP1=127.0.0.1&#x27;</span> &gt; broker.conf</span><br></pre></td></tr></table></figure>
-
-<p><strong><code>brokerIP1</code></strong>：仅从<strong>本机</strong>客户端访问映射端口时，常用 <strong><code>127.0.0.1</code></strong>；若客户端在其它机器或 <strong>K8s Pod</strong> 内，需改为可达的宿主机 <strong>IP</strong> 或 <strong>Service</strong> 地址，并同步 <strong>Broker</strong> 监听与防火墙策略。</p>
-<h2 id="2-启动-NameServer"><a href="#2-启动-NameServer" class="headerlink" title="2. 启动 NameServer"></a>2. 启动 NameServer</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -d --name rmqnamesrv -p 9876:9876 --network rocketmq apache/rocketmq:5.3.2 sh mqnamesrv</span><br></pre></td></tr></table></figure>
-
-<h2 id="3-启动-Broker（含-Proxy，挂载-broker-conf）"><a href="#3-启动-Broker（含-Proxy，挂载-broker-conf）" class="headerlink" title="3. 启动 Broker（含 Proxy，挂载 broker.conf）"></a>3. 启动 Broker（含 Proxy，挂载 <code>broker.conf</code>）</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -d --name rmqbroker --network rocketmq -p 10912:10912 -p 10911:10911 -p 10909:10909 -p 8080:8080 -p 8081:8081 -e NAMESRV_ADDR=rmqnamesrv:9876 -v <span class="string">&quot;<span class="subst">$(pwd)</span>/broker.conf:/home/rocketmq/rocketmq-5.3.2/conf/broker.conf&quot;</span> apache/rocketmq:5.3.2 sh mqbroker --enable-proxy -c /home/rocketmq/rocketmq-5.3.2/conf/broker.conf</span><br></pre></td></tr></table></figure>
-
-<p>常用运维：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">docker logs -f rmqnamesrv</span><br><span class="line">docker logs -f rmqbroker</span><br><span class="line">docker stop rmqbroker rmqnamesrv &amp;&amp; docker <span class="built_in">rm</span> rmqbroker rmqnamesrv &amp;&amp; docker network <span class="built_in">rm</span> rocketmq</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h1 id="四、Docker-Compose-一键部署"><a href="#四、Docker-Compose-一键部署" class="headerlink" title="四、Docker Compose 一键部署"></a>四、Docker Compose 一键部署</h1><p>将下面 <strong><code>broker.conf</code></strong> 内容保存为当前目录 <strong><code>broker.conf</code></strong>（与上节 <strong><code>printf</code></strong> 示例等价即可），再将 <strong>Compose</strong> 文件保存为 <strong><code>docker-compose.rocketmq.yml</code></strong>。</p>
-<p><strong>一条命令</strong>启动：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker compose -f docker-compose.rocketmq.yml up -d</span><br></pre></td></tr></table></figure>
-
-<p><strong><code>docker-compose.rocketmq.yml</code></strong> 全文：</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">version:</span> <span class="string">&quot;3.8&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="attr">name:</span> <span class="string">rocketmq-stack</span></span><br><span class="line"></span><br><span class="line"><span class="attr">services:</span></span><br><span class="line">  <span class="attr">rmqnamesrv:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">apache/rocketmq:5.3.2</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">rmqnamesrv</span></span><br><span class="line">    <span class="attr">command:</span> <span class="string">sh</span> <span class="string">mqnamesrv</span></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;9876:9876&quot;</span></span><br><span class="line">    <span class="attr">networks:</span> [<span class="string">rocketmq</span>]</span><br><span class="line"></span><br><span class="line">  <span class="attr">broker:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">apache/rocketmq:5.3.2</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">rmqbroker</span></span><br><span class="line">    <span class="attr">depends_on:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">rmqnamesrv</span></span><br><span class="line">    <span class="attr">environment:</span></span><br><span class="line">      <span class="attr">NAMESRV_ADDR:</span> <span class="string">rmqnamesrv:9876</span></span><br><span class="line">    <span class="attr">command:</span> <span class="string">sh</span> <span class="string">mqbroker</span> <span class="string">--enable-proxy</span> <span class="string">-c</span> <span class="string">/home/rocketmq/rocketmq-5.3.2/conf/broker.conf</span></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;10912:10912&quot;</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;10911:10911&quot;</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;10909:10909&quot;</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;8080:8080&quot;</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;8081:8081&quot;</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">./broker.conf:/home/rocketmq/rocketmq-5.3.2/conf/broker.conf:ro</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">broker_store:/home/rocketmq/store</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">broker_logs:/home/rocketmq/logs</span></span><br><span class="line">    <span class="attr">networks:</span> [<span class="string">rocketmq</span>]</span><br><span class="line">    <span class="attr">healthcheck:</span></span><br><span class="line">      <span class="attr">test:</span> [<span class="string">&quot;CMD-SHELL&quot;</span>, <span class="string">&quot;bash -c &#x27;&lt;/dev/tcp/127.0.0.1/10911&#x27; || exit 1&quot;</span>]</span><br><span class="line">      <span class="attr">interval:</span> <span class="string">15s</span></span><br><span class="line">      <span class="attr">timeout:</span> <span class="string">5s</span></span><br><span class="line">      <span class="attr">retries:</span> <span class="number">20</span></span><br><span class="line">      <span class="attr">start_period:</span> <span class="string">90s</span></span><br><span class="line"></span><br><span class="line"><span class="attr">volumes:</span></span><br><span class="line">  <span class="attr">broker_store:</span></span><br><span class="line">    <span class="attr">driver:</span> <span class="string">local</span></span><br><span class="line">  <span class="attr">broker_logs:</span></span><br><span class="line">    <span class="attr">driver:</span> <span class="string">local</span></span><br><span class="line"></span><br><span class="line"><span class="attr">networks:</span></span><br><span class="line">  <span class="attr">rocketmq:</span></span><br><span class="line">    <span class="attr">driver:</span> <span class="string">bridge</span></span><br></pre></td></tr></table></figure>
-
-<p>查看状态、日志、停止（保留命名卷）：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">docker compose -f docker-compose.rocketmq.yml ps</span><br><span class="line">docker compose -f docker-compose.rocketmq.yml logs -f broker</span><br><span class="line">docker compose -f docker-compose.rocketmq.yml down</span><br></pre></td></tr></table></figure>
-
-<p><strong><code>down -v</code></strong> 会删除 <strong><code>broker_store</code></strong> 等卷上的消息数据。</p>
-<hr>
-<h1 id="五、Kubernetes-一键部署（单文件完整清单）"><a href="#五、Kubernetes-一键部署（单文件完整清单）" class="headerlink" title="五、Kubernetes 一键部署（单文件完整清单）"></a>五、Kubernetes 一键部署（单文件完整清单）</h1><p>将 <strong><code>broker.conf</code></strong> 以 <strong><code>ConfigMap</code></strong> 挂载；<strong>NameServer</strong> 与 <strong>Broker</strong> 分 <strong>Deployment</strong>，<strong>Broker</strong> 使用 <strong>PVC</strong> 持久化 <strong><code>/home/rocketmq/store</code></strong>。将下面保存为 <strong><code>rocketmq-k8s.yaml</code></strong> 后执行：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl apply -f rocketmq-k8s.yaml</span><br></pre></td></tr></table></figure>
-
-<p><strong>说明</strong>：为简化依赖，<strong>Broker</strong> 使用 <strong><code>mqbroker -n rocketmq-namesrv.default.svc.cluster.local:9876</code></strong>（<strong>未启用 Proxy</strong>）；若需与官方文档一致的 <strong>Proxy</strong>，请在镜像内 <strong><code>ROCKETMQ_HOME</code></strong> 下增加 <strong><code>broker.conf</code></strong> 与 <strong><code>--enable-proxy</code></strong> 等参数并开放对应端口。</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">ConfigMap</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">rocketmq-broker-conf</span></span><br><span class="line">  <span class="attr">namespace:</span> <span class="string">default</span></span><br><span class="line"><span class="attr">data:</span></span><br><span class="line">  <span class="attr">broker.conf:</span> <span class="string">|</span></span><br><span class="line"><span class="string">    brokerClusterName=DefaultCluster</span></span><br><span class="line"><span class="string">    brokerName=broker-a</span></span><br><span class="line"><span class="string">    brokerId=0</span></span><br><span class="line"><span class="string">    deleteWhen=04</span></span><br><span class="line"><span class="string">    fileReservedTime=48</span></span><br><span class="line"><span class="string">    brokerRole=ASYNC_MASTER</span></span><br><span class="line"><span class="string">    flushDiskType=ASYNC_FLUSH</span></span><br><span class="line"><span class="string">    brokerIP1=0.0.0.0</span></span><br><span class="line"><span class="string"></span><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">PersistentVolumeClaim</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">rocketmq-broker-store</span></span><br><span class="line">  <span class="attr">namespace:</span> <span class="string">default</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">accessModes:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">ReadWriteOnce</span></span><br><span class="line">  <span class="attr">resources:</span></span><br><span class="line">    <span class="attr">requests:</span></span><br><span class="line">      <span class="attr">storage:</span> <span class="string">20Gi</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">apps/v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Deployment</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">rocketmq-namesrv</span></span><br><span class="line">  <span class="attr">namespace:</span> <span class="string">default</span></span><br><span class="line">  <span class="attr">labels:</span></span><br><span class="line">    <span class="attr">app:</span> <span class="string">rocketmq-namesrv</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">replicas:</span> <span class="number">1</span></span><br><span class="line">  <span class="attr">selector:</span></span><br><span class="line">    <span class="attr">matchLabels:</span></span><br><span class="line">      <span class="attr">app:</span> <span class="string">rocketmq-namesrv</span></span><br><span class="line">  <span class="attr">template:</span></span><br><span class="line">    <span class="attr">metadata:</span></span><br><span class="line">      <span class="attr">labels:</span></span><br><span class="line">        <span class="attr">app:</span> <span class="string">rocketmq-namesrv</span></span><br><span class="line">    <span class="attr">spec:</span></span><br><span class="line">      <span class="attr">containers:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">namesrv</span></span><br><span class="line">          <span class="attr">image:</span> <span class="string">apache/rocketmq:5.3.2</span></span><br><span class="line">          <span class="attr">command:</span> [<span class="string">&quot;sh&quot;</span>, <span class="string">&quot;mqnamesrv&quot;</span>]</span><br><span class="line">          <span class="attr">ports:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">containerPort:</span> <span class="number">9876</span></span><br><span class="line">              <span class="attr">name:</span> <span class="string">namesrv</span></span><br><span class="line">          <span class="attr">readinessProbe:</span></span><br><span class="line">            <span class="attr">tcpSocket:</span></span><br><span class="line">              <span class="attr">port:</span> <span class="number">9876</span></span><br><span class="line">            <span class="attr">initialDelaySeconds:</span> <span class="number">10</span></span><br><span class="line">            <span class="attr">periodSeconds:</span> <span class="number">5</span></span><br><span class="line">          <span class="attr">livenessProbe:</span></span><br><span class="line">            <span class="attr">tcpSocket:</span></span><br><span class="line">              <span class="attr">port:</span> <span class="number">9876</span></span><br><span class="line">            <span class="attr">initialDelaySeconds:</span> <span class="number">30</span></span><br><span class="line">            <span class="attr">periodSeconds:</span> <span class="number">15</span></span><br><span class="line">          <span class="attr">resources:</span></span><br><span class="line">            <span class="attr">requests:</span></span><br><span class="line">              <span class="attr">memory:</span> <span class="string">&quot;256Mi&quot;</span></span><br><span class="line">              <span class="attr">cpu:</span> <span class="string">&quot;100m&quot;</span></span><br><span class="line">            <span class="attr">limits:</span></span><br><span class="line">              <span class="attr">memory:</span> <span class="string">&quot;512Mi&quot;</span></span><br><span class="line">              <span class="attr">cpu:</span> <span class="string">&quot;500m&quot;</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Service</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">rocketmq-namesrv</span></span><br><span class="line">  <span class="attr">namespace:</span> <span class="string">default</span></span><br><span class="line">  <span class="attr">labels:</span></span><br><span class="line">    <span class="attr">app:</span> <span class="string">rocketmq-namesrv</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">type:</span> <span class="string">ClusterIP</span></span><br><span class="line">  <span class="attr">selector:</span></span><br><span class="line">    <span class="attr">app:</span> <span class="string">rocketmq-namesrv</span></span><br><span class="line">  <span class="attr">ports:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">namesrv</span></span><br><span class="line">      <span class="attr">port:</span> <span class="number">9876</span></span><br><span class="line">      <span class="attr">targetPort:</span> <span class="number">9876</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">apps/v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Deployment</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">rocketmq-broker</span></span><br><span class="line">  <span class="attr">namespace:</span> <span class="string">default</span></span><br><span class="line">  <span class="attr">labels:</span></span><br><span class="line">    <span class="attr">app:</span> <span class="string">rocketmq-broker</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">replicas:</span> <span class="number">1</span></span><br><span class="line">  <span class="attr">selector:</span></span><br><span class="line">    <span class="attr">matchLabels:</span></span><br><span class="line">      <span class="attr">app:</span> <span class="string">rocketmq-broker</span></span><br><span class="line">  <span class="attr">strategy:</span></span><br><span class="line">    <span class="attr">type:</span> <span class="string">Recreate</span></span><br><span class="line">  <span class="attr">template:</span></span><br><span class="line">    <span class="attr">metadata:</span></span><br><span class="line">      <span class="attr">labels:</span></span><br><span class="line">        <span class="attr">app:</span> <span class="string">rocketmq-broker</span></span><br><span class="line">    <span class="attr">spec:</span></span><br><span class="line">      <span class="attr">initContainers:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">wait-namesrv</span></span><br><span class="line">          <span class="attr">image:</span> <span class="string">busybox:1.36</span></span><br><span class="line">          <span class="attr">command:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="string">sh</span></span><br><span class="line">            <span class="bullet">-</span> <span class="string">-c</span></span><br><span class="line">            <span class="bullet">-</span> <span class="string">&quot;until nc -z rocketmq-namesrv 9876; do echo waiting namesrv; sleep 2; done&quot;</span></span><br><span class="line">      <span class="attr">containers:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">broker</span></span><br><span class="line">          <span class="attr">image:</span> <span class="string">apache/rocketmq:5.3.2</span></span><br><span class="line">          <span class="attr">command:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="string">sh</span></span><br><span class="line">            <span class="bullet">-</span> <span class="string">mqbroker</span></span><br><span class="line">            <span class="bullet">-</span> <span class="string">-n</span></span><br><span class="line">            <span class="bullet">-</span> <span class="string">rocketmq-namesrv.default.svc.cluster.local:9876</span></span><br><span class="line">            <span class="bullet">-</span> <span class="string">-c</span></span><br><span class="line">            <span class="bullet">-</span> <span class="string">/home/rocketmq/rocketmq-5.3.2/conf/broker.conf</span></span><br><span class="line">          <span class="attr">ports:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">containerPort:</span> <span class="number">10909</span></span><br><span class="line">              <span class="attr">name:</span> <span class="string">vip</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">containerPort:</span> <span class="number">10911</span></span><br><span class="line">              <span class="attr">name:</span> <span class="string">main</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">containerPort:</span> <span class="number">10912</span></span><br><span class="line">              <span class="attr">name:</span> <span class="string">ha</span></span><br><span class="line">          <span class="attr">env:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">NAMESRV_ADDR</span></span><br><span class="line">              <span class="attr">value:</span> <span class="string">rocketmq-namesrv.default.svc.cluster.local:9876</span></span><br><span class="line">          <span class="attr">volumeMounts:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">broker-conf</span></span><br><span class="line">              <span class="attr">mountPath:</span> <span class="string">/home/rocketmq/rocketmq-5.3.2/conf/broker.conf</span></span><br><span class="line">              <span class="attr">subPath:</span> <span class="string">broker.conf</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">broker-store</span></span><br><span class="line">              <span class="attr">mountPath:</span> <span class="string">/home/rocketmq/store</span></span><br><span class="line">          <span class="attr">readinessProbe:</span></span><br><span class="line">            <span class="attr">tcpSocket:</span></span><br><span class="line">              <span class="attr">port:</span> <span class="number">10911</span></span><br><span class="line">            <span class="attr">initialDelaySeconds:</span> <span class="number">40</span></span><br><span class="line">            <span class="attr">periodSeconds:</span> <span class="number">10</span></span><br><span class="line">            <span class="attr">timeoutSeconds:</span> <span class="number">5</span></span><br><span class="line">            <span class="attr">failureThreshold:</span> <span class="number">30</span></span><br><span class="line">          <span class="attr">livenessProbe:</span></span><br><span class="line">            <span class="attr">tcpSocket:</span></span><br><span class="line">              <span class="attr">port:</span> <span class="number">10911</span></span><br><span class="line">            <span class="attr">initialDelaySeconds:</span> <span class="number">120</span></span><br><span class="line">            <span class="attr">periodSeconds:</span> <span class="number">20</span></span><br><span class="line">            <span class="attr">timeoutSeconds:</span> <span class="number">5</span></span><br><span class="line">            <span class="attr">failureThreshold:</span> <span class="number">6</span></span><br><span class="line">          <span class="attr">resources:</span></span><br><span class="line">            <span class="attr">requests:</span></span><br><span class="line">              <span class="attr">memory:</span> <span class="string">&quot;1Gi&quot;</span></span><br><span class="line">              <span class="attr">cpu:</span> <span class="string">&quot;500m&quot;</span></span><br><span class="line">            <span class="attr">limits:</span></span><br><span class="line">              <span class="attr">memory:</span> <span class="string">&quot;2Gi&quot;</span></span><br><span class="line">              <span class="attr">cpu:</span> <span class="string">&quot;2000m&quot;</span></span><br><span class="line">      <span class="attr">volumes:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">broker-conf</span></span><br><span class="line">          <span class="attr">configMap:</span></span><br><span class="line">            <span class="attr">name:</span> <span class="string">rocketmq-broker-conf</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">broker-store</span></span><br><span class="line">          <span class="attr">persistentVolumeClaim:</span></span><br><span class="line">            <span class="attr">claimName:</span> <span class="string">rocketmq-broker-store</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Service</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">rocketmq-broker</span></span><br><span class="line">  <span class="attr">namespace:</span> <span class="string">default</span></span><br><span class="line">  <span class="attr">labels:</span></span><br><span class="line">    <span class="attr">app:</span> <span class="string">rocketmq-broker</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">type:</span> <span class="string">ClusterIP</span></span><br><span class="line">  <span class="attr">selector:</span></span><br><span class="line">    <span class="attr">app:</span> <span class="string">rocketmq-broker</span></span><br><span class="line">  <span class="attr">ports:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">vip</span></span><br><span class="line">      <span class="attr">port:</span> <span class="number">10909</span></span><br><span class="line">      <span class="attr">targetPort:</span> <span class="number">10909</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">main</span></span><br><span class="line">      <span class="attr">port:</span> <span class="number">10911</span></span><br><span class="line">      <span class="attr">targetPort:</span> <span class="number">10911</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">ha</span></span><br><span class="line">      <span class="attr">port:</span> <span class="number">10912</span></span><br><span class="line">      <span class="attr">targetPort:</span> <span class="number">10912</span></span><br></pre></td></tr></table></figure>
-
-<p>查看资源：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl get deploy,svc,pvc</span><br></pre></td></tr></table></figure>
-
-<p>集群内 <strong>NameServer</strong> 地址：<strong><code>rocketmq-namesrv.default.svc.cluster.local:9876</code></strong>；<strong>Broker</strong> 主端口：<strong><code>rocketmq-broker.default.svc.cluster.local:10911</code></strong>（按 <strong>namespace</strong> 调整）。</p>
-<p><strong>说明</strong>：<strong><code>strategy: Recreate</code></strong> 避免 <strong>RWO</strong> 卷被多副本同时挂载；多 <strong>Master</strong>、<strong>DLedger</strong>、<strong>Controller</strong> 与运维自动化请使用 <strong>RocketMQ Operator</strong> 或官方推荐拓扑，勿直接水平扩展上述 <strong>Deployment</strong>。</p>
-<hr>
-<h1 id="六、小结"><a href="#六、小结" class="headerlink" title="六、小结"></a>六、小结</h1><table>
-<thead>
-<tr>
-<th>项</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>前置</strong></td>
-<td>已安装 <strong><code>docker</code></strong> 与 <strong><code>docker compose</code></strong>（或 <strong><code>docker-compose</code></strong>）</td>
-</tr>
-<tr>
-<td><strong>镜像</strong></td>
-<td><strong><code>apache/rocketmq:5.3.2</code></strong>；升级时核对 <strong><code>conf</code></strong> 路径与 <strong>Proxy</strong> 需求</td>
-</tr>
-<tr>
-<td><strong>最小编排</strong></td>
-<td><strong><code>docker network create</code></strong> → <strong><code>rmqnamesrv</code></strong> → <strong><code>rmqbroker</code></strong>（三条命令）</td>
-</tr>
-<tr>
-<td><strong>Compose</strong></td>
-<td><strong><code>broker.conf</code></strong> + <strong><code>docker-compose.rocketmq.yml</code></strong> → <strong><code>docker compose -f ... up -d</code></strong></td>
-</tr>
-<tr>
-<td><strong>Kubernetes</strong></td>
-<td><strong><code>rocketmq-k8s.yaml</code></strong>：<strong>ConfigMap + PVC + 两套 Deploy&#x2F;Service&#96;</strong></td>
-</tr>
-</tbody></table>
-<p>生产环境请启用 <strong>ACL</strong>、<strong>TLS</strong>、监控与容量规划；<strong>5.x</strong> 新客户端与 <strong>Proxy</strong> 接入请参考 <strong>Apache RocketMQ</strong> 官方文档。</p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/ClickHouse/ClickHouse-Docker/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="miracle">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="my">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | my">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/05/01/ClickHouse/ClickHouse-Docker/" class="post-title-link" itemprop="url">Docker 部署 ClickHouse</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-      
-
-      <time title="创建时间：2026-05-01 21:57:13 / 修改时间：21:58:42" itemprop="dateCreated datePublished" datetime="2026-05-01T21:57:13+08:00">2026-05-01</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/ClickHouse/" itemprop="url" rel="index"><span itemprop="name">ClickHouse</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>1.4k</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>5 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>在 <strong>Docker</strong> 中运行 <strong>ClickHouse</strong>，适合本地开发、与 <strong>Compose</strong> 编排其它服务、或在 <strong>Kubernetes</strong> 中单节点部署。下文给出<strong>镜像选型</strong>、<strong>一条命令起容器</strong>、<strong>Compose 一键起栈</strong>与<strong>一份多文档 K8s 清单</strong>；密码与数据卷请按环境自行替换，勿把生产密钥提交进仓库。</p>
-<hr>
-<h1 id="一、前置条件"><a href="#一、前置条件" class="headerlink" title="一、前置条件"></a>一、前置条件</h1><p>本机已安装 <strong><code>docker</code></strong>，并能使用 <strong><code>docker compose</code></strong>（<strong>Compose V2</strong> 插件，命令为 <strong><code>docker compose</code></strong>；若仍使用旧版独立程序，则将下文中的 <strong><code>docker compose</code></strong> 换成 <strong><code>docker-compose</code></strong>）。</p>
-<p>验证：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker version</span><br><span class="line">docker compose version</span><br></pre></td></tr></table></figure>
-
-<p>满足即可，与宿主机操作系统无关。</p>
-<hr>
-<h1 id="二、ClickHouse-镜像选择"><a href="#二、ClickHouse-镜像选择" class="headerlink" title="二、ClickHouse 镜像选择"></a>二、ClickHouse 镜像选择</h1><h2 id="1-官方镜像（推荐）"><a href="#1-官方镜像（推荐）" class="headerlink" title="1. 官方镜像（推荐）"></a>1. 官方镜像（推荐）</h2><ul>
-<li><strong>仓库</strong>：<strong><code>clickhouse/clickhouse-server</code></strong>（Docker Hub 官方组织镜像，与 <strong>ClickHouse</strong> 发行节奏一致）。  </li>
-<li><strong>常用标签</strong>：  <ul>
-<li><strong><code>clickhouse/clickhouse-server:24.8</code></strong>：固定次版本，便于与文档、驱动对齐。  </li>
-<li><strong><code>clickhouse/clickhouse-server:latest</code></strong> 或 <strong><code>...-lts</code></strong>：滚动更新（以 <a target="_blank" rel="noopener external nofollow noreferrer" href="https://hub.docker.com/r/clickhouse/clickhouse-server/tags">Docker Hub clickhouse-server tags</a> 为准）。</li>
-</ul>
-</li>
-<li><strong>生产建议</strong>：固定具体补丁标签或记录 <strong>digest</strong>，避免 <strong><code>latest</code></strong> 漂移导致行为变化。</li>
-</ul>
-<h2 id="2-变体说明"><a href="#2-变体说明" class="headerlink" title="2. 变体说明"></a>2. 变体说明</h2><table>
-<thead>
-<tr>
-<th>需求</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>访问控制</strong></td>
-<td>设置 <strong><code>CLICKHOUSE_USER</code></strong>、<strong><code>CLICKHOUSE_PASSWORD</code></strong> 时，建议同时 <strong><code>CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT=1</code></strong>，以便用 <strong>SQL</strong> 管理用户与权限（与官方镜像说明一致）。</td>
-</tr>
-<tr>
-<td><strong>协议与端口</strong></td>
-<td><strong>HTTP</strong> 默认 <strong>8123</strong>，<strong>Native</strong> 默认 <strong>9000</strong>；客户端按协议选择端口。</td>
-</tr>
-<tr>
-<td><strong>ARM64</strong>（Apple Silicon 等）</td>
-<td>多数标签提供多架构；若拉取失败，换标签或在 Hub 查看 <strong>OS&#x2F;ARCH</strong>。</td>
-</tr>
-<tr>
-<td><strong>极简&#x2F;定制</strong></td>
-<td>社区编排模板与 <strong><code>bitnami/clickhouse</code></strong> 等路径、变量不同，切换镜像时需对照该镜像文档。</td>
-</tr>
-</tbody></table>
-<h2 id="3-初始化脚本"><a href="#3-初始化脚本" class="headerlink" title="3. 初始化脚本"></a>3. 初始化脚本</h2><p>将 <strong><code>.sql</code> &#x2F; <code>.sh</code></strong> 放入 <strong><code>/docker-entrypoint-initdb.d</code></strong>（通过卷挂载），仅在<strong>首次初始化空数据目录</strong>时执行；已有数据卷时不会重复执行。</p>
-<hr>
-<h1 id="三、单容器一键部署（docker-run）"><a href="#三、单容器一键部署（docker-run）" class="headerlink" title="三、单容器一键部署（docker run）"></a>三、单容器一键部署（<code>docker run</code>）</h1><p>在<strong>当前目录</strong>先建数据与初始化目录（仅首次）：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">mkdir</span> -p ./ch-data ./ch-init</span><br></pre></td></tr></table></figure>
-
-<p><strong>一条命令</strong>启动（请按需改账号、密码、库名、端口、卷路径；示例仅供本地）：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -d --name clickhouse-dev -e CLICKHOUSE_USER=app -e CLICKHOUSE_PASSWORD=dev-change-me -e CLICKHOUSE_DB=default -e CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT=1 -p 8123:8123 -p 9000:9000 -v <span class="string">&quot;<span class="subst">$(pwd)</span>/ch-data:/var/lib/clickhouse&quot;</span> -v <span class="string">&quot;<span class="subst">$(pwd)</span>/ch-init:/docker-entrypoint-initdb.d:ro&quot;</span> clickhouse/clickhouse-server:24.8</span><br></pre></td></tr></table></figure>
-
-<p>常用运维一条命令：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker logs -f clickhouse-dev</span><br><span class="line">docker stop clickhouse-dev &amp;&amp; docker <span class="built_in">rm</span> clickhouse-dev</span><br></pre></td></tr></table></figure>
-
-<p>本机 <strong>HTTP</strong> 探测示例：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -sS <span class="string">&quot;http://127.0.0.1:8123/ping&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p><strong>Native</strong> 客户端示例（与镜像内 <strong><code>clickhouse-client</code></strong> 主版本一致即可）：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker <span class="built_in">exec</span> -it clickhouse-dev clickhouse-client -u app --password dev-change-me --query <span class="string">&quot;SELECT version()&quot;</span></span><br></pre></td></tr></table></figure>
-
-<hr>
-<h1 id="四、Docker-Compose-一键部署"><a href="#四、Docker-Compose-一键部署" class="headerlink" title="四、Docker Compose 一键部署"></a>四、Docker Compose 一键部署</h1><p>将下面内容保存为 <strong><code>docker-compose.clickhouse.yml</code></strong>（与 <strong><code># 一</code></strong> 要求一致：已能执行 <strong><code>docker compose</code></strong>）。敏感项建议放在同目录 <strong><code>.env</code></strong>（加入 <strong><code>.gitignore</code></strong>），勿长期写死在仓库。</p>
-<p><strong>一条命令</strong>启动全栈（在 <strong><code>docker-compose.clickhouse.yml</code></strong> 所在目录执行）：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker compose -f docker-compose.clickhouse.yml up -d</span><br></pre></td></tr></table></figure>
-
-<p>以下为 <strong><code>docker-compose.clickhouse.yml</code></strong> 全文：<strong><code>version</code></strong>、<strong><code>name</code></strong>、<strong>命名卷</strong>、<strong>健康检查</strong>。</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">version:</span> <span class="string">&quot;3.8&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="attr">name:</span> <span class="string">clickhouse-stack</span></span><br><span class="line"></span><br><span class="line"><span class="attr">services:</span></span><br><span class="line">  <span class="attr">clickhouse:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">clickhouse/clickhouse-server:24.8</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">clickhouse-24</span></span><br><span class="line">    <span class="attr">restart:</span> <span class="string">unless-stopped</span></span><br><span class="line">    <span class="attr">environment:</span></span><br><span class="line">      <span class="attr">CLICKHOUSE_USER:</span> <span class="string">$&#123;CLICKHOUSE_USER:-app&#125;</span></span><br><span class="line">      <span class="attr">CLICKHOUSE_PASSWORD:</span> <span class="string">$&#123;CLICKHOUSE_PASSWORD:-dev-change-me&#125;</span></span><br><span class="line">      <span class="attr">CLICKHOUSE_DB:</span> <span class="string">$&#123;CLICKHOUSE_DB:-default&#125;</span></span><br><span class="line">      <span class="attr">CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT:</span> <span class="string">&quot;1&quot;</span></span><br><span class="line">      <span class="attr">TZ:</span> <span class="string">Asia/Shanghai</span></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;8123:8123&quot;</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;9000:9000&quot;</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">ch_data:/var/lib/clickhouse</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">./ch-init:/docker-entrypoint-initdb.d:ro</span></span><br><span class="line">    <span class="attr">ulimits:</span></span><br><span class="line">      <span class="attr">nofile:</span></span><br><span class="line">        <span class="attr">soft:</span> <span class="number">262144</span></span><br><span class="line">        <span class="attr">hard:</span> <span class="number">262144</span></span><br><span class="line">    <span class="attr">healthcheck:</span></span><br><span class="line">      <span class="attr">test:</span> [<span class="string">&quot;CMD-SHELL&quot;</span>, <span class="string">&quot;wget --no-verbose --tries=1 --spider http://127.0.0.1:8123/ping || exit 1&quot;</span>]</span><br><span class="line">      <span class="attr">interval:</span> <span class="string">10s</span></span><br><span class="line">      <span class="attr">timeout:</span> <span class="string">5s</span></span><br><span class="line">      <span class="attr">retries:</span> <span class="number">12</span></span><br><span class="line">      <span class="attr">start_period:</span> <span class="string">40s</span></span><br><span class="line"></span><br><span class="line"><span class="attr">volumes:</span></span><br><span class="line">  <span class="attr">ch_data:</span></span><br><span class="line">    <span class="attr">driver:</span> <span class="string">local</span></span><br></pre></td></tr></table></figure>
-
-<p>同目录可选 <strong><code>.env</code></strong>（勿提交）：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">CLICKHOUSE_USER=app</span><br><span class="line">CLICKHOUSE_PASSWORD=your-strong-password</span><br><span class="line">CLICKHOUSE_DB=default</span><br></pre></td></tr></table></figure>
-
-<p>查看状态、日志、停止并删除容器（保留数据卷）：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">docker compose -f docker-compose.clickhouse.yml ps</span><br><span class="line">docker compose -f docker-compose.clickhouse.yml logs -f clickhouse</span><br><span class="line">docker compose -f docker-compose.clickhouse.yml down</span><br></pre></td></tr></table></figure>
-
-<p><strong><code>down</code></strong> 默认保留命名卷 <strong><code>ch_data</code></strong>；若需清空数据加 <strong><code>docker compose ... down -v</code></strong>（<strong>会删库</strong>）。</p>
-<hr>
-<h1 id="五、Kubernetes-一键部署（单文件完整清单）"><a href="#五、Kubernetes-一键部署（单文件完整清单）" class="headerlink" title="五、Kubernetes 一键部署（单文件完整清单）"></a>五、Kubernetes 一键部署（单文件完整清单）</h1><p>将下面内容保存为 <strong><code>clickhouse-k8s.yaml</code></strong> 后，<strong>一条命令</strong>应用：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl apply -f clickhouse-k8s.yaml</span><br></pre></td></tr></table></figure>
-
-<p>清单含 <strong>Secret</strong>（业务用户与库名）、<strong>PVC</strong>、<strong>Deployment</strong>、<strong>ClusterIP Service</strong>（<strong>8123</strong>、<strong>9000</strong>）。未写 <strong><code>storageClassName</code></strong> 时使用集群默认 <strong>StorageClass</strong>；无默认 <strong>SC</strong> 时请在 <strong>PVC</strong> 中补上 <strong><code>storageClassName</code></strong>。命名空间为 <strong><code>default</code></strong>，可按需修改 <strong><code>metadata.namespace</code></strong>。</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Secret</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">clickhouse-secret</span></span><br><span class="line">  <span class="attr">namespace:</span> <span class="string">default</span></span><br><span class="line"><span class="attr">type:</span> <span class="string">Opaque</span></span><br><span class="line"><span class="attr">stringData:</span></span><br><span class="line">  <span class="attr">CLICKHOUSE_USER:</span> <span class="string">&quot;app&quot;</span></span><br><span class="line">  <span class="attr">CLICKHOUSE_PASSWORD:</span> <span class="string">&quot;请替换为强密码&quot;</span></span><br><span class="line">  <span class="attr">CLICKHOUSE_DB:</span> <span class="string">&quot;default&quot;</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">PersistentVolumeClaim</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">clickhouse-data</span></span><br><span class="line">  <span class="attr">namespace:</span> <span class="string">default</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">accessModes:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">ReadWriteOnce</span></span><br><span class="line">  <span class="attr">resources:</span></span><br><span class="line">    <span class="attr">requests:</span></span><br><span class="line">      <span class="attr">storage:</span> <span class="string">50Gi</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">apps/v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Deployment</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">clickhouse</span></span><br><span class="line">  <span class="attr">namespace:</span> <span class="string">default</span></span><br><span class="line">  <span class="attr">labels:</span></span><br><span class="line">    <span class="attr">app:</span> <span class="string">clickhouse</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">replicas:</span> <span class="number">1</span></span><br><span class="line">  <span class="attr">selector:</span></span><br><span class="line">    <span class="attr">matchLabels:</span></span><br><span class="line">      <span class="attr">app:</span> <span class="string">clickhouse</span></span><br><span class="line">  <span class="attr">strategy:</span></span><br><span class="line">    <span class="attr">type:</span> <span class="string">Recreate</span></span><br><span class="line">  <span class="attr">template:</span></span><br><span class="line">    <span class="attr">metadata:</span></span><br><span class="line">      <span class="attr">labels:</span></span><br><span class="line">        <span class="attr">app:</span> <span class="string">clickhouse</span></span><br><span class="line">    <span class="attr">spec:</span></span><br><span class="line">      <span class="attr">containers:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">clickhouse</span></span><br><span class="line">          <span class="attr">image:</span> <span class="string">clickhouse/clickhouse-server:24.8</span></span><br><span class="line">          <span class="attr">ports:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">containerPort:</span> <span class="number">8123</span></span><br><span class="line">              <span class="attr">name:</span> <span class="string">http</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">containerPort:</span> <span class="number">9000</span></span><br><span class="line">              <span class="attr">name:</span> <span class="string">native</span></span><br><span class="line">          <span class="attr">env:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">CLICKHOUSE_USER</span></span><br><span class="line">              <span class="attr">valueFrom:</span></span><br><span class="line">                <span class="attr">secretKeyRef:</span></span><br><span class="line">                  <span class="attr">name:</span> <span class="string">clickhouse-secret</span></span><br><span class="line">                  <span class="attr">key:</span> <span class="string">CLICKHOUSE_USER</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">CLICKHOUSE_PASSWORD</span></span><br><span class="line">              <span class="attr">valueFrom:</span></span><br><span class="line">                <span class="attr">secretKeyRef:</span></span><br><span class="line">                  <span class="attr">name:</span> <span class="string">clickhouse-secret</span></span><br><span class="line">                  <span class="attr">key:</span> <span class="string">CLICKHOUSE_PASSWORD</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">CLICKHOUSE_DB</span></span><br><span class="line">              <span class="attr">valueFrom:</span></span><br><span class="line">                <span class="attr">secretKeyRef:</span></span><br><span class="line">                  <span class="attr">name:</span> <span class="string">clickhouse-secret</span></span><br><span class="line">                  <span class="attr">key:</span> <span class="string">CLICKHOUSE_DB</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT</span></span><br><span class="line">              <span class="attr">value:</span> <span class="string">&quot;1&quot;</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">TZ</span></span><br><span class="line">              <span class="attr">value:</span> <span class="string">&quot;Asia/Shanghai&quot;</span></span><br><span class="line">          <span class="attr">volumeMounts:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">data</span></span><br><span class="line">              <span class="attr">mountPath:</span> <span class="string">/var/lib/clickhouse</span></span><br><span class="line">          <span class="attr">readinessProbe:</span></span><br><span class="line">            <span class="attr">httpGet:</span></span><br><span class="line">              <span class="attr">path:</span> <span class="string">/ping</span></span><br><span class="line">              <span class="attr">port:</span> <span class="number">8123</span></span><br><span class="line">            <span class="attr">initialDelaySeconds:</span> <span class="number">15</span></span><br><span class="line">            <span class="attr">periodSeconds:</span> <span class="number">5</span></span><br><span class="line">            <span class="attr">timeoutSeconds:</span> <span class="number">3</span></span><br><span class="line">            <span class="attr">failureThreshold:</span> <span class="number">24</span></span><br><span class="line">          <span class="attr">livenessProbe:</span></span><br><span class="line">            <span class="attr">httpGet:</span></span><br><span class="line">              <span class="attr">path:</span> <span class="string">/ping</span></span><br><span class="line">              <span class="attr">port:</span> <span class="number">8123</span></span><br><span class="line">            <span class="attr">initialDelaySeconds:</span> <span class="number">60</span></span><br><span class="line">            <span class="attr">periodSeconds:</span> <span class="number">15</span></span><br><span class="line">            <span class="attr">timeoutSeconds:</span> <span class="number">5</span></span><br><span class="line">            <span class="attr">failureThreshold:</span> <span class="number">6</span></span><br><span class="line">          <span class="attr">resources:</span></span><br><span class="line">            <span class="attr">requests:</span></span><br><span class="line">              <span class="attr">memory:</span> <span class="string">&quot;1Gi&quot;</span></span><br><span class="line">              <span class="attr">cpu:</span> <span class="string">&quot;500m&quot;</span></span><br><span class="line">            <span class="attr">limits:</span></span><br><span class="line">              <span class="attr">memory:</span> <span class="string">&quot;4Gi&quot;</span></span><br><span class="line">              <span class="attr">cpu:</span> <span class="string">&quot;2000m&quot;</span></span><br><span class="line">      <span class="attr">volumes:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">data</span></span><br><span class="line">          <span class="attr">persistentVolumeClaim:</span></span><br><span class="line">            <span class="attr">claimName:</span> <span class="string">clickhouse-data</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Service</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">clickhouse</span></span><br><span class="line">  <span class="attr">namespace:</span> <span class="string">default</span></span><br><span class="line">  <span class="attr">labels:</span></span><br><span class="line">    <span class="attr">app:</span> <span class="string">clickhouse</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">type:</span> <span class="string">ClusterIP</span></span><br><span class="line">  <span class="attr">selector:</span></span><br><span class="line">    <span class="attr">app:</span> <span class="string">clickhouse</span></span><br><span class="line">  <span class="attr">ports:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">http</span></span><br><span class="line">      <span class="attr">port:</span> <span class="number">8123</span></span><br><span class="line">      <span class="attr">targetPort:</span> <span class="number">8123</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">native</span></span><br><span class="line">      <span class="attr">port:</span> <span class="number">9000</span></span><br><span class="line">      <span class="attr">targetPort:</span> <span class="number">9000</span></span><br></pre></td></tr></table></figure>
-
-<p>查看资源与连接前检查：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl get pods,svc,pvc -l app=clickhouse</span><br></pre></td></tr></table></figure>
-
-<p>集群内 <strong>HTTP</strong> 示例：<strong><code>http://clickhouse.default.svc.cluster.local:8123/</code></strong>（带鉴权的查询需在 <strong>URL</strong> 或 <strong>Header</strong> 中按官方 <strong>HTTP</strong> 接口说明传用户与密码）。</p>
-<p><strong>说明</strong>：<strong><code>strategy: Recreate</code></strong> 避免 <strong>RWO</strong> 卷被多副本 <strong>RollingUpdate</strong> 同时挂载；<strong>Keeper</strong>、分片、副本与高可用请使用 <strong>ClickHouse Operator</strong> 或专用编排方案，勿直接水平扩展上述 <strong>Deployment</strong>。</p>
-<hr>
-<h1 id="六、小结"><a href="#六、小结" class="headerlink" title="六、小结"></a>六、小结</h1><table>
-<thead>
-<tr>
-<th>项</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>前置</strong></td>
-<td>已安装 <strong><code>docker</code></strong> 与 <strong><code>docker compose</code></strong>（或 <strong><code>docker-compose</code></strong>）</td>
-</tr>
-<tr>
-<td><strong>镜像</strong></td>
-<td>优先 <strong><code>clickhouse/clickhouse-server:24.8</code></strong> &#x2F; 固定补丁标签；<strong><code>CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT=1</code></strong> 与账号环境变量配套使用</td>
-</tr>
-<tr>
-<td><strong>单容器</strong></td>
-<td><strong><code>mkdir</code></strong> 后一条 <strong><code>docker run ...</code></strong>（暴露 <strong>8123</strong>、<strong>9000</strong>）</td>
-</tr>
-<tr>
-<td><strong>Compose</strong></td>
-<td>保存 <strong><code>docker-compose.clickhouse.yml</code></strong> 后 <strong><code>docker compose -f ... up -d</code></strong></td>
-</tr>
-<tr>
-<td><strong>Kubernetes</strong></td>
-<td>保存 <strong><code>clickhouse-k8s.yaml</code></strong> 后 <strong><code>kubectl apply -f ...</code></strong></td>
-</tr>
-</tbody></table>
-<p>生产环境请配合备份、监控、网络策略与 <strong>TLS</strong>（<strong>8123</strong> 对外时务必加固）；<strong>Secret</strong> 建议对接 <strong>External Secrets</strong> &#x2F; <strong>Sealed Secrets</strong> 等管控流程。</p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
   <nav class="pagination">
     <a class="extend prev" rel="prev" title="上一页" aria-label="上一页" href="/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/12/">12</a><a class="extend next" rel="next" title="下一页" aria-label="下一页" href="/page/3/"><i class="fa fa-angle-right"></i></a>
   </nav>
@@ -3398,13 +3305,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">58k</span>
+    <span title="站点总字数">77k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">3:14</span>
+    <span title="站点阅读时长">4:18</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动
