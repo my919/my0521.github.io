@@ -22,29 +22,28 @@
 
     <meta name="description" content="gRPC 是跨语言 RPC 框架：接口用 Protocol Buffers（protobuf） 描述，默认基于 HTTP&#x2F;2 帧传输二进制消息，支持一元与多种流式调用。下面从「与泛型 RPC 的关系 → .proto 与代码生成原理 → 传输与安全 → grpcurl 无代码调用 → Python 最小客户端思路」顺序写清楚；磁盘文件名为 GRPC.md，正文统一使用官方拼写 gRPC。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="gRPC 详解：Protobuf、HTTP&#x2F;2 与 grpcurl &#x2F; Python 示例">
+<meta property="og:title" content="GRPC 详解：Protobuf、HTTP&#x2F;2 与 grpcurl &#x2F; Python 示例">
 <meta property="og:url" content="http://example.com/2026/05/01/Protocol/GRPC/index.html">
 <meta property="og:site_name" content="my">
 <meta property="og:description" content="gRPC 是跨语言 RPC 框架：接口用 Protocol Buffers（protobuf） 描述，默认基于 HTTP&#x2F;2 帧传输二进制消息，支持一元与多种流式调用。下面从「与泛型 RPC 的关系 → .proto 与代码生成原理 → 传输与安全 → grpcurl 无代码调用 → Python 最小客户端思路」顺序写清楚；磁盘文件名为 GRPC.md，正文统一使用官方拼写 gRPC。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-05-01T04:50:35.000Z">
-<meta property="article:modified_time" content="2026-05-04T07:03:12.259Z">
+<meta property="article:modified_time" content="2026-05-04T14:05:42.549Z">
 <meta property="article:author" content="miracle">
+<meta property="article:tag" content="GRPC">
 <meta property="article:tag" content="HTTP&#x2F;2">
 <meta property="article:tag" content="Protobuf">
 <meta property="article:tag" content="Protocol">
-<meta property="article:tag" content="RPC">
-<meta property="article:tag" content="gRPC">
 <meta name="twitter:card" content="summary">
 
 
 <link rel="canonical" href="http://example.com/2026/05/01/Protocol/GRPC/">
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2026/05/01/Protocol/GRPC/","path":"2026/05/01/Protocol/GRPC/","title":"gRPC 详解：Protobuf、HTTP/2 与 grpcurl / Python 示例"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2026/05/01/Protocol/GRPC/","path":"2026/05/01/Protocol/GRPC/","title":"GRPC 详解：Protobuf、HTTP/2 与 grpcurl / Python 示例"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>gRPC 详解：Protobuf、HTTP/2 与 grpcurl / Python 示例 | my</title>
+<title>GRPC 详解：Protobuf、HTTP/2 与 grpcurl / Python 示例 | my</title>
   
 
 
@@ -176,18 +175,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">120</span>
+          <span class="site-state-item-count">122</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">36</span>
+        <span class="site-state-item-count">37</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">142</span>
+        <span class="site-state-item-count">116</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -238,12 +237,12 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="gRPC 详解：Protobuf、HTTP&#x2F;2 与 grpcurl &#x2F; Python 示例 | my">
+      <meta itemprop="name" content="GRPC 详解：Protobuf、HTTP&#x2F;2 与 grpcurl &#x2F; Python 示例 | my">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          gRPC 详解：Protobuf、HTTP/2 与 grpcurl / Python 示例
+          GRPC 详解：Protobuf、HTTP/2 与 grpcurl / Python 示例
         </h1>
 
         <div class="post-meta-container">
@@ -261,7 +260,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-04 15:03:12" itemprop="dateModified" datetime="2026-05-04T15:03:12+08:00">2026-05-04</time>
+      <time title="修改时间：2026-05-04 22:05:42" itemprop="dateModified" datetime="2026-05-04T22:05:42+08:00">2026-05-04</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -409,8 +408,7 @@
     <footer class="post-footer">
           <div class="post-tags">
               <a href="/tags/Protocol/" rel="tag"># Protocol</a>
-              <a href="/tags/gRPC/" rel="tag"># gRPC</a>
-              <a href="/tags/RPC/" rel="tag"># RPC</a>
+              <a href="/tags/GRPC/" rel="tag"># GRPC</a>
               <a href="/tags/HTTP-2/" rel="tag"># HTTP/2</a>
               <a href="/tags/Protobuf/" rel="tag"># Protobuf</a>
           </div>
@@ -457,13 +455,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">77k</span>
+    <span title="站点总字数">82k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">4:18</span>
+    <span title="站点阅读时长">4:35</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

@@ -20,13 +20,15 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
 
-    <meta property="og:type" content="article">
+    <meta name="description" content="OpenSSL 证书与密钥 完整指南OpenSSL 是生成、管理非对称密钥和数字证书的标准工具，广泛用于 HTTPS、SSL&#x2F;TLS、身份认证、加密通信等场景。一、核心概念（快速看懂） 私钥（private key）：.key &#x2F; .pem，必须保密，用于解密、签名 公钥（public key）：从私钥导出，公开分发，用于加密、验签 证书（certificate）：.crt &amp;">
+<meta property="og:type" content="article">
 <meta property="og:title" content="OpenSSL">
 <meta property="og:url" content="http://example.com/2026/05/01/OpenSSL/OpenSSL/index.html">
 <meta property="og:site_name" content="my">
+<meta property="og:description" content="OpenSSL 证书与密钥 完整指南OpenSSL 是生成、管理非对称密钥和数字证书的标准工具，广泛用于 HTTPS、SSL&#x2F;TLS、身份认证、加密通信等场景。一、核心概念（快速看懂） 私钥（private key）：.key &#x2F; .pem，必须保密，用于解密、签名 公钥（public key）：从私钥导出，公开分发，用于加密、验签 证书（certificate）：.crt &amp;">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-05-01T05:43:11.000Z">
-<meta property="article:modified_time" content="2026-05-01T05:43:11.041Z">
+<meta property="article:modified_time" content="2026-05-04T12:13:54.102Z">
 <meta property="article:author" content="miracle">
 <meta property="article:tag" content="OpenSSL">
 <meta name="twitter:card" content="summary">
@@ -144,7 +146,7 @@
   
   <aside class="sidebar">
 
-    <div class="sidebar-inner sidebar-overview-active">
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
       <ul class="sidebar-nav">
         <li class="sidebar-nav-toc">
           文章目录
@@ -157,6 +159,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#OpenSSL-%E8%AF%81%E4%B9%A6%E4%B8%8E%E5%AF%86%E9%92%A5-%E5%AE%8C%E6%95%B4%E6%8C%87%E5%8D%97"><span class="nav-number">1.</span> <span class="nav-text">OpenSSL 证书与密钥 完整指南</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#OpenSSL-%E6%98%AF%E7%94%9F%E6%88%90%E3%80%81%E7%AE%A1%E7%90%86%E9%9D%9E%E5%AF%B9%E7%A7%B0%E5%AF%86%E9%92%A5%E5%92%8C%E6%95%B0%E5%AD%97%E8%AF%81%E4%B9%A6%E7%9A%84%E6%A0%87%E5%87%86%E5%B7%A5%E5%85%B7%EF%BC%8C%E5%B9%BF%E6%B3%9B%E7%94%A8%E4%BA%8E-HTTPS%E3%80%81SSL-TLS%E3%80%81%E8%BA%AB%E4%BB%BD%E8%AE%A4%E8%AF%81%E3%80%81%E5%8A%A0%E5%AF%86%E9%80%9A%E4%BF%A1%E7%AD%89%E5%9C%BA%E6%99%AF%E3%80%82"><span class="nav-number">1.1.</span> <span class="nav-text">OpenSSL 是生成、管理非对称密钥和数字证书的标准工具，广泛用于 HTTPS、SSL&#x2F;TLS、身份认证、加密通信等场景。</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5%EF%BC%88%E5%BF%AB%E9%80%9F%E7%9C%8B%E6%87%82%EF%BC%89"><span class="nav-number">1.2.</span> <span class="nav-text">一、核心概念（快速看懂）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E6%9C%80%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%EF%BC%88%E7%9B%B4%E6%8E%A5%E7%94%A8%EF%BC%89"><span class="nav-number">1.3.</span> <span class="nav-text">二、最常用命令（直接用）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E7%94%9F%E6%88%90-RSA-%E7%A7%81%E9%92%A5%EF%BC%88%E6%97%A0%E5%AF%86%E7%A0%81%EF%BC%89"><span class="nav-number">1.3.1.</span> <span class="nav-text">1. 生成 RSA 私钥（无密码）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E7%94%9F%E6%88%90%E5%B8%A6%E5%AF%86%E7%A0%81%E4%BF%9D%E6%8A%A4%E7%9A%84%E7%A7%81%E9%92%A5%EF%BC%88%E6%9B%B4%E5%AE%89%E5%85%A8%EF%BC%89"><span class="nav-number">1.3.2.</span> <span class="nav-text">2. 生成带密码保护的私钥（更安全）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E4%BB%8E%E7%A7%81%E9%92%A5%E5%AF%BC%E5%87%BA%E5%85%AC%E9%92%A5"><span class="nav-number">1.3.3.</span> <span class="nav-text">3. 从私钥导出公钥</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E7%94%9F%E6%88%90%E8%87%AA%E7%AD%BE%E5%90%8D%E8%AF%81%E4%B9%A6%EF%BC%88%E5%BC%80%E5%8F%91-%E6%B5%8B%E8%AF%95%E5%BF%85%E5%A4%87%EF%BC%89"><span class="nav-number">1.4.</span> <span class="nav-text">三、生成自签名证书（开发&#x2F;测试必备）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E6%AD%A5%E7%94%9F%E6%88%90-%E7%A7%81%E9%92%A5-%E8%AF%81%E4%B9%A6%EF%BC%88%E6%9C%89%E6%95%88%E6%9C%9F-10-%E5%B9%B4%EF%BC%89"><span class="nav-number">1.4.1.</span> <span class="nav-text">一步生成 私钥 + 证书（有效期 10 年）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E7%94%9F%E6%88%90-CSR%EF%BC%88%E5%90%91-CA-%E7%94%B3%E8%AF%B7%E6%AD%A3%E5%BC%8F%E8%AF%81%E4%B9%A6%EF%BC%89"><span class="nav-number">1.5.</span> <span class="nav-text">四、生成 CSR（向 CA 申请正式证书）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E7%94%9F%E6%88%90%E7%A7%81%E9%92%A5"><span class="nav-number">1.5.1.</span> <span class="nav-text">1. 生成私钥</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E7%94%9F%E6%88%90-CSR-%E8%AF%B7%E6%B1%82%E6%96%87%E4%BB%B6"><span class="nav-number">1.5.2.</span> <span class="nav-text">2. 生成 CSR 请求文件</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E8%AF%81%E4%B9%A6-%E5%AF%86%E9%92%A5%E6%9F%A5%E7%9C%8B%E5%91%BD%E4%BB%A4"><span class="nav-number">1.6.</span> <span class="nav-text">五、证书&#x2F;密钥查看命令</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E6%9F%A5%E7%9C%8B%E7%A7%81%E9%92%A5%E4%BF%A1%E6%81%AF"><span class="nav-number">1.6.1.</span> <span class="nav-text">1. 查看私钥信息</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E6%9F%A5%E7%9C%8B%E8%AF%81%E4%B9%A6%E4%BF%A1%E6%81%AF%EF%BC%88%E6%9C%80%E5%B8%B8%E7%94%A8%EF%BC%89"><span class="nav-number">1.6.2.</span> <span class="nav-text">2. 查看证书信息（最常用）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E6%9F%A5%E7%9C%8B-CSR-%E4%BF%A1%E6%81%AF"><span class="nav-number">1.6.3.</span> <span class="nav-text">3. 查看 CSR 信息</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E9%AA%8C%E8%AF%81-%E7%A7%81%E9%92%A5-%E5%92%8C-%E8%AF%81%E4%B9%A6-%E6%98%AF%E5%90%A6%E5%8C%B9%E9%85%8D"><span class="nav-number">1.6.4.</span> <span class="nav-text">4. 验证 私钥 和 证书 是否匹配</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E6%A0%BC%E5%BC%8F%E8%BD%AC%E6%8D%A2%EF%BC%88%E6%9C%80%E5%B8%B8%E8%A7%81%E9%9C%80%E6%B1%82%EF%BC%89"><span class="nav-number">1.7.</span> <span class="nav-text">六、格式转换（最常见需求）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-PEM-%E8%BD%AC-PKCS-12%EF%BC%88-pfx-p12%EF%BC%8CWindows-IIS-%E7%94%A8%EF%BC%89"><span class="nav-number">1.7.1.</span> <span class="nav-text">1. PEM 转 PKCS#12（.pfx &#x2F; .p12，Windows&#x2F;IIS 用）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E4%BB%8E-PFX-%E6%8F%90%E5%8F%96-%E7%A7%81%E9%92%A5-%E8%AF%81%E4%B9%A6"><span class="nav-number">1.7.2.</span> <span class="nav-text">2. 从 PFX 提取 私钥 + 证书</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-DER-%E8%BD%AC-PEM"><span class="nav-number">1.7.3.</span> <span class="nav-text">3. DER 转 PEM</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%83%E3%80%81%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E6%A0%87%E5%87%86%E6%B5%81%E7%A8%8B"><span class="nav-number">1.8.</span> <span class="nav-text">七、生产环境标准流程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">1.8.1.</span> <span class="nav-text">总结</span></a></li></ol></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -169,18 +172,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">120</span>
+          <span class="site-state-item-count">122</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">36</span>
+        <span class="site-state-item-count">37</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">142</span>
+        <span class="site-state-item-count">116</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -251,6 +254,13 @@
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-05-04 20:13:54" itemprop="dateModified" datetime="2026-05-04T20:13:54+08:00">2026-05-04</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
         <i class="far fa-folder"></i>
       </span>
       <span class="post-meta-item-text">分类于</span>
@@ -266,14 +276,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>0</span>
+      <span>717</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>1 分钟</span>
+      <span>2 分钟</span>
     </span>
 </div>
 
@@ -283,7 +293,72 @@
     
     
     
-    <div class="post-body" itemprop="articleBody">
+    <div class="post-body" itemprop="articleBody"><h1 id="OpenSSL-证书与密钥-完整指南"><a href="#OpenSSL-证书与密钥-完整指南" class="headerlink" title="OpenSSL 证书与密钥 完整指南"></a>OpenSSL 证书与密钥 完整指南</h1><h2 id="OpenSSL-是生成、管理非对称密钥和数字证书的标准工具，广泛用于-HTTPS、SSL-TLS、身份认证、加密通信等场景。"><a href="#OpenSSL-是生成、管理非对称密钥和数字证书的标准工具，广泛用于-HTTPS、SSL-TLS、身份认证、加密通信等场景。" class="headerlink" title="OpenSSL 是生成、管理非对称密钥和数字证书的标准工具，广泛用于 HTTPS、SSL&#x2F;TLS、身份认证、加密通信等场景。"></a>OpenSSL 是生成、管理<strong>非对称密钥</strong>和<strong>数字证书</strong>的标准工具，广泛用于 HTTPS、SSL&#x2F;TLS、身份认证、加密通信等场景。</h2><h2 id="一、核心概念（快速看懂）"><a href="#一、核心概念（快速看懂）" class="headerlink" title="一、核心概念（快速看懂）"></a>一、核心概念（快速看懂）</h2><ol>
+<li><strong>私钥（private key）</strong>：.key &#x2F; .pem，必须保密，用于解密、签名</li>
+<li><strong>公钥（public key）</strong>：从私钥导出，公开分发，用于加密、验签</li>
+<li><strong>证书（certificate）</strong>：.crt &#x2F; .pem，包含公钥 + 身份信息 + 签名，证明公钥合法</li>
+<li><strong>CSR（证书签名请求）</strong>：.csr，向 CA 机构申请正式证书的文件</li>
+</ol>
+<hr>
+<h2 id="二、最常用命令（直接用）"><a href="#二、最常用命令（直接用）" class="headerlink" title="二、最常用命令（直接用）"></a>二、最常用命令（直接用）</h2><h3 id="1-生成-RSA-私钥（无密码）"><a href="#1-生成-RSA-私钥（无密码）" class="headerlink" title="1. 生成 RSA 私钥（无密码）"></a>1. 生成 RSA 私钥（无密码）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl genrsa -out private.key 2048</span><br></pre></td></tr></table></figure>
+<ul>
+<li>2048 是密钥长度（安全推荐）</li>
+<li>生成后<strong>千万不要泄露</strong></li>
+</ul>
+<h3 id="2-生成带密码保护的私钥（更安全）"><a href="#2-生成带密码保护的私钥（更安全）" class="headerlink" title="2. 生成带密码保护的私钥（更安全）"></a>2. 生成带密码保护的私钥（更安全）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl genrsa -aes256 -out private.key 2048</span><br></pre></td></tr></table></figure>
+<p>每次使用会要求输入密码。</p>
+<h3 id="3-从私钥导出公钥"><a href="#3-从私钥导出公钥" class="headerlink" title="3. 从私钥导出公钥"></a>3. 从私钥导出公钥</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl rsa -<span class="keyword">in</span> private.key -pubout -out public.key</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="三、生成自签名证书（开发-测试必备）"><a href="#三、生成自签名证书（开发-测试必备）" class="headerlink" title="三、生成自签名证书（开发&#x2F;测试必备）"></a>三、生成自签名证书（开发&#x2F;测试必备）</h2><p><strong>自签名证书 &#x3D; 私钥 + 自己签发的证书</strong><br>适合本地开发、内网测试，不能用于公网生产环境。</p>
+<h3 id="一步生成-私钥-证书（有效期-10-年）"><a href="#一步生成-私钥-证书（有效期-10-年）" class="headerlink" title="一步生成 私钥 + 证书（有效期 10 年）"></a>一步生成 私钥 + 证书（有效期 10 年）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl req -x509 -newkey rsa:2048 -keyout private.key -out cert.crt -days 3650 -nodes</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>-nodes</code>：私钥不加密</li>
+<li><code>-days 3650</code>：有效期 10 年</li>
+<li>执行后按提示填信息（可以全部回车）</li>
+</ul>
+<p>最终得到两个文件：</p>
+<ul>
+<li><code>private.key</code>：私钥</li>
+<li><code>cert.crt</code>：自签名证书</li>
+</ul>
+<hr>
+<h2 id="四、生成-CSR（向-CA-申请正式证书）"><a href="#四、生成-CSR（向-CA-申请正式证书）" class="headerlink" title="四、生成 CSR（向 CA 申请正式证书）"></a>四、生成 CSR（向 CA 申请正式证书）</h2><p>如果你要申请<strong>阿里云&#x2F;腾讯云&#x2F;Let’s Encrypt</strong> 正规证书，必须先生成 CSR。</p>
+<h3 id="1-生成私钥"><a href="#1-生成私钥" class="headerlink" title="1. 生成私钥"></a>1. 生成私钥</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl genrsa -out private.key 2048</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-生成-CSR-请求文件"><a href="#2-生成-CSR-请求文件" class="headerlink" title="2. 生成 CSR 请求文件"></a>2. 生成 CSR 请求文件</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl req -new -key private.key -out cert.csr</span><br></pre></td></tr></table></figure>
+<p>提交 <code>cert.csr</code> 给 CA 机构，就能拿到正式证书。</p>
+<hr>
+<h2 id="五、证书-密钥查看命令"><a href="#五、证书-密钥查看命令" class="headerlink" title="五、证书&#x2F;密钥查看命令"></a>五、证书&#x2F;密钥查看命令</h2><h3 id="1-查看私钥信息"><a href="#1-查看私钥信息" class="headerlink" title="1. 查看私钥信息"></a>1. 查看私钥信息</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl rsa -<span class="keyword">in</span> private.key -text -noout</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-查看证书信息（最常用）"><a href="#2-查看证书信息（最常用）" class="headerlink" title="2. 查看证书信息（最常用）"></a>2. 查看证书信息（最常用）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl x509 -<span class="keyword">in</span> cert.crt -text -noout</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-查看-CSR-信息"><a href="#3-查看-CSR-信息" class="headerlink" title="3. 查看 CSR 信息"></a>3. 查看 CSR 信息</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl req -<span class="keyword">in</span> cert.csr -text -noout</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-验证-私钥-和-证书-是否匹配"><a href="#4-验证-私钥-和-证书-是否匹配" class="headerlink" title="4. 验证 私钥 和 证书 是否匹配"></a>4. 验证 私钥 和 证书 是否匹配</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">openssl rsa -modulus -<span class="keyword">in</span> private.key -noout | <span class="built_in">md5sum</span></span><br><span class="line">openssl x509 -modulus -<span class="keyword">in</span> cert.crt -noout | <span class="built_in">md5sum</span></span><br></pre></td></tr></table></figure>
+<p>两个 MD5 值<strong>完全相同</strong> &#x3D; 匹配</p>
+<hr>
+<h2 id="六、格式转换（最常见需求）"><a href="#六、格式转换（最常见需求）" class="headerlink" title="六、格式转换（最常见需求）"></a>六、格式转换（最常见需求）</h2><h3 id="1-PEM-转-PKCS-12（-pfx-p12，Windows-IIS-用）"><a href="#1-PEM-转-PKCS-12（-pfx-p12，Windows-IIS-用）" class="headerlink" title="1. PEM 转 PKCS#12（.pfx &#x2F; .p12，Windows&#x2F;IIS 用）"></a>1. PEM 转 PKCS#12（.pfx &#x2F; .p12，Windows&#x2F;IIS 用）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl pkcs12 -<span class="built_in">export</span> -out cert.pfx -inkey private.key -<span class="keyword">in</span> cert.crt</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-从-PFX-提取-私钥-证书"><a href="#2-从-PFX-提取-私钥-证书" class="headerlink" title="2. 从 PFX 提取 私钥 + 证书"></a>2. 从 PFX 提取 私钥 + 证书</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 提取私钥</span></span><br><span class="line">openssl pkcs12 -<span class="keyword">in</span> cert.pfx -nocerts -out private.key</span><br><span class="line"></span><br><span class="line"><span class="comment"># 提取证书</span></span><br><span class="line">openssl pkcs12 -<span class="keyword">in</span> cert.pfx -clcerts -nokeys -out cert.crt</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-DER-转-PEM"><a href="#3-DER-转-PEM" class="headerlink" title="3. DER 转 PEM"></a>3. DER 转 PEM</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl x509 -inform der -<span class="keyword">in</span> cert.der -out cert.crt</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="七、生产环境标准流程"><a href="#七、生产环境标准流程" class="headerlink" title="七、生产环境标准流程"></a>七、生产环境标准流程</h2><ol>
+<li><strong>生成安全私钥</strong>（4096 位，带密码）<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl genrsa -aes256 -out private.key 4096</span><br></pre></td></tr></table></figure></li>
+<li><strong>生成 CSR</strong><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl req -new -key private.key -out cert.csr</span><br></pre></td></tr></table></figure></li>
+<li>提交 CSR 给 CA → 获取<strong>正式证书</strong></li>
+<li><strong>部署证书</strong>（Nginx&#x2F;Apache&#x2F;IIS）</li>
+</ol>
+<hr>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><ol>
+<li>开发用：<strong>自签名证书</strong>（私钥 + crt）</li>
+<li>生产用：<strong>CSR 申请正规证书</strong></li>
+<li>必备命令：生成密钥、查看证书、格式转换、验证匹配</li>
+<li>私钥<strong>绝对不能泄露</strong>，泄露等于证书失效</li>
+</ol>
+
     </div>
 
     
@@ -337,13 +412,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">77k</span>
+    <span title="站点总字数">82k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">4:18</span>
+    <span title="站点阅读时长">4:35</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

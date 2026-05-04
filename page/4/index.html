@@ -166,18 +166,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">120</span>
+          <span class="site-state-item-count">122</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">36</span>
+        <span class="site-state-item-count">37</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">142</span>
+        <span class="site-state-item-count">116</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -205,6 +205,241 @@
     </div>
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/MySQL/MySQL-Docker/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/05/01/MySQL/MySQL-Docker/" class="post-title-link" itemprop="url">Docker 部署 MySQL</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-05-01 20:35:17" itemprop="dateCreated datePublished" datetime="2026-05-01T20:35:17+08:00">2026-05-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-05-03 11:02:46" itemprop="dateModified" datetime="2026-05-03T11:02:46+08:00">2026-05-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>1.9k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>6 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>在 <strong>Docker</strong> 中运行 <strong>MySQL</strong>，适合本地开发、与 <strong>Compose</strong> 编排其它服务、或在 <strong>Kubernetes</strong> 中单实例部署。下文给出<strong>镜像选型</strong>、<strong>一条命令起容器</strong>、<strong>Compose 一键起栈</strong>与<strong>一份多文档 K8s 清单</strong>；密码与数据卷请按环境自行替换，勿把生产密钥提交进仓库。多行命令：<strong>Linux &#x2F; macOS &#x2F; Git Bash</strong> 用行末 <strong><code>\</code>** 续行；**Windows CMD** 用行末 **<code>^</code>** 续行（**<code>^</code> 后不能有空格</strong>）。</p>
+<hr>
+<h1 id="一、前置条件"><a href="#一、前置条件" class="headerlink" title="一、前置条件"></a>一、前置条件</h1><p>本机已安装 <strong><code>docker</code></strong>，并能使用 <strong><code>docker compose</code></strong>（<strong>Compose V2</strong> 插件，命令为 <strong><code>docker compose</code></strong>；若仍使用旧版独立程序，则将下文中的 <strong><code>docker compose</code></strong> 换成 <strong><code>docker-compose</code></strong>）。</p>
+<p>验证：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker version</span><br><span class="line">docker compose version</span><br></pre></td></tr></table></figure>
+
+<p>满足即可，与宿主机操作系统无关。</p>
+<hr>
+<h1 id="二、MySQL-镜像选择"><a href="#二、MySQL-镜像选择" class="headerlink" title="二、MySQL 镜像选择"></a>二、MySQL 镜像选择</h1><h2 id="1-官方镜像（推荐）"><a href="#1-官方镜像（推荐）" class="headerlink" title="1. 官方镜像（推荐）"></a>1. 官方镜像（推荐）</h2><ul>
+<li><strong>仓库</strong>：<strong><code>mysql</code></strong>（Docker Hub 官方库，由 <strong>Oracle</strong> &#x2F; <strong>MySQL</strong> 团队维护）。  </li>
+<li><strong>常用标签</strong>：  <ul>
+<li><strong><code>mysql:8.0</code></strong>：<strong>8.0</strong> 长期维护线，生态兼容面广（<strong>WordPress</strong>、旧驱动等多以 <strong>8.0</strong> 为基准）。  </li>
+<li><strong><code>mysql:8.4</code></strong> 或 <strong><code>mysql:lts</code></strong>：较新的 <strong>LTS</strong> 线（以 <a target="_blank" rel="noopener external nofollow noreferrer" href="https://hub.docker.com/_/mysql/tags">Docker Hub mysql tags</a> 为准）。</li>
+</ul>
+</li>
+<li><strong>生产建议</strong>：固定小版本标签（如 <strong><code>mysql:8.0.40</code></strong>）或记录 <strong>digest</strong>，避免 <strong><code>latest</code></strong> 漂移导致行为变化。</li>
+</ul>
+<h2 id="2-变体说明"><a href="#2-变体说明" class="headerlink" title="2. 变体说明"></a>2. 变体说明</h2><table>
+<thead>
+<tr>
+<th>需求</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>默认认证插件</strong></td>
+<td><strong>8.0</strong> 起默认 <strong><code>caching_sha2_password</code></strong>；老客户端不支持时需调整 <strong><code>--default-authentication-plugin</code></strong> 或升级客户端（<strong>MySQL 8.4</strong> 已移除 <strong><code>mysql_native_password</code></strong>，迁移前查发行说明）。</td>
+</tr>
+<tr>
+<td><strong>ARM64</strong>（Apple Silicon 等）</td>
+<td>官方 <strong><code>mysql</code></strong> 多架构镜像一般可直接拉取；若某标签缺架构，换标签或查 Hub <strong>OS&#x2F;ARCH</strong>。</td>
+</tr>
+<tr>
+<td><strong>极简&#x2F;定制</strong></td>
+<td>社区有 <strong><code>bitnami/mysql</code></strong> 等，参数与路径与官方不同，切换镜像时需对照该镜像文档。</td>
+</tr>
+</tbody></table>
+<h2 id="3-字符集与排序规则"><a href="#3-字符集与排序规则" class="headerlink" title="3. 字符集与排序规则"></a>3. 字符集与排序规则</h2><p>容器内建议在 <strong><code>command</code></strong> 或 <strong><code>my.cnf</code></strong> 中显式指定 <strong><code>utf8mb4</code></strong>，与业务库一致，避免默认与连接串不一致。</p>
+<hr>
+<p><strong>1Panel（推荐）</strong>：在 <strong>Linux</strong> 宿主机上若希望少手写命令、仍以容器方式运行 <strong>MySQL</strong>，可先安装 <a target="_blank" rel="noopener external nofollow noreferrer" href="https://1panel.cn/"><strong>1Panel</strong></a>（开源 <strong>Linux</strong> 运维面板），在 <strong>「应用商店」</strong> 中选择 <strong>MySQL</strong> 一键部署：由面板负责镜像版本、数据持久化、端口映射与（可选）计划备份，启停与日志可在界面查看。与下文 <strong><code>docker run</code> &#x2F; Compose &#x2F; K8s</strong> 中的环境变量、卷与字符集语义对齐或排障时，自 <strong># 三</strong> 起各节仍可作对照。适合单台 <strong>VPS</strong>、家庭服务器等「一台机子上稳态跑库」的场景。</p>
+<hr>
+<h1 id="三、单容器一键部署（docker-run）"><a href="#三、单容器一键部署（docker-run）" class="headerlink" title="三、单容器一键部署（docker run）"></a>三、单容器一键部署（<code>docker run</code>）</h1><p><strong>一条命令</strong>启动（与下述参数一致；<strong>命名卷</strong> <strong><code>mysql-data</code></strong>、<strong><code>mysql-init</code></strong> 在首次运行时会由 <strong>Docker</strong> 自动创建，无需在宿主机 <strong><code>mkdir</code></strong>）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -d   --name mysql-dev   -e MYSQL_ROOT_PASSWORD=<span class="string">&quot;pi=3.1415&quot;</span>   -e MYSQL_DATABASE=<span class="string">&quot;app&quot;</span>   -e MYSQL_USER=<span class="string">&quot;admin&quot;</span>   -e MYSQL_PASSWORD=<span class="string">&quot;pi=3.1415&quot;</span>   -p 3306:3306   -v mysql-data:/var/lib/mysql   -v mysql-init:/docker-entrypoint-initdb.d:ro   mysql:8.0   --character-set-server=utf8mb4   --collation-server=utf8mb4_unicode_ci</span><br></pre></td></tr></table></figure>
+
+<p>多行可读（与上条等价；按终端选一种）：</p>
+<h2 id="Linux-macOS-Git-Bash（-续行）"><a href="#Linux-macOS-Git-Bash（-续行）" class="headerlink" title="Linux &#x2F; macOS &#x2F; Git Bash（\ 续行）"></a>Linux &#x2F; macOS &#x2F; Git Bash（<code>\</code> 续行）</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">docker run -d\</span><br><span class="line">  --name mysql-dev\</span><br><span class="line">  -e MYSQL_ROOT_PASSWORD=<span class="string">&quot;pi=3.1415&quot;</span>\</span><br><span class="line">  -e MYSQL_DATABASE=<span class="string">&quot;app&quot;</span>\</span><br><span class="line">  -e MYSQL_USER=<span class="string">&quot;admin&quot;</span>\</span><br><span class="line">  -e MYSQL_PASSWORD=<span class="string">&quot;pi=3.1415&quot;</span>\</span><br><span class="line">  -p 3306:3306\</span><br><span class="line">  -v mysql-data:/var/lib/mysql\</span><br><span class="line">  -v mysql-init:/docker-entrypoint-initdb.d:ro\</span><br><span class="line">  mysql:8.0\</span><br><span class="line">  --character-set-server=utf8mb4\</span><br><span class="line">  --collation-server=utf8mb4_unicode_ci</span><br></pre></td></tr></table></figure>
+
+<h2 id="Windows-CMD（-续行）"><a href="#Windows-CMD（-续行）" class="headerlink" title="Windows CMD（^ 续行）"></a>Windows CMD（<code>^</code> 续行）</h2><figure class="highlight bat"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">docker run -d^</span><br><span class="line">  --name mysql-dev^</span><br><span class="line">  -e MYSQL_ROOT_PASSWORD=&quot;pi=<span class="number">3</span>.<span class="number">1415</span>&quot;^</span><br><span class="line">  -e MYSQL_DATABASE=&quot;app&quot;^</span><br><span class="line">  -e MYSQL_USER=&quot;admin&quot;^</span><br><span class="line">  -e MYSQL_PASSWORD=&quot;pi=<span class="number">3</span>.<span class="number">1415</span>&quot;^</span><br><span class="line">  -p <span class="number">3306</span>:<span class="number">3306</span>^</span><br><span class="line">  -v mysql-data:/var/lib/mysql^</span><br><span class="line">  -v mysql-init:/docker-entrypoint-initdb.d:ro^</span><br><span class="line"><span class="function">  mysql:8.0^</span></span><br><span class="line"><span class="function">  --<span class="title">character</span>-<span class="title">set</span>-<span class="title">server</span>=<span class="title">utf8mb4</span>^</span></span><br><span class="line"><span class="function">  --<span class="title">collation</span>-<span class="title">server</span>=<span class="title">utf8mb4_unicode_ci</span></span></span><br></pre></td></tr></table></figure>
+
+<p><strong>Windows 说明</strong>：<strong>Docker Desktop</strong> 下命名卷写法与 <strong>Linux</strong> 一致；若在 <strong>CMD</strong> 中路径或引号报错，可改用 <strong>PowerShell</strong>（行末续行符为 <strong><code>`</code></strong>）或仍用<strong>一条命令</strong>单行复制。</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong><code>-e MYSQL_*</code></strong></td>
+<td><strong>root</strong> 与应用库 <strong><code>app</code></strong>、用户 <strong><code>admin</code></strong> 的密码（示例为 <strong><code>pi=3.1415</code></strong>，含 <strong><code>=</code></strong> 故用引号包住）</td>
+</tr>
+<tr>
+<td><strong><code>-v mysql-data:</code></strong></td>
+<td>数据目录持久化到 <strong>Docker 命名卷</strong> <strong><code>mysql-data</code></strong></td>
+</tr>
+<tr>
+<td><strong><code>-v mysql-init:</code></strong></td>
+<td>初始化脚本目录挂载为<strong>只读</strong>命名卷 <strong><code>mysql-init</code></strong>；<strong><code>.sql</code> &#x2F; <code>.sh</code></strong> 仅在<strong>首次空数据目录</strong>时执行</td>
+</tr>
+<tr>
+<td>末尾 <strong><code>--character-*</code></strong></td>
+<td>传给 <strong><code>mysqld</code></strong>：服务端 <strong>utf8mb4</strong> &#x2F; <strong><code>utf8mb4_unicode_ci</code></strong></td>
+</tr>
+</tbody></table>
+<p>若要把 <strong><code>.sql</code></strong> 放进命名卷 <strong><code>mysql-init</code></strong>，可任选其一：<strong>①</strong> 临时容器拷入 <strong><code>docker run --rm -v mysql-init:/init ...</code></strong>；<strong>②</strong> 改用绑定挂载 <strong><code>-v /宿主机路径/mysql-init:/docker-entrypoint-initdb.d:ro</code></strong>，便于本机直接放文件。</p>
+<p>常用运维一条命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker logs -f mysql-dev</span><br><span class="line">docker stop mysql-dev &amp;&amp; docker <span class="built_in">rm</span> mysql-dev</span><br></pre></td></tr></table></figure>
+
+<p>已有数据卷时<strong>不会</strong>再次执行 <strong><code>docker-entrypoint-initdb.d</code></strong> 内脚本；清空数据需删卷：<strong><code>docker volume rm mysql-data</code></strong>（<strong>会删库</strong>，且须先删容器）。</p>
+<hr>
+<h1 id="四、Docker-Compose-一键部署"><a href="#四、Docker-Compose-一键部署" class="headerlink" title="四、Docker Compose 一键部署"></a>四、Docker Compose 一键部署</h1><p>将下面内容保存为 <strong><code>docker-compose.mysql.yml</code></strong>（与 <strong><code># 一</code></strong> 要求一致：已能执行 <strong><code>docker compose</code></strong>）。敏感项建议放在同目录 <strong><code>.env</code></strong>（加入 <strong><code>.gitignore</code></strong>），勿长期写死在仓库。</p>
+<p><strong>一条命令</strong>启动全栈（在 <strong><code>docker-compose.mysql.yml</code></strong> 所在目录执行）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker compose -f docker-compose.mysql.yml up -d</span><br></pre></td></tr></table></figure>
+
+<p>以下为 <strong><code>docker-compose.mysql.yml</code></strong> 全文：<strong><code>version</code></strong>、<strong><code>name</code></strong>、<strong>命名卷</strong>、<strong>健康检查</strong>、<strong>字符集参数</strong>。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">version:</span> <span class="string">&quot;3.8&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="attr">name:</span> <span class="string">mysql-stack</span></span><br><span class="line"></span><br><span class="line"><span class="attr">services:</span></span><br><span class="line">  <span class="attr">mysql:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">mysql:8.0</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">mysql-dev</span></span><br><span class="line">    <span class="attr">restart:</span> <span class="string">unless-stopped</span></span><br><span class="line">    <span class="attr">environment:</span></span><br><span class="line">      <span class="attr">MYSQL_ROOT_PASSWORD:</span> <span class="string">$&#123;MYSQL_ROOT_PASSWORD:-pi=3.1415&#125;</span></span><br><span class="line">      <span class="attr">MYSQL_DATABASE:</span> <span class="string">$&#123;MYSQL_DATABASE:-app&#125;</span></span><br><span class="line">      <span class="attr">MYSQL_USER:</span> <span class="string">$&#123;MYSQL_USER:-admin&#125;</span></span><br><span class="line">      <span class="attr">MYSQL_PASSWORD:</span> <span class="string">$&#123;MYSQL_PASSWORD:-pi=3.1415&#125;</span></span><br><span class="line">      <span class="attr">TZ:</span> <span class="string">Asia/Shanghai</span></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;3306:3306&quot;</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">mysql-data:/var/lib/mysql</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">mysql-init:/docker-entrypoint-initdb.d:ro</span></span><br><span class="line">    <span class="attr">command:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;--character-set-server=utf8mb4&quot;</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;--collation-server=utf8mb4_unicode_ci&quot;</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;--default-authentication-plugin=caching_sha2_password&quot;</span></span><br><span class="line">    <span class="attr">healthcheck:</span></span><br><span class="line">      <span class="attr">test:</span> [<span class="string">&quot;CMD-SHELL&quot;</span>, <span class="string">&quot;mysqladmin ping -h 127.0.0.1 -uroot -p\&quot;$$MYSQL_ROOT_PASSWORD\&quot; || exit 1&quot;</span>]</span><br><span class="line">      <span class="attr">interval:</span> <span class="string">5s</span></span><br><span class="line">      <span class="attr">timeout:</span> <span class="string">5s</span></span><br><span class="line">      <span class="attr">retries:</span> <span class="number">30</span></span><br><span class="line">      <span class="attr">start_period:</span> <span class="string">40s</span></span><br><span class="line"></span><br><span class="line"><span class="attr">volumes:</span></span><br><span class="line">  <span class="attr">mysql-data:</span></span><br><span class="line">    <span class="attr">driver:</span> <span class="string">local</span></span><br><span class="line">  <span class="attr">mysql-init:</span></span><br><span class="line">    <span class="attr">driver:</span> <span class="string">local</span></span><br></pre></td></tr></table></figure>
+
+<p>同目录可选 <strong><code>.env</code></strong>（勿提交；与 <strong><code># 三</code></strong> 一条 <strong><code>docker run</code></strong> 对齐）：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">MYSQL_ROOT_PASSWORD=pi=3.1415</span><br><span class="line">MYSQL_DATABASE=app</span><br><span class="line">MYSQL_USER=admin</span><br><span class="line">MYSQL_PASSWORD=pi=3.1415</span><br></pre></td></tr></table></figure>
+
+<p>查看状态、日志、停止并删除容器（保留数据卷）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">docker compose -f docker-compose.mysql.yml ps</span><br><span class="line">docker compose -f docker-compose.mysql.yml logs -f mysql</span><br><span class="line">docker compose -f docker-compose.mysql.yml down</span><br></pre></td></tr></table></figure>
+
+<p><strong><code>down</code></strong> 默认保留命名卷 <strong><code>mysql-data</code></strong>、<strong><code>mysql-init</code></strong>；若需清空数据加 <strong><code>docker compose ... down -v</code></strong>（<strong>会删库</strong>）。</p>
+<hr>
+<h1 id="五、Kubernetes-一键部署（单文件完整清单）"><a href="#五、Kubernetes-一键部署（单文件完整清单）" class="headerlink" title="五、Kubernetes 一键部署（单文件完整清单）"></a>五、Kubernetes 一键部署（单文件完整清单）</h1><p>将下面内容保存为 <strong><code>mysql-k8s.yaml</code></strong> 后，<strong>一条命令</strong>应用：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl apply -f mysql-k8s.yaml</span><br></pre></td></tr></table></figure>
+
+<p>清单含 <strong>Secret</strong>（<strong>root</strong> 与应用账号）、<strong>PVC</strong>、<strong>Deployment</strong>、<strong>ClusterIP Service</strong>。未写 <strong><code>storageClassName</code></strong> 时使用集群默认 <strong>StorageClass</strong>；无默认 <strong>SC</strong> 时请在 <strong>PVC</strong> 中补上 <strong><code>storageClassName</code></strong>。命名空间为 <strong><code>default</code></strong>，可按需修改 <strong><code>metadata.namespace</code></strong>。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Secret</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">mysql-secret</span></span><br><span class="line">  <span class="attr">namespace:</span> <span class="string">default</span></span><br><span class="line"><span class="attr">type:</span> <span class="string">Opaque</span></span><br><span class="line"><span class="attr">stringData:</span></span><br><span class="line">  <span class="attr">MYSQL_ROOT_PASSWORD:</span> <span class="string">&quot;pi=3.1415&quot;</span></span><br><span class="line">  <span class="attr">MYSQL_DATABASE:</span> <span class="string">&quot;app&quot;</span></span><br><span class="line">  <span class="attr">MYSQL_USER:</span> <span class="string">&quot;admin&quot;</span></span><br><span class="line">  <span class="attr">MYSQL_PASSWORD:</span> <span class="string">&quot;pi=3.1415&quot;</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">PersistentVolumeClaim</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">mysql-data</span></span><br><span class="line">  <span class="attr">namespace:</span> <span class="string">default</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">accessModes:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">ReadWriteOnce</span></span><br><span class="line">  <span class="attr">resources:</span></span><br><span class="line">    <span class="attr">requests:</span></span><br><span class="line">      <span class="attr">storage:</span> <span class="string">20Gi</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">apps/v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Deployment</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">mysql</span></span><br><span class="line">  <span class="attr">namespace:</span> <span class="string">default</span></span><br><span class="line">  <span class="attr">labels:</span></span><br><span class="line">    <span class="attr">app:</span> <span class="string">mysql</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">replicas:</span> <span class="number">1</span></span><br><span class="line">  <span class="attr">selector:</span></span><br><span class="line">    <span class="attr">matchLabels:</span></span><br><span class="line">      <span class="attr">app:</span> <span class="string">mysql</span></span><br><span class="line">  <span class="attr">strategy:</span></span><br><span class="line">    <span class="attr">type:</span> <span class="string">Recreate</span></span><br><span class="line">  <span class="attr">template:</span></span><br><span class="line">    <span class="attr">metadata:</span></span><br><span class="line">      <span class="attr">labels:</span></span><br><span class="line">        <span class="attr">app:</span> <span class="string">mysql</span></span><br><span class="line">    <span class="attr">spec:</span></span><br><span class="line">      <span class="attr">containers:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">mysql</span></span><br><span class="line">          <span class="attr">image:</span> <span class="string">mysql:8.0</span></span><br><span class="line">          <span class="attr">ports:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">containerPort:</span> <span class="number">3306</span></span><br><span class="line">              <span class="attr">name:</span> <span class="string">mysql</span></span><br><span class="line">          <span class="attr">env:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">MYSQL_ROOT_PASSWORD</span></span><br><span class="line">              <span class="attr">valueFrom:</span></span><br><span class="line">                <span class="attr">secretKeyRef:</span></span><br><span class="line">                  <span class="attr">name:</span> <span class="string">mysql-secret</span></span><br><span class="line">                  <span class="attr">key:</span> <span class="string">MYSQL_ROOT_PASSWORD</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">MYSQL_DATABASE</span></span><br><span class="line">              <span class="attr">valueFrom:</span></span><br><span class="line">                <span class="attr">secretKeyRef:</span></span><br><span class="line">                  <span class="attr">name:</span> <span class="string">mysql-secret</span></span><br><span class="line">                  <span class="attr">key:</span> <span class="string">MYSQL_DATABASE</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">MYSQL_USER</span></span><br><span class="line">              <span class="attr">valueFrom:</span></span><br><span class="line">                <span class="attr">secretKeyRef:</span></span><br><span class="line">                  <span class="attr">name:</span> <span class="string">mysql-secret</span></span><br><span class="line">                  <span class="attr">key:</span> <span class="string">MYSQL_USER</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">MYSQL_PASSWORD</span></span><br><span class="line">              <span class="attr">valueFrom:</span></span><br><span class="line">                <span class="attr">secretKeyRef:</span></span><br><span class="line">                  <span class="attr">name:</span> <span class="string">mysql-secret</span></span><br><span class="line">                  <span class="attr">key:</span> <span class="string">MYSQL_PASSWORD</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">TZ</span></span><br><span class="line">              <span class="attr">value:</span> <span class="string">&quot;Asia/Shanghai&quot;</span></span><br><span class="line">          <span class="attr">args:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="string">&quot;--character-set-server=utf8mb4&quot;</span></span><br><span class="line">            <span class="bullet">-</span> <span class="string">&quot;--collation-server=utf8mb4_unicode_ci&quot;</span></span><br><span class="line">            <span class="bullet">-</span> <span class="string">&quot;--default-authentication-plugin=caching_sha2_password&quot;</span></span><br><span class="line">          <span class="attr">volumeMounts:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">data</span></span><br><span class="line">              <span class="attr">mountPath:</span> <span class="string">/var/lib/mysql</span></span><br><span class="line">          <span class="attr">readinessProbe:</span></span><br><span class="line">            <span class="attr">tcpSocket:</span></span><br><span class="line">              <span class="attr">port:</span> <span class="number">3306</span></span><br><span class="line">            <span class="attr">initialDelaySeconds:</span> <span class="number">15</span></span><br><span class="line">            <span class="attr">periodSeconds:</span> <span class="number">5</span></span><br><span class="line">            <span class="attr">timeoutSeconds:</span> <span class="number">3</span></span><br><span class="line">            <span class="attr">failureThreshold:</span> <span class="number">30</span></span><br><span class="line">          <span class="attr">livenessProbe:</span></span><br><span class="line">            <span class="attr">tcpSocket:</span></span><br><span class="line">              <span class="attr">port:</span> <span class="number">3306</span></span><br><span class="line">            <span class="attr">initialDelaySeconds:</span> <span class="number">60</span></span><br><span class="line">            <span class="attr">periodSeconds:</span> <span class="number">10</span></span><br><span class="line">            <span class="attr">timeoutSeconds:</span> <span class="number">5</span></span><br><span class="line">            <span class="attr">failureThreshold:</span> <span class="number">6</span></span><br><span class="line">          <span class="attr">resources:</span></span><br><span class="line">            <span class="attr">requests:</span></span><br><span class="line">              <span class="attr">memory:</span> <span class="string">&quot;512Mi&quot;</span></span><br><span class="line">              <span class="attr">cpu:</span> <span class="string">&quot;250m&quot;</span></span><br><span class="line">            <span class="attr">limits:</span></span><br><span class="line">              <span class="attr">memory:</span> <span class="string">&quot;1Gi&quot;</span></span><br><span class="line">              <span class="attr">cpu:</span> <span class="string">&quot;1000m&quot;</span></span><br><span class="line">      <span class="attr">volumes:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">data</span></span><br><span class="line">          <span class="attr">persistentVolumeClaim:</span></span><br><span class="line">            <span class="attr">claimName:</span> <span class="string">mysql-data</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Service</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">mysql</span></span><br><span class="line">  <span class="attr">namespace:</span> <span class="string">default</span></span><br><span class="line">  <span class="attr">labels:</span></span><br><span class="line">    <span class="attr">app:</span> <span class="string">mysql</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">type:</span> <span class="string">ClusterIP</span></span><br><span class="line">  <span class="attr">selector:</span></span><br><span class="line">    <span class="attr">app:</span> <span class="string">mysql</span></span><br><span class="line">  <span class="attr">ports:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">mysql</span></span><br><span class="line">      <span class="attr">port:</span> <span class="number">3306</span></span><br><span class="line">      <span class="attr">targetPort:</span> <span class="number">3306</span></span><br></pre></td></tr></table></figure>
+
+<p>查看资源与连接前检查：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl get pods,svc,pvc -l app=mysql</span><br></pre></td></tr></table></figure>
+
+<p>集群内连接串示例（按 <strong>namespace</strong> 调整）：<strong><code>admin:pi=3.1415@tcp(mysql.default.svc.cluster.local:3306)/app?parseTime=true&amp;charset=utf8mb4</code></strong>（密码含 <strong><code>=</code></strong> 时 <strong>URL</strong> 内需 <strong><code>encodeURIComponent</code></strong> 或改用 <strong>Secret</strong> 挂载 <strong><code>my.cnf</code></strong>，勿裸贴生产密钥）。</p>
+<p><strong>说明</strong>：<strong><code>strategy: Recreate</code></strong> 避免 <strong>RWO</strong> 卷被多副本 <strong>RollingUpdate</strong> 同时挂载；<strong>MySQL</strong> 主从、读写分离请用 <strong>Operator</strong> 或 <strong>StatefulSet</strong> 方案，勿直接水平扩展上述 <strong>Deployment</strong>。</p>
+<hr>
+<h1 id="六、小结"><a href="#六、小结" class="headerlink" title="六、小结"></a>六、小结</h1><table>
+<thead>
+<tr>
+<th>项</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>前置</strong></td>
+<td>已安装 <strong><code>docker</code></strong> 与 <strong><code>docker compose</code></strong>（或 <strong><code>docker-compose</code></strong>）</td>
+</tr>
+<tr>
+<td><strong>镜像</strong></td>
+<td>优先官方 <strong><code>mysql:8.0</code></strong> &#x2F; 固定补丁标签；注意认证插件与客户端版本</td>
+</tr>
+<tr>
+<td><strong>单容器</strong></td>
+<td><strong><code>docker run</code></strong>：<strong><code>mysql-dev</code></strong>、命名卷 <strong><code>mysql-data</code></strong> &#x2F; <strong><code>mysql-init</code></strong>、库 <strong><code>app</code></strong>、用户 <strong><code>admin</code></strong>、<strong><code>utf8mb4</code></strong>（见 <strong># 三</strong>）</td>
+</tr>
+<tr>
+<td><strong>Compose</strong></td>
+<td>保存 <strong><code>docker-compose.mysql.yml</code></strong> 后 <strong><code>docker compose -f ... up -d</code></strong></td>
+</tr>
+<tr>
+<td><strong>Kubernetes</strong></td>
+<td>保存 <strong><code>mysql-k8s.yaml</code></strong> 后 <strong><code>kubectl apply -f ...</code></strong></td>
+</tr>
+</tbody></table>
+<p>生产环境请配合备份、监控、网络策略与 <strong>TLS</strong>；<strong>Secret</strong> 建议对接 <strong>External Secrets</strong> &#x2F; <strong>Sealed Secrets</strong> 等管控流程。</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -1210,6 +1445,13 @@
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-05-04 20:13:54" itemprop="dateModified" datetime="2026-05-04T20:13:54+08:00">2026-05-04</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
         <i class="far fa-folder"></i>
       </span>
       <span class="post-meta-item-text">分类于</span>
@@ -1225,14 +1467,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>0</span>
+      <span>717</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>1 分钟</span>
+      <span>2 分钟</span>
     </span>
 </div>
 
@@ -1243,7 +1485,72 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          
+          <h1 id="OpenSSL-证书与密钥-完整指南"><a href="#OpenSSL-证书与密钥-完整指南" class="headerlink" title="OpenSSL 证书与密钥 完整指南"></a>OpenSSL 证书与密钥 完整指南</h1><h2 id="OpenSSL-是生成、管理非对称密钥和数字证书的标准工具，广泛用于-HTTPS、SSL-TLS、身份认证、加密通信等场景。"><a href="#OpenSSL-是生成、管理非对称密钥和数字证书的标准工具，广泛用于-HTTPS、SSL-TLS、身份认证、加密通信等场景。" class="headerlink" title="OpenSSL 是生成、管理非对称密钥和数字证书的标准工具，广泛用于 HTTPS、SSL&#x2F;TLS、身份认证、加密通信等场景。"></a>OpenSSL 是生成、管理<strong>非对称密钥</strong>和<strong>数字证书</strong>的标准工具，广泛用于 HTTPS、SSL&#x2F;TLS、身份认证、加密通信等场景。</h2><h2 id="一、核心概念（快速看懂）"><a href="#一、核心概念（快速看懂）" class="headerlink" title="一、核心概念（快速看懂）"></a>一、核心概念（快速看懂）</h2><ol>
+<li><strong>私钥（private key）</strong>：.key &#x2F; .pem，必须保密，用于解密、签名</li>
+<li><strong>公钥（public key）</strong>：从私钥导出，公开分发，用于加密、验签</li>
+<li><strong>证书（certificate）</strong>：.crt &#x2F; .pem，包含公钥 + 身份信息 + 签名，证明公钥合法</li>
+<li><strong>CSR（证书签名请求）</strong>：.csr，向 CA 机构申请正式证书的文件</li>
+</ol>
+<hr>
+<h2 id="二、最常用命令（直接用）"><a href="#二、最常用命令（直接用）" class="headerlink" title="二、最常用命令（直接用）"></a>二、最常用命令（直接用）</h2><h3 id="1-生成-RSA-私钥（无密码）"><a href="#1-生成-RSA-私钥（无密码）" class="headerlink" title="1. 生成 RSA 私钥（无密码）"></a>1. 生成 RSA 私钥（无密码）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl genrsa -out private.key 2048</span><br></pre></td></tr></table></figure>
+<ul>
+<li>2048 是密钥长度（安全推荐）</li>
+<li>生成后<strong>千万不要泄露</strong></li>
+</ul>
+<h3 id="2-生成带密码保护的私钥（更安全）"><a href="#2-生成带密码保护的私钥（更安全）" class="headerlink" title="2. 生成带密码保护的私钥（更安全）"></a>2. 生成带密码保护的私钥（更安全）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl genrsa -aes256 -out private.key 2048</span><br></pre></td></tr></table></figure>
+<p>每次使用会要求输入密码。</p>
+<h3 id="3-从私钥导出公钥"><a href="#3-从私钥导出公钥" class="headerlink" title="3. 从私钥导出公钥"></a>3. 从私钥导出公钥</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl rsa -<span class="keyword">in</span> private.key -pubout -out public.key</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="三、生成自签名证书（开发-测试必备）"><a href="#三、生成自签名证书（开发-测试必备）" class="headerlink" title="三、生成自签名证书（开发&#x2F;测试必备）"></a>三、生成自签名证书（开发&#x2F;测试必备）</h2><p><strong>自签名证书 &#x3D; 私钥 + 自己签发的证书</strong><br>适合本地开发、内网测试，不能用于公网生产环境。</p>
+<h3 id="一步生成-私钥-证书（有效期-10-年）"><a href="#一步生成-私钥-证书（有效期-10-年）" class="headerlink" title="一步生成 私钥 + 证书（有效期 10 年）"></a>一步生成 私钥 + 证书（有效期 10 年）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl req -x509 -newkey rsa:2048 -keyout private.key -out cert.crt -days 3650 -nodes</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>-nodes</code>：私钥不加密</li>
+<li><code>-days 3650</code>：有效期 10 年</li>
+<li>执行后按提示填信息（可以全部回车）</li>
+</ul>
+<p>最终得到两个文件：</p>
+<ul>
+<li><code>private.key</code>：私钥</li>
+<li><code>cert.crt</code>：自签名证书</li>
+</ul>
+<hr>
+<h2 id="四、生成-CSR（向-CA-申请正式证书）"><a href="#四、生成-CSR（向-CA-申请正式证书）" class="headerlink" title="四、生成 CSR（向 CA 申请正式证书）"></a>四、生成 CSR（向 CA 申请正式证书）</h2><p>如果你要申请<strong>阿里云&#x2F;腾讯云&#x2F;Let’s Encrypt</strong> 正规证书，必须先生成 CSR。</p>
+<h3 id="1-生成私钥"><a href="#1-生成私钥" class="headerlink" title="1. 生成私钥"></a>1. 生成私钥</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl genrsa -out private.key 2048</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-生成-CSR-请求文件"><a href="#2-生成-CSR-请求文件" class="headerlink" title="2. 生成 CSR 请求文件"></a>2. 生成 CSR 请求文件</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl req -new -key private.key -out cert.csr</span><br></pre></td></tr></table></figure>
+<p>提交 <code>cert.csr</code> 给 CA 机构，就能拿到正式证书。</p>
+<hr>
+<h2 id="五、证书-密钥查看命令"><a href="#五、证书-密钥查看命令" class="headerlink" title="五、证书&#x2F;密钥查看命令"></a>五、证书&#x2F;密钥查看命令</h2><h3 id="1-查看私钥信息"><a href="#1-查看私钥信息" class="headerlink" title="1. 查看私钥信息"></a>1. 查看私钥信息</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl rsa -<span class="keyword">in</span> private.key -text -noout</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-查看证书信息（最常用）"><a href="#2-查看证书信息（最常用）" class="headerlink" title="2. 查看证书信息（最常用）"></a>2. 查看证书信息（最常用）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl x509 -<span class="keyword">in</span> cert.crt -text -noout</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-查看-CSR-信息"><a href="#3-查看-CSR-信息" class="headerlink" title="3. 查看 CSR 信息"></a>3. 查看 CSR 信息</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl req -<span class="keyword">in</span> cert.csr -text -noout</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-验证-私钥-和-证书-是否匹配"><a href="#4-验证-私钥-和-证书-是否匹配" class="headerlink" title="4. 验证 私钥 和 证书 是否匹配"></a>4. 验证 私钥 和 证书 是否匹配</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">openssl rsa -modulus -<span class="keyword">in</span> private.key -noout | <span class="built_in">md5sum</span></span><br><span class="line">openssl x509 -modulus -<span class="keyword">in</span> cert.crt -noout | <span class="built_in">md5sum</span></span><br></pre></td></tr></table></figure>
+<p>两个 MD5 值<strong>完全相同</strong> &#x3D; 匹配</p>
+<hr>
+<h2 id="六、格式转换（最常见需求）"><a href="#六、格式转换（最常见需求）" class="headerlink" title="六、格式转换（最常见需求）"></a>六、格式转换（最常见需求）</h2><h3 id="1-PEM-转-PKCS-12（-pfx-p12，Windows-IIS-用）"><a href="#1-PEM-转-PKCS-12（-pfx-p12，Windows-IIS-用）" class="headerlink" title="1. PEM 转 PKCS#12（.pfx &#x2F; .p12，Windows&#x2F;IIS 用）"></a>1. PEM 转 PKCS#12（.pfx &#x2F; .p12，Windows&#x2F;IIS 用）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl pkcs12 -<span class="built_in">export</span> -out cert.pfx -inkey private.key -<span class="keyword">in</span> cert.crt</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-从-PFX-提取-私钥-证书"><a href="#2-从-PFX-提取-私钥-证书" class="headerlink" title="2. 从 PFX 提取 私钥 + 证书"></a>2. 从 PFX 提取 私钥 + 证书</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 提取私钥</span></span><br><span class="line">openssl pkcs12 -<span class="keyword">in</span> cert.pfx -nocerts -out private.key</span><br><span class="line"></span><br><span class="line"><span class="comment"># 提取证书</span></span><br><span class="line">openssl pkcs12 -<span class="keyword">in</span> cert.pfx -clcerts -nokeys -out cert.crt</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-DER-转-PEM"><a href="#3-DER-转-PEM" class="headerlink" title="3. DER 转 PEM"></a>3. DER 转 PEM</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl x509 -inform der -<span class="keyword">in</span> cert.der -out cert.crt</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="七、生产环境标准流程"><a href="#七、生产环境标准流程" class="headerlink" title="七、生产环境标准流程"></a>七、生产环境标准流程</h2><ol>
+<li><strong>生成安全私钥</strong>（4096 位，带密码）<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl genrsa -aes256 -out private.key 4096</span><br></pre></td></tr></table></figure></li>
+<li><strong>生成 CSR</strong><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl req -new -key private.key -out cert.csr</span><br></pre></td></tr></table></figure></li>
+<li>提交 CSR 给 CA → 获取<strong>正式证书</strong></li>
+<li><strong>部署证书</strong>（Nginx&#x2F;Apache&#x2F;IIS）</li>
+</ol>
+<hr>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><ol>
+<li>开发用：<strong>自签名证书</strong>（私钥 + crt）</li>
+<li>生产用：<strong>CSR 申请正规证书</strong></li>
+<li>必备命令：生成密钥、查看证书、格式转换、验证匹配</li>
+<li>私钥<strong>绝对不能泄露</strong>，泄露等于证书失效</li>
+</ol>
+
       
     </div>
 
@@ -1537,100 +1844,8 @@
 
 
 
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/MQ/RocketMQ/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="miracle">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="my">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | my">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/05/01/MQ/RocketMQ/" class="post-title-link" itemprop="url">RocketMQ</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2026-05-01 13:35:45" itemprop="dateCreated datePublished" datetime="2026-05-01T13:35:45+08:00">2026-05-01</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/MQ/" itemprop="url" rel="index"><span itemprop="name">MQ</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>0</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>1 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
   <nav class="pagination">
-    <a class="extend prev" rel="prev" title="上一页" aria-label="上一页" href="/page/3/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/12/">12</a><a class="extend next" rel="next" title="下一页" aria-label="下一页" href="/page/5/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" title="上一页" aria-label="上一页" href="/page/3/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/13/">13</a><a class="extend next" rel="next" title="下一页" aria-label="下一页" href="/page/5/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 </div>
@@ -1652,13 +1867,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">77k</span>
+    <span title="站点总字数">82k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">4:18</span>
+    <span title="站点阅读时长">4:35</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动
