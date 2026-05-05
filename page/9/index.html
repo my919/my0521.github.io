@@ -63,6 +63,12 @@
 
 
 
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js" defer></script>
+
+
 
   <noscript>
     <link rel="stylesheet" href="/css/noscript.css">
@@ -166,18 +172,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">122</span>
+          <span class="site-state-item-count">163</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">37</span>
+        <span class="site-state-item-count">38</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">116</span>
+        <span class="site-state-item-count">114</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -205,6 +211,731 @@
     </div>
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/Protocol/SSH/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/05/01/Protocol/SSH/" class="post-title-link" itemprop="url">SSH 详解：加密远程登录、密钥与端口转发示例</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-05-01 12:49:24" itemprop="dateCreated datePublished" datetime="2026-05-01T12:49:24+08:00">2026-05-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-05-04 22:07:06" itemprop="dateModified" datetime="2026-05-04T22:07:06+08:00">2026-05-04</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Protocol/" itemprop="url" rel="index"><span itemprop="name">Protocol</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>426</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>1 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p><strong>SSH</strong>（<strong>Secure Shell</strong>）在不安全网络上提供<strong>加密远程 shell</strong>、<strong>文件传输（<a href="/2026/05/01/SFTP/">SFTP</a>）<strong>与</strong>隧道</strong>。常见实现 <strong>OpenSSH</strong> 默认 <strong>TCP&#x2F;22</strong>。下面从「<strong>协议目标</strong> → <strong>主机密钥与用户认证原理</strong> → <strong><code>ssh_config</code> &#x2F; <code>sshd_config</code></strong> → <strong>本地端口转发示例</strong> → <strong>安全运维要点</strong>」顺序写清楚。</p>
+<hr>
+<h1 id="一、协议目标（作用）"><a href="#一、协议目标（作用）" class="headerlink" title="一、协议目标（作用）"></a>一、协议目标（作用）</h1><ul>
+<li><strong>机密性与完整性</strong>：防窃听与篡改。  </li>
+<li><strong>身份认证</strong>：至少认证<strong>服务器</strong>；可双向证书或密钥。  </li>
+<li><strong>隧道能力</strong>：为其他 <a href="/2026/05/01/TCP/">TCP</a> 应用提供加密通道。</li>
+</ul>
+<hr>
+<h1 id="二、主机密钥与用户认证（原理）"><a href="#二、主机密钥与用户认证（原理）" class="headerlink" title="二、主机密钥与用户认证（原理）"></a>二、主机密钥与用户认证（原理）</h1><h2 id="1-主机身份"><a href="#1-主机身份" class="headerlink" title="1. 主机身份"></a>1. 主机身份</h2><p>首次连接写入 <strong><code>~/.ssh/known_hosts</code></strong>；指纹变更会报警，需区分<strong>重装</strong>与<strong>中间人</strong>。</p>
+<h2 id="2-用户认证方式"><a href="#2-用户认证方式" class="headerlink" title="2. 用户认证方式"></a>2. 用户认证方式</h2><table>
+<thead>
+<tr>
+<th>方式</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>公钥</strong></td>
+<td>推荐；私钥 <strong><code>chmod 600</code></strong></td>
+</tr>
+<tr>
+<td><strong>密码</strong></td>
+<td>简单；配合 <strong>fail2ban</strong>、<strong>速率限制</strong></td>
+</tr>
+<tr>
+<td><strong>证书</strong></td>
+<td>企业 <strong>SSH CA</strong> 签发主机&#x2F;用户证书</td>
+</tr>
+</tbody></table>
+<hr>
+<h1 id="三、-ssh-config-示例"><a href="#三、-ssh-config-示例" class="headerlink" title="三、~/.ssh/config 示例"></a>三、<code>~/.ssh/config</code> 示例</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Host myserver</span><br><span class="line">    HostName 203.0.113.10</span><br><span class="line">    User deploy</span><br><span class="line">    Port 22</span><br><span class="line">    IdentityFile ~/.ssh/id_ed25519</span><br><span class="line">    ServerAliveInterval 30</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh myserver</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="四、本地端口转发（-L）原理与示例"><a href="#四、本地端口转发（-L）原理与示例" class="headerlink" title="四、本地端口转发（-L）原理与示例"></a>四、本地端口转发（<code>-L</code>）原理与示例</h1><p>把<strong>本机</strong> <strong><code>localhost:LOCAL_PORT</code></strong> 映射到<strong>经 SSH 可达</strong>的 <strong><code>target:REMOTE_PORT</code></strong>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -N -L 3307:127.0.0.1:3306 user@bastion</span><br></pre></td></tr></table></figure>
+
+<p>本机连接 <strong><code>127.0.0.1:3307</code></strong> 即相当于在 <strong>bastion</strong> 上访问 <strong><code>127.0.0.1:3306</code></strong>（常用于内网数据库跳板）。</p>
+<hr>
+<h1 id="五、跳板：ProxyJump"><a href="#五、跳板：ProxyJump" class="headerlink" title="五、跳板：ProxyJump"></a>五、跳板：<code>ProxyJump</code></h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -J bastion_user@bastion_host app_user@app_private</span><br></pre></td></tr></table></figure>
+
+<p>等价 <strong><code>~/.ssh/config</code></strong>：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Host app</span><br><span class="line">    HostName 10.0.0.5</span><br><span class="line">    User appuser</span><br><span class="line">    ProxyJump bastion_user@bastion_host</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="六、sshd-config-常见安全项（概念）"><a href="#六、sshd-config-常见安全项（概念）" class="headerlink" title="六、sshd_config 常见安全项（概念）"></a>六、<code>sshd_config</code> 常见安全项（概念）</h1><ul>
+<li><strong><code>PasswordAuthentication no</code></strong>：仅密钥（变更前确保不会锁死自己）。  </li>
+<li><strong><code>PermitRootLogin prohibit-password</code></strong> 或 <strong><code>no</code></strong>。  </li>
+<li><strong><code>AllowUsers</code></strong> &#x2F; <strong><code>AllowGroups</code></strong> 限制登录账户。</li>
+</ul>
+<p>修改后：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> systemctl reload sshd</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="七、小结"><a href="#七、小结" class="headerlink" title="七、小结"></a>七、小结</h1><table>
+<thead>
+<tr>
+<th>项</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>原理</td>
+<td>加密通道 + 主机密钥 + 用户认证</td>
+</tr>
+<tr>
+<td>作用</td>
+<td>远程管理、<a href="/2026/05/01/SFTP/">SFTP</a>、隧道</td>
+</tr>
+<tr>
+<td>示例</td>
+<td><strong><code>-L</code></strong>、<strong><code>-J</code></strong>、<strong><code>ssh_config</code></strong></td>
+</tr>
+<tr>
+<td>延伸</td>
+<td><a href="/2026/05/01/SFTP/">SFTP</a> · <a href="/2026/05/01/TCP/">TCP</a></td>
+</tr>
+</tbody></table>
+<p>审计日志、<strong>MFA</strong>、及时打补丁与<strong>密钥轮换</strong>属生产基线。</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/Protocol/SFTP/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/05/01/Protocol/SFTP/" class="post-title-link" itemprop="url">SFTP 详解：SSH 子系统、协议栈与 sftp 示例</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-05-01 12:49:04" itemprop="dateCreated datePublished" datetime="2026-05-01T12:49:04+08:00">2026-05-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-05-04 22:06:58" itemprop="dateModified" datetime="2026-05-04T22:06:58+08:00">2026-05-04</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Protocol/" itemprop="url" rel="index"><span itemprop="name">Protocol</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>377</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>1 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p><strong>SFTP</strong>（<strong>SSH File Transfer Protocol</strong>）在 <a href="/2026/05/01/SSH/">SSH</a> 加密通道上提供文件列表、上传、下载、权限修改等能力；与 <a href="/2026/05/01/FTP/">FTP</a> 的<strong>双连接明文模型</strong>无关，也<strong>不等于 FTPS（FTP+TLS）</strong>。下面从「<strong>作用与协议栈</strong> → <strong>与 SCP 区别</strong> → <strong>交互与批处理示例</strong> → <strong><code>ssh</code> 管道技巧</strong>」顺序写清楚。</p>
+<hr>
+<h1 id="一、作用与协议栈（原理）"><a href="#一、作用与协议栈（原理）" class="headerlink" title="一、作用与协议栈（原理）"></a>一、作用与协议栈（原理）</h1><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[ SFTP 子系统：文件操作 PDU ]</span><br><span class="line">            ↓</span><br><span class="line">[ SSH 传输层：加密、完整性、压缩(可选) ]</span><br><span class="line">            ↓</span><br><span class="line">[ TCP ]</span><br><span class="line">            ↓</span><br><span class="line">[ IP ]</span><br></pre></td></tr></table></figure>
+
+<p><strong>SFTP</strong> 是 <strong>SSH</strong> 协议族中的<strong>子系统</strong>，与 <strong>shell</strong> 会话可并存于同一 <strong>SSH</strong> 连接实现上（由服务器策略决定）。</p>
+<hr>
+<h1 id="二、与-SCP、rsync-over-SSH-的取舍"><a href="#二、与-SCP、rsync-over-SSH-的取舍" class="headerlink" title="二、与 SCP、rsync over SSH 的取舍"></a>二、与 <strong>SCP</strong>、<strong>rsync over SSH</strong> 的取舍</h1><table>
+<thead>
+<tr>
+<th>工具</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>SFTP</strong></td>
+<td>交互浏览目录、断点续传能力依客户端而定</td>
+</tr>
+<tr>
+<td><strong>scp</strong></td>
+<td>单次拷贝简单文件</td>
+</tr>
+<tr>
+<td><strong>rsync -e ssh</strong></td>
+<td>增量同步目录，底层仍是 <strong>SSH</strong> 隧道，协议不等同于 <strong>SFTP</strong></td>
+</tr>
+</tbody></table>
+<hr>
+<h1 id="三、交互式-sftp"><a href="#三、交互式-sftp" class="headerlink" title="三、交互式 sftp"></a>三、交互式 <code>sftp</code></h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sftp user@example.com</span><br></pre></td></tr></table></figure>
+
+<p>常用子命令：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">ls</span><br><span class="line">cd remote_dir</span><br><span class="line">lcd local_dir</span><br><span class="line">get remote.txt</span><br><span class="line">put local.txt</span><br><span class="line">mkdir newdir</span><br><span class="line">bye</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="四、批处理：-b-脚本文件"><a href="#四、批处理：-b-脚本文件" class="headerlink" title="四、批处理：-b 脚本文件"></a>四、批处理：<code>-b</code> 脚本文件</h1><p><strong><code>batch.txt</code></strong>：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">cd incoming</span><br><span class="line">put /local/path/report.csv</span><br><span class="line">ls -l</span><br><span class="line">bye</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sftp -b batch.txt user@example.com</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="五、与-SSH-密钥（配合作用）"><a href="#五、与-SSH-密钥（配合作用）" class="headerlink" title="五、与 SSH 密钥（配合作用）"></a>五、与 <strong>SSH 密钥</strong>（配合作用）</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519 -N <span class="string">&quot;&quot;</span></span><br><span class="line">ssh-copy-id user@example.com</span><br><span class="line">sftp user@example.com</span><br></pre></td></tr></table></figure>
+
+<p>私钥权限过宽时 <strong>OpenSSH</strong> 会拒绝加载（<strong><code>chmod 600 ~/.ssh/id_ed25519</code></strong>）。</p>
+<hr>
+<h1 id="六、小结"><a href="#六、小结" class="headerlink" title="六、小结"></a>六、小结</h1><table>
+<thead>
+<tr>
+<th>项</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>原理</td>
+<td><strong>SSH</strong> 隧道上的 <strong>SFTP</strong> 子系统</td>
+</tr>
+<tr>
+<td>作用</td>
+<td>安全文件传输与远程目录管理</td>
+</tr>
+<tr>
+<td>示例</td>
+<td><strong><code>sftp</code></strong>、<strong><code>-b</code> 批处理</strong></td>
+</tr>
+<tr>
+<td>对比</td>
+<td><a href="/2026/05/01/FTP/">FTP</a> 明文双连接 · <strong>FTPS</strong> 仍双连接</td>
+</tr>
+</tbody></table>
+<p>服务端 <strong>chroot</strong>、<strong>ForceCommand</strong>、<strong>AllowUsers</strong> 等以 <strong><code>sshd_config</code></strong> 与发行版文档为准。</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/Protocol/FTP/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/05/01/Protocol/FTP/" class="post-title-link" itemprop="url">FTP 详解：双连接模型、主动/被动与 lftp 示例</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-05-01 12:48:31" itemprop="dateCreated datePublished" datetime="2026-05-01T12:48:31+08:00">2026-05-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-05-04 22:05:22" itemprop="dateModified" datetime="2026-05-04T22:05:22+08:00">2026-05-04</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Protocol/" itemprop="url" rel="index"><span itemprop="name">Protocol</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>559</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>2 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p><strong>FTP</strong>（<strong>File Transfer Protocol</strong>，<strong>RFC 959</strong>）使用<strong>两条独立的 TCP 连接</strong>：<strong>控制连接</strong>（默认 <strong>21</strong>）传输命令与应答，<strong>数据连接</strong>传输文件与目录列表。下面从「<strong>设计动机</strong> → <strong>控制与数据通道原理</strong> → <strong>PORT 与 PASV</strong> → <strong>明文风险</strong> → <strong><code>lftp</code> 命令示例</strong> → <strong>与 SFTP 取舍</strong>」顺序写清楚；安全替代见 <a href="/2026/05/01/SFTP/">SFTP</a>。</p>
+<hr>
+<h1 id="一、设计动机（历史作用）"><a href="#一、设计动机（历史作用）" class="headerlink" title="一、设计动机（历史作用）"></a>一、设计动机（历史作用）</h1><p>在 <strong>TCP&#x2F;IP</strong> 早期提供<strong>跨异构系统</strong>的文件列目录、上传、下载与断点续传（由扩展命令支持程度决定）；命令为<strong>可读文本</strong>（如 <strong><code>RETR</code></strong>、<strong><code>STOR</code></strong>、<strong><code>LIST</code></strong>），便于人机调试。</p>
+<hr>
+<h1 id="二、双连接模型（原理）"><a href="#二、双连接模型（原理）" class="headerlink" title="二、双连接模型（原理）"></a>二、双连接模型（原理）</h1><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">客户端                                服务端</span><br><span class="line">  |  TCP 21 控制连接（命令/响应）        |</span><br><span class="line">  |&lt;==================================&gt;|</span><br><span class="line">  |                                    |</span><br><span class="line">  |  数据连接（文件内容 / LIST 输出）    |</span><br><span class="line">  |&lt;==================================&gt;|  端口依 PORT/PASV 而定</span><br></pre></td></tr></table></figure>
+
+<p><strong>控制连接</strong>全程保持；每条数据传送动态建立<strong>数据连接</strong>。</p>
+<hr>
+<h1 id="三、主动-PORT-与被动-PASV"><a href="#三、主动-PORT-与被动-PASV" class="headerlink" title="三、主动 PORT 与被动 PASV"></a>三、主动 PORT 与被动 PASV</h1><h2 id="1-主动（PORT）"><a href="#1-主动（PORT）" class="headerlink" title="1. 主动（PORT）"></a>1. 主动（PORT）</h2><p>服务端从 <strong>20</strong> 端口向客户端在 <strong><code>PORT</code></strong> 命令中声明的 <strong>IP:端口</strong> 主动连出。<strong>客户端在 NAT 后</strong>时常失败（内网端口对服务端不可达）。</p>
+<h2 id="2-被动（PASV）（主流）"><a href="#2-被动（PASV）（主流）" class="headerlink" title="2. 被动（PASV）（主流）"></a>2. 被动（PASV）（主流）</h2><p>服务端在应答中给出<strong>监听 IP 与端口</strong>，客户端主动连入。<strong>防火墙</strong>须在服务端放行<strong>被动端口范围</strong>；<strong>NAT</strong> 下常需配置<strong>对外通告地址</strong>（如 <strong><code>masquerade_address</code></strong>）。</p>
+<hr>
+<h1 id="四、明文与认证"><a href="#四、明文与认证" class="headerlink" title="四、明文与认证"></a>四、明文与认证</h1><p>传统 <strong>FTP</strong> 用户名、密码与数据多为<strong>明文</strong>；<strong>FTPES</strong> 在 <strong>TLS</strong> 上加密，但仍保留双连接复杂性。公网新系统优先 <a href="/2026/05/01/SFTP/">SFTP</a> 或对象存储 <strong>HTTPS</strong> 上传。</p>
+<hr>
+<h1 id="五、命令示例：lftp（若已安装）"><a href="#五、命令示例：lftp（若已安装）" class="headerlink" title="五、命令示例：lftp（若已安装）"></a>五、命令示例：<code>lftp</code>（若已安装）</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">lftp -u anonymous, ftp://speedtest.tele2.net</span><br></pre></td></tr></table></figure>
+
+<p>交互内：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ls</span><br><span class="line">get 1KB.zip</span><br><span class="line">bye</span><br></pre></td></tr></table></figure>
+
+<p>脚本化：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">lftp -c <span class="string">&quot;open -u user,pass ftp://example.com; ls; get remote.bin -o local.bin&quot;</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="六、原始-FTP-控制序列（telnet-nc-教学向）"><a href="#六、原始-FTP-控制序列（telnet-nc-教学向）" class="headerlink" title="六、原始 FTP 控制序列（telnet&#x2F;nc 教学向）"></a>六、原始 <strong>FTP</strong> 控制序列（<code>telnet</code>&#x2F;<code>nc</code> 教学向）</h1><p><strong>仅本地实验</strong>，手动发 <strong><code>USER</code></strong> &#x2F; <strong><code>PASS</code></strong>（密码进历史，勿在生产使用）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">printf</span> <span class="string">&#x27;USER anonymous\r\nPASS guest@\r\nQUIT\r\n&#x27;</span> | nc -v ftp.example.com 21</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="七、小结"><a href="#七、小结" class="headerlink" title="七、小结"></a>七、小结</h1><table>
+<thead>
+<tr>
+<th>项</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>原理</td>
+<td><strong>控制 21</strong> + <strong>动态数据连接</strong></td>
+</tr>
+<tr>
+<td>作用</td>
+<td>历史最广泛的文件交换协议之一</td>
+</tr>
+<tr>
+<td>工具</td>
+<td><strong><code>lftp</code></strong>、<strong><code>ftp</code></strong>、<strong><code>nc</code></strong></td>
+</tr>
+<tr>
+<td>安全</td>
+<td>优先 <a href="/2026/05/01/SFTP/">SFTP</a> &#x2F; <strong>HTTPS</strong></td>
+</tr>
+</tbody></table>
+<hr>
+<h1 id="八、与-SFTP-对比"><a href="#八、与-SFTP-对比" class="headerlink" title="八、与 SFTP 对比"></a>八、与 <a href="/2026/05/01/SFTP/">SFTP</a> 对比</h1><table>
+<thead>
+<tr>
+<th></th>
+<th><strong>FTP</strong></th>
+<th><strong>SFTP</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>连接数</td>
+<td>双连接</td>
+<td>单 <a href="/2026/05/01/SSH/">SSH</a> 连接</td>
+</tr>
+<tr>
+<td>加密</td>
+<td>默认无</td>
+<td>强加密</td>
+</tr>
+<tr>
+<td>防火墙</td>
+<td><strong>PASV</strong> 端口范围</td>
+<td>通常单端口 <strong>22</strong></td>
+</tr>
+</tbody></table>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/Protocol/IP/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/05/01/Protocol/IP/" class="post-title-link" itemprop="url">IP 协议详解：原理、编址与排障示例</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-05-01 12:48:09" itemprop="dateCreated datePublished" datetime="2026-05-01T12:48:09+08:00">2026-05-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-05-04 22:06:17" itemprop="dateModified" datetime="2026-05-04T22:06:17+08:00">2026-05-04</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Protocol/" itemprop="url" rel="index"><span itemprop="name">Protocol</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>958</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>3 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p><strong>IP</strong>（<strong>Internet Protocol</strong>，互联网协议）工作在 <strong>OSI</strong> 第三层（网络层），向上为 <a href="/2026/05/01/TCP/">TCP</a>、<a href="/2026/05/01/UDP/">UDP</a> 等传输层协议提供**主机到主机（host-to-host）**的分组投递服务。下面从「<strong>作用与设计目标</strong> → <strong>IPv4 报文与编址原理</strong> → <strong>转发与路由</strong> → <strong>IPv6 差异要点</strong> → <strong>与 DNS&#x2F;TCP 的关系</strong> → <strong>Linux 排障命令示例</strong>」顺序写清楚；命令在 <strong>Linux</strong> 终端演示为主，<strong>macOS</strong> 多数可类比。</p>
+<hr>
+<h1 id="一、作用与设计目标"><a href="#一、作用与设计目标" class="headerlink" title="一、作用与设计目标"></a>一、作用与设计目标</h1><h2 id="1-IP-解决什么问题"><a href="#1-IP-解决什么问题" class="headerlink" title="1. IP 解决什么问题"></a>1. IP 解决什么问题</h2><ul>
+<li><strong>统一寻址</strong>：给互联网上每台参与通信的主机接口分配 <strong>IP 地址</strong>，使跨网段寻址成为可能。  </li>
+<li><strong>无连接、尽力交付（best-effort）</strong>：<strong>IP</strong> 不保证分组一定到达、不保证顺序、不负责重传；<strong>可靠性</strong>由上层（如 <a href="/2026/05/01/TCP/">TCP</a>）或应用自行实现。  </li>
+<li><strong>多路复用下层链路</strong>：无论是以太网、<strong>Wi‑Fi</strong> 还是隧道，都可承载 <strong>IP</strong> 分组。</li>
+</ul>
+<h2 id="2-与上下层的关系（简图）"><a href="#2-与上下层的关系（简图）" class="headerlink" title="2. 与上下层的关系（简图）"></a>2. 与上下层的关系（简图）</h2><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[ 应用层 HTTP / DNS 客户端 … ]</span><br><span class="line">        ↓</span><br><span class="line">[ 传输层 TCP / UDP ]  ← 端口号区分进程</span><br><span class="line">        ↓</span><br><span class="line">[ 网络层 IP ]         ← 本文：逻辑寻址与分组</span><br><span class="line">        ↓</span><br><span class="line">[ 链路层 以太网 … ]   ← MAC 帧、交换机</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="二、IPv4-报文与编址原理（概念）"><a href="#二、IPv4-报文与编址原理（概念）" class="headerlink" title="二、IPv4 报文与编址原理（概念）"></a>二、IPv4 报文与编址原理（概念）</h1><h2 id="1-IPv4-首部关键字段（理解排障）"><a href="#1-IPv4-首部关键字段（理解排障）" class="headerlink" title="1. IPv4 首部关键字段（理解排障）"></a>1. IPv4 首部关键字段（理解排障）</h2><table>
+<thead>
+<tr>
+<th>字段（概念）</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>源 &#x2F; 目的地址</strong></td>
+<td>各 <strong>32 bit</strong>，点分十进制如 <strong><code>192.168.1.10</code></strong></td>
+</tr>
+<tr>
+<td><strong>TTL</strong></td>
+<td>每经路由器减 <strong>1</strong>，到 <strong>0</strong> 丢弃，防路由环路</td>
+</tr>
+<tr>
+<td><strong>协议号</strong></td>
+<td>指示载荷是 <strong>TCP(6)</strong>、<strong>UDP(17)</strong>、<strong>ICMP(1)</strong> 等</td>
+</tr>
+<tr>
+<td><strong>总长度 &#x2F; 分片相关</strong></td>
+<td>超过链路 <strong>MTU</strong> 时可能触发 <strong>IP 分片</strong>（<strong>IPv6</strong> 主要在源端处理）</td>
+</tr>
+</tbody></table>
+<h2 id="2-子网与-CIDR"><a href="#2-子网与-CIDR" class="headerlink" title="2. 子网与 CIDR"></a>2. 子网与 CIDR</h2><p><strong>IP 地址 &#x3D; 网络前缀 + 主机号</strong>。<strong><code>/24</code></strong> 表示前 <strong>24 bit</strong> 为网络部分，主机部分 <strong>8 bit</strong>，共 <strong>256</strong> 个地址（含网络地址与广播地址用法依场景而定）。同一二层广播域内主机须在<strong>同一子网</strong>才能「直连」互通；跨子网则须走<strong>默认网关</strong>（路由器）。</p>
+<p><strong>RFC 1918 私有地址</strong>（内网常用）：</p>
+<ul>
+<li><strong><code>10.0.0.0/8</code></strong>、<strong><code>172.16.0.0/12</code></strong>、<strong><code>192.168.0.0/16</code></strong></li>
+</ul>
+<hr>
+<h1 id="三、转发与路由（原理）"><a href="#三、转发与路由（原理）" class="headerlink" title="三、转发与路由（原理）"></a>三、转发与路由（原理）</h1><p>路由器根据<strong>路由表</strong>最长前缀匹配决定下一跳；主机则主要使用<strong>默认路由</strong>（<strong><code>0.0.0.0/0</code></strong>）把非本子网流量交给网关。<strong>NAT</strong> 可在私网与公网之间改写地址&#x2F;端口，但 <strong>NAT</strong> 不是传输层协议；端到端排障仍要区分 <strong>「IP 层是否可达」</strong> 与 <strong>「端口映射&#x2F;防火墙策略」</strong>。</p>
+<hr>
+<h1 id="四、IPv6-要点（与-IPv4-对照）"><a href="#四、IPv6-要点（与-IPv4-对照）" class="headerlink" title="四、IPv6 要点（与 IPv4 对照）"></a>四、IPv6 要点（与 IPv4 对照）</h1><ul>
+<li><strong>128 bit</strong> 地址，冒号十六进制表示；存在<strong>链路本地</strong>、<strong>唯一本地</strong>、<strong>全局单播</strong> 等范围。  </li>
+<li><strong>邻居发现（NDP）</strong> 承担类似 <strong>IPv4 ARP</strong> 的链路地址解析角色。  </li>
+<li>双栈环境下 <a href="/2026/05/01/DNS/">DNS</a> 常同时返回 <strong>A</strong> 与 <strong>AAAA</strong>，应用与运维需同时考虑两条路径的防火墙与 <strong>MTU</strong>（<strong>IPv6</strong> 最小 <strong>MTU</strong> 要求为 <strong>1280</strong>）。</li>
+</ul>
+<hr>
+<h1 id="五、与-TCP、UDP、DNS-的关系"><a href="#五、与-TCP、UDP、DNS-的关系" class="headerlink" title="五、与 TCP、UDP、DNS 的关系"></a>五、与 TCP、UDP、DNS 的关系</h1><table>
+<thead>
+<tr>
+<th>上层协议</th>
+<th>如何使用 <strong>IP</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="/2026/05/01/TCP/">TCP</a></td>
+<td>在 <strong>IP</strong> 分组载荷中放 <strong>TCP 段</strong>（含端口、序号等）</td>
+</tr>
+<tr>
+<td><a href="/2026/05/01/UDP/">UDP</a></td>
+<td>载荷为 <strong>UDP 数据报</strong></td>
+</tr>
+<tr>
+<td><a href="/2026/05/01/DNS/">DNS</a></td>
+<td>查询&#x2F;响应封装在 <strong>UDP</strong> 或 <strong>TCP</strong> 中，再封装进 <strong>IP</strong></td>
+</tr>
+</tbody></table>
+<hr>
+<h1 id="六、代码与命令示例"><a href="#六、代码与命令示例" class="headerlink" title="六、代码与命令示例"></a>六、代码与命令示例</h1><h2 id="1-查看本机-IP-与路由（Linux）"><a href="#1-查看本机-IP-与路由（Linux）" class="headerlink" title="1. 查看本机 IP 与路由（Linux）"></a>1. 查看本机 <strong>IP</strong> 与路由（Linux）</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ip -4 addr show</span><br><span class="line">ip -4 route show</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ip -6 addr show</span><br><span class="line">ip -6 route show</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-连通性：-ping（ICMP-依赖-IP）"><a href="#2-连通性：-ping（ICMP-依赖-IP）" class="headerlink" title="2. 连通性： ping（ICMP 依赖 IP）"></a>2. 连通性： <strong>ping</strong>（<strong>ICMP</strong> 依赖 <strong>IP</strong>）</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ping -c 4 223.5.5.5</span><br><span class="line">ping -c 4 2400:3200::1</span><br></pre></td></tr></table></figure>
+
+<p>若 <strong>ping</strong> 通 <strong>IP</strong> 但域名不通，优先查 <a href="/2026/05/01/DNS/">DNS</a> 与 <strong><code>/etc/resolv.conf</code></strong>。</p>
+<h2 id="3-Python：解析域名到-A-AAAA（调用系统解析器）"><a href="#3-Python：解析域名到-A-AAAA（调用系统解析器）" class="headerlink" title="3. Python：解析域名到 A &#x2F; AAAA（调用系统解析器）"></a>3. <strong>Python</strong>：解析域名到 <strong>A &#x2F; AAAA</strong>（调用系统解析器）</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> socket</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> family, kind, proto, canon, sockaddr <span class="keyword">in</span> socket.getaddrinfo(</span><br><span class="line">    <span class="string">&quot;example.com&quot;</span>, <span class="number">443</span>, <span class="built_in">type</span>=socket.SOCK_STREAM</span><br><span class="line">):</span><br><span class="line">    <span class="built_in">print</span>(family, sockaddr)  <span class="comment"># AF_INET / AF_INET6 与 (ip, port)</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="4-traceroute（路径探测，实现因系统而异）"><a href="#4-traceroute（路径探测，实现因系统而异）" class="headerlink" title="4. traceroute（路径探测，实现因系统而异）"></a>4. <strong>traceroute</strong>（路径探测，实现因系统而异）</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">traceroute -4 -n 8.8.8.8</span><br><span class="line">tracepath -n 2400:3200::1</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="七、小结"><a href="#七、小结" class="headerlink" title="七、小结"></a>七、小结</h1><table>
+<thead>
+<tr>
+<th>项</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>原理</td>
+<td><strong>无连接</strong>、<strong>尽力交付</strong>；<strong>TTL</strong>、<strong>分片</strong>、<strong>协议号</strong></td>
+</tr>
+<tr>
+<td>作用</td>
+<td>全局寻址与跨网段转发基础</td>
+</tr>
+<tr>
+<td>编址</td>
+<td><strong>IPv4 &#x2F; IPv6</strong> + <strong>CIDR</strong>；私网 <strong>RFC 1918</strong></td>
+</tr>
+<tr>
+<td>上层</td>
+<td><a href="/2026/05/01/TCP/">TCP</a> · <a href="/2026/05/01/UDP/">UDP</a> · <a href="/2026/05/01/DNS/">DNS</a></td>
+</tr>
+</tbody></table>
+<p>更深入主题（<strong>策略路由</strong>、<strong>Anycast</strong>、<strong>IPsec</strong>）以 <strong>RFC</strong> 与发行版 <strong>Networking</strong> 文档为准。</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -1199,376 +1930,8 @@
 
 
 
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/BigData/Flink/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="miracle">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="my">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | my">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/05/01/BigData/Flink/" class="post-title-link" itemprop="url">Flink</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2026-05-01 12:43:45" itemprop="dateCreated datePublished" datetime="2026-05-01T12:43:45+08:00">2026-05-01</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/BigData/" itemprop="url" rel="index"><span itemprop="name">BigData</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>0</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>1 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/BigData/Spark/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="miracle">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="my">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | my">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/05/01/BigData/Spark/" class="post-title-link" itemprop="url">Spark</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2026-05-01 12:43:07" itemprop="dateCreated datePublished" datetime="2026-05-01T12:43:07+08:00">2026-05-01</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/BigData/" itemprop="url" rel="index"><span itemprop="name">BigData</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>0</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>1 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/Blockchain/NFT/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="miracle">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="my">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | my">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/05/01/Blockchain/NFT/" class="post-title-link" itemprop="url">NFT</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2026-05-01 12:41:26" itemprop="dateCreated datePublished" datetime="2026-05-01T12:41:26+08:00">2026-05-01</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Blockchain/" itemprop="url" rel="index"><span itemprop="name">Blockchain</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>0</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>1 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/Blockchain/%E5%85%83%E5%AE%87%E5%AE%99/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="miracle">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="my">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | my">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/05/01/Blockchain/%E5%85%83%E5%AE%87%E5%AE%99/" class="post-title-link" itemprop="url">元宇宙(Metaverse)</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2026-05-01 12:40:05" itemprop="dateCreated datePublished" datetime="2026-05-01T12:40:05+08:00">2026-05-01</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Blockchain/" itemprop="url" rel="index"><span itemprop="name">Blockchain</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>0</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>1 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
   <nav class="pagination">
-    <a class="extend prev" rel="prev" title="上一页" aria-label="上一页" href="/page/8/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><span class="page-number current">9</span><a class="page-number" href="/page/10/">10</a><span class="space">&hellip;</span><a class="page-number" href="/page/13/">13</a><a class="extend next" rel="next" title="下一页" aria-label="下一页" href="/page/10/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" title="上一页" aria-label="上一页" href="/page/8/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><span class="page-number current">9</span><a class="page-number" href="/page/10/">10</a><span class="space">&hellip;</span><a class="page-number" href="/page/17/">17</a><a class="extend next" rel="next" title="下一页" aria-label="下一页" href="/page/10/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 </div>
@@ -1590,13 +1953,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">82k</span>
+    <span title="站点总字数">143k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">4:35</span>
+    <span title="站点阅读时长">7:57</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

@@ -63,6 +63,12 @@
 
 
 
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js" defer></script>
+
+
 
   <noscript>
     <link rel="stylesheet" href="/css/noscript.css">
@@ -166,18 +172,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">122</span>
+          <span class="site-state-item-count">163</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">37</span>
+        <span class="site-state-item-count">38</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">116</span>
+        <span class="site-state-item-count">114</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -205,6 +211,657 @@
     </div>
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/Python/JupyterHub/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/05/01/Python/JupyterHub/" class="post-title-link" itemprop="url">JupyterHub 入门：多用户架构与部署要点</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-05-01 12:32:03" itemprop="dateCreated datePublished" datetime="2026-05-01T12:32:03+08:00">2026-05-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-05-04 20:20:39" itemprop="dateModified" datetime="2026-05-04T20:20:39+08:00">2026-05-04</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Python/" itemprop="url" rel="index"><span itemprop="name">Python</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>854</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>3 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p><strong>JupyterHub</strong> 把 <strong>Jupyter Notebook &#x2F; JupyterLab</strong> 扩展为<strong>多用户</strong>场景：统一登录后，为每位用户启动<strong>独立的单用户服务器</strong>（<strong>Notebook</strong> 或 <strong>Lab</strong>），适合高校课程、企业内部分析平台与科研组共享集群。下面从「<strong>官网与适用边界</strong> → <strong>架构角色</strong> → <strong>本地最小试用</strong> → <strong>配置与安全</strong> → <strong>生产与 Kubernetes</strong>」顺序写清楚；单用户写 <strong><code>.ipynb</code></strong> 仍建议先看 <a href="/2026/05/01/Jupyter/">Jupyter 入门</a> 与 <a href="/2026/05/01/JupyterLab/">JupyterLab 入门</a>。<strong>Hub</strong> 的认证、<strong>HTTPS</strong> 与配额属于运维范畴，生产请以官方文档与内控为准。</p>
+<hr>
+<h1 id="一、官网与适用边界"><a href="#一、官网与适用边界" class="headerlink" title="一、官网与适用边界"></a>一、官网与适用边界</h1><ul>
+<li><strong>JupyterHub 文档</strong>：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://jupyterhub.readthedocs.io/">https://jupyterhub.readthedocs.io/</a>  </li>
+<li><strong>教程与部署指南</strong>：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://jupyterhub.readthedocs.io/en/stable/tutorial/index.html">https://jupyterhub.readthedocs.io/en/stable/tutorial/index.html</a>  </li>
+<li><strong>多用户「零到部署」参考（Kubernetes）</strong>：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://z2jh.jupyter.org/">https://z2jh.jupyter.org/</a></li>
+</ul>
+<p><strong>JupyterHub</strong> 解决的是「<strong>谁可以登录、登录后跑哪个镜像&#x2F;环境、如何回收资源</strong>」；不替代 <strong>Python</strong> 依赖管理，也不等于 <strong>Kubernetes</strong> 本身——但生产上常与 <strong>K8s</strong>、<strong>反向代理</strong> 组合使用。</p>
+<hr>
+<h1 id="二、架构角色（概念）"><a href="#二、架构角色（概念）" class="headerlink" title="二、架构角色（概念）"></a>二、架构角色（概念）</h1><table>
+<thead>
+<tr>
+<th>组件</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Hub</strong></td>
+<td>处理登录、会话与<strong>启动&#x2F;停止</strong>用户服务器</td>
+</tr>
+<tr>
+<td><strong>Proxy</strong></td>
+<td>把浏览器请求<strong>按用户路径</strong>转发到对应单用户进程（常见为 <strong>configurable-http-proxy</strong>）</td>
+</tr>
+<tr>
+<td><strong>Single-user server</strong></td>
+<td>每个用户自己的 <strong>Jupyter Server</strong>（界面多为 <strong>JupyterLab</strong> 或 <strong>Notebook</strong>）</td>
+</tr>
+<tr>
+<td><strong>Spawner</strong></td>
+<td>决定「如何启动」单用户进程（本机进程、<strong>Docker</strong>、<strong>K8s Pod</strong> 等）</td>
+</tr>
+</tbody></table>
+<p>理清「<strong>Hub 进程</strong>」与「<strong>用户内核进程</strong>」分离，有助于排查端口、<strong>Cookie</strong> 与 <strong>WebSocket</strong> 转发问题。</p>
+<hr>
+<h1 id="三、本地最小试用（pip）"><a href="#三、本地最小试用（pip）" class="headerlink" title="三、本地最小试用（pip）"></a>三、本地最小试用（pip）</h1><p>仅用于<strong>本机理解流程</strong>，不代表生产安全配置。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">python -m pip install -U pip</span><br><span class="line">python -m pip install jupyterhub notebook</span><br></pre></td></tr></table></figure>
+
+<p>生成默认配置并查看路径提示：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jupyterhub --generate-config</span><br></pre></td></tr></table></figure>
+
+<p>在同一虚拟环境、<strong>可接受 Hub 监听非 localhost 的机器</strong>上首次试跑（具体子命令与选项以当前版本 <strong><code>jupyterhub --help</code></strong> 为准）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jupyterhub</span><br></pre></td></tr></table></figure>
+
+<p>默认可能监听 <strong><code>0.0.0.0:8000</code></strong> 等（随版本变化），<strong>请勿在公网无认证环境长期运行</strong>。首次使用请阅读终端说明与 <strong>RTD</strong> 中 <strong>Getting Started</strong> 的安全警告。</p>
+<hr>
+<h1 id="四、配置与安全要点"><a href="#四、配置与安全要点" class="headerlink" title="四、配置与安全要点"></a>四、配置与安全要点</h1><h2 id="1-jupyterhub-config-py"><a href="#1-jupyterhub-config-py" class="headerlink" title="1. jupyterhub_config.py"></a>1. <code>jupyterhub_config.py</code></h2><p><strong><code>--generate-config</code></strong> 会生成 <strong><code>jupyterhub_config.py</code></strong> 模板，其中可设置：</p>
+<ul>
+<li><strong>认证</strong>：<strong>PAM</strong>（类 Unix）、<strong>OAuth</strong>（<strong>GitHub &#x2F; OIDC</strong> 等，需注册应用与回调 <strong>URL</strong>）  </li>
+<li><strong>Spawner</strong>：默认 <strong><code>LocalProcessSpawner</code></strong> 适合单机试用；<strong>DockerSpawner</strong>、<strong>KubeSpawner</strong> 用于隔离与弹性  </li>
+<li><strong><code>c.JupyterHub.bind_url</code></strong>：监听地址与端口，与反向代理 scheme 对齐</li>
+</ul>
+<h2 id="2-HTTPS-与-Cookie"><a href="#2-HTTPS-与-Cookie" class="headerlink" title="2. HTTPS 与 Cookie"></a>2. HTTPS 与 Cookie</h2><p>浏览器 <strong>Cookie</strong>、<strong>Secure</strong> 与 <strong><code>SameSite</code></strong> 与是否 <strong>HTTPS</strong> 强相关；对外服务应在 <strong>Hub</strong> 前放置 <strong>TLS</strong> 终结（<strong>Nginx</strong>、<strong>Traefik</strong> 或云负载均衡），并按文档设置 <strong><code>c.JupyterHub.cookie_secret</code></strong> 等密钥文件权限。</p>
+<h2 id="3-资源与隔离"><a href="#3-资源与隔离" class="headerlink" title="3. 资源与隔离"></a>3. 资源与隔离</h2><p>多用户共享一台机时，注意 <strong>CPU &#x2F; 内存 &#x2F; 磁盘</strong> 配额与<strong>恶意代码</strong>风险；生产常用<strong>容器或 K8s</strong> 做进程隔离，并限制出站网络。</p>
+<hr>
+<h1 id="五、生产与-Kubernetes"><a href="#五、生产与-Kubernetes" class="headerlink" title="五、生产与 Kubernetes"></a>五、生产与 Kubernetes</h1><ul>
+<li><strong>单机 &#x2F; 虚拟机</strong>：<strong>PAM + Nginx + HTTPS + systemd</strong> 管理 <strong>Hub</strong>，<strong>Spawner</strong> 选 <strong>Docker</strong> 等。  </li>
+<li><strong>Kubernetes</strong>：参考 <strong>Zero to JupyterHub</strong>（<strong>Z2JH</strong>）：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://z2jh.jupyter.org/">https://z2jh.jupyter.org/</a> ，用 <strong>Helm</strong> 维护 <strong>Hub、Proxy、用户镜像</strong> 与存储类。</li>
+</ul>
+<p>上线前务必完成：<strong>身份源审计</strong>、<strong>镜像供应链</strong>、<strong>持久化 home</strong>、<strong>升级与回滚策略</strong>。</p>
+<hr>
+<h1 id="六、小结"><a href="#六、小结" class="headerlink" title="六、小结"></a>六、小结</h1><table>
+<thead>
+<tr>
+<th>项</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>定位</td>
+<td>多用户 <strong>Jupyter</strong> 入口；<strong>Hub + Proxy + 单用户服务</strong></td>
+</tr>
+<tr>
+<td>试用</td>
+<td><strong><code>pip install jupyterhub notebook</code></strong> → <strong><code>jupyterhub --generate-config</code></strong> → 阅读官方 <strong>Getting Started</strong></td>
+</tr>
+<tr>
+<td>安全</td>
+<td><strong>HTTPS</strong>、强认证、<strong>cookie_secret</strong>；避免公网裸 <strong>Hub</strong></td>
+</tr>
+<tr>
+<td>单用户基础</td>
+<td><a href="/2026/05/01/Jupyter/">Jupyter</a> · <a href="/2026/05/01/JupyterLab/">JupyterLab</a></td>
+</tr>
+<tr>
+<td>生产编排</td>
+<td><strong>Z2JH</strong>（<strong>K8s</strong>）或等价 <strong>IaC</strong> 方案</td>
+</tr>
+</tbody></table>
+<p><strong>JupyterHub</strong> 大版本升级会牵动 <strong>Spawner</strong>、<strong>OAuthenticator</strong> 等周边包，升级前请在预发环境对照发行说明做回归。</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/Python/JupyterLab/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/05/01/Python/JupyterLab/" class="post-title-link" itemprop="url">JupyterLab 入门：安装、工作区与扩展</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-05-01 12:31:44" itemprop="dateCreated datePublished" datetime="2026-05-01T12:31:44+08:00">2026-05-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-05-04 20:20:41" itemprop="dateModified" datetime="2026-05-04T20:20:41+08:00">2026-05-04</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Python/" itemprop="url" rel="index"><span itemprop="name">Python</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>684</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>2 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p><strong>JupyterLab</strong> 是 <strong>Jupyter</strong> 项目的下一代<strong>单用户</strong> Web 界面：多文档标签、文件浏览器、终端与笔记本同屏工作流，底层同样基于 <strong><code>jupyter_server</code></strong>。下面从「<strong>官网与定位</strong> → <strong>安装</strong> → <strong>启动与安全习惯</strong> → <strong>工作区与常用面板</strong> → <strong>扩展</strong> → <strong>与 Notebook &#x2F; Hub 的关系</strong>」顺序写清楚；命令在 <strong>Linux &#x2F; macOS</strong> 或 <strong>Windows</strong> 下 <strong>Python 3.10+</strong> 虚拟环境中执行。经典界面见 <a href="/2026/05/01/Jupyter/">Jupyter 入门</a>；多用户入口见 <a href="/2026/05/01/JupyterHub/">JupyterHub 入门</a>。</p>
+<hr>
+<h1 id="一、官网与定位"><a href="#一、官网与定位" class="headerlink" title="一、官网与定位"></a>一、官网与定位</h1><ul>
+<li><strong>JupyterLab 文档</strong>：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://jupyterlab.readthedocs.io/">https://jupyterlab.readthedocs.io/</a>  </li>
+<li><strong>Jupyter 总览</strong>：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://jupyter.org/">https://jupyter.org/</a></li>
+</ul>
+<p><strong>JupyterLab</strong> 与 <strong><code>jupyter notebook</code></strong> 共享 <strong><code>.ipynb</code></strong> 与内核模型；迁移时一般<strong>无需改文件格式</strong>，主要是换启动命令与操作习惯。</p>
+<hr>
+<h1 id="二、安装"><a href="#二、安装" class="headerlink" title="二、安装"></a>二、安装</h1><p>在已激活的虚拟环境中：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">python -m pip install -U pip</span><br><span class="line">python -m pip install jupyterlab</span><br></pre></td></tr></table></figure>
+
+<p>验证：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jupyter lab --version</span><br></pre></td></tr></table></figure>
+
+<p>若与 <strong>经典 Notebook</strong> 同环境共存，可额外保留 <strong><code>notebook</code></strong> 包（见 <a href="/2026/05/01/Jupyter/">Jupyter 入门</a>）。</p>
+<hr>
+<h1 id="三、启动与安全习惯"><a href="#三、启动与安全习惯" class="headerlink" title="三、启动与安全习惯"></a>三、启动与安全习惯</h1><h2 id="1-默认启动"><a href="#1-默认启动" class="headerlink" title="1. 默认启动"></a>1. 默认启动</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jupyter lab</span><br></pre></td></tr></table></figure>
+
+<p>终端打印的 <strong>URL</strong> 含 <strong><code>token=</code></strong>；<strong><code>--no-browser</code></strong> 适合在远程服务器上只复制链接到本地浏览器打开。</p>
+<h2 id="2-端口与监听地址"><a href="#2-端口与监听地址" class="headerlink" title="2. 端口与监听地址"></a>2. 端口与监听地址</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jupyter lab --port 8888 --no-browser --ServerApp.ip=127.0.0.1</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong><code>127.0.0.1</code></strong>：仅本机访问，适合本地开发。  </li>
+<li><strong><code>0.0.0.0</code></strong>：监听所有网卡，便于 <strong>SSH 端口转发</strong> 或容器内访问，但<strong>须配合防火墙与认证</strong>，勿在公网裸奔。</li>
+</ul>
+<h2 id="3-配置密码与-HTTPS（生产必读）"><a href="#3-配置密码与-HTTPS（生产必读）" class="headerlink" title="3. 配置密码与 HTTPS（生产必读）"></a>3. 配置密码与 HTTPS（生产必读）</h2><p>长期使用可配置 <strong><code>ServerApp.password</code></strong>（哈希）与证书，详见 <strong>Jupyter Server</strong> 文档中的 <strong>Security</strong> 章节；团队统一入口请评估 <strong>JupyterHub</strong>。</p>
+<hr>
+<h1 id="四、工作区与常用能力"><a href="#四、工作区与常用能力" class="headerlink" title="四、工作区与常用能力"></a>四、工作区与常用能力</h1><table>
+<thead>
+<tr>
+<th>能力</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>文件浏览器</strong></td>
+<td>左侧打开工作目录下 <strong><code>.ipynb</code></strong>、文本与图片</td>
+</tr>
+<tr>
+<td><strong>Notebook</strong></td>
+<td>与经典界面相同的单元格执行模型</td>
+</tr>
+<tr>
+<td><strong>Console</strong></td>
+<td>与内核绑定的「控制台」，适合试片段代码</td>
+</tr>
+<tr>
+<td><strong>Terminal</strong></td>
+<td>内置终端（依赖系统 <strong>shell</strong>），在远程环境非常方便</td>
+</tr>
+<tr>
+<td><strong>Workspace</strong></td>
+<td>布局可保存；关闭前注意 <strong>File → Save Workspace</strong>（以当前版本菜单为准）</td>
+</tr>
+</tbody></table>
+<hr>
+<h1 id="五、扩展（Extensions）"><a href="#五、扩展（Extensions）" class="headerlink" title="五、扩展（Extensions）"></a>五、扩展（Extensions）</h1><p><strong>JupyterLab 3+</strong> 起多数扩展以 <strong>Python pip 包</strong> 分发，安装后重启 <strong>Lab</strong>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python -m pip install jupyterlab-git</span><br></pre></td></tr></table></figure>
+
+<p>具体扩展名以 <strong>PyPI</strong> 与扩展文档为准；<strong>Extension Manager</strong> 是否在界面默认启用，取决于管理员策略与版本（详见 <strong>JupyterLab</strong> 文档 <strong>Extensions</strong> 一节）。</p>
+<hr>
+<h1 id="六、与-Jupyter-JupyterHub-的关系"><a href="#六、与-Jupyter-JupyterHub-的关系" class="headerlink" title="六、与 Jupyter &#x2F; JupyterHub 的关系"></a>六、与 Jupyter &#x2F; JupyterHub 的关系</h1><ul>
+<li><strong>经典 Notebook</strong>：见 <a href="/2026/05/01/Jupyter/">Jupyter 入门</a>，命令为 <strong><code>jupyter notebook</code></strong>。  </li>
+<li><strong>JupyterHub</strong>：在 <strong>Hub</strong> 后为用户各自拉起 <strong>单用户服务器</strong>，前端常仍是 <strong>JupyterLab</strong>；部署与认证见 <a href="/2026/05/01/JupyterHub/">JupyterHub 入门</a>。</li>
+</ul>
+<hr>
+<h1 id="七、小结"><a href="#七、小结" class="headerlink" title="七、小结"></a>七、小结</h1><table>
+<thead>
+<tr>
+<th>项</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>安装</td>
+<td><strong><code>python -m pip install jupyterlab</code></strong></td>
+</tr>
+<tr>
+<td>启动</td>
+<td><strong><code>jupyter lab</code></strong>，使用终端中的 <strong>token URL</strong></td>
+</tr>
+<tr>
+<td>安全</td>
+<td>优先 <strong><code>127.0.0.1</code></strong>；远程用 <strong>SSH 转发</strong> 或 <strong>Hub + HTTPS</strong></td>
+</tr>
+<tr>
+<td>延伸</td>
+<td><a href="/2026/05/01/Jupyter/">Jupyter</a> · <a href="/2026/05/01/JupyterHub/">JupyterHub</a></td>
+</tr>
+</tbody></table>
+<p>界面与快捷键随 <strong>JupyterLab</strong> 大版本迭代会有差异，以你安装的版本对应文档为准。</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/Python/Jupyter/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/05/01/Python/Jupyter/" class="post-title-link" itemprop="url">Jupyter 入门：经典 Notebook、安装与内核</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-05-01 12:31:06" itemprop="dateCreated datePublished" datetime="2026-05-01T12:31:06+08:00">2026-05-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-05-04 20:20:34" itemprop="dateModified" datetime="2026-05-04T20:20:34+08:00">2026-05-04</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Python/" itemprop="url" rel="index"><span itemprop="name">Python</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>779</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>3 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p><strong>Jupyter</strong> 指以浏览器为界面、<strong>单元格</strong>为单位交互运行代码的笔记本生态；日常所说的「<strong>Notebook</strong>」多指经典 <strong><code>jupyter notebook</code></strong> 界面（文档扩展名 <strong><code>.ipynb</code></strong>）。下面从「<strong>官网与组成</strong> → <strong>环境准备</strong> → <strong>安装与启动</strong> → <strong>内核与 <code>.ipynb</code> 要点</strong> → <strong>与 JupyterLab 的关系</strong>」顺序写清楚；命令在 <strong>Linux &#x2F; macOS</strong> 终端或 <strong>Windows PowerShell</strong> 中执行（已安装 <strong>Python 3.10+</strong> 为前提）。多用户与统一入口见站内 <a href="/2026/05/01/JupyterHub/">JupyterHub 入门</a>；下一代单用户界面见 <a href="/2026/05/01/JupyterLab/">JupyterLab 入门</a>。</p>
+<hr>
+<h1 id="一、官网与组成"><a href="#一、官网与组成" class="headerlink" title="一、官网与组成"></a>一、官网与组成</h1><ul>
+<li><strong>Jupyter 项目主页</strong>：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://jupyter.org/">https://jupyter.org/</a>  </li>
+<li><strong>Notebook 文档（经典界面）</strong>：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://jupyter-notebook.readthedocs.io/">https://jupyter-notebook.readthedocs.io/</a>  </li>
+<li><strong><code>.ipynb</code> 格式说明</strong>：以当前 <strong>nbformat</strong> 文档为准（Notebook 文件为 <strong>JSON</strong>，含代码单元、输出与元数据）。</li>
+</ul>
+<p><strong>Jupyter</strong> 与具体「前端」解耦：<strong>Notebook</strong> 与 <strong>JupyterLab</strong> 都能打开同一 <strong><code>.ipynb</code></strong>；底层常由 <strong><code>jupyter_server</code></strong> 提供 <strong>HTTP</strong> 与 <strong>WebSocket</strong> 服务。团队若只需<strong>单用户本机或单容器</strong>写分析，<strong>Notebook</strong> 或 <strong>JupyterLab</strong> 二选一即可。</p>
+<hr>
+<h1 id="二、环境准备"><a href="#二、环境准备" class="headerlink" title="二、环境准备"></a>二、环境准备</h1><ol>
+<li>安装 <strong>Python 3.10+</strong>，终端可执行 <strong><code>python --version</code></strong>（或 <strong><code>python3</code></strong>，下文统一写 <strong><code>python</code></strong>，请按本机替换）。  </li>
+<li>建议使用<strong>虚拟环境</strong>（<strong><code>venv</code></strong>、<strong><code>conda</code></strong> 或站内 <strong>uv</strong> 工具），避免把 <strong>Jupyter</strong> 装进全局 <strong>site-packages</strong> 难以清理。</li>
+</ol>
+<hr>
+<h1 id="三、安装与启动"><a href="#三、安装与启动" class="headerlink" title="三、安装与启动"></a>三、安装与启动</h1><h2 id="1-安装-notebook-包"><a href="#1-安装-notebook-包" class="headerlink" title="1. 安装 notebook 包"></a>1. 安装 <code>notebook</code> 包</h2><p>在已激活的虚拟环境中：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">python -m pip install -U pip</span><br><span class="line">python -m pip install notebook</span><br></pre></td></tr></table></figure>
+
+<p>验证：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jupyter notebook --version</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-启动经典-Notebook"><a href="#2-启动经典-Notebook" class="headerlink" title="2. 启动经典 Notebook"></a>2. 启动经典 Notebook</h2><p>在项目目录下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jupyter notebook</span><br></pre></td></tr></table></figure>
+
+<p>终端会打印带 <strong><code>token=</code></strong> 的本地 <strong>URL</strong>（默认 <strong><code>127.0.0.1:8888</code></strong>），用浏览器打开即可。首次运行若浏览器未自动打开，请<strong>手动复制完整带 token 的链接</strong>。</p>
+<h2 id="3-指定端口与仅本机监听（推荐习惯）"><a href="#3-指定端口与仅本机监听（推荐习惯）" class="headerlink" title="3. 指定端口与仅本机监听（推荐习惯）"></a>3. 指定端口与仅本机监听（推荐习惯）</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jupyter notebook --port 8888 --no-browser --ServerApp.ip=127.0.0.1</span><br></pre></td></tr></table></figure>
+
+<p><strong><code>--ServerApp.ip=0.0.0.0</code></strong> 会监听所有网卡，<strong>仅在可信内网或已配反向代理与认证时使用</strong>；公网暴露须配合 <strong>HTTPS</strong>、<strong>强鉴权</strong> 或专用网关（多用户场景更适合 <strong>JupyterHub</strong>）。</p>
+<hr>
+<h1 id="四、内核与-ipynb-要点"><a href="#四、内核与-ipynb-要点" class="headerlink" title="四、内核与 .ipynb 要点"></a>四、内核与 <code>.ipynb</code> 要点</h1><h2 id="1-内核（Kernel）"><a href="#1-内核（Kernel）" class="headerlink" title="1. 内核（Kernel）"></a>1. 内核（Kernel）</h2><p>内核是<strong>执行代码的进程</strong>；<strong>Python</strong> 环境装了 <strong><code>ipykernel</code></strong> 并注册后，Notebook 右上角可选该内核。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">python -m pip install ipykernel</span><br><span class="line">python -m ipykernel install --user --name=myenv --display-name=<span class="string">&quot;Python (myenv)&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="2-单元格类型"><a href="#2-单元格类型" class="headerlink" title="2. 单元格类型"></a>2. 单元格类型</h2><p>常见为 <strong>Code</strong>（运行代码）与 <strong>Markdown</strong>（写说明）；<strong>Shift+Enter</strong> 执行当前单元并跳到下一单元（具体快捷键以界面 <strong>Help</strong> 为准）。</p>
+<h2 id="3-保存与版本"><a href="#3-保存与版本" class="headerlink" title="3. 保存与版本"></a>3. 保存与版本</h2><p><strong><code>.ipynb</code></strong> 含输出时体积会变大；纳入 <strong>Git</strong> 前团队可约定是否<strong>清空输出</strong>再提交，或使用 <strong><code>nbstripout</code></strong> 等工具（按需查阅文档）。</p>
+<hr>
+<h1 id="五、与-JupyterLab-的取舍"><a href="#五、与-JupyterLab-的取舍" class="headerlink" title="五、与 JupyterLab 的取舍"></a>五、与 JupyterLab 的取舍</h1><table>
+<thead>
+<tr>
+<th>需求</th>
+<th>建议</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>习惯经典菜单、轻量界面</td>
+<td>继续用 <strong><code>jupyter notebook</code></strong></td>
+</tr>
+<tr>
+<td>多文件标签、内置终端、扩展生态</td>
+<td>使用 <a href="/2026/05/01/JupyterLab/">JupyterLab</a>（<strong><code>jupyter lab</code></strong>）</td>
+</tr>
+<tr>
+<td>多用户、登录与配额</td>
+<td>使用 <a href="/2026/05/01/JupyterHub/">JupyterHub</a></td>
+</tr>
+</tbody></table>
+<p>二者可<strong>同一虚拟环境</strong>内并存：同时安装 <strong><code>notebook</code></strong> 与 <strong><code>jupyterlab</code></strong> 并不冲突。</p>
+<hr>
+<h1 id="六、小结"><a href="#六、小结" class="headerlink" title="六、小结"></a>六、小结</h1><table>
+<thead>
+<tr>
+<th>项</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>定位</td>
+<td>浏览器中的交互式笔记本；经典命令 <strong><code>jupyter notebook</code></strong></td>
+</tr>
+<tr>
+<td>安装</td>
+<td><strong><code>python -m pip install notebook</code></strong>；常配合 <strong><code>ipykernel</code></strong></td>
+</tr>
+<tr>
+<td>启动</td>
+<td>注意 <strong>token</strong> 与 <strong><code>127.0.0.1</code></strong> 监听范围</td>
+</tr>
+<tr>
+<td>延伸</td>
+<td><a href="/2026/05/01/JupyterLab/">JupyterLab</a> · <a href="/2026/05/01/JupyterHub/">JupyterHub</a></td>
+</tr>
+</tbody></table>
+<p>更完整的配置项（密码、证书、扩展目录）以 <strong><code>jupyter_server</code></strong> &#x2F; <strong>Notebook</strong> 当前大版本文档为准。</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/Golang/Golang/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/05/01/Golang/Golang/" class="post-title-link" itemprop="url">Golang</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-05-01 12:28:41" itemprop="dateCreated datePublished" datetime="2026-05-01T12:28:41+08:00">2026-05-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Golang/" itemprop="url" rel="index"><span itemprop="name">Golang</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>0</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>1 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -1130,806 +1787,8 @@
 
 
 
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/Java/MyBatis/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="miracle">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="my">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | my">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/05/01/Java/MyBatis/" class="post-title-link" itemprop="url">MyBatis-Plus</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2026-05-01 12:21:18" itemprop="dateCreated datePublished" datetime="2026-05-01T12:21:18+08:00">2026-05-01</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-04 19:26:20" itemprop="dateModified" datetime="2026-05-04T19:26:20+08:00">2026-05-04</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>1.1k</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>4 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><h1 id="添加依赖"><a href="#添加依赖" class="headerlink" title="添加依赖"></a>添加依赖</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">implementation &#x27;com.baomidou:mybatis-plus-spring-boot4-starter:3.5.15&#x27;</span><br><span class="line">implementation &#x27;com.baomidou:mybatis-plus-jsqlparser:3.5.15&#x27;</span><br></pre></td></tr></table></figure>
-
-<h1 id="springboot配置"><a href="#springboot配置" class="headerlink" title="springboot配置"></a>springboot配置</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mybatis-plus:</span><br><span class="line">  mapper-locations: classpath*:org/my919/springboot/mapper/**/*.xml</span><br><span class="line">  type-aliases-package: org.my919.springboot.domain</span><br><span class="line">  configuration:</span><br><span class="line">    map-underscore-to-camel-case: true</span><br><span class="line">    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl</span><br></pre></td></tr></table></figure>
-<h1 id="添加-MapperScan-“org-my919-springboot-mapper”"><a href="#添加-MapperScan-“org-my919-springboot-mapper”" class="headerlink" title="添加@MapperScan(“org.my919.springboot.mapper”)"></a>添加@MapperScan(“org.my919.springboot.mapper”)</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">import org.mybatis.spring.annotation.MapperScan;</span><br><span class="line">import org.springframework.context.annotation.Configuration;</span><br><span class="line"></span><br><span class="line">@Configuration</span><br><span class="line">@MapperScan(&quot;org.my919.springboot.mapper&quot;) // 推荐，使用此注解，不用每个mapper上加@Mapper</span><br><span class="line">public class MapperScanConfiguration &#123;&#125;</span><br></pre></td></tr></table></figure>
-<h1 id="添加分页插件配置"><a href="#添加分页插件配置" class="headerlink" title="添加分页插件配置"></a>添加分页插件配置</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;</span><br><span class="line">import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;</span><br><span class="line">import org.springframework.context.annotation.Bean;</span><br><span class="line">import org.springframework.context.annotation.Configuration;</span><br><span class="line"></span><br><span class="line">@Configuration</span><br><span class="line">public class MybatisPlusPaginationConfig &#123;</span><br><span class="line"></span><br><span class="line">    @Bean</span><br><span class="line">    public MybatisPlusInterceptor mybatisPlusInterceptor() &#123;</span><br><span class="line">        MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();</span><br><span class="line">        PaginationInnerInterceptor pagination = new PaginationInnerInterceptor();</span><br><span class="line">        pagination.setOverflow(true);</span><br><span class="line">        interceptor.addInnerInterceptor(pagination);</span><br><span class="line">        return interceptor;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<h1 id="插件生成代码"><a href="#插件生成代码" class="headerlink" title="插件生成代码"></a>插件生成代码</h1><ul>
-<li>idea 插件安装MyatisX-Generator</li>
-<li>idea 登录数据库</li>
-<li>在表上右键-MyatisX-Generator 自动生成CRUD代码</li>
-</ul>
-<h1 id="MyBatis-Plus-分页接口"><a href="#MyBatis-Plus-分页接口" class="headerlink" title="MyBatis-Plus 分页接口"></a>MyBatis-Plus 分页接口</h1><ul>
-<li>UsersService</li>
-</ul>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Page&lt;Users&gt; page(long pageNum, long pageSize);</span><br></pre></td></tr></table></figure>
-<ul>
-<li>UsersServiceImpl</li>
-</ul>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"> public Page&lt;Users&gt; page(long pageNum, long pageSize) &#123;</span><br><span class="line">    Page&lt;Users&gt; p = new Page&lt;&gt;(pageNum, pageSize);</span><br><span class="line">    usersMapper.selectPage(p, Wrappers.emptyWrapper());</span><br><span class="line">    return p;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="MyBatis-Plus-分页原理执行流程图"><a href="#MyBatis-Plus-分页原理执行流程图" class="headerlink" title="MyBatis-Plus 分页原理执行流程图"></a>MyBatis-Plus 分页原理执行流程图</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">【开发者业务代码】</span><br><span class="line">        ↓</span><br><span class="line">new Page&lt;&gt;(pageNum, pageSize)  // 传入分页参数</span><br><span class="line">        ↓</span><br><span class="line">userMapper.selectPage(Page, QueryWrapper)</span><br><span class="line">        ↓</span><br><span class="line">【MyBatis 拦截器入口】</span><br><span class="line">        ↓</span><br><span class="line">MybatisPlusInterceptor 全局拦截</span><br><span class="line">        ↓</span><br><span class="line">匹配内部插件 → PaginationInnerInterceptor（分页核心拦截器）</span><br><span class="line">        ↓</span><br><span class="line">判断：方法参数是否包含 IPage/Page 对象？</span><br><span class="line">   ├─ 否 → 正常执行原SQL，不分页</span><br><span class="line">   └─ 是 → 进入MP分页逻辑</span><br><span class="line">          ↓</span><br><span class="line">1. 自动解析原始查询 SQL</span><br><span class="line">          ↓</span><br><span class="line">2. 自动生成 Count 统计SQL（select count(*) ...）</span><br><span class="line">          ↓</span><br><span class="line">3. 执行 Count SQL → 获取【总记录数 total】</span><br><span class="line">          ↓</span><br><span class="line">4. 自动改写原始SQL → 末尾拼接 LIMIT ?,?</span><br><span class="line">          ↓</span><br><span class="line">5. 执行 分页Limit SQL → 获取当前页数据列表</span><br><span class="line">          ↓</span><br><span class="line">6. 自动计算：总页数、当前页、是否有上/下一页</span><br><span class="line">          ↓</span><br><span class="line">7. 把 数据列表+分页信息 封装进 IPage 对象</span><br><span class="line">          ↓</span><br><span class="line">【返回给 Service/Controller 层】</span><br></pre></td></tr></table></figure>
-
-<h2 id="MyBatis-Plus-分页原理"><a href="#MyBatis-Plus-分页原理" class="headerlink" title="MyBatis-Plus 分页原理"></a>MyBatis-Plus 分页原理</h2><h3 id="一、核心一句话"><a href="#一、核心一句话" class="headerlink" title="一、核心一句话"></a>一、核心一句话</h3><p>MP 分页本质：<strong>MyBatis 拦截器 + 自动改写 SQL</strong></p>
-<ol>
-<li>你传入 <code>Page&lt;&gt;(当前页,每页条数)</code></li>
-<li>MP 分页拦截器拦截 Mapper 查询方法</li>
-<li><strong>自动帮你生成 count 总数SQL + 拼接 limit 分页SQL</strong></li>
-<li>执行两条 SQL：<strong>查总数 → 查当前页数据</strong></li>
-<li>把总数、页码、数据封装到 <code>IPage</code> 返回</li>
-</ol>
-<hr>
-<h3 id="二、关键核心组件"><a href="#二、关键核心组件" class="headerlink" title="二、关键核心组件"></a>二、关键核心组件</h3><ol>
-<li><strong>MybatisPlusInterceptor</strong><br>MP 核心插件容器，所有插件（分页、防全表更新、乐观锁）都往里注册。</li>
-<li><strong>PaginationInnerInterceptor</strong><br><strong>MP 真正的分页拦截器</strong>，核心逻辑全在这。</li>
-<li><strong>Page &#x2F; IPage</strong><br>分页参数载体，存：当前页、每页条数、总记录数、总页数、分页数据。</li>
-</ol>
-<hr>
-<h3 id="三、完整执行流程（一步一步走）"><a href="#三、完整执行流程（一步一步走）" class="headerlink" title="三、完整执行流程（一步一步走）"></a>三、完整执行流程（一步一步走）</h3><h4 id="1-配置分页拦截器（必须配置，否则分页无效）"><a href="#1-配置分页拦截器（必须配置，否则分页无效）" class="headerlink" title="1. 配置分页拦截器（必须配置，否则分页无效）"></a>1. 配置分页拦截器（必须配置，否则分页无效）</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Bean</span></span><br><span class="line"><span class="keyword">public</span> MybatisPlusInterceptor <span class="title function_">mybatisPlusInterceptor</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="type">MybatisPlusInterceptor</span> <span class="variable">interceptor</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">MybatisPlusInterceptor</span>();</span><br><span class="line">    <span class="comment">// 加入分页拦截器，指定数据库方言</span></span><br><span class="line">    interceptor.addInnerInterceptor(<span class="keyword">new</span> <span class="title class_">PaginationInnerInterceptor</span>(DbType.MYSQL));</span><br><span class="line">    <span class="keyword">return</span> interceptor;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="2-业务代码使用"><a href="#2-业务代码使用" class="headerlink" title="2. 业务代码使用"></a>2. 业务代码使用</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 第几页、每页几条</span></span><br><span class="line">IPage&lt;User&gt; page = <span class="keyword">new</span> <span class="title class_">Page</span>&lt;&gt;(<span class="number">1</span>, <span class="number">10</span>);</span><br><span class="line"><span class="comment">// MP 会自动分页</span></span><br><span class="line">IPage&lt;User&gt; resultPage = userMapper.selectPage(page, <span class="literal">null</span>);</span><br></pre></td></tr></table></figure>
-
-<h4 id="3-底层执行步骤"><a href="#3-底层执行步骤" class="headerlink" title="3. 底层执行步骤"></a>3. 底层执行步骤</h4><ol>
-<li><strong>进入 Mapper 方法前</strong><br><code>PaginationInnerInterceptor</code> 拦截到 <code>selectPage</code> 查询。</li>
-<li><strong>判断是否是分页查询</strong><br>检测方法参数里有没有 <code>IPage/Page</code> 对象，<strong>有就走分页逻辑</strong>。</li>
-<li><strong>自动生成 COUNT 语句</strong><br>原SQL：<code>select id,name from user</code><br>自动生成：<code>select count(*) from user</code> → 查询<strong>总记录数</strong></li>
-<li><strong>改写原SQL 加 LIMIT</strong><br>原SQL 被改写为：<br><code>select id,name from user limit 0,10</code></li>
-<li><strong>执行两条 SQL</strong></li>
-</ol>
-<ul>
-<li>第一条：查总条数</li>
-<li>第二条：查分页数据</li>
-</ul>
-<ol start="6">
-<li><strong>封装分页信息</strong><br>把总条数、当前页、每页大小、总页数、数据列表 全部塞进 <code>IPage</code> 返回。</li>
-</ol>
-<hr>
-<h3 id="四、为什么不用自己写-limit、不用自己写-count？"><a href="#四、为什么不用自己写-limit、不用自己写-count？" class="headerlink" title="四、为什么不用自己写 limit、不用自己写 count？"></a>四、为什么不用自己写 limit、不用自己写 count？</h3><p>MP 拦截器<strong>动态解析 SQL、动态拼接 limit、动态生成 count</strong>，完全无侵入。</p>
-<hr>
-<h3 id="五、分页两个重要特性"><a href="#五、分页两个重要特性" class="headerlink" title="五、分页两个重要特性"></a>五、分页两个重要特性</h3><h4 id="1-分页合理化-reasonable-true"><a href="#1-分页合理化-reasonable-true" class="headerlink" title="1. 分页合理化 reasonable=true"></a>1. 分页合理化 <code>reasonable=true</code></h4><ul>
-<li>输入页码 <strong>&lt;&#x3D;0</strong> 自动变成第 1 页</li>
-<li>输入页码 <strong>大于总页数</strong> 自动返回最后一页</li>
-</ul>
-<h4 id="2-溢出总页数后是否查最后一页"><a href="#2-溢出总页数后是否查最后一页" class="headerlink" title="2. 溢出总页数后是否查最后一页"></a>2. 溢出总页数后是否查最后一页</h4><p><code>PaginationInnerInterceptor</code> 可配置，防止页码乱输报错。</p>
-<hr>
-<h3 id="六、常见坑（原理衍生出来的）"><a href="#六、常见坑（原理衍生出来的）" class="headerlink" title="六、常见坑（原理衍生出来的）"></a>六、常见坑（原理衍生出来的）</h3><ol>
-<li><strong>没配置 PaginationInnerInterceptor → 分页无效，查全部数据</strong></li>
-<li><strong>只有 Mapper 层用 Page 参数才生效，Service 自己写 list 不分页</strong></li>
-<li><strong>自定义 XML SQL 也能自动分页</strong>，MP 照样拦截加 limit、count</li>
-<li><strong>多表联查、复杂 SQL 也支持</strong>，拦截器会解析原有 SQL 结构</li>
-</ol>
-<hr>
-<h3 id="七、极简总结"><a href="#七、极简总结" class="headerlink" title="七、极简总结"></a>七、极简总结</h3><p>MP 分页 &#x3D; <strong>拦截器拦截SQL → 自动查总数 → 自动拼接LIMIT → 封装分页结果</strong><br>不用手写 count、不用手写 limit，全靠拦截器动态代理实现。</p>
-<p>需要我给你画一张<strong>MP分页执行流程图</strong>，更直观看懂调用链路吗？</p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/Java/gradle/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="miracle">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="my">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | my">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/05/01/Java/gradle/" class="post-title-link" itemprop="url">Gradle 构建工具</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-      
-
-      <time title="创建时间：2026-05-01 12:18:47 / 修改时间：14:30:38" itemprop="dateCreated datePublished" datetime="2026-05-01T12:18:47+08:00">2026-05-01</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>1.2k</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>4 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>Gradle 是基于 JVM 的构建自动化工具，用 <strong><code>build.gradle</code></strong> &#x2F; <strong><code>build.gradle.kts</code></strong> 与 <strong><code>settings.gradle</code></strong> 描述依赖、插件与任务，支持增量编译与构建缓存，Android 与大型多模块项目常用。下面从官网、前置条件、Windows &#x2F; Rocky Linux 安装、环境变量到国内镜像加速，按步骤写清楚。</p>
-<hr>
-<h1 id="一、官网与发行包"><a href="#一、官网与发行包" class="headerlink" title="一、官网与发行包"></a>一、官网与发行包</h1><ul>
-<li><strong>项目官网</strong>：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://gradle.org/">https://gradle.org/</a></li>
-<li><strong>发行版列表与变更说明</strong>：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://gradle.org/releases/">https://gradle.org/releases/</a></li>
-<li><strong>二进制包下载（<code>-bin.zip</code>，各平台通用）</strong>：<code>https://services.gradle.org/distributions/gradle-&lt;版本&gt;-bin.zip</code><br>例如：<code>https://services.gradle.org/distributions/gradle-9.5.0-bin.zip</code>（<strong><code>&lt;版本&gt;</code></strong> 请按官网当前稳定版替换）。</li>
-</ul>
-<p>安装前需已安装 <strong>JDK 8+</strong>（建议 JDK 17 或 21 LTS），终端可执行 <code>java -version</code> 验证。<br>Linux 解压 <strong><code>.zip</code></strong> 需要 <strong><code>unzip</code></strong>（Rocky 可 <code>sudo dnf install -y unzip</code>）。</p>
-<hr>
-<h1 id="二、Windows-安装"><a href="#二、Windows-安装" class="headerlink" title="二、Windows 安装"></a>二、Windows 安装</h1><h2 id="1-解压到固定目录"><a href="#1-解压到固定目录" class="headerlink" title="1. 解压到固定目录"></a>1. 解压到固定目录</h2><p>将下载的 <strong><code>gradle-*-bin.zip</code></strong> 解压到不含中文、无空格的路径。本文默认安装到 <strong><code>C:\app\</code></strong>，例如：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">C:\app\gradle-9.5.0</span><br></pre></td></tr></table></figure>
-
-<p>解压后应能看到 <strong><code>bin</code></strong>、<strong><code>lib</code></strong>、<strong><code>init.d</code></strong> 等子目录。</p>
-<h2 id="2-配置系统环境变量"><a href="#2-配置系统环境变量" class="headerlink" title="2. 配置系统环境变量"></a>2. 配置系统环境变量</h2><ol>
-<li><p>打开 <strong>「系统属性」→「高级」→「环境变量」</strong>。</p>
-</li>
-<li><p><strong>新建系统变量</strong>（用户级也可，多用户建议系统级）：</p>
-<ul>
-<li>变量名：<code>GRADLE_HOME</code>  </li>
-<li>变量值：<code>C:\app\gradle-9.5.0</code>（与解压路径一致，<strong>不要</strong>写到 <code>\bin</code>）</li>
-</ul>
-</li>
-<li><p>编辑系统变量 <strong><code>Path</code></strong>，<strong>新建</strong>一行：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">%GRADLE_HOME%\bin</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>确定保存后，<strong>重新打开</strong> PowerShell 或 CMD。</p>
-</li>
-</ol>
-<h2 id="3-验证"><a href="#3-验证" class="headerlink" title="3. 验证"></a>3. 验证</h2><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gradle <span class="literal">-v</span></span><br></pre></td></tr></table></figure>
-
-<p>应输出 Gradle 版本、JVM 与安装路径等信息。</p>
-<hr>
-<h1 id="三、Rocky-Linux-安装"><a href="#三、Rocky-Linux-安装" class="headerlink" title="三、Rocky Linux 安装"></a>三、Rocky Linux 安装</h1><p>任选其一即可；需要固定版本或与官网一致时，优先用 <strong>官方压缩包</strong>。</p>
-<h2 id="方式-A：软件包安装（简单）"><a href="#方式-A：软件包安装（简单）" class="headerlink" title="方式 A：软件包安装（简单）"></a>方式 A：软件包安装（简单）</h2><p>部分版本可通过仓库安装（包名与版本随发行版变化）：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> dnf install -y unzip gradle</span><br><span class="line">gradle -v</span><br></pre></td></tr></table></figure>
-
-<p>若提示找不到包或版本过旧，可改用方式 B。<br><strong>方式 A</strong> 的安装路径由发行版软件包决定；若约定统一放在 <strong><code>/usr/local/</code></strong>，请用方式 B。</p>
-<h2 id="方式-B：官方二进制包（版本可控，默认-usr-local-）"><a href="#方式-B：官方二进制包（版本可控，默认-usr-local-）" class="headerlink" title="方式 B：官方二进制包（版本可控，默认 /usr/local/）"></a>方式 B：官方二进制包（版本可控，默认 <code>/usr/local/</code>）</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 示例版本号请按官网 releases 页最新稳定版替换</span></span><br><span class="line">VER=9.5.0</span><br><span class="line"><span class="built_in">sudo</span> dnf install -y unzip</span><br><span class="line"><span class="built_in">cd</span> /usr/local</span><br><span class="line"><span class="built_in">sudo</span> wget <span class="string">&quot;https://services.gradle.org/distributions/gradle-<span class="variable">$&#123;VER&#125;</span>-bin.zip&quot;</span></span><br><span class="line"><span class="built_in">sudo</span> unzip -q <span class="string">&quot;gradle-<span class="variable">$&#123;VER&#125;</span>-bin.zip&quot;</span></span><br><span class="line"><span class="built_in">sudo</span> <span class="built_in">ln</span> -sfn <span class="string">&quot;/usr/local/gradle-<span class="variable">$&#123;VER&#125;</span>&quot;</span> /usr/local/gradle</span><br></pre></td></tr></table></figure>
-
-<p>下面「环境变量」一节中的路径为 <strong><code>/usr/local/gradle</code></strong>（即 <strong><code>GRADLE_HOME</code></strong> 默认值）。</p>
-<hr>
-<h1 id="四、Rocky-Linux-环境变量"><a href="#四、Rocky-Linux-环境变量" class="headerlink" title="四、Rocky Linux 环境变量"></a>四、Rocky Linux 环境变量</h1><h2 id="1-当前用户生效（推荐个人开发）"><a href="#1-当前用户生效（推荐个人开发）" class="headerlink" title="1. 当前用户生效（推荐个人开发）"></a>1. 当前用户生效（推荐个人开发）</h2><p>编辑 <code>~/.bashrc</code>（或 <code>~/.bash_profile</code>），末尾追加：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> GRADLE_HOME=/usr/local/gradle</span><br><span class="line"><span class="built_in">export</span> PATH=<span class="variable">$GRADLE_HOME</span>/bin:<span class="variable">$PATH</span></span><br></pre></td></tr></table></figure>
-
-<p>使配置生效：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">source</span> ~/.bashrc</span><br><span class="line">gradle -v</span><br></pre></td></tr></table></figure>
-
-<p>若实际解压路径不同，把 <strong><code>GRADLE_HOME</code></strong> 改成对应目录即可。</p>
-<h2 id="2-全系统生效"><a href="#2-全系统生效" class="headerlink" title="2. 全系统生效"></a>2. 全系统生效</h2><p>新建 <strong><code>/etc/profile.d/gradle.sh</code></strong>（需 root），<strong><code>cat</code> + <code>tee</code></strong> 一键写入：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cat</span> &lt;&lt;<span class="string">&#x27;EOF&#x27;</span> | <span class="built_in">sudo</span> <span class="built_in">tee</span> /etc/profile.d/gradle.sh</span><br><span class="line"><span class="built_in">export</span> GRADLE_HOME=/usr/local/gradle</span><br><span class="line"><span class="built_in">export</span> PATH=<span class="variable">$GRADLE_HOME</span>/bin:<span class="variable">$PATH</span></span><br><span class="line">EOF</span><br><span class="line"><span class="built_in">sudo</span> <span class="built_in">chmod</span> +x /etc/profile.d/gradle.sh</span><br><span class="line"><span class="built_in">source</span> /etc/profile.d/gradle.sh</span><br><span class="line">gradle -v</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h1 id="五、阿里云镜像（加速依赖与插件解析）"><a href="#五、阿里云镜像（加速依赖与插件解析）" class="headerlink" title="五、阿里云镜像（加速依赖与插件解析）"></a>五、阿里云镜像（加速依赖与插件解析）</h1><p>Gradle 依赖仓库多在项目的 <strong><code>settings.gradle</code></strong> &#x2F; <strong><code>build.gradle</code></strong> 中声明；在 <strong><code>~/.gradle/</code></strong> 下放 <strong>初始化脚本</strong>，可对当前用户下执行的所有构建统一 prepend 国内源（适合本机开发）。在用户目录新建 <strong><code>~/.gradle/init.gradle</code></strong>：</p>
-<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">allprojects</span> &#123;</span><br><span class="line">    <span class="keyword">repositories</span> &#123;</span><br><span class="line">        maven &#123; url <span class="string">&#x27;https://maven.aliyun.com/repository/google&#x27;</span> &#125;</span><br><span class="line">        maven &#123; url <span class="string">&#x27;https://maven.aliyun.com/repository/public&#x27;</span> &#125;</span><br><span class="line">        maven &#123; url <span class="string">&#x27;https://maven.aliyun.com/repository/gradle-plugin&#x27;</span> &#125;</span><br><span class="line">        google()</span><br><span class="line">        mavenCentral()</span><br><span class="line">        gradlePluginPortal()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>说明：</p>
-<ul>
-<li><strong>阿里云 Maven 仓库指南</strong>（含 Gradle 相关说明）：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://developer.aliyun.com/mvn/guide">https://developer.aliyun.com/mvn/guide</a>  </li>
-<li>若项目已在 <strong><code>settings.gradle</code></strong> 里使用 <strong><code>dependencyResolutionManagement { repositories { ... } }</code></strong> 且不允许继承，全局 <strong><code>init.gradle</code></strong> 可能不生效或需按项目规范改 <strong><code>settings.gradle</code></strong>。  </li>
-<li><strong>Gradle Wrapper</strong> 下载 <strong><code>distributionUrl</code></strong> 若很慢，可在项目 <strong><code>gradle/wrapper/gradle-wrapper.properties</code></strong> 中把发行包地址改为国内镜像（如腾讯云 Gradle 镜像，路径与版本需与镜像站一致），与 <strong><code>init.gradle</code></strong> 是两件事：前者加速 <strong>Gradle 本体 zip</strong>，后者加速 <strong>依赖 jar</strong>。</li>
-</ul>
-<p>公司私服若已配置仓库，需与运维规范一致，避免与私服规则冲突。</p>
-<hr>
-<h1 id="六、常用命令速查"><a href="#六、常用命令速查" class="headerlink" title="六、常用命令速查"></a>六、常用命令速查</h1><p>在项目根目录（含 <strong><code>settings.gradle</code></strong> 或 <strong><code>settings.gradle.kts</code></strong>）执行：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">gradle tasks              <span class="comment"># 列出可用任务</span></span><br><span class="line">gradle clean              <span class="comment"># 清理构建输出</span></span><br><span class="line">gradle build              <span class="comment"># 编译、测试并打包（依项目配置）</span></span><br><span class="line">gradle <span class="built_in">test</span>               <span class="comment"># 运行测试</span></span><br><span class="line">./gradlew build           <span class="comment"># 使用 Wrapper 时（需项目已生成 gradlew）</span></span><br></pre></td></tr></table></figure>
-
-<p>首次执行会下载依赖与插件，配置镜像后一般会明显加快。团队项目推荐提交 <strong>Gradle Wrapper</strong>（<code>gradlew</code> &#x2F; <code>gradlew.bat</code>），保证大家使用同一 Gradle 版本。</p>
-<hr>
-<h1 id="七、小结"><a href="#七、小结" class="headerlink" title="七、小结"></a>七、小结</h1><table>
-<thead>
-<tr>
-<th>项</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>官网</td>
-<td><a target="_blank" rel="noopener external nofollow noreferrer" href="https://gradle.org/">https://gradle.org/</a></td>
-</tr>
-<tr>
-<td>Windows</td>
-<td>默认解压到 **<code>C:\app\</code>**，配置 <code>GRADLE_HOME</code> 与 <code>Path</code> 中的 <code>%GRADLE_HOME%\bin</code></td>
-</tr>
-<tr>
-<td>Rocky Linux</td>
-<td><code>dnf install gradle</code>（路径随包）或官方 <strong><code>gradle-*-bin.zip</code></strong> 解压到 <strong><code>/usr/local/</code></strong> 并设 <code>GRADLE_HOME=/usr/local/gradle</code></td>
-</tr>
-<tr>
-<td>加速</td>
-<td><code>~/.gradle/init.gradle</code> 配置阿里云等仓库；Wrapper 本体另看 <strong><code>gradle-wrapper.properties</code></strong></td>
-</tr>
-<tr>
-<td>验证</td>
-<td><code>gradle -v</code></td>
-</tr>
-</tbody></table>
-<p>完成以上步骤后，本机即可稳定使用 Gradle 构建 Java 等项目。</p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/Java/maven/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="miracle">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="my">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | my">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/05/01/Java/maven/" class="post-title-link" itemprop="url">Maven 构建工具</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-      
-
-      <time title="创建时间：2026-05-01 12:17:40 / 修改时间：14:29:43" itemprop="dateCreated datePublished" datetime="2026-05-01T12:17:40+08:00">2026-05-01</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>1k</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>3 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>Apache Maven 是 Java 项目常用的依赖管理与构建工具，用 <strong><code>pom.xml</code></strong> 描述坐标、依赖与生命周期，一条命令完成编译、测试、打包。下面从官网、前置条件、Windows &#x2F; Rocky Linux 安装、环境变量到国内镜像加速，按步骤写清楚。</p>
-<hr>
-<h1 id="一、官网与发行包"><a href="#一、官网与发行包" class="headerlink" title="一、官网与发行包"></a>一、官网与发行包</h1><ul>
-<li><strong>项目官网</strong>：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://maven.apache.org/">https://maven.apache.org/</a></li>
-<li><strong>下载页（Binary zip &#x2F; tar.gz）</strong>：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://maven.apache.org/download.cgi">https://maven.apache.org/download.cgi</a><br>选择当前稳定版的 <strong><code>apache-maven-*-bin.zip</code></strong>（Windows）或 <strong><code>apache-maven-*-bin.tar.gz</code></strong>（Linux）。</li>
-</ul>
-<p>安装前需已安装 <strong>JDK 8+</strong>（建议 JDK 17 或 21 LTS），终端可执行 <code>java -version</code> 验证。</p>
-<hr>
-<h1 id="二、Windows-安装"><a href="#二、Windows-安装" class="headerlink" title="二、Windows 安装"></a>二、Windows 安装</h1><h2 id="1-解压到固定目录"><a href="#1-解压到固定目录" class="headerlink" title="1. 解压到固定目录"></a>1. 解压到固定目录</h2><p>将下载的 <strong><code>apache-maven-*-bin.zip</code></strong> 解压到不含中文、无空格的路径。本文默认安装到 <strong><code>C:\app\</code></strong>，例如：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">C:\app\apache-maven-3.9.15</span><br></pre></td></tr></table></figure>
-
-<p>解压后应能看到 <strong><code>bin</code></strong>、<strong><code>conf</code></strong>、<strong><code>lib</code></strong> 等子目录。</p>
-<h2 id="2-配置系统环境变量"><a href="#2-配置系统环境变量" class="headerlink" title="2. 配置系统环境变量"></a>2. 配置系统环境变量</h2><ol>
-<li><p>打开 <strong>「系统属性」→「高级」→「环境变量」</strong>。</p>
-</li>
-<li><p><strong>新建系统变量</strong>（用户级也可，多用户建议系统级）：</p>
-<ul>
-<li>变量名：<code>MAVEN_HOME</code>  </li>
-<li>变量值：<code>C:\app\apache-maven-3.9.15</code>（与解压路径一致，<strong>不要</strong>写到 <code>\bin</code>）</li>
-</ul>
-</li>
-<li><p>编辑系统变量 <strong><code>Path</code></strong>，<strong>新建</strong>一行：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">%MAVEN_HOME%\bin</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>确定保存后，<strong>重新打开</strong> PowerShell 或 CMD。</p>
-</li>
-</ol>
-<h2 id="3-验证"><a href="#3-验证" class="headerlink" title="3. 验证"></a>3. 验证</h2><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mvn <span class="literal">-v</span></span><br></pre></td></tr></table></figure>
-
-<p>应输出 Maven 版本、Java 版本与安装路径等信息。</p>
-<hr>
-<h1 id="三、Rocky-Linux-安装"><a href="#三、Rocky-Linux-安装" class="headerlink" title="三、Rocky Linux 安装"></a>三、Rocky Linux 安装</h1><p>任选其一即可；需要固定版本或与官网一致时，优先用 <strong>官方压缩包</strong>。</p>
-<h2 id="方式-A：软件包安装（简单）"><a href="#方式-A：软件包安装（简单）" class="headerlink" title="方式 A：软件包安装（简单）"></a>方式 A：软件包安装（简单）</h2><p>Rocky Linux 8 &#x2F; 9 在启用默认仓库后，通常可直接：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> dnf install -y maven</span><br><span class="line">mvn -v</span><br></pre></td></tr></table></figure>
-
-<p>若提示找不到包，可先更新缓存并安装常用附加仓库说明见官方文档，或改用方式 B。<br><strong>方式 A</strong> 的安装路径由发行版软件包决定；若约定统一放在 <strong><code>/usr/local/</code></strong>，请用方式 B。</p>
-<h2 id="方式-B：官方二进制包（版本可控，默认-usr-local-）"><a href="#方式-B：官方二进制包（版本可控，默认-usr-local-）" class="headerlink" title="方式 B：官方二进制包（版本可控，默认 /usr/local/）"></a>方式 B：官方二进制包（版本可控，默认 <code>/usr/local/</code>）</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 示例版本号请按下载页最新稳定版替换</span></span><br><span class="line">VER=3.9.15</span><br><span class="line"><span class="built_in">cd</span> /usr/local</span><br><span class="line"><span class="built_in">sudo</span> wget https://dlcdn.apache.org/maven/maven-3/<span class="variable">$&#123;VER&#125;</span>/binaries/apache-maven-<span class="variable">$&#123;VER&#125;</span>-bin.tar.gz</span><br><span class="line"><span class="built_in">sudo</span> tar -xzf apache-maven-<span class="variable">$&#123;VER&#125;</span>-bin.tar.gz</span><br><span class="line"><span class="built_in">sudo</span> <span class="built_in">ln</span> -sfn /usr/local/apache-maven-<span class="variable">$&#123;VER&#125;</span> /usr/local/maven</span><br></pre></td></tr></table></figure>
-
-<p>下面「环境变量」一节中的路径为 <strong><code>/usr/local/maven</code></strong>（即 <strong><code>MAVEN_HOME</code></strong> 默认值）。</p>
-<hr>
-<h1 id="四、Rocky-Linux-环境变量"><a href="#四、Rocky-Linux-环境变量" class="headerlink" title="四、Rocky Linux 环境变量"></a>四、Rocky Linux 环境变量</h1><h2 id="1-当前用户生效（推荐个人开发）"><a href="#1-当前用户生效（推荐个人开发）" class="headerlink" title="1. 当前用户生效（推荐个人开发）"></a>1. 当前用户生效（推荐个人开发）</h2><p>编辑 <code>~/.bashrc</code>（或 <code>~/.bash_profile</code>），末尾追加：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> MAVEN_HOME=/usr/local/maven</span><br><span class="line"><span class="built_in">export</span> PATH=<span class="variable">$MAVEN_HOME</span>/bin:<span class="variable">$PATH</span></span><br></pre></td></tr></table></figure>
-
-<p>使配置生效：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">source</span> ~/.bashrc</span><br><span class="line">mvn -v</span><br></pre></td></tr></table></figure>
-
-<p>若实际解压路径不同，把 <strong><code>MAVEN_HOME</code></strong> 改成对应目录即可。</p>
-<h2 id="2-全系统生效"><a href="#2-全系统生效" class="headerlink" title="2. 全系统生效"></a>2. 全系统生效</h2><p>新建 <strong><code>/etc/profile.d/maven.sh</code></strong>（需 root），<strong><code>cat</code> + <code>tee</code></strong> 一键写入：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cat</span> &lt;&lt;<span class="string">&#x27;EOF&#x27;</span> | <span class="built_in">sudo</span> <span class="built_in">tee</span> /etc/profile.d/maven.sh</span><br><span class="line"><span class="built_in">export</span> MAVEN_HOME=/usr/local/maven</span><br><span class="line"><span class="built_in">export</span> PATH=<span class="variable">$MAVEN_HOME</span>/bin:<span class="variable">$PATH</span></span><br><span class="line">EOF</span><br><span class="line"><span class="built_in">sudo</span> <span class="built_in">chmod</span> +x /etc/profile.d/maven.sh</span><br><span class="line"><span class="built_in">source</span> /etc/profile.d/maven.sh</span><br><span class="line">mvn -v</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h1 id="五、阿里云公共仓库镜像（加速依赖下载）"><a href="#五、阿里云公共仓库镜像（加速依赖下载）" class="headerlink" title="五、阿里云公共仓库镜像（加速依赖下载）"></a>五、阿里云公共仓库镜像（加速依赖下载）</h1><p>在用户目录下配置 <strong><code>~/.m2/settings.xml</code></strong>（没有则新建），在 <strong><code>&lt;mirrors&gt;</code></strong> 内增加阿里云公共仓库（聚合了 central 等常用仓库，适合个人与小型项目）：</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=<span class="string">&quot;1.0&quot;</span> encoding=<span class="string">&quot;UTF-8&quot;</span>?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">settings</span> <span class="attr">xmlns</span>=<span class="string">&quot;http://maven.apache.org/SETTINGS/1.2.0&quot;</span></span></span><br><span class="line"><span class="tag">          <span class="attr">xmlns:xsi</span>=<span class="string">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span></span></span><br><span class="line"><span class="tag">          <span class="attr">xsi:schemaLocation</span>=<span class="string">&quot;http://maven.apache.org/SETTINGS/1.2.0 https://maven.apache.org/xsd/settings-1.2.0.xsd&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">mirrors</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">mirror</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">id</span>&gt;</span>aliyunmaven<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">mirrorOf</span>&gt;</span>*<span class="tag">&lt;/<span class="name">mirrorOf</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">name</span>&gt;</span>Aliyun Public<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">url</span>&gt;</span>https://maven.aliyun.com/repository/public<span class="tag">&lt;/<span class="name">url</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">mirror</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">mirrors</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">settings</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>说明：</p>
-<ul>
-<li>官方配置说明见 <strong>阿里云 Maven 仓库指南</strong>：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://developer.aliyun.com/mvn/guide">https://developer.aliyun.com/mvn/guide</a>  </li>
-<li>若只需替换 Maven Central，可把 <strong><code>mirrorOf</code></strong> 改为 <strong><code>central</code></strong>，<strong><code>url</code></strong> 改为 <strong><code>https://maven.aliyun.com/repository/central</code></strong>。  </li>
-<li>公司私服若已配置 <strong><code>mirror</code></strong>，需与运维规范一致，勿与私服规则冲突。</li>
-</ul>
-<hr>
-<h1 id="六、常用命令速查"><a href="#六、常用命令速查" class="headerlink" title="六、常用命令速查"></a>六、常用命令速查</h1><p>在项目根目录（含 <strong><code>pom.xml</code></strong>）执行：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">mvn clean          <span class="comment"># 清理 target</span></span><br><span class="line">mvn compile        <span class="comment"># 编译主代码</span></span><br><span class="line">mvn <span class="built_in">test</span>           <span class="comment"># 运行测试</span></span><br><span class="line">mvn package        <span class="comment"># 打包（jar/war 等）</span></span><br><span class="line">mvn clean install  <span class="comment"># 清理后编译、测试并安装到本地仓库</span></span><br></pre></td></tr></table></figure>
-
-<p>首次执行会下载插件与依赖，配置镜像后一般会明显加快。</p>
-<hr>
-<h1 id="七、小结"><a href="#七、小结" class="headerlink" title="七、小结"></a>七、小结</h1><table>
-<thead>
-<tr>
-<th>项</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>官网</td>
-<td><a target="_blank" rel="noopener external nofollow noreferrer" href="https://maven.apache.org/">https://maven.apache.org/</a></td>
-</tr>
-<tr>
-<td>Windows</td>
-<td>默认解压到 **<code>C:\app\</code>**，配置 <code>MAVEN_HOME</code> 与 <code>Path</code> 中的 <code>%MAVEN_HOME%\bin</code></td>
-</tr>
-<tr>
-<td>Rocky Linux</td>
-<td><code>dnf install maven</code>（路径随包）或官方包解压到 <strong><code>/usr/local/</code></strong> 并设 <code>MAVEN_HOME=/usr/local/maven</code></td>
-</tr>
-<tr>
-<td>加速</td>
-<td><code>~/.m2/settings.xml</code> 配置阿里云等镜像</td>
-</tr>
-<tr>
-<td>验证</td>
-<td><code>mvn -v</code></td>
-</tr>
-</tbody></table>
-<p>完成以上步骤后，本机即可稳定使用 Maven 构建 Java 项目。</p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/SpringCloud/SpringCloudAlibaba/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="miracle">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="my">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | my">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/05/01/SpringCloud/SpringCloudAlibaba/" class="post-title-link" itemprop="url">Spring Cloud Alibaba 与 Gradle 从零搭建</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2026-05-01 12:16:10" itemprop="dateCreated datePublished" datetime="2026-05-01T12:16:10+08:00">2026-05-01</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-02 11:47:38" itemprop="dateModified" datetime="2026-05-02T11:47:38+08:00">2026-05-02</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/SpringCloud/" itemprop="url" rel="index"><span itemprop="name">SpringCloud</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>1.9k</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>6 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>Spring Cloud Alibaba（简称 <strong>SCA</strong>）在 Spring Cloud 之上整合 <strong>Nacos、Sentinel、Seata、RocketMQ</strong> 等组件，便于做注册发现、配置、限流与分布式事务。本文先说明 <strong>版本怎么选</strong>，再用 <strong>IntelliJ IDEA</strong> 创建 <strong>Gradle（Kotlin DSL）</strong> 工程，按后文替换构建脚本与依赖，得到可启动、可连 <strong>Nacos</strong> 做服务注册的最小示例；构建工具安装与镜像加速见站内 <strong><code>gradle.md</code></strong>。</p>
-<hr>
-<h1 id="一、官网与文档"><a href="#一、官网与文档" class="headerlink" title="一、官网与文档"></a>一、官网与文档</h1><ul>
-<li><strong>中文官网</strong>：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://sca.aliyun.com/">https://sca.aliyun.com/</a></li>
-<li><strong>GitHub</strong>：<a target="_blank" rel="noopener" href="https://github.com/alibaba/spring-cloud-alibaba">https://github.com/alibaba/spring-cloud-alibaba</a>  </li>
-<li><strong>版本说明（与 Spring Boot &#x2F; Spring Cloud 对齐关系）</strong>：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://sca.aliyun.com/docs/2025.x/overview/version-explain/">https://sca.aliyun.com/docs/2025.x/overview/version-explain/</a>  </li>
-<li><strong>发行说明与变更</strong>：<a target="_blank" rel="noopener" href="https://github.com/alibaba/spring-cloud-alibaba/releases">https://github.com/alibaba/spring-cloud-alibaba/releases</a></li>
-</ul>
-<hr>
-<h1 id="二、版本选型（先做这一步）"><a href="#二、版本选型（先做这一步）" class="headerlink" title="二、版本选型（先做这一步）"></a>二、版本选型（先做这一步）</h1><p>SCA 以 <strong>BOM 三位版本号</strong>（如 <strong><code>2025.1.0.0</code></strong>）发布，须与 <strong>Spring Boot、Spring Cloud</strong> 同一世代，不能混用旧版 Boot 配新版 SCA。</p>
-<h2 id="1-当前两条主线（摘自官方-README-分支说明）"><a href="#1-当前两条主线（摘自官方-README-分支说明）" class="headerlink" title="1. 当前两条主线（摘自官方 README 分支说明）"></a>1. 当前两条主线（摘自官方 README 分支说明）</h2><table>
-<thead>
-<tr>
-<th>路线</th>
-<th>Spring Boot</th>
-<th>Spring Cloud</th>
-<th>SCA BOM（示例）</th>
-<th>JDK</th>
-<th>适用场景</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>2025.1.x</strong>（<strong>本文采用</strong>）</td>
-<td><strong>4.0.x</strong></td>
-<td><strong>2025.1.x</strong></td>
-<td><strong>2025.1.0.0</strong>（当前 GA）</td>
-<td><strong>17+</strong></td>
-<td>新项目、跟官方最新发布版</td>
-</tr>
-<tr>
-<td><strong>2025.0.x</strong></td>
-<td><strong>3.5.x</strong></td>
-<td><strong>2025.0.x</strong></td>
-<td><strong>2025.0.0.x</strong>（以 Central 为准）</td>
-<td><strong>17+</strong></td>
-<td>暂不升级 Boot 4、存量 Boot 3.5</td>
-</tr>
-</tbody></table>
-<h2 id="2-本文固定组合（与-SCA-2025-1-0-0-发行说明一致）"><a href="#2-本文固定组合（与-SCA-2025-1-0-0-发行说明一致）" class="headerlink" title="2. 本文固定组合（与 SCA 2025.1.0.0 发行说明一致）"></a>2. 本文固定组合（与 SCA <strong>2025.1.0.0</strong> 发行说明一致）</h2><ul>
-<li><strong>Spring Cloud Alibaba BOM</strong>：<strong><code>2025.1.0.0</code></strong>（<code>com.alibaba.cloud:spring-cloud-alibaba-dependencies</code>）  </li>
-<li><strong>Spring Boot</strong>：<strong><code>4.0.4</code></strong>（4.0 线补丁，仍属官方所述 <strong>Boot 4.0.x</strong>）  </li>
-<li><strong>Spring Cloud BOM</strong>：<strong><code>2025.1.0</code></strong>（<code>org.springframework.cloud:spring-cloud-dependencies</code>）  </li>
-<li><strong>JDK</strong>：<strong>17</strong>（官方要求 <strong>17+</strong>，可用 <strong>21</strong>）  </li>
-<li><strong>Gradle</strong>：与 <strong><code>gradle.md</code></strong> 一致，示例 Wrapper 使用 <strong>9.5.0</strong></li>
-</ul>
-<p><strong>2025.1.x</strong> 起 Nacos 配置侧已弱化 <strong><code>bootstrap.yml</code></strong>，推荐 <strong><code>spring.config.import</code></strong> 或直接在 <strong><code>application.yaml</code></strong> 中配置；本文最小示例只用 <strong><code>application.yaml</code> + Nacos 注册发现</strong>。</p>
-<p>升级小版本前请到 <strong>GitHub Releases</strong> 与 <strong>sca.aliyun.com</strong> 核对是否仍有更新的 <strong>2025.1.0.x</strong> 补丁版，并替换下文的 BOM 与 Boot 小版本号。</p>
-<hr>
-<h1 id="三、环境与前置"><a href="#三、环境与前置" class="headerlink" title="三、环境与前置"></a>三、环境与前置</h1><ol>
-<li>安装 <strong>JDK 17+</strong>，终端执行 <strong><code>java -version</code></strong>。  </li>
-<li>安装 <strong>IntelliJ IDEA</strong>（<strong>Community &#x2F; Ultimate</strong> 均可；下文以 <strong>Ultimate</strong> 菜单名为准，社区版对应项名称可能略有差异）。  </li>
-<li>安装 <strong>Gradle</strong>（或使用下文 <strong><code>gradle wrapper</code></strong> 生成 Wrapper，本机需已装 Gradle 一次），参见 <strong><code>source/_posts/Java/gradle.md</code></strong>；亦可在 IDEA 内用自带 <strong>Gradle</strong> 执行同步与 <strong><code>bootRun</code></strong>。  </li>
-<li>若要验证注册发现：本机或服务器已部署 <strong>Nacos 2.x &#x2F; 3.x</strong>（示例地址 <strong><code>127.0.0.1:8848</code></strong>）。无 Nacos 时工程仍可 <strong>编译</strong>；启动后若连不上注册中心，控制台会有连接相关日志。</li>
-</ol>
-<hr>
-<h1 id="四、用-IntelliJ-IDEA-创建工程（替换原手动建目录）"><a href="#四、用-IntelliJ-IDEA-创建工程（替换原手动建目录）" class="headerlink" title="四、用 IntelliJ IDEA 创建工程（替换原手动建目录）"></a>四、用 IntelliJ IDEA 创建工程（替换原手动建目录）</h1><p><strong>不要</strong>使用 <strong>Spring Initializr</strong> 向导直接生成完整 Boot 工程：本文 <strong><code>build.gradle.kts</code></strong> 需手写 <strong>Spring Cloud &#x2F; SCA BOM</strong>，与 Initializr 默认模板不一致。请用 <strong>IDEA「Java + Gradle」向导</strong> 建骨架，<strong>Gradle DSL 必须选 Kotlin</strong>（与 <strong>「五～七」</strong> 文件名一致），再按 <strong>「五～七」</strong> 覆盖脚本。</p>
-<h2 id="1-新建项目：左侧「Java」-构建系统「Gradle」"><a href="#1-新建项目：左侧「Java」-构建系统「Gradle」" class="headerlink" title="1. 新建项目：左侧「Java」+ 构建系统「Gradle」"></a>1. 新建项目：左侧「Java」+ 构建系统「Gradle」</h2><p>与 <strong>IntelliJ IDEA</strong> 新版「新建项目」界面一致（欢迎页 <strong>New Project</strong> &#x2F; 菜单 <strong>File → New → Project</strong>）：</p>
-<ol>
-<li>左侧在 <strong>New Project</strong> 下选 <strong>Java</strong>；右侧 <strong>Build system（构建系统）</strong> 选 <strong>Gradle</strong>（与 <strong>IDEA</strong> 当前「<strong>Java + Gradle</strong>」向导一致）。若你习惯用左侧 <strong>Gradle</strong> 向导，同样必须把 <strong>Gradle DSL</strong> 设为 <strong>Kotlin</strong>，效果等价。  </li>
-<li>右侧 <strong>Name（名称）</strong>：填 <strong><code>sca-nacos-demo</code></strong>（与下文工程名一致）。  </li>
-<li><strong>Location（位置）</strong>：选父目录，<strong>IDEA</strong> 会在其下创建 <strong><code>sca-nacos-demo</code></strong> 文件夹。  </li>
-<li><strong>Create Git repository（创建 Git 仓库）</strong>：按需勾选（团队协同时建议勾选）。  </li>
-<li><strong>Build system（构建系统）</strong>：选 <strong>Gradle</strong>。  </li>
-<li><strong>JDK</strong>：选 <strong>17</strong> 或 <strong>21</strong>（须满足「二」中 <strong>17+</strong>；与 <strong><code>build.gradle.kts</code></strong> 里 <strong><code>JavaLanguageVersion.of(17)</code></strong>  toolchain 一致时，选 <strong>17</strong> 最省事）。  </li>
-<li><strong>Gradle DSL</strong>：<strong>务必选 Kotlin</strong>（生成 <strong><code>build.gradle.kts</code></strong> &#x2F; <strong><code>settings.gradle.kts</code></strong>）。向导默认有时是 <strong>Groovy</strong>（生成 <strong><code>build.gradle</code></strong>），<strong>与本文不符</strong>。若已误选 <strong>Groovy</strong>：最省事是重新 <strong>New Project</strong> 并改选 <strong>Kotlin</strong>；或手动新建 <strong><code>build.gradle.kts</code></strong>、<strong><code>settings.gradle.kts</code></strong>，删除 <strong><code>build.gradle</code></strong>、<strong><code>settings.gradle</code></strong> 后 <strong>Reload Gradle Project</strong>。  </li>
-<li><strong>Add sample code（添加示例代码）</strong>：建议<strong>取消勾选</strong>，减少默认 <strong><code>Main.java</code></strong>；若保留，完成 <strong>「九」</strong> 前删除向导生成的示例类即可。  </li>
-<li>点击 <strong>Create（创建）</strong>。<strong>IDEA</strong> 会生成 <strong><code>src/main/java</code></strong>、<strong><code>src/main/resources</code></strong>、<strong><code>gradle/</code></strong> 等，无需再手动 <strong><code>mkdir</code></strong>。</li>
-</ol>
-<h2 id="2-创建-Java-包与源码目录"><a href="#2-创建-Java-包与源码目录" class="headerlink" title="2. 创建 Java 包与源码目录"></a>2. 创建 Java 包与源码目录</h2><ol>
-<li>在 <strong>Project</strong> 视图中展开 <strong><code>src/main/java</code></strong>。  </li>
-<li>在 <strong><code>java</code></strong> 上右键 → <strong>New → Package</strong>，输入 <strong><code>com.example.sca</code></strong> 并确认。  </li>
-<li>后续 <strong>「九」</strong> 中的 <strong><code>ScaDemoApplication.java</code></strong>、<strong><code>HelloController.java</code></strong> 均建在该包下；<strong><code>application.yaml</code></strong> 放在 <strong><code>src/main/resources/</code></strong>。</li>
-</ol>
-<h2 id="3-覆盖-Gradle-脚本（与「五～七」对应）"><a href="#3-覆盖-Gradle-脚本（与「五～七」对应）" class="headerlink" title="3. 覆盖 Gradle 脚本（与「五～七」对应）"></a>3. 覆盖 Gradle 脚本（与「五～七」对应）</h2><p>向导生成的 <strong><code>settings.gradle.kts</code></strong>、<strong><code>build.gradle.kts</code></strong> 往往带演示性 <strong><code>main</code> 函数</strong>或默认依赖，请打开文件后<strong>整段替换</strong>为 <strong>「五」「七」</strong> 中的内容；新建 <strong><code>gradle.properties</code></strong> 并写入 <strong>「六」</strong>。保存后点击右上角 <strong>Load Gradle Changes</strong>（或 <strong>Gradle</strong> 工具窗口的刷新），等待依赖解析完成。</p>
-<p>下文默认<strong>模块根目录</strong>为 <strong><code>sca-nacos-demo/</code></strong>（即包含 <strong><code>build.gradle.kts</code></strong> 的目录），Java 包名为 <strong><code>com.example.sca</code></strong>。</p>
-<hr>
-<h1 id="五、settings-gradle-kts"><a href="#五、settings-gradle-kts" class="headerlink" title="五、settings.gradle.kts"></a>五、<code>settings.gradle.kts</code></h1><p>在 <strong><code>sca-nacos-demo/settings.gradle.kts</code></strong> 写入：</p>
-<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rootProject.name = <span class="string">&quot;sca-nacos-demo&quot;</span></span><br></pre></td></tr></table></figure>
-
-<hr>
-<h1 id="六、gradle-properties（版本集中管理）"><a href="#六、gradle-properties（版本集中管理）" class="headerlink" title="六、gradle.properties（版本集中管理）"></a>六、<code>gradle.properties</code>（版本集中管理）</h1><p>在 <strong><code>sca-nacos-demo/gradle.properties</code></strong> 写入：</p>
-<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 与「二、版本选型」一致；升级 Cloud / SCA 时改这里，并与下方 build.gradle.kts 中 Boot 插件版本对齐</span></span><br><span class="line"><span class="attr">springCloudVersion</span>=<span class="string">2025.1.0</span></span><br><span class="line"><span class="attr">springCloudAlibabaVersion</span>=<span class="string">2025.1.0.0</span></span><br></pre></td></tr></table></figure>
-
-<hr>
-<h1 id="七、build-gradle-kts（Spring-Boot-Cloud-SCA-BOM）"><a href="#七、build-gradle-kts（Spring-Boot-Cloud-SCA-BOM）" class="headerlink" title="七、build.gradle.kts（Spring Boot + Cloud + SCA BOM）"></a>七、<code>build.gradle.kts</code>（Spring Boot + Cloud + SCA BOM）</h1><p>在 <strong><code>sca-nacos-demo/build.gradle.kts</code></strong> 写入：</p>
-<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Spring Boot 与「二、版本选型」一致（4.0.x）；小版本升级时请对照 SCA 发行说明</span></span><br><span class="line">plugins &#123;</span><br><span class="line">    java</span><br><span class="line">    id(<span class="string">&quot;org.springframework.boot&quot;</span>) version <span class="string">&quot;4.0.4&quot;</span></span><br><span class="line">    id(<span class="string">&quot;io.spring.dependency-management&quot;</span>) version <span class="string">&quot;1.1.7&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">group = <span class="string">&quot;com.example&quot;</span></span><br><span class="line">version = <span class="string">&quot;0.0.1-SNAPSHOT&quot;</span></span><br><span class="line"></span><br><span class="line">java &#123;</span><br><span class="line">    toolchain &#123;</span><br><span class="line">        languageVersion.<span class="keyword">set</span>(JavaLanguageVersion.of(<span class="number">17</span>))</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">repositories &#123;</span><br><span class="line">    mavenCentral()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">dependencyManagement &#123;</span><br><span class="line">    imports &#123;</span><br><span class="line">        mavenBom(<span class="string">&quot;org.springframework.cloud:spring-cloud-dependencies:<span class="subst">$&#123;property(<span class="string">&quot;springCloudVersion&quot;</span>)&#125;</span>&quot;</span>)</span><br><span class="line">        mavenBom(<span class="string">&quot;com.alibaba.cloud:spring-cloud-alibaba-dependencies:<span class="subst">$&#123;property(<span class="string">&quot;springCloudAlibabaVersion&quot;</span>)&#125;</span>&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">dependencies &#123;</span><br><span class="line">    implementation(<span class="string">&quot;org.springframework.boot:spring-boot-starter-web&quot;</span>)</span><br><span class="line">    implementation(<span class="string">&quot;org.springframework.boot:spring-boot-starter-actuator&quot;</span>)</span><br><span class="line">    implementation(<span class="string">&quot;com.alibaba.cloud:spring-cloud-starter-alibaba-nacos-discovery&quot;</span>)</span><br><span class="line">    testImplementation(<span class="string">&quot;org.springframework.boot:spring-boot-starter-test&quot;</span>)</span><br><span class="line">    testRuntimeOnly(<span class="string">&quot;org.junit.platform:junit-platform-launcher&quot;</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">tasks.withType&lt;Test&gt; &#123;</span><br><span class="line">    useJUnitPlatform()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>说明：</p>
-<ul>
-<li><strong><code>org.springframework.boot</code></strong> 插件会管理 <strong>Spring Boot</strong> 自带依赖版本；<strong><code>spring-cloud-dependencies</code></strong> 与 <strong><code>spring-cloud-alibaba-dependencies</code></strong> 通过 <strong><code>mavenBom</code></strong> 对齐 Cloud 与 SCA。  </li>
-<li>仅 <strong><code>nacos-discovery</code></strong> 即可在 Nacos 控制台看到服务实例；后续若要配置中心，再增加 <strong><code>spring-cloud-starter-alibaba-nacos-config</code></strong> 并按官方文档改用 <strong><code>spring.config.import</code></strong>。</li>
-</ul>
-<hr>
-<h1 id="八、生成-Gradle-Wrapper"><a href="#八、生成-Gradle-Wrapper" class="headerlink" title="八、生成 Gradle Wrapper"></a>八、生成 Gradle Wrapper</h1><p>在 <strong>IDEA</strong> 底部打开 <strong>Terminal</strong>（<strong>View → Tool Windows → Terminal</strong>），确认当前目录为项目根 <strong><code>sca-nacos-demo/</code></strong>（含 <strong><code>build.gradle.kts</code></strong>），执行（版本与 <strong><code>gradle.md</code></strong> 对齐）：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gradle wrapper --gradle-version=9.5.0</span><br></pre></td></tr></table></figure>
-
-<p>若未装全局 <strong>Gradle</strong>，可在 <strong>File → Settings → Build, Execution, Deployment → Build Tools → Gradle</strong> 中查看 <strong>Gradle</strong> 分发路径，或在 <strong>Gradle</strong> 工具窗口对 <strong><code>wrapper</code></strong> 任务执行一次（视 IDEA 版本与项目是否已含 <strong>wrapper</strong> 配置而定）；生成 <strong><code>gradlew</code></strong>、<strong><code>gradlew.bat</code></strong> 与 <strong><code>gradle/wrapper/</code></strong> 后，团队可统一用 <strong><code>./gradlew</code></strong>，无需本机全局安装同版本 Gradle。</p>
-<hr>
-<h1 id="九、主类、接口与配置"><a href="#九、主类、接口与配置" class="headerlink" title="九、主类、接口与配置"></a>九、主类、接口与配置</h1><h2 id="1-启动类-ScaDemoApplication-java"><a href="#1-启动类-ScaDemoApplication-java" class="headerlink" title="1. 启动类 ScaDemoApplication.java"></a>1. 启动类 <code>ScaDemoApplication.java</code></h2><p>路径：<strong><code>src/main/java/com/example/sca/ScaDemoApplication.java</code></strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.example.sca;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.springframework.boot.SpringApplication;</span><br><span class="line"><span class="keyword">import</span> org.springframework.boot.autoconfigure.SpringBootApplication;</span><br><span class="line"></span><br><span class="line"><span class="meta">@SpringBootApplication</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ScaDemoApplication</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        SpringApplication.run(ScaDemoApplication.class, args);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="2-示例接口-HelloController-java"><a href="#2-示例接口-HelloController-java" class="headerlink" title="2. 示例接口 HelloController.java"></a>2. 示例接口 <code>HelloController.java</code></h2><p>路径：<strong><code>src/main/java/com/example/sca/HelloController.java</code></strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.example.sca;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.GetMapping;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.RestController;</span><br><span class="line"></span><br><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">HelloController</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@GetMapping(&quot;/&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">hello</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;Spring Cloud Alibaba + Gradle OK&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="3-application-yaml"><a href="#3-application-yaml" class="headerlink" title="3. application.yaml"></a>3. <code>application.yaml</code></h2><p>路径：<strong><code>src/main/resources/application.yaml</code></strong></p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">server:</span></span><br><span class="line">  <span class="attr">port:</span> <span class="number">8080</span></span><br><span class="line"></span><br><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">application:</span></span><br><span class="line">    <span class="attr">name:</span> <span class="string">sca-nacos-demo</span></span><br><span class="line">  <span class="attr">cloud:</span></span><br><span class="line">    <span class="attr">nacos:</span></span><br><span class="line">      <span class="attr">discovery:</span></span><br><span class="line">        <span class="attr">server-addr:</span> <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span><span class="string">:8848</span></span><br><span class="line">        <span class="comment"># 多环境可再配置 namespace、group 等，见官方 Nacos 文档</span></span><br><span class="line"></span><br><span class="line"><span class="attr">management:</span></span><br><span class="line">  <span class="attr">endpoints:</span></span><br><span class="line">    <span class="attr">web:</span></span><br><span class="line">      <span class="attr">exposure:</span></span><br><span class="line">        <span class="attr">include:</span> <span class="string">health,info</span></span><br></pre></td></tr></table></figure>
-
-<p>将 <strong><code>server-addr</code></strong> 改成你的 Nacos 地址；若暂无 Nacos，可先注释掉 <strong><code>spring.cloud.nacos</code></strong> 整段，仅验证 Web 与构建（注释后不再向 Nacos 注册）。</p>
-<hr>
-<h1 id="十、构建与运行"><a href="#十、构建与运行" class="headerlink" title="十、构建与运行"></a>十、构建与运行</h1><p><strong>方式一（终端）</strong>：在 <strong>IDEA Terminal</strong> 中于项目根执行：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./gradlew clean bootRun</span><br></pre></td></tr></table></figure>
-
-<p><strong>方式二（IDEA）</strong>：右侧 <strong>Gradle</strong> 工具窗口展开 <strong><code>sca-nacos-demo → Tasks → application</code></strong>，双击 <strong><code>bootRun</code></strong>（首次前可先执行 <strong><code>build</code></strong> 或 <strong><code>classes</code></strong> 确认无报错）。</p>
-<p>浏览器访问：<strong><a target="_blank" rel="noopener external nofollow noreferrer" href="http://127.0.0.1:8080/">http://127.0.0.1:8080/</a></strong> ，应看到返回字符串。<br>若已配置 Nacos 且服务正常，在 Nacos 控制台 <strong>「服务管理 → 服务列表」</strong> 中应出现 <strong><code>sca-nacos-demo</code></strong> 实例。</p>
-<p>打包：在终端执行 <strong><code>./gradlew bootJar</code></strong>，或在 <strong>Gradle → Tasks → build → bootJar</strong>。产物在 <strong><code>build/libs/</code></strong> 下。</p>
-<hr>
-<h1 id="十一、小结"><a href="#十一、小结" class="headerlink" title="十一、小结"></a>十一、小结</h1><table>
-<thead>
-<tr>
-<th>项</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>SCA BOM</td>
-<td><strong><code>2025.1.0.0</code></strong>（发布版；升级请看 GitHub Releases）</td>
-</tr>
-<tr>
-<td>Spring Boot &#x2F; Cloud</td>
-<td><strong><code>4.0.4</code></strong> + <strong><code>2025.1.0</code></strong>，与 <strong>2025.1.x</strong> 主线一致</td>
-</tr>
-<tr>
-<td>创建方式</td>
-<td><strong>IntelliJ IDEA</strong>：<strong>Gradle + Kotlin DSL</strong> 向导，再覆盖 <strong>「五～七」</strong> 脚本</td>
-</tr>
-<tr>
-<td>构建</td>
-<td><strong>Gradle Kotlin DSL</strong>，<strong>Wrapper 9.5.0</strong></td>
-</tr>
-<tr>
-<td>注册发现</td>
-<td><strong><code>spring-cloud-starter-alibaba-nacos-discovery</code></strong> + <strong><code>application.yaml</code></strong></td>
-</tr>
-<tr>
-<td>官方文档</td>
-<td><a target="_blank" rel="noopener external nofollow noreferrer" href="https://sca.aliyun.com/">https://sca.aliyun.com/</a> · <a target="_blank" rel="noopener" href="https://github.com/alibaba/spring-cloud-alibaba">https://github.com/alibaba/spring-cloud-alibaba</a></td>
-</tr>
-</tbody></table>
-<p>按上述顺序即可用 <strong>IDEA</strong> 得到可维护的最小 <strong>Spring Cloud Alibaba + Gradle</strong> 工程；需要 <strong>Sentinel &#x2F; Seata &#x2F; RocketMQ</strong> 时在 <strong><code>build.gradle.kts</code></strong> 增加对应 <strong><code>spring-cloud-starter-alibaba-*</code></strong> 依赖，并查阅官网各组件章节继续配置即可。</p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
   <nav class="pagination">
-    <a class="extend prev" rel="prev" title="上一页" aria-label="上一页" href="/page/10/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/10/">10</a><span class="page-number current">11</span><a class="page-number" href="/page/12/">12</a><a class="page-number" href="/page/13/">13</a><a class="extend next" rel="next" title="下一页" aria-label="下一页" href="/page/12/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" title="上一页" aria-label="上一页" href="/page/10/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/10/">10</a><span class="page-number current">11</span><a class="page-number" href="/page/12/">12</a><span class="space">&hellip;</span><a class="page-number" href="/page/17/">17</a><a class="extend next" rel="next" title="下一页" aria-label="下一页" href="/page/12/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 </div>
@@ -1951,13 +1810,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">82k</span>
+    <span title="站点总字数">143k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">4:35</span>
+    <span title="站点阅读时长">7:57</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

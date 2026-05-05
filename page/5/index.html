@@ -63,6 +63,12 @@
 
 
 
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js" defer></script>
+
+
 
   <noscript>
     <link rel="stylesheet" href="/css/noscript.css">
@@ -166,18 +172,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">122</span>
+          <span class="site-state-item-count">163</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">37</span>
+        <span class="site-state-item-count">38</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">116</span>
+        <span class="site-state-item-count">114</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -205,6 +211,503 @@
     </div>
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/OpenSSL/OpenSSL%E5%8A%9F%E8%83%BD/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/05/01/OpenSSL/OpenSSL%E5%8A%9F%E8%83%BD/" class="post-title-link" itemprop="url">OpenSSL功能</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-05-01 13:43:11" itemprop="dateCreated datePublished" datetime="2026-05-01T13:43:11+08:00">2026-05-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-05-05 11:39:05" itemprop="dateModified" datetime="2026-05-05T11:39:05+08:00">2026-05-05</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/OpenSSL/" itemprop="url" rel="index"><span itemprop="name">OpenSSL</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>1.1k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>4 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="OpenSSL-有两层身份："><a href="#OpenSSL-有两层身份：" class="headerlink" title="OpenSSL 有两层身份："></a>OpenSSL 有<strong>两层身份</strong>：</h2><ol>
+<li><strong>命令行工具</strong>（你刚才用的：生成证书、密钥）</li>
+<li><strong>底层密码库</strong>（几乎所有软件的加密都靠它：Nginx、Python、Java、curl、安卓、iOS 等）</li>
+</ol>
+<p><strong>90% 的互联网加密通信，底层都在用 OpenSSL</strong>。</p>
+<hr>
+<h2 id="二、OpenSSL-到底能做什么？"><a href="#二、OpenSSL-到底能做什么？" class="headerlink" title="二、OpenSSL 到底能做什么？"></a>二、OpenSSL 到底能做什么？</h2><h3 id="1-证书体系"><a href="#1-证书体系" class="headerlink" title="1. 证书体系"></a>1. 证书体系</h3><ul>
+<li>生成私钥、公钥</li>
+<li>生成自签名证书（本地&#x2F;内网开发）</li>
+<li>生成 CSR（向 CA 申请正式 HTTPS 证书）</li>
+<li>查看证书信息</li>
+<li>证书格式转换（PEM ↔ PFX ↔ DER）</li>
+</ul>
+<hr>
+<h3 id="2-加密-解密-文件（超级实用）"><a href="#2-加密-解密-文件（超级实用）" class="headerlink" title="2. 加密 &#x2F; 解密 文件（超级实用）"></a>2. 加密 &#x2F; 解密 文件（超级实用）</h3><p>直接用命令加密文件，无需任何软件：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 加密文件</span></span><br><span class="line">openssl enc -aes-256-cbc -<span class="keyword">in</span> 照片.jpg -out 照片.jpg.enc</span><br><span class="line"></span><br><span class="line"><span class="comment"># 解密</span></span><br><span class="line">openssl enc -d -aes-256-cbc -<span class="keyword">in</span> 照片.jpg.enc -out 照片.jpg</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="3-计算哈希（MD5-SHA1-SHA256）"><a href="#3-计算哈希（MD5-SHA1-SHA256）" class="headerlink" title="3. 计算哈希（MD5&#x2F;SHA1&#x2F;SHA256）"></a>3. 计算哈希（MD5&#x2F;SHA1&#x2F;SHA256）</h3><p>校验文件是否被篡改：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl sha256 安装包.exe</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="4-生成随机密码-密钥"><a href="#4-生成随机密码-密钥" class="headerlink" title="4. 生成随机密码&#x2F;密钥"></a>4. 生成随机密码&#x2F;密钥</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 生成 32 位随机密钥</span></span><br><span class="line">openssl rand -hex 32</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="5-测试-HTTPS-SSL-连接"><a href="#5-测试-HTTPS-SSL-连接" class="headerlink" title="5. 测试 HTTPS&#x2F;SSL 连接"></a>5. 测试 HTTPS&#x2F;SSL 连接</h3><p>排查网站证书是否有效：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl s_client -connect www.baidu.com:443</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="6-模拟-HTTPS-服务器"><a href="#6-模拟-HTTPS-服务器" class="headerlink" title="6. 模拟 HTTPS 服务器"></a>6. 模拟 HTTPS 服务器</h3><p><strong>一行命令启动一个 HTTPS 服务器</strong>（本地测试超好用）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl s_server -cert cert.pem -key key.pem -www</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="7-签名-验签"><a href="#7-签名-验签" class="headerlink" title="7. 签名 &amp; 验签"></a>7. 签名 &amp; 验签</h3><p>确保文件不被篡改、来源可靠（软件发布、固件验证必备）：</p>
+<ul>
+<li>私钥签名</li>
+<li>公钥验签</li>
+</ul>
+<hr>
+<h3 id="8-支持所有主流加密算法"><a href="#8-支持所有主流加密算法" class="headerlink" title="8. 支持所有主流加密算法"></a>8. 支持所有主流加密算法</h3><ul>
+<li>RSA、ECC（非对称加密）</li>
+<li>AES、ChaCha20（对称加密）</li>
+<li>SHA256、SHA3、MD5（哈希）</li>
+<li>TLS 1.3 &#x2F; QUIC 等最新协议</li>
+</ul>
+<hr>
+<h2 id="三、哪些软件在底层使用-OpenSSL？"><a href="#三、哪些软件在底层使用-OpenSSL？" class="headerlink" title="三、哪些软件在底层使用 OpenSSL？"></a>三、哪些软件在底层使用 OpenSSL？</h2><ul>
+<li><strong>Nginx &#x2F; Apache</strong>（HTTPS 加密）</li>
+<li><strong>curl &#x2F; wget</strong></li>
+<li><strong>Python &#x2F; PHP &#x2F; Node.js</strong></li>
+<li><strong>Android &#x2F; iOS 系统加密</strong></li>
+<li><strong>Docker &#x2F; Kubernetes</strong></li>
+<li><strong>Wi-Fi 加密、VPN、SSH</strong></li>
+<li><strong>你的浏览器底层密码库</strong></li>
+</ul>
+<p>一句话：<strong>互联网加密的基石</strong>。</p>
+<hr>
+<h2 id="四、极简总结（记这-4-点就够）"><a href="#四、极简总结（记这-4-点就够）" class="headerlink" title="四、极简总结（记这 4 点就够）"></a>四、极简总结（记这 4 点就够）</h2><ol>
+<li><strong>是工具</strong>：生成证书、加密文件、测试 HTTPS</li>
+<li><strong>是库</strong>：几乎所有软件加密都靠它</li>
+<li><strong>全覆盖</strong>：HTTPS、TLS、QUIC、VPN、SSH 全支持</li>
+</ol>
+<hr>
+<h1 id="OpenSSL-搭建局域网全套可信证书（自建根CA-签发服务器证书）"><a href="#OpenSSL-搭建局域网全套可信证书（自建根CA-签发服务器证书）" class="headerlink" title="OpenSSL 搭建局域网全套可信证书（自建根CA + 签发服务器证书）"></a>OpenSSL 搭建<strong>局域网全套可信证书</strong>（自建根CA + 签发服务器证书）</h1><p>核心思路：</p>
+<ol>
+<li>自己做<strong>根CA证书</strong>（相当于自己当权威证书机构）</li>
+<li>用根CA签发<strong>局域网服务器证书</strong>（绑定你的IP：192.168.1.22）</li>
+<li>手机&#x2F;电脑<strong>导入根CA证书</strong>，之后访问 <code>https://192.168.1.22</code> <strong>浏览器绿标、无不安全警告</strong></li>
+</ol>
+<p>全程一条一条复制命令即可，适配你的 IP：<strong>192.168.1.22</strong></p>
+<hr>
+<h2 id="一、目录准备"><a href="#一、目录准备" class="headerlink" title="一、目录准备"></a>一、目录准备</h2><p>新建文件夹，所有文件放这里：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">mkdir</span> -p ~/ssl/lan-ca</span><br><span class="line"><span class="built_in">cd</span> ~/ssl/lan-ca</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="二、第一步：生成-根CA私钥-根CA自签名证书"><a href="#二、第一步：生成-根CA私钥-根CA自签名证书" class="headerlink" title="二、第一步：生成 根CA私钥 + 根CA自签名证书"></a>二、第一步：生成 根CA私钥 + 根CA自签名证书</h2><h3 id="1-生成根CA私钥"><a href="#1-生成根CA私钥" class="headerlink" title="1. 生成根CA私钥"></a>1. 生成根CA私钥</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl genrsa -aes256 -out ca.key 4096</span><br></pre></td></tr></table></figure>
+<p>设置一个密码（记住，后面签发证书要用）</p>
+<h3 id="2-生成根CA证书（有效期10年）"><a href="#2-生成根CA证书（有效期10年）" class="headerlink" title="2. 生成根CA证书（有效期10年）"></a>2. 生成根CA证书（有效期10年）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl req -x509 -new -nodes -key ca.key -sha256 -days 3650 -out ca.crt</span><br></pre></td></tr></table></figure>
+<p>填写信息可随意，一路回车也行。<br>产出：</p>
+<ul>
+<li><code>ca.key</code>：根CA私钥（绝密，别外泄）</li>
+<li><code>ca.crt</code>：<strong>根CA证书</strong>（手机、电脑要安装这个）</li>
+</ul>
+<hr>
+<h2 id="三、第二步：生成服务器私钥-CSR请求"><a href="#三、第二步：生成服务器私钥-CSR请求" class="headerlink" title="三、第二步：生成服务器私钥 + CSR请求"></a>三、第二步：生成服务器私钥 + CSR请求</h2><h3 id="1-生成服务器私钥"><a href="#1-生成服务器私钥" class="headerlink" title="1. 生成服务器私钥"></a>1. 生成服务器私钥</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl genrsa -out server.key 2048</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-生成证书请求-CSR"><a href="#2-生成证书请求-CSR" class="headerlink" title="2. 生成证书请求 CSR"></a>2. 生成证书请求 CSR</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl req -new -key server.key -out server.csr</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="四、第三步：创建SAN扩展配置（关键！支持IP访问）"><a href="#四、第三步：创建SAN扩展配置（关键！支持IP访问）" class="headerlink" title="四、第三步：创建SAN扩展配置（关键！支持IP访问）"></a>四、第三步：创建SAN扩展配置（关键！支持IP访问）</h2><p>新建文件 <code>server.ext</code>，复制下面内容：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">authorityKeyIdentifier</span>=keyid,issuer</span><br><span class="line"><span class="attr">basicConstraints</span>=CA:<span class="literal">FALSE</span></span><br><span class="line"><span class="attr">keyUsage</span> = digitalSignature, keyEncipherment</span><br><span class="line"><span class="attr">subjectAltName</span> = IP:<span class="number">192.168</span>.<span class="number">1.22</span>,IP:<span class="number">127.0</span>.<span class="number">0.1</span>,DNS:localhost</span><br></pre></td></tr></table></figure>
+<hr>
+<h2 id="五、第四步：用根CA签发-局域网可信服务器证书"><a href="#五、第四步：用根CA签发-局域网可信服务器证书" class="headerlink" title="五、第四步：用根CA签发 局域网可信服务器证书"></a>五、第四步：用根CA签发 局域网可信服务器证书</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">openssl x509 -req \</span><br><span class="line">  -<span class="keyword">in</span> server.csr \</span><br><span class="line">  -CA ca.crt -CAkey ca.key \</span><br><span class="line">  -CAcreateserial \</span><br><span class="line">  -out server.crt \</span><br><span class="line">  -days 3650 -sha256 \</span><br><span class="line">  -extfile server.ext</span><br></pre></td></tr></table></figure>
+
+<h3 id="最终拿到4个文件"><a href="#最终拿到4个文件" class="headerlink" title="最终拿到4个文件"></a>最终拿到4个文件</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ca.key       # 根CA私钥（保密）</span><br><span class="line">ca.crt       # 根CA证书（给设备安装信任）</span><br><span class="line">server.key   # 网站/QUIC服务私钥</span><br><span class="line">server.crt   # 网站/QUIC服务证书</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="六、设备导入根CA，实现永久信任"><a href="#六、设备导入根CA，实现永久信任" class="headerlink" title="六、设备导入根CA，实现永久信任"></a>六、设备导入根CA，实现永久信任</h2><h3 id="Windows"><a href="#Windows" class="headerlink" title="Windows"></a>Windows</h3><ol>
+<li>双击 <code>ca.crt</code> → 安装证书</li>
+<li>存储位置：<strong>本地计算机</strong></li>
+<li>放入：<strong>受信任的根证书颁发机构</strong></li>
+<li>下一步到底即可</li>
+</ol>
+<h3 id="Mac"><a href="#Mac" class="headerlink" title="Mac"></a>Mac</h3><p>双击 <code>ca.crt</code> → 钥匙串 → 设为<strong>始终信任</strong></p>
+<h3 id="Android"><a href="#Android" class="headerlink" title="Android"></a>Android</h3><p>把 <code>ca.crt</code> 发到手机，设置 → 安全 → 安装证书 → 选择文件</p>
+<h3 id="iOS"><a href="#iOS" class="headerlink" title="iOS"></a>iOS</h3><p>邮件发 <code>ca.crt</code>，点开安装，再到 设置→通用→关于本机→证书信任设置 开启信任</p>
+<hr>
+<h2 id="七、你的Python-HTTP-3-项目怎么用"><a href="#七、你的Python-HTTP-3-项目怎么用" class="headerlink" title="七、你的Python HTTP&#x2F;3 项目怎么用"></a>七、你的Python HTTP&#x2F;3 项目怎么用</h2><p>服务端配置：</p>
+<ul>
+<li>证书：<code>server.crt</code></li>
+<li>私钥：<code>server.key</code></li>
+</ul>
+<p>Python 客户端运行时：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python xxx.py --host 192.168.1.22 --port 4433 --ca-certs ca.crt</span><br></pre></td></tr></table></figure>
+<p>客户端用 <strong>根CA证书</strong> 校验，完全可信、无警告。</p>
+<hr>
+<h2 id="八、后续换IP怎么办"><a href="#八、后续换IP怎么办" class="headerlink" title="八、后续换IP怎么办"></a>八、后续换IP怎么办</h2><p>如果以后改成 <code>192.168.1.33</code>，只需要：</p>
+<ol>
+<li>修改 <code>server.ext</code> 里的 <code>IP:xxx</code></li>
+<li>重新执行<strong>第四步签发命令</strong>即可，根CA不用重新生成。</li>
+</ol>
+<hr>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/OpenCV/OpenCV/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/05/01/OpenCV/OpenCV/" class="post-title-link" itemprop="url">OpenCV</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-05-01 13:42:38" itemprop="dateCreated datePublished" datetime="2026-05-01T13:42:38+08:00">2026-05-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/OpenCV/" itemprop="url" rel="index"><span itemprop="name">OpenCV</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>0</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>1 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/FFmpeg/FFmpeg/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/05/01/FFmpeg/FFmpeg/" class="post-title-link" itemprop="url">FFmpeg</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-05-01 13:41:59" itemprop="dateCreated datePublished" datetime="2026-05-01T13:41:59+08:00">2026-05-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/FFmpeg/" itemprop="url" rel="index"><span itemprop="name">FFmpeg</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>0</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>1 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/GraphQL/GraphQL/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/05/01/GraphQL/GraphQL/" class="post-title-link" itemprop="url">GraphQL</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-05-01 13:38:08" itemprop="dateCreated datePublished" datetime="2026-05-01T13:38:08+08:00">2026-05-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/GraphQL/" itemprop="url" rel="index"><span itemprop="name">GraphQL</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>0</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>1 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -1097,376 +1600,8 @@
 
 
 
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/PyTorch/PyTorch/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="miracle">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="my">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | my">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/05/01/PyTorch/PyTorch/" class="post-title-link" itemprop="url">PyTorch</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2026-05-01 13:29:05" itemprop="dateCreated datePublished" datetime="2026-05-01T13:29:05+08:00">2026-05-01</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/PyTorch/" itemprop="url" rel="index"><span itemprop="name">PyTorch</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>0</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>1 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/AI/LLM/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="miracle">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="my">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | my">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/05/01/AI/LLM/" class="post-title-link" itemprop="url">LLM</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2026-05-01 13:23:27" itemprop="dateCreated datePublished" datetime="2026-05-01T13:23:27+08:00">2026-05-01</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>0</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>1 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/AI/DL/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="miracle">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="my">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | my">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/05/01/AI/DL/" class="post-title-link" itemprop="url">DL</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2026-05-01 13:23:10" itemprop="dateCreated datePublished" datetime="2026-05-01T13:23:10+08:00">2026-05-01</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>0</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>1 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/AI/ML/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="miracle">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="my">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | my">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/05/01/AI/ML/" class="post-title-link" itemprop="url">ML</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2026-05-01 13:22:45" itemprop="dateCreated datePublished" datetime="2026-05-01T13:22:45+08:00">2026-05-01</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>0</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>1 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
   <nav class="pagination">
-    <a class="extend prev" rel="prev" title="上一页" aria-label="上一页" href="/page/4/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><span class="space">&hellip;</span><a class="page-number" href="/page/13/">13</a><a class="extend next" rel="next" title="下一页" aria-label="下一页" href="/page/6/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" title="上一页" aria-label="上一页" href="/page/4/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><span class="space">&hellip;</span><a class="page-number" href="/page/17/">17</a><a class="extend next" rel="next" title="下一页" aria-label="下一页" href="/page/6/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 </div>
@@ -1488,13 +1623,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">82k</span>
+    <span title="站点总字数">143k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">4:35</span>
+    <span title="站点阅读时长">7:57</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动
