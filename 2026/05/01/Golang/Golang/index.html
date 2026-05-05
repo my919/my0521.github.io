@@ -20,13 +20,15 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
 
-    <meta property="og:type" content="article">
-<meta property="og:title" content="Golang">
+    <meta name="description" content="Go（常称 Golang）把并发写进语言核心：goroutine 作为轻量执行单元，channel 作为类型安全的通信原语，再配合 sync 与 context，适合网络服务、流水线与可取消任务。下面按「模型 → 通信 → 多路选择 → 锁与协作 → 取消」组织。 一、goroutine 与调度模型 goroutine：用 go f() 启动；栈初始很小、可按需增长，创建成本远低于操作系统线程，因">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Go 并发">
 <meta property="og:url" content="http://example.com/2026/05/01/Golang/Golang/index.html">
 <meta property="og:site_name" content="my">
+<meta property="og:description" content="Go（常称 Golang）把并发写进语言核心：goroutine 作为轻量执行单元，channel 作为类型安全的通信原语，再配合 sync 与 context，适合网络服务、流水线与可取消任务。下面按「模型 → 通信 → 多路选择 → 锁与协作 → 取消」组织。 一、goroutine 与调度模型 goroutine：用 go f() 启动；栈初始很小、可按需增长，创建成本远低于操作系统线程，因">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-05-01T04:28:41.000Z">
-<meta property="article:modified_time" content="2026-05-01T04:28:41.367Z">
+<meta property="article:modified_time" content="2026-05-05T12:10:16.591Z">
 <meta property="article:author" content="miracle">
 <meta property="article:tag" content="Golang">
 <meta name="twitter:card" content="summary">
@@ -35,10 +37,10 @@
 <link rel="canonical" href="http://example.com/2026/05/01/Golang/Golang/">
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2026/05/01/Golang/Golang/","path":"2026/05/01/Golang/Golang/","title":"Golang"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2026/05/01/Golang/Golang/","path":"2026/05/01/Golang/Golang/","title":"Go 并发"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>Golang | my</title>
+<title>Go 并发 | my</title>
   
 
 
@@ -150,7 +152,7 @@
   
   <aside class="sidebar">
 
-    <div class="sidebar-inner sidebar-overview-active">
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
       <ul class="sidebar-nav">
         <li class="sidebar-nav-toc">
           文章目录
@@ -163,6 +165,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81goroutine-%E4%B8%8E%E8%B0%83%E5%BA%A6%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.</span> <span class="nav-text">一、goroutine 与调度模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81channel%EF%BC%9A%E9%80%9A%E4%BF%A1%E4%BC%98%E5%85%88%E4%BA%8E%E5%85%B1%E4%BA%AB%E5%86%85%E5%AD%98"><span class="nav-number">2.</span> <span class="nav-text">二、channel：通信优先于共享内存</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81select%EF%BC%9A%E5%A4%9A%E8%B7%AF%E7%AD%89%E5%BE%85%E4%B8%8E%E8%B6%85%E6%97%B6"><span class="nav-number">3.</span> <span class="nav-text">三、select：多路等待与超时</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81sync-%E5%8C%85%EF%BC%9A%E9%94%81%E4%B8%8E%E5%8D%8F%E4%BD%9C%E5%8E%9F%E8%AF%AD"><span class="nav-number">4.</span> <span class="nav-text">四、sync 包：锁与协作原语</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-Mutex-RWMutex"><span class="nav-number">4.1.</span> <span class="nav-text">4.1 Mutex &#x2F; RWMutex</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-WaitGroup"><span class="nav-number">4.2.</span> <span class="nav-text">4.2 WaitGroup</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-Once"><span class="nav-number">4.3.</span> <span class="nav-text">4.3 Once</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81context%EF%BC%9A%E5%8F%96%E6%B6%88%E3%80%81%E8%B6%85%E6%97%B6%E4%B8%8E%E4%BC%A0%E5%80%BC"><span class="nav-number">5.</span> <span class="nav-text">五、context：取消、超时与传值</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E5%B8%B8%E8%A7%81%E9%99%B7%E9%98%B1%E4%B8%8E%E5%AE%9E%E8%B7%B5%E5%BB%BA%E8%AE%AE"><span class="nav-number">6.</span> <span class="nav-text">六、常见陷阱与实践建议</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -175,7 +178,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">163</span>
+          <span class="site-state-item-count">164</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -186,7 +189,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">114</span>
+        <span class="site-state-item-count">115</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -237,12 +240,12 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="Golang | my">
+      <meta itemprop="name" content="Go 并发 | my">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          Golang
+          Go 并发
         </h1>
 
         <div class="post-meta-container">
@@ -254,6 +257,13 @@
       <span class="post-meta-item-text">发表于</span>
 
       <time title="创建时间：2026-05-01 12:28:41" itemprop="dateCreated datePublished" datetime="2026-05-01T12:28:41+08:00">2026-05-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-05-05 20:10:16" itemprop="dateModified" datetime="2026-05-05T20:10:16+08:00">2026-05-05</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -272,14 +282,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>0</span>
+      <span>1.1k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>1 分钟</span>
+      <span>4 分钟</span>
     </span>
 </div>
 
@@ -289,7 +299,56 @@
     
     
     
-    <div class="post-body" itemprop="articleBody">
+    <div class="post-body" itemprop="articleBody"><p><strong>Go</strong>（常称 <strong>Golang</strong>）把并发写进语言核心：<strong>goroutine</strong> 作为轻量执行单元，<strong>channel</strong> 作为类型安全的通信原语，再配合 <strong><code>sync</code></strong> 与 <strong><code>context</code></strong>，适合网络服务、流水线与可取消任务。下面按「模型 → 通信 → 多路选择 → 锁与协作 → 取消」组织。</p>
+<h2 id="一、goroutine-与调度模型"><a href="#一、goroutine-与调度模型" class="headerlink" title="一、goroutine 与调度模型"></a>一、goroutine 与调度模型</h2><ul>
+<li><strong>goroutine</strong>：用 <code>go f()</code> 启动；栈初始很小、可按需增长，<strong>创建成本远低于操作系统线程</strong>，因此可以大量存在。</li>
+<li><strong>调度器</strong>：运行时把许多 goroutine 映射到少量 <strong>OS 线程</strong>（<strong>M:N</strong> 模型），在阻塞或抢占点切换，避免「一线程一连接」把机器拖垮。</li>
+<li><strong>何时用</strong>：IO 密集、扇出扇入、后台任务；<strong>CPU 密集</strong>仍要控制并发度（见第六节），否则和线程池一样会抢满核心。</li>
+</ul>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="built_in">println</span>(<span class="string">&quot;在另一个 goroutine 里执行&quot;</span>)</span><br><span class="line">    &#125;()</span><br><span class="line">    <span class="comment">// main 若立即退出，进程结束，子 goroutine 可能来不及打印</span></span><br><span class="line">    time.Sleep(<span class="number">10</span> * time.Millisecond)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="二、channel：通信优先于共享内存"><a href="#二、channel：通信优先于共享内存" class="headerlink" title="二、channel：通信优先于共享内存"></a>二、channel：通信优先于共享内存</h2><ul>
+<li><strong>声明与创建</strong>：<code>var ch chan int</code> 为 <code>nil</code>，发送&#x2F;接收会永久阻塞；<code>ch := make(chan int)</code> 无缓冲；<code>make(chan int, 10)</code> 带容量为<strong>缓冲 channel</strong>。</li>
+<li><strong>无缓冲</strong>：发送方与接收方<strong>必须同时就绪</strong>，完成一次「交接」，常用于<strong>同步节拍</strong>。</li>
+<li><strong>缓冲</strong>：未满时可先发送，常用于<strong>限流或解耦</strong>；容量为 0 与无缓冲语义一致。</li>
+</ul>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">sum</span><span class="params">(a []<span class="type">int</span>, c <span class="keyword">chan</span> <span class="type">int</span>)</span></span> &#123;</span><br><span class="line">    s := <span class="number">0</span></span><br><span class="line">    <span class="keyword">for</span> _, v := <span class="keyword">range</span> a &#123;</span><br><span class="line">        s += v</span><br><span class="line">    &#125;</span><br><span class="line">    c &lt;- s <span class="comment">// 把结果发出去</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    c := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="type">int</span>)</span><br><span class="line">    <span class="keyword">go</span> sum([]<span class="type">int</span>&#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>&#125;, c)</span><br><span class="line">    fmt.Println(&lt;-c) <span class="comment">// 接收</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>关闭</strong>：仅<strong>发送方</strong>应调用 <code>close(ch)</code>；接收方可用 <code>v, ok := &lt;-ch</code>，<code>ok == false</code> 表示 channel 已关闭且无剩余数据。</li>
+<li><strong>单向 channel</strong>：类型 <code>chan&lt;- T</code>（只发）、<code>&lt;-chan T</code>（只收）用于函数签名，约束使用方式、减少误用。</li>
+</ul>
+<h2 id="三、select：多路等待与超时"><a href="#三、select：多路等待与超时" class="headerlink" title="三、select：多路等待与超时"></a>三、<code>select</code>：多路等待与超时</h2><ul>
+<li><strong><code>select</code></strong> 在<strong>多个 channel 操作</strong>上等待，<strong>随机</strong>选择一个可执行的 <code>case</code>；若都阻塞且<strong>无 <code>default</code></strong>，则阻塞；有 <strong><code>default</code></strong> 则立即走默认分支（常用于<strong>非阻塞</strong>尝试）。</li>
+<li><strong>超时模式</strong>：用 <code>time.After</code> 或 <strong><code>context</code></strong>（推荐生产代码）控制最长等待。</li>
+</ul>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> &#123;</span><br><span class="line"><span class="keyword">case</span> v := &lt;-ch:</span><br><span class="line">    fmt.Println(<span class="string">&quot;收到&quot;</span>, v)</span><br><span class="line"><span class="keyword">case</span> &lt;-time.After(<span class="number">2</span> * time.Second):</span><br><span class="line">    fmt.Println(<span class="string">&quot;超时&quot;</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="四、sync-包：锁与协作原语"><a href="#四、sync-包：锁与协作原语" class="headerlink" title="四、sync 包：锁与协作原语"></a>四、<code>sync</code> 包：锁与协作原语</h2><h3 id="4-1-Mutex-RWMutex"><a href="#4-1-Mutex-RWMutex" class="headerlink" title="4.1 Mutex &#x2F; RWMutex"></a>4.1 <code>Mutex</code> &#x2F; <code>RWMutex</code></h3><ul>
+<li>多 goroutine <strong>读写同一内存</strong>且无 channel 串行化时，用 <strong><code>sync.Mutex</code></strong> 保护临界区；<strong>读多写少</strong>可考虑 <strong><code>RWMutex</code></strong>。</li>
+<li>锁粒度要小、持有时间要短；避免在持锁时做 IO 或可能阻塞很久的逻辑。</li>
+</ul>
+<h3 id="4-2-WaitGroup"><a href="#4-2-WaitGroup" class="headerlink" title="4.2 WaitGroup"></a>4.2 <code>WaitGroup</code></h3><ul>
+<li><strong><code>Add</code> &#x2F; <code>Done</code> &#x2F; <code>Wait</code></strong>：主 goroutine <code>Wait()</code> 等待一组子任务结束；<strong><code>Add</code> 要在启动 goroutine 之前</strong>（或确保不竞态地提前 <code>Add</code>），避免 <code>Wait</code> 早于 <code>Add</code> 导致计数错误。</li>
+</ul>
+<h3 id="4-3-Once"><a href="#4-3-Once" class="headerlink" title="4.3 Once"></a>4.3 <code>Once</code></h3><ul>
+<li><strong><code>sync.Once</code></strong> 保证 <code>Do(f)</code> 里的 <code>f</code> <strong>全局只执行一次</strong>，常用于懒初始化单例。</li>
+</ul>
+<h2 id="五、context：取消、超时与传值"><a href="#五、context：取消、超时与传值" class="headerlink" title="五、context：取消、超时与传值"></a>五、<code>context</code>：取消、超时与传值</h2><ul>
+<li><strong><code>context.Context</code></strong> 贯穿调用链：<strong>超时</strong>（<code>WithTimeout</code>）、<strong>手动取消</strong>（<code>WithCancel</code>）、<strong>截止时间</strong>（<code>WithDeadline</code>）；下游应监听 <code>ctx.Done()</code> 并尽快返回。</li>
+<li><strong>值传递</strong>：<code>WithValue</code> 适合传<strong>请求范围元数据</strong>（如 trace id）；不要塞业务大对象，也不要把 <code>Context</code> 放进结构体字段长期保存（应作为函数首参传递）。</li>
+</ul>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">ctx, cancel := context.WithTimeout(context.Background(), <span class="number">100</span>*time.Millisecond)</span><br><span class="line"><span class="keyword">defer</span> cancel()</span><br><span class="line"></span><br><span class="line">ch := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">struct</span>&#123;&#125;)</span><br><span class="line"><span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">    time.Sleep(<span class="number">200</span> * time.Millisecond)</span><br><span class="line">    ch &lt;- <span class="keyword">struct</span>&#123;&#125;&#123;&#125;</span><br><span class="line">&#125;()</span><br><span class="line"></span><br><span class="line"><span class="keyword">select</span> &#123;</span><br><span class="line"><span class="keyword">case</span> &lt;-ch:</span><br><span class="line">    fmt.Println(<span class="string">&quot;完成&quot;</span>)</span><br><span class="line"><span class="keyword">case</span> &lt;-ctx.Done():</span><br><span class="line">    fmt.Println(<span class="string">&quot;取消或超时:&quot;</span>, ctx.Err())</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="六、常见陷阱与实践建议"><a href="#六、常见陷阱与实践建议" class="headerlink" title="六、常见陷阱与实践建议"></a>六、常见陷阱与实践建议</h2><ul>
+<li><strong>main 退出即进程退出</strong>：未 <code>Wait</code> 或未收完结果的 goroutine 会被直接掐掉；要有明确的<strong>汇合点</strong>（<code>WaitGroup</code>、<code>channel</code> 关闭、<code>errgroup</code> 等）。</li>
+<li><strong>泄漏 goroutine</strong>：向无人接收的 channel 发送、或 goroutine 永远阻塞在 <code>select</code>，都会导致泄漏；长生命周期任务要设计<strong>退出信号</strong>。</li>
+<li><strong>闭包与循环变量</strong>：在循环里 <code>go func() { ... }</code> 若引用循环变量，应用<strong>参数传入</strong>当前值，避免经典「全部打印最后一个」问题（Go 1.22+ 对循环变量语义有调整，仍建议显式传参以增强可读性与兼容旧版本）。</li>
+<li><strong>CPU 密集</strong>：用 <strong><code>runtime.NumCPU()</code></strong> 或带缓冲的 worker channel <strong>限制并发 worker 数量</strong>，而不是无节制 <code>go</code>。</li>
+<li><strong>竞态检测</strong>：开发与 CI 中开启 <strong><code>go test -race</code></strong>，能发现大量数据竞态。</li>
+</ul>
+<p>整体上，Go 鼓励用 <strong>channel 表达所有权与流水线</strong>，在热点路径或简单共享计数时用 <strong><code>Mutex</code></strong>；<strong>取消与超时</strong>交给 <strong><code>context</code></strong>，代码意图会更清晰、也更容易在团队中保持一致。</p>
+
     </div>
 
     
@@ -343,13 +402,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">143k</span>
+    <span title="站点总字数">150k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">7:57</span>
+    <span title="站点阅读时长">8:19</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

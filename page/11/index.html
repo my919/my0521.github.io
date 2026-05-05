@@ -172,7 +172,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">163</span>
+          <span class="site-state-item-count">164</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -183,7 +183,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">114</span>
+        <span class="site-state-item-count">115</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -211,6 +211,197 @@
     </div>
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/Netty/Netty%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/05/01/Netty/Netty%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8/" class="post-title-link" itemprop="url">Netty 多路复用</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-05-01 12:33:20" itemprop="dateCreated datePublished" datetime="2026-05-01T12:33:20+08:00">2026-05-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-05-02 00:14:11" itemprop="dateModified" datetime="2026-05-02T00:14:11+08:00">2026-05-02</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Netty/" itemprop="url" rel="index"><span itemprop="name">Netty</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>1.5k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>5 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p><strong>I&#x2F;O 多路复用</strong>指用<strong>少量线程</strong>通过 <strong><code>Selector</code>（Linux 上常为 Epoll）</strong> 同时<strong>监视大量 <code>Channel</code></strong>，只在<strong>有就绪事件</strong>时读写，而不是「一线程一连接」。<strong>Netty</strong> 把 <strong>Java NIO</strong> 封装成 <strong><code>EventLoop</code> + <code>Pipeline</code></strong> 的 <strong>Reactor</strong> 风格，便于高并发网络程序。下面先给 <strong>Maven &#x2F; Gradle</strong> 依赖，再讲概念、<strong>Boss &#x2F; Worker</strong> 线程模型、<strong>Echo</strong> 示例与系统侧注意点。</p>
+<hr>
+<h1 id="一、先把三个概念说清楚"><a href="#一、先把三个概念说清楚" class="headerlink" title="一、先把三个概念说清楚"></a>一、先把三个概念说清楚</h1><h2 id="1-「很多连接」≠「每条连接占满一条线程」"><a href="#1-「很多连接」≠「每条连接占满一条线程」" class="headerlink" title="1. 「很多连接」≠「每条连接占满一条线程」"></a>1. 「很多连接」≠「每条连接占满一条线程」</h2><ul>
+<li><strong>大量长连接</strong>：例如推送、网关、<strong>IM</strong> 在线，许多连接<strong>长时间无读写</strong>，适合交给<strong>一个 <code>Selector</code></strong> 统一等就绪。  </li>
+<li><strong>高 QPS 短连接</strong>：瓶颈常在 <strong>CPU</strong>、<strong>GC</strong>、<strong>协议栈</strong>，与「单 <code>Selector</code> 挂很多空闲连接」不是同一维度的问题。</li>
+</ul>
+<h2 id="2-NIO-多路复用在干什么"><a href="#2-NIO-多路复用在干什么" class="headerlink" title="2. NIO 多路复用在干什么"></a>2. <strong>NIO</strong> 多路复用在干什么</h2><p>一条线程调用 <strong><code>Selector.select()</code></strong> 阻塞等待，直到<strong>一批</strong> <strong>Channel</strong> 上<strong>有就绪的 I&#x2F;O 事件</strong>（可读、可写等），再<strong>依次分发</strong>处理。这样<strong>一条线程可以注册并监视成千上万个连接</strong>，而不是为每个连接各开一条阻塞线程。</p>
+<h2 id="3-Netty-扮演的角色"><a href="#3-Netty-扮演的角色" class="headerlink" title="3. Netty 扮演的角色"></a>3. <strong>Netty</strong> 扮演的角色</h2><p><strong>Netty</strong> 在 <strong>Java NIO &#x2F; Epoll（Linux）</strong> 之上封装了 <strong>Reactor</strong> 风格的 <strong><code>EventLoop</code></strong>、<strong><code>Pipeline</code></strong>、内存与缓冲策略，让你用<strong>少量 <code>EventLoop</code> 线程</strong>管理<strong>大量 <code>Channel</code></strong>，并把编解码、业务入 <strong><code>ChannelPipeline</code></strong>。</p>
+<hr>
+<h1 id="二、依赖示例（Maven-Gradle）"><a href="#二、依赖示例（Maven-Gradle）" class="headerlink" title="二、依赖示例（Maven &#x2F; Gradle）"></a>二、依赖示例（Maven &#x2F; Gradle）</h1><p><strong><code>&lt;version&gt;</code> &#x2F; 版本号</strong> 请换成当前 <strong>4.1.x</strong> 稳定版，与团队对齐。</p>
+<h2 id="1-Maven（pom-xml）"><a href="#1-Maven（pom-xml）" class="headerlink" title="1. Maven（pom.xml）"></a>1. Maven（<code>pom.xml</code>）</h2><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>io.netty<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>netty-all<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">version</span>&gt;</span>4.1.115.Final<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="2-Gradle（Groovy，build-gradle）"><a href="#2-Gradle（Groovy，build-gradle）" class="headerlink" title="2. Gradle（Groovy，build.gradle）"></a>2. Gradle（Groovy，<code>build.gradle</code>）</h2><figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">dependencies</span> &#123;</span><br><span class="line">    implementation <span class="string">&#x27;io.netty:netty-all:4.1.115.Final&#x27;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-Gradle（Kotlin-DSL，build-gradle-kts）"><a href="#3-Gradle（Kotlin-DSL，build-gradle-kts）" class="headerlink" title="3. Gradle（Kotlin DSL，build.gradle.kts）"></a>3. Gradle（Kotlin DSL，<code>build.gradle.kts</code>）</h2><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">dependencies &#123;</span><br><span class="line">    implementation(<span class="string">&quot;io.netty:netty-all:4.1.115.Final&quot;</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>官方仓库与版本列表：<strong><a target="_blank" rel="noopener external nofollow noreferrer" href="https://netty.io/">https://netty.io/</a></strong> · <strong><a target="_blank" rel="noopener" href="https://github.com/netty/netty">https://github.com/netty/netty</a></strong></p>
+<hr>
+<h1 id="三、Netty-常见线程模型（Boss-Worker）"><a href="#三、Netty-常见线程模型（Boss-Worker）" class="headerlink" title="三、Netty 常见线程模型（Boss &#x2F; Worker）"></a>三、Netty 常见线程模型（Boss &#x2F; Worker）</h1><h2 id="1-典型服务端写法（概念）"><a href="#1-典型服务端写法（概念）" class="headerlink" title="1. 典型服务端写法（概念）"></a>1. 典型服务端写法（概念）</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">EventLoopGroup</span> <span class="variable">bossGroup</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">NioEventLoopGroup</span>(<span class="number">1</span>);   <span class="comment">// 常 1：只负责接入</span></span><br><span class="line"><span class="type">EventLoopGroup</span> <span class="variable">workerGroup</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">NioEventLoopGroup</span>(); <span class="comment">// 默认：CPU×2 等，负责已连接通道的 I/O</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong><code>bossGroup</code></strong>：线程数常为 <strong>1</strong>（也可更多），负责<strong>接受新连接</strong>并把 <strong><code>SocketChannel</code></strong> 注册进 <strong><code>workerGroup</code></strong> 中某个 <strong><code>EventLoop</code></strong> 的 <strong><code>Selector</code></strong>。  </li>
+<li><strong><code>workerGroup</code></strong>：每个 <strong><code>NioEventLoop</code></strong> 内<strong>一条线程 + 一个 <code>Selector</code></strong>，<strong>多路复用</strong>其上的所有 <strong><code>Channel</code></strong> 的读&#x2F;写就绪事件。整体是<strong>少量线程 + 大量连接</strong>，业务逻辑仍在 <strong><code>Pipeline</code></strong> 里按事件触发执行。</li>
+</ul>
+<h2 id="2-一张逻辑关系（文字版）"><a href="#2-一张逻辑关系（文字版）" class="headerlink" title="2. 一张逻辑关系（文字版）"></a>2. 一张逻辑关系（文字版）</h2><table>
+<thead>
+<tr>
+<th>角色</th>
+<th>大致职责</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Boss <code>EventLoop</code></strong></td>
+<td><strong><code>accept</code></strong>，建 <strong><code>Channel</code></strong>，注册到某个 <strong>Worker</strong></td>
+</tr>
+<tr>
+<td><strong>Worker <code>EventLoop</code></strong></td>
+<td>已连接 <strong><code>Channel</code></strong> 的读&#x2F;写就绪事件、入站出站 <strong>Pipeline</strong></td>
+</tr>
+</tbody></table>
+<p>业务若<strong>阻塞</strong>（重度 <strong>CPU</strong>、同步 <strong>JDBC</strong>、大 <strong><code>Thread.sleep</code></strong>），会占满该 <strong><code>EventLoop</code></strong> 上的所有 <strong><code>Channel</code></strong>，拖慢整组连接——因此<strong>阻塞操作</strong>应丢到<strong>业务线程池</strong>或异步组件，这是多路复用能发挥作用的<strong>前提</strong>。</p>
+<hr>
+<h1 id="四、示例代码：最小-Echo-服务端（可运行）"><a href="#四、示例代码：最小-Echo-服务端（可运行）" class="headerlink" title="四、示例代码：最小 Echo 服务端（可运行）"></a>四、示例代码：最小 Echo 服务端（可运行）</h1><p>下面是一个<strong>单文件可跑</strong>的 <strong>Echo</strong>：客户端发来多少字节，服务端原样写回（<strong>Boss&#x3D;1</strong>、<strong>Worker</strong> 默认线程数由 <strong>Netty</strong> 按 <strong>CPU</strong> 推算）。包名可按你的工程修改；需已引入 <strong><code>netty-all</code></strong>（<strong>Maven</strong> 见 <strong><code>pom.xml</code></strong>，<strong>Gradle</strong> 见 <strong><code>build.gradle</code> &#x2F; <code>build.gradle.kts</code></strong>，均见上文 <strong>二、依赖示例</strong>）。</p>
+<h2 id="1-EchoServer-java"><a href="#1-EchoServer-java" class="headerlink" title="1. EchoServer.java"></a>1. <code>EchoServer.java</code></h2><p>将类放到任意 <strong><code>src/main/java</code></strong> 包路径下（示例包名 <strong><code>example.netty</code></strong>），与 <strong><code>pom.xml</code></strong> 中 <strong><code>mainClass</code></strong> 或 <strong>IDE</strong> 运行入口一致即可。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> example.netty;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> io.netty.bootstrap.ServerBootstrap;</span><br><span class="line"><span class="keyword">import</span> io.netty.channel.*;</span><br><span class="line"><span class="keyword">import</span> io.netty.channel.nio.NioEventLoopGroup;</span><br><span class="line"><span class="keyword">import</span> io.netty.channel.socket.SocketChannel;</span><br><span class="line"><span class="keyword">import</span> io.netty.channel.socket.nio.NioServerSocketChannel;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 最小 Echo：读入的字节原样写回。默认端口 8000，也可传入参数：8080。</span></span><br><span class="line"><span class="comment"> * 验证：nc 127.0.0.1 8000</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">class</span> <span class="title class_">EchoServer</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">port</span> <span class="operator">=</span> (args.length &gt; <span class="number">0</span>) ? Integer.parseInt(args[<span class="number">0</span>]) : <span class="number">8000</span>;</span><br><span class="line"></span><br><span class="line">        <span class="type">EventLoopGroup</span> <span class="variable">bossGroup</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">NioEventLoopGroup</span>(<span class="number">1</span>);</span><br><span class="line">        <span class="type">EventLoopGroup</span> <span class="variable">workerGroup</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">NioEventLoopGroup</span>();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="type">ServerBootstrap</span> <span class="variable">b</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ServerBootstrap</span>();</span><br><span class="line">            b.group(bossGroup, workerGroup)</span><br><span class="line">                    .channel(NioServerSocketChannel.class)</span><br><span class="line">                    .childHandler(<span class="keyword">new</span> <span class="title class_">ChannelInitializer</span>&lt;SocketChannel&gt;() &#123;</span><br><span class="line">                        <span class="meta">@Override</span></span><br><span class="line">                        <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">initChannel</span><span class="params">(SocketChannel ch)</span> &#123;</span><br><span class="line">                            ch.pipeline().addLast(<span class="keyword">new</span> <span class="title class_">ChannelInboundHandlerAdapter</span>() &#123;</span><br><span class="line">                                <span class="meta">@Override</span></span><br><span class="line">                                <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">channelRead</span><span class="params">(ChannelHandlerContext ctx, Object msg)</span> &#123;</span><br><span class="line">                                    ctx.write(msg);</span><br><span class="line">                                &#125;</span><br><span class="line"></span><br><span class="line">                                <span class="meta">@Override</span></span><br><span class="line">                                <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">channelReadComplete</span><span class="params">(ChannelHandlerContext ctx)</span> &#123;</span><br><span class="line">                                    ctx.flush();</span><br><span class="line">                                &#125;</span><br><span class="line"></span><br><span class="line">                                <span class="meta">@Override</span></span><br><span class="line">                                <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">exceptionCaught</span><span class="params">(ChannelHandlerContext ctx, Throwable cause)</span> &#123;</span><br><span class="line">                                    cause.printStackTrace();</span><br><span class="line">                                    ctx.close();</span><br><span class="line">                                &#125;</span><br><span class="line">                            &#125;);</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;);</span><br><span class="line"></span><br><span class="line">            <span class="type">ChannelFuture</span> <span class="variable">f</span> <span class="operator">=</span> b.bind(port).sync();</span><br><span class="line">            System.out.println(<span class="string">&quot;Echo 监听端口 &quot;</span> + port + <span class="string">&quot;，终端执行: nc 127.0.0.1 &quot;</span> + port);</span><br><span class="line">            f.channel().closeFuture().sync();</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            bossGroup.shutdownGracefully();</span><br><span class="line">            workerGroup.shutdownGracefully();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-用-nc-或-Netty-客户端自测"><a href="#2-用-nc-或-Netty-客户端自测" class="headerlink" title="2. 用 nc 或 Netty 客户端自测"></a>2. 用 <code>nc</code> 或 <strong>Netty</strong> 客户端自测</h2><p>另开终端：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nc 127.0.0.1 8000</span><br></pre></td></tr></table></figure>
+
+<p>随意输入几行文字；服务端把同一字节流写回，<strong><code>nc</code></strong> 侧应看到<strong>回显</strong>。按 <strong><code>Ctrl+C</code></strong> 结束 <strong><code>nc</code></strong>；停止服务端在运行 <strong>Echo</strong> 的终端 <strong><code>Ctrl+C</code></strong> 或结束进程。</p>
+<h2 id="3-可选：EchoClient-java（本机连本机）"><a href="#3-可选：EchoClient-java（本机连本机）" class="headerlink" title="3. 可选：EchoClient.java（本机连本机）"></a>3. 可选：<code>EchoClient.java</code>（本机连本机）</h2><p>与上节同一 <strong><code>package</code></strong> 下再加一类，先启动 <strong><code>EchoServer</code></strong>，再运行 <strong><code>EchoClient</code></strong>；客户端连上后发送一行 <strong><code>hello</code></strong>，控制台打印读到的字节数（即回显长度）。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> example.netty;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> io.netty.bootstrap.Bootstrap;</span><br><span class="line"><span class="keyword">import</span> io.netty.buffer.ByteBuf;</span><br><span class="line"><span class="keyword">import</span> io.netty.channel.*;</span><br><span class="line"><span class="keyword">import</span> io.netty.channel.nio.NioEventLoopGroup;</span><br><span class="line"><span class="keyword">import</span> io.netty.channel.socket.SocketChannel;</span><br><span class="line"><span class="keyword">import</span> io.netty.channel.socket.nio.NioSocketChannel;</span><br><span class="line"><span class="keyword">import</span> io.netty.util.CharsetUtil;</span><br><span class="line"><span class="keyword">import</span> io.netty.util.ReferenceCountUtil;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">class</span> <span class="title class_">EchoClient</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="type">String</span> <span class="variable">host</span> <span class="operator">=</span> (args.length &gt; <span class="number">0</span>) ? args[<span class="number">0</span>] : <span class="string">&quot;127.0.0.1&quot;</span>;</span><br><span class="line">        <span class="type">int</span> <span class="variable">port</span> <span class="operator">=</span> (args.length &gt; <span class="number">1</span>) ? Integer.parseInt(args[<span class="number">1</span>]) : <span class="number">8000</span>;</span><br><span class="line"></span><br><span class="line">        <span class="type">EventLoopGroup</span> <span class="variable">group</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">NioEventLoopGroup</span>();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="type">Bootstrap</span> <span class="variable">b</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Bootstrap</span>();</span><br><span class="line">            b.group(group)</span><br><span class="line">                    .channel(NioSocketChannel.class)</span><br><span class="line">                    .handler(<span class="keyword">new</span> <span class="title class_">ChannelInitializer</span>&lt;SocketChannel&gt;() &#123;</span><br><span class="line">                        <span class="meta">@Override</span></span><br><span class="line">                        <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">initChannel</span><span class="params">(SocketChannel ch)</span> &#123;</span><br><span class="line">                            ch.pipeline().addLast(<span class="keyword">new</span> <span class="title class_">ChannelInboundHandlerAdapter</span>() &#123;</span><br><span class="line">                                <span class="meta">@Override</span></span><br><span class="line">                                <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">channelActive</span><span class="params">(ChannelHandlerContext ctx)</span> &#123;</span><br><span class="line">                                    <span class="type">ByteBuf</span> <span class="variable">buf</span> <span class="operator">=</span> ctx.alloc().buffer();</span><br><span class="line">                                    buf.writeBytes(<span class="string">&quot;hello\n&quot;</span>.getBytes(CharsetUtil.UTF_8));</span><br><span class="line">                                    ctx.writeAndFlush(buf);</span><br><span class="line">                                &#125;</span><br><span class="line"></span><br><span class="line">                                <span class="meta">@Override</span></span><br><span class="line">                                <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">channelRead</span><span class="params">(ChannelHandlerContext ctx, Object msg)</span> &#123;</span><br><span class="line">                                    <span class="type">ByteBuf</span> <span class="variable">in</span> <span class="operator">=</span> (ByteBuf) msg;</span><br><span class="line">                                    <span class="keyword">try</span> &#123;</span><br><span class="line">                                        System.out.println(<span class="string">&quot;收到回显，可读字节: &quot;</span> + in.readableBytes());</span><br><span class="line">                                    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">                                        ReferenceCountUtil.release(msg);</span><br><span class="line">                                    &#125;</span><br><span class="line">                                &#125;</span><br><span class="line"></span><br><span class="line">                                <span class="meta">@Override</span></span><br><span class="line">                                <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">exceptionCaught</span><span class="params">(ChannelHandlerContext ctx, Throwable cause)</span> &#123;</span><br><span class="line">                                    cause.printStackTrace();</span><br><span class="line">                                    ctx.close();</span><br><span class="line">                                &#125;</span><br><span class="line">                            &#125;);</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;);</span><br><span class="line"></span><br><span class="line">            <span class="type">ChannelFuture</span> <span class="variable">f</span> <span class="operator">=</span> b.connect(host, port).sync();</span><br><span class="line">            f.channel().closeFuture().sync();</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            group.shutdownGracefully();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>说明</strong>：真实协议一般要在 <strong><code>Pipeline</code></strong> 里加<strong>粘包&#x2F;拆包</strong>（如 <strong><code>LineBasedFrameDecoder</code></strong>、长度域），这里刻意最简，只对应「线程模型 + 读写回显」演示。</p>
+<hr>
+<h1 id="五、大量连接下的系统侧（简述）"><a href="#五、大量连接下的系统侧（简述）" class="headerlink" title="五、大量连接下的系统侧（简述）"></a>五、大量连接下的系统侧（简述）</h1><p>要把<strong>多路复用</strong>撑到<strong>很大连接数</strong>，通常还要：</p>
+<ol>
+<li><strong>进程最大打开文件数</strong>（<strong><code>ulimit -n</code></strong>）调到足够大。  </li>
+<li><strong>Linux</strong> 上 <strong>TCP</strong>、<strong>端口范围</strong>、<strong><code>somaxconn</code></strong> 等与接入能力相关的内核参数按运维规范调整。  </li>
+<li><strong>堆外内存</strong>、<strong>直接内存</strong>、<strong><code>-Xmx</code></strong> 与 <strong>Netty</strong> 的 <strong>ByteBuf</strong> 分配策略匹配业务量，避免 <strong>OOM</strong>。</li>
+</ol>
+<p>这些属于<strong>容量规划</strong>与<strong>运维</strong>，单靠应用层多路复用无法替代。</p>
+<hr>
+<h1 id="六、小结"><a href="#六、小结" class="headerlink" title="六、小结"></a>六、小结</h1><table>
+<thead>
+<tr>
+<th>说法</th>
+<th>更稳妥的理解</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Maven &#x2F; Gradle</strong></td>
+<td><strong>二</strong>：坐标 <strong><code>io.netty:netty-all</code></strong>；<strong>Maven</strong> 用 <strong><code>&lt;dependency&gt;</code></strong>；<strong>Gradle</strong> 用 <strong><code>implementation</code></strong>（<strong>Groovy</strong> 或 <strong>Kotlin DSL</strong>）。版本与团队对齐。</td>
+</tr>
+<tr>
+<td><strong>I&#x2F;O 多路复用</strong></td>
+<td><strong><code>Selector</code></strong> 一批 <strong><code>Channel</code></strong> 上就绪事件再处理；<strong>Netty</strong> 用 <strong><code>EventLoop</code></strong> 封装这一模型。</td>
+</tr>
+<tr>
+<td><strong>Netty</strong> 与线程</td>
+<td><strong>Boss</strong> 接入、<strong>Worker</strong> 做已连通道的 <strong>I&#x2F;O</strong> 与 <strong><code>Pipeline</code></strong>；<strong>少量线程</strong>对应<strong>大量连接</strong>（连接多空闲、业务非阻塞时更匹配）。</td>
+</tr>
+<tr>
+<td>示例代码</td>
+<td><strong>四</strong>：<strong><code>EchoServer</code></strong> + <strong><code>nc</code></strong>；可选 <strong><code>EchoClient</code></strong>。依赖声明见 <strong>二</strong>。</td>
+</tr>
+<tr>
+<td>要上量</td>
+<td><strong>连接模型</strong>、<strong>业务是否阻塞</strong>、<strong>FD &#x2F; 内核 &#x2F; 内存</strong> 一起评估。</td>
+</tr>
+</tbody></table>
+<p>进一步阅读：<strong>《Netty 实战》</strong>、官方 <strong>User guide</strong>；进阶可看 <strong>Epoll</strong>、<strong>零拷贝（<code>FileRegion</code> &#x2F; <code>sendfile</code>）</strong>、<strong>内存池</strong>与 <strong><code>PooledByteBufAllocator</code></strong>。</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -797,7 +988,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/05/01/Golang/Golang/" class="post-title-link" itemprop="url">Golang</a>
+          <a href="/2026/05/01/Golang/Golang/" class="post-title-link" itemprop="url">Go 并发</a>
         </h2>
 
         <div class="post-meta-container">
@@ -809,6 +1000,13 @@
       <span class="post-meta-item-text">发表于</span>
 
       <time title="创建时间：2026-05-01 12:28:41" itemprop="dateCreated datePublished" datetime="2026-05-01T12:28:41+08:00">2026-05-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-05-05 20:10:16" itemprop="dateModified" datetime="2026-05-05T20:10:16+08:00">2026-05-05</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -827,14 +1025,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>0</span>
+      <span>1.1k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>1 分钟</span>
+      <span>4 分钟</span>
     </span>
 </div>
 
@@ -845,7 +1043,56 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          
+          <p><strong>Go</strong>（常称 <strong>Golang</strong>）把并发写进语言核心：<strong>goroutine</strong> 作为轻量执行单元，<strong>channel</strong> 作为类型安全的通信原语，再配合 <strong><code>sync</code></strong> 与 <strong><code>context</code></strong>，适合网络服务、流水线与可取消任务。下面按「模型 → 通信 → 多路选择 → 锁与协作 → 取消」组织。</p>
+<h2 id="一、goroutine-与调度模型"><a href="#一、goroutine-与调度模型" class="headerlink" title="一、goroutine 与调度模型"></a>一、goroutine 与调度模型</h2><ul>
+<li><strong>goroutine</strong>：用 <code>go f()</code> 启动；栈初始很小、可按需增长，<strong>创建成本远低于操作系统线程</strong>，因此可以大量存在。</li>
+<li><strong>调度器</strong>：运行时把许多 goroutine 映射到少量 <strong>OS 线程</strong>（<strong>M:N</strong> 模型），在阻塞或抢占点切换，避免「一线程一连接」把机器拖垮。</li>
+<li><strong>何时用</strong>：IO 密集、扇出扇入、后台任务；<strong>CPU 密集</strong>仍要控制并发度（见第六节），否则和线程池一样会抢满核心。</li>
+</ul>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="built_in">println</span>(<span class="string">&quot;在另一个 goroutine 里执行&quot;</span>)</span><br><span class="line">    &#125;()</span><br><span class="line">    <span class="comment">// main 若立即退出，进程结束，子 goroutine 可能来不及打印</span></span><br><span class="line">    time.Sleep(<span class="number">10</span> * time.Millisecond)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="二、channel：通信优先于共享内存"><a href="#二、channel：通信优先于共享内存" class="headerlink" title="二、channel：通信优先于共享内存"></a>二、channel：通信优先于共享内存</h2><ul>
+<li><strong>声明与创建</strong>：<code>var ch chan int</code> 为 <code>nil</code>，发送&#x2F;接收会永久阻塞；<code>ch := make(chan int)</code> 无缓冲；<code>make(chan int, 10)</code> 带容量为<strong>缓冲 channel</strong>。</li>
+<li><strong>无缓冲</strong>：发送方与接收方<strong>必须同时就绪</strong>，完成一次「交接」，常用于<strong>同步节拍</strong>。</li>
+<li><strong>缓冲</strong>：未满时可先发送，常用于<strong>限流或解耦</strong>；容量为 0 与无缓冲语义一致。</li>
+</ul>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">sum</span><span class="params">(a []<span class="type">int</span>, c <span class="keyword">chan</span> <span class="type">int</span>)</span></span> &#123;</span><br><span class="line">    s := <span class="number">0</span></span><br><span class="line">    <span class="keyword">for</span> _, v := <span class="keyword">range</span> a &#123;</span><br><span class="line">        s += v</span><br><span class="line">    &#125;</span><br><span class="line">    c &lt;- s <span class="comment">// 把结果发出去</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    c := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="type">int</span>)</span><br><span class="line">    <span class="keyword">go</span> sum([]<span class="type">int</span>&#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>&#125;, c)</span><br><span class="line">    fmt.Println(&lt;-c) <span class="comment">// 接收</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>关闭</strong>：仅<strong>发送方</strong>应调用 <code>close(ch)</code>；接收方可用 <code>v, ok := &lt;-ch</code>，<code>ok == false</code> 表示 channel 已关闭且无剩余数据。</li>
+<li><strong>单向 channel</strong>：类型 <code>chan&lt;- T</code>（只发）、<code>&lt;-chan T</code>（只收）用于函数签名，约束使用方式、减少误用。</li>
+</ul>
+<h2 id="三、select：多路等待与超时"><a href="#三、select：多路等待与超时" class="headerlink" title="三、select：多路等待与超时"></a>三、<code>select</code>：多路等待与超时</h2><ul>
+<li><strong><code>select</code></strong> 在<strong>多个 channel 操作</strong>上等待，<strong>随机</strong>选择一个可执行的 <code>case</code>；若都阻塞且<strong>无 <code>default</code></strong>，则阻塞；有 <strong><code>default</code></strong> 则立即走默认分支（常用于<strong>非阻塞</strong>尝试）。</li>
+<li><strong>超时模式</strong>：用 <code>time.After</code> 或 <strong><code>context</code></strong>（推荐生产代码）控制最长等待。</li>
+</ul>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> &#123;</span><br><span class="line"><span class="keyword">case</span> v := &lt;-ch:</span><br><span class="line">    fmt.Println(<span class="string">&quot;收到&quot;</span>, v)</span><br><span class="line"><span class="keyword">case</span> &lt;-time.After(<span class="number">2</span> * time.Second):</span><br><span class="line">    fmt.Println(<span class="string">&quot;超时&quot;</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="四、sync-包：锁与协作原语"><a href="#四、sync-包：锁与协作原语" class="headerlink" title="四、sync 包：锁与协作原语"></a>四、<code>sync</code> 包：锁与协作原语</h2><h3 id="4-1-Mutex-RWMutex"><a href="#4-1-Mutex-RWMutex" class="headerlink" title="4.1 Mutex &#x2F; RWMutex"></a>4.1 <code>Mutex</code> &#x2F; <code>RWMutex</code></h3><ul>
+<li>多 goroutine <strong>读写同一内存</strong>且无 channel 串行化时，用 <strong><code>sync.Mutex</code></strong> 保护临界区；<strong>读多写少</strong>可考虑 <strong><code>RWMutex</code></strong>。</li>
+<li>锁粒度要小、持有时间要短；避免在持锁时做 IO 或可能阻塞很久的逻辑。</li>
+</ul>
+<h3 id="4-2-WaitGroup"><a href="#4-2-WaitGroup" class="headerlink" title="4.2 WaitGroup"></a>4.2 <code>WaitGroup</code></h3><ul>
+<li><strong><code>Add</code> &#x2F; <code>Done</code> &#x2F; <code>Wait</code></strong>：主 goroutine <code>Wait()</code> 等待一组子任务结束；<strong><code>Add</code> 要在启动 goroutine 之前</strong>（或确保不竞态地提前 <code>Add</code>），避免 <code>Wait</code> 早于 <code>Add</code> 导致计数错误。</li>
+</ul>
+<h3 id="4-3-Once"><a href="#4-3-Once" class="headerlink" title="4.3 Once"></a>4.3 <code>Once</code></h3><ul>
+<li><strong><code>sync.Once</code></strong> 保证 <code>Do(f)</code> 里的 <code>f</code> <strong>全局只执行一次</strong>，常用于懒初始化单例。</li>
+</ul>
+<h2 id="五、context：取消、超时与传值"><a href="#五、context：取消、超时与传值" class="headerlink" title="五、context：取消、超时与传值"></a>五、<code>context</code>：取消、超时与传值</h2><ul>
+<li><strong><code>context.Context</code></strong> 贯穿调用链：<strong>超时</strong>（<code>WithTimeout</code>）、<strong>手动取消</strong>（<code>WithCancel</code>）、<strong>截止时间</strong>（<code>WithDeadline</code>）；下游应监听 <code>ctx.Done()</code> 并尽快返回。</li>
+<li><strong>值传递</strong>：<code>WithValue</code> 适合传<strong>请求范围元数据</strong>（如 trace id）；不要塞业务大对象，也不要把 <code>Context</code> 放进结构体字段长期保存（应作为函数首参传递）。</li>
+</ul>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">ctx, cancel := context.WithTimeout(context.Background(), <span class="number">100</span>*time.Millisecond)</span><br><span class="line"><span class="keyword">defer</span> cancel()</span><br><span class="line"></span><br><span class="line">ch := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">struct</span>&#123;&#125;)</span><br><span class="line"><span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">    time.Sleep(<span class="number">200</span> * time.Millisecond)</span><br><span class="line">    ch &lt;- <span class="keyword">struct</span>&#123;&#125;&#123;&#125;</span><br><span class="line">&#125;()</span><br><span class="line"></span><br><span class="line"><span class="keyword">select</span> &#123;</span><br><span class="line"><span class="keyword">case</span> &lt;-ch:</span><br><span class="line">    fmt.Println(<span class="string">&quot;完成&quot;</span>)</span><br><span class="line"><span class="keyword">case</span> &lt;-ctx.Done():</span><br><span class="line">    fmt.Println(<span class="string">&quot;取消或超时:&quot;</span>, ctx.Err())</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="六、常见陷阱与实践建议"><a href="#六、常见陷阱与实践建议" class="headerlink" title="六、常见陷阱与实践建议"></a>六、常见陷阱与实践建议</h2><ul>
+<li><strong>main 退出即进程退出</strong>：未 <code>Wait</code> 或未收完结果的 goroutine 会被直接掐掉；要有明确的<strong>汇合点</strong>（<code>WaitGroup</code>、<code>channel</code> 关闭、<code>errgroup</code> 等）。</li>
+<li><strong>泄漏 goroutine</strong>：向无人接收的 channel 发送、或 goroutine 永远阻塞在 <code>select</code>，都会导致泄漏；长生命周期任务要设计<strong>退出信号</strong>。</li>
+<li><strong>闭包与循环变量</strong>：在循环里 <code>go func() { ... }</code> 若引用循环变量，应用<strong>参数传入</strong>当前值，避免经典「全部打印最后一个」问题（Go 1.22+ 对循环变量语义有调整，仍建议显式传参以增强可读性与兼容旧版本）。</li>
+<li><strong>CPU 密集</strong>：用 <strong><code>runtime.NumCPU()</code></strong> 或带缓冲的 worker channel <strong>限制并发 worker 数量</strong>，而不是无节制 <code>go</code>。</li>
+<li><strong>竞态检测</strong>：开发与 CI 中开启 <strong><code>go test -race</code></strong>，能发现大量数据竞态。</li>
+</ul>
+<p>整体上，Go 鼓励用 <strong>channel 表达所有权与流水线</strong>，在热点路径或简单共享计数时用 <strong><code>Mutex</code></strong>；<strong>取消与超时</strong>交给 <strong><code>context</code></strong>，代码意图会更清晰、也更容易在团队中保持一致。</p>
+
       
     </div>
 
@@ -1562,231 +1809,6 @@
 
 
 
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/Redis/Redis/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="miracle">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="my">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | my">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/05/01/Redis/Redis/" class="post-title-link" itemprop="url">Redis 入门：安装、CLI 与数据类型</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2026-05-01 12:22:28" itemprop="dateCreated datePublished" datetime="2026-05-01T12:22:28+08:00">2026-05-01</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-04 12:03:47" itemprop="dateModified" datetime="2026-05-04T12:03:47+08:00">2026-05-04</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Redis/" itemprop="url" rel="index"><span itemprop="name">Redis</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>964</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>3 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p><strong>Redis</strong> 是内存型数据结构存储，常用作<strong>缓存</strong>、<strong>会话</strong>、<strong>排行榜</strong>、<strong>消息流</strong>与<strong>分布式锁</strong>等；单线程执行命令模型简单，但<strong>持久化</strong>、<strong>主从</strong>与<strong>集群</strong>仍须按业务规划。下面从「<strong>官网与概念</strong> → <strong>安装验证</strong> → <strong>启动与 <code>redis-cli</code></strong> → <strong>常用数据类型</strong> → <strong>持久化与安全要点</strong> → <strong>与容器部署的关系</strong>」顺序写清楚；命令在 <strong>Linux &#x2F; macOS</strong> 终端或 <strong>Windows WSL</strong> 中均可使用（生产环境请固定版本并限制暴露面）。</p>
-<hr>
-<h1 id="一、官网与定位"><a href="#一、官网与定位" class="headerlink" title="一、官网与定位"></a>一、官网与定位</h1><ul>
-<li><strong>Redis 文档（当前产品站）</strong>：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://redis.io/docs/">https://redis.io/docs/</a>  </li>
-<li><strong>下载与发行说明</strong>：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://redis.io/downloads/">https://redis.io/downloads/</a>  </li>
-<li><strong>命令参考</strong>：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://redis.io/commands/">https://redis.io/commands/</a></li>
-</ul>
-<p><strong>Redis</strong> 以<strong>键值</strong>为核心，值支持多种<strong>数据类型</strong>（字符串、哈希、列表等）；默认监听 <strong><code>6379</code></strong>。与关系型数据库不同，数据主要在内存中，须结合<strong>淘汰策略</strong>、<strong>持久化</strong>与<strong>备份</strong>设计，避免单点丢数。</p>
-<hr>
-<h1 id="二、安装与验证"><a href="#二、安装与验证" class="headerlink" title="二、安装与验证"></a>二、安装与验证</h1><h2 id="1-Linux（包管理器，适合快速体验）"><a href="#1-Linux（包管理器，适合快速体验）" class="headerlink" title="1. Linux（包管理器，适合快速体验）"></a>1. Linux（包管理器，适合快速体验）</h2><p><strong>Debian &#x2F; Ubuntu</strong> 示例：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> apt update</span><br><span class="line"><span class="built_in">sudo</span> apt install -y redis-server</span><br><span class="line">redis-server --version</span><br></pre></td></tr></table></figure>
-
-<p><strong>RHEL &#x2F; Rocky &#x2F; Fedora</strong> 可使用 <strong><code>dnf install redis</code></strong>（包名以发行版仓库为准）。</p>
-<h2 id="2-macOS（Homebrew）"><a href="#2-macOS（Homebrew）" class="headerlink" title="2. macOS（Homebrew）"></a>2. macOS（Homebrew）</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">brew install redis</span><br><span class="line">redis-server --version</span><br></pre></td></tr></table></figure>
-
-<h2 id="3-Windows-与容器"><a href="#3-Windows-与容器" class="headerlink" title="3. Windows 与容器"></a>3. Windows 与容器</h2><p><strong>Redis</strong> 官方以 <strong>Linux</strong> 为主要运行环境；<strong>Windows</strong> 本地开发常见做法是 <strong>WSL2</strong>、虚拟机或 <strong>Docker</strong>。若希望用 <strong>Docker Compose &#x2F; Kubernetes</strong> 一键起栈、配置 <strong><code>requirepass</code></strong> 与卷，见站内 <a href="/2026/05/01/Redis-Docker/">Docker 部署 Redis</a>。</p>
-<hr>
-<h1 id="三、启动服务与-redis-cli"><a href="#三、启动服务与-redis-cli" class="headerlink" title="三、启动服务与 redis-cli"></a>三、启动服务与 <code>redis-cli</code></h1><h2 id="1-前台-后台启动（Linux-包安装常见路径）"><a href="#1-前台-后台启动（Linux-包安装常见路径）" class="headerlink" title="1. 前台 &#x2F; 后台启动（Linux 包安装常见路径）"></a>1. 前台 &#x2F; 后台启动（Linux 包安装常见路径）</h2><p>前台调试（终端占用，<strong>Ctrl+C</strong> 结束）：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">redis-server</span><br></pre></td></tr></table></figure>
-
-<p>或使用发行版提供的 <strong>systemd</strong> 服务（名称可能是 <strong><code>redis</code></strong> 或 <strong><code>redis-server</code></strong>）：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> systemctl <span class="built_in">enable</span> --now redis-server</span><br><span class="line"><span class="built_in">sudo</span> systemctl status redis-server</span><br></pre></td></tr></table></figure>
-
-<h2 id="2-连接与探测"><a href="#2-连接与探测" class="headerlink" title="2. 连接与探测"></a>2. 连接与探测</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">redis-cli ping</span><br></pre></td></tr></table></figure>
-
-<p>返回 <strong><code>PONG</code></strong> 表示服务端已响应。指定主机与端口：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">redis-cli -h 127.0.0.1 -p 6379 ping</span><br></pre></td></tr></table></figure>
-
-<p>若启用了密码（见下文「六」），需 <strong><code>AUTH &lt;密码&gt;</code></strong> 或 <strong><code>redis-cli -a &lt;密码&gt;</code></strong>（<strong><code>-a</code> 可能进 shell 历史，生产慎用</strong>）。</p>
-<h2 id="3-两条最常用读写命令"><a href="#3-两条最常用读写命令" class="headerlink" title="3. 两条最常用读写命令"></a>3. 两条最常用读写命令</h2><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:6379&gt; SET mykey &quot;hello&quot;</span><br><span class="line">OK</span><br><span class="line">127.0.0.1:6379&gt; GET mykey</span><br><span class="line">&quot;hello&quot;</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h1 id="四、常用数据类型（速览）"><a href="#四、常用数据类型（速览）" class="headerlink" title="四、常用数据类型（速览）"></a>四、常用数据类型（速览）</h1><table>
-<thead>
-<tr>
-<th>类型</th>
-<th>典型用途</th>
-<th>命令示例</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>String</strong></td>
-<td>缓存、计数器</td>
-<td><strong><code>SET</code> &#x2F; <code>GET</code> &#x2F; <code>INCR</code></strong></td>
-</tr>
-<tr>
-<td><strong>Hash</strong></td>
-<td>对象字段</td>
-<td><strong><code>HSET</code> &#x2F; <code>HGET</code> &#x2F; <code>HGETALL</code></strong></td>
-</tr>
-<tr>
-<td><strong>List</strong></td>
-<td>队列、时间线</td>
-<td><strong><code>LPUSH</code> &#x2F; <code>RPOP</code> &#x2F; <code>LRANGE</code></strong></td>
-</tr>
-<tr>
-<td><strong>Set</strong></td>
-<td>去重集合</td>
-<td><strong><code>SADD</code> &#x2F; <code>SMEMBERS</code> &#x2F; <code>SISMEMBER</code></strong></td>
-</tr>
-<tr>
-<td><strong>Sorted Set</strong></td>
-<td>排行榜</td>
-<td><strong><code>ZADD</code> &#x2F; <code>ZRANGE</code> &#x2F; <code>ZRANK</code></strong></td>
-</tr>
-<tr>
-<td><strong>Stream</strong></td>
-<td>消息流、消费者组</td>
-<td><strong><code>XADD</code> &#x2F; <code>XREADGROUP</code></strong></td>
-</tr>
-</tbody></table>
-<p>更多语义与复杂度见官方 <strong>Commands</strong> 文档；<strong><code>KEYS *</code></strong> 在生产大库上可能阻塞，排查键名请优先 <strong><code>SCAN</code></strong>。</p>
-<hr>
-<h1 id="五、持久化：RDB-与-AOF"><a href="#五、持久化：RDB-与-AOF" class="headerlink" title="五、持久化：RDB 与 AOF"></a>五、持久化：RDB 与 AOF</h1><table>
-<thead>
-<tr>
-<th>方式</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>RDB</strong></td>
-<td>按策略生成<strong>时间点快照</strong>（<strong><code>.rdb</code></strong>），恢复快、可能丢失最后一次快照后的写入</td>
-</tr>
-<tr>
-<td><strong>AOF</strong></td>
-<td>追加写日志（<strong><code>.aof</code></strong>），可配置 <strong><code>fsync</code></strong> 频率，<strong>更耐久</strong>、文件通常更大</td>
-</tr>
-</tbody></table>
-<p>配置在 <strong><code>redis.conf</code></strong> 中（包安装路径因发行版而异，常见 <strong><code>/etc/redis/redis.conf</code></strong>）。<strong>Docker</strong> 场景下常通过 <strong><code>redis-server</code> 参数</strong> 或挂载配置覆盖，与 <a href="/2026/05/01/Redis-Docker/">Docker 部署 Redis</a> 中 <strong><code>--appendonly</code></strong> 等示例对照即可。</p>
-<hr>
-<h1 id="六、安全与网络要点"><a href="#六、安全与网络要点" class="headerlink" title="六、安全与网络要点"></a>六、安全与网络要点</h1><ol>
-<li><strong>默认无密码</strong>时，只要网络能连上 <strong><code>6379</code></strong> 即可读写，<strong>仅允许本机或可信内网</strong>；公网暴露须配 <strong><code>requirepass</code></strong> 与 <strong>Redis ACL</strong>，并配合防火墙、<strong>TLS</strong>（视版本与部署形态）。  </li>
-<li><strong><code>bind</code></strong>：默认若监听 <strong><code>0.0.0.0</code></strong>，表示所有网卡可连；缩小监听地址可减少误暴露。  </li>
-<li><strong>危险命令</strong>：<strong><code>FLUSHALL</code></strong>、<strong><code>CONFIG</code></strong> 等在生产应通过 <strong><code>rename-command</code></strong> 禁用或限制执行身份。</li>
-</ol>
-<hr>
-<h1 id="七、小结"><a href="#七、小结" class="headerlink" title="七、小结"></a>七、小结</h1><table>
-<thead>
-<tr>
-<th>场景</th>
-<th>做法</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>安装验证</td>
-<td><strong><code>redis-server --version</code></strong>；<strong><code>redis-cli ping</code></strong></td>
-</tr>
-<tr>
-<td>本地读写</td>
-<td><strong><code>SET</code> &#x2F; <code>GET</code></strong>；按业务选 <strong>Hash &#x2F; List &#x2F; ZSet</strong> 等</td>
-</tr>
-<tr>
-<td>持久化</td>
-<td><strong><code>redis.conf</code></strong> 中 <strong>RDB &#x2F; AOF</strong> 策略；容器见 <strong>Redis-Docker</strong> 文</td>
-</tr>
-<tr>
-<td>安全</td>
-<td><strong>密码 &#x2F; ACL</strong> + 网络隔离；避免公网裸 <strong><code>6379</code></strong></td>
-</tr>
-<tr>
-<td>容器与编排</td>
-<td><a href="/2026/05/01/Redis-Docker/">Docker 部署 Redis</a></td>
-</tr>
-</tbody></table>
-<p>更深入的<strong>主从复制</strong>、<strong>Sentinel 高可用</strong>、<strong>Cluster 分片</strong>与客户端连接池调优，请以当前 <strong>Redis</strong> 大版本官方文档为准，并与业务 <strong>RPO&#x2F;RTO</strong> 一起评审。</p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
   <nav class="pagination">
     <a class="extend prev" rel="prev" title="上一页" aria-label="上一页" href="/page/10/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/10/">10</a><span class="page-number current">11</span><a class="page-number" href="/page/12/">12</a><span class="space">&hellip;</span><a class="page-number" href="/page/17/">17</a><a class="extend next" rel="next" title="下一页" aria-label="下一页" href="/page/12/"><i class="fa fa-angle-right"></i></a>
   </nav>
@@ -1810,13 +1832,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">143k</span>
+    <span title="站点总字数">150k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">7:57</span>
+    <span title="站点阅读时长">8:19</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动
