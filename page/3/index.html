@@ -172,7 +172,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">164</span>
+          <span class="site-state-item-count">166</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -211,6 +211,449 @@
     </div>
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/03/PostgreSQL/PostgreSQL%E9%AB%98%E7%BA%A7%E6%9F%A5%E8%AF%A2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/05/03/PostgreSQL/PostgreSQL%E9%AB%98%E7%BA%A7%E6%9F%A5%E8%AF%A2/" class="post-title-link" itemprop="url">PostgreSQL 高级查询示例</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2026-05-03 17:00:00 / 修改时间：16:39:23" itemprop="dateCreated datePublished" datetime="2026-05-03T17:00:00+08:00">2026-05-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/PostgreSQL/" itemprop="url" rel="index"><span itemprop="name">PostgreSQL</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>1.1k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>4 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>面向 <strong><code>SELECT</code></strong> 与常用分析写法；示例可在任意库执行（下文用 <strong><code>pg_demo</code></strong> 模式对象，<strong><code>DROP … IF EXISTS</code></strong> 便于重复跑）。</p>
+<p>姊妹文：<strong><code>PostgreSQL.md</code></strong>（<strong>DDL</strong>）、<strong><code>PostgreSQL索引与性能优化.md</code></strong>（<strong><code>EXPLAIN</code></strong>）、<strong><code>PostgreSQL并发与MVCC入门.md</code></strong>（锁与快照）。</p>
+<hr>
+<h2 id="示例数据（一键建表）"><a href="#示例数据（一键建表）" class="headerlink" title="示例数据（一键建表）"></a>示例数据（一键建表）</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">DROP</span> <span class="keyword">TABLE</span> IF <span class="keyword">EXISTS</span> orders, emp, dept CASCADE;</span><br><span class="line"></span><br><span class="line"><span class="keyword">CREATE TABLE</span> dept (</span><br><span class="line">    id <span class="type">integer</span> <span class="keyword">PRIMARY KEY</span>,</span><br><span class="line">    name <span class="type">varchar</span>(<span class="number">50</span>) <span class="keyword">NOT NULL</span></span><br><span class="line">);</span><br><span class="line"></span><br><span class="line"><span class="keyword">CREATE TABLE</span> emp (</span><br><span class="line">    id <span class="type">bigint</span> <span class="keyword">PRIMARY KEY</span> GENERATED ALWAYS <span class="keyword">AS</span> <span class="keyword">IDENTITY</span>,</span><br><span class="line">    name <span class="type">varchar</span>(<span class="number">50</span>) <span class="keyword">NOT NULL</span>,</span><br><span class="line">    dept_id <span class="type">integer</span> <span class="keyword">REFERENCES</span> dept (id),</span><br><span class="line">    salary <span class="type">numeric</span>(<span class="number">10</span>,<span class="number">2</span>),</span><br><span class="line">    hire_date <span class="type">date</span></span><br><span class="line">);</span><br><span class="line"></span><br><span class="line"><span class="keyword">CREATE TABLE</span> orders (</span><br><span class="line">    id <span class="type">bigint</span> <span class="keyword">PRIMARY KEY</span> GENERATED ALWAYS <span class="keyword">AS</span> <span class="keyword">IDENTITY</span>,</span><br><span class="line">    emp_id <span class="type">bigint</span> <span class="keyword">NOT NULL</span> <span class="keyword">REFERENCES</span> emp (id),</span><br><span class="line">    amount <span class="type">numeric</span>(<span class="number">10</span>,<span class="number">2</span>) <span class="keyword">NOT NULL</span>,</span><br><span class="line">    order_date <span class="type">date</span> <span class="keyword">NOT NULL</span></span><br><span class="line">);</span><br><span class="line"></span><br><span class="line"><span class="keyword">INSERT INTO</span> dept (id, name) <span class="keyword">VALUES</span></span><br><span class="line">(<span class="number">1</span>, <span class="string">&#x27;研发&#x27;</span>), (<span class="number">2</span>, <span class="string">&#x27;市场&#x27;</span>), (<span class="number">3</span>, <span class="string">&#x27;财务&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">INSERT INTO</span> emp (name, dept_id, salary, hire_date) <span class="keyword">VALUES</span></span><br><span class="line">(<span class="string">&#x27;张三&#x27;</span>, <span class="number">1</span>, <span class="number">15000</span>, <span class="string">&#x27;2020-03-01&#x27;</span>),</span><br><span class="line">(<span class="string">&#x27;李四&#x27;</span>, <span class="number">1</span>, <span class="number">18000</span>, <span class="string">&#x27;2019-07-15&#x27;</span>),</span><br><span class="line">(<span class="string">&#x27;王五&#x27;</span>, <span class="number">2</span>, <span class="number">12000</span>, <span class="string">&#x27;2021-01-10&#x27;</span>),</span><br><span class="line">(<span class="string">&#x27;赵六&#x27;</span>, <span class="number">2</span>, <span class="keyword">NULL</span>, <span class="string">&#x27;2022-05-20&#x27;</span>),</span><br><span class="line">(<span class="string">&#x27;钱七&#x27;</span>, <span class="keyword">NULL</span>, <span class="number">9000</span>, <span class="string">&#x27;2023-11-01&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">INSERT INTO</span> orders (emp_id, amount, order_date) <span class="keyword">VALUES</span></span><br><span class="line">((<span class="keyword">SELECT</span> id <span class="keyword">FROM</span> emp <span class="keyword">WHERE</span> name <span class="operator">=</span> <span class="string">&#x27;张三&#x27;</span> LIMIT <span class="number">1</span>), <span class="number">100.00</span>, <span class="string">&#x27;2024-06-01&#x27;</span>),</span><br><span class="line">((<span class="keyword">SELECT</span> id <span class="keyword">FROM</span> emp <span class="keyword">WHERE</span> name <span class="operator">=</span> <span class="string">&#x27;张三&#x27;</span> LIMIT <span class="number">1</span>), <span class="number">200.50</span>, <span class="string">&#x27;2024-06-10&#x27;</span>),</span><br><span class="line">((<span class="keyword">SELECT</span> id <span class="keyword">FROM</span> emp <span class="keyword">WHERE</span> name <span class="operator">=</span> <span class="string">&#x27;李四&#x27;</span> LIMIT <span class="number">1</span>), <span class="number">300.00</span>, <span class="string">&#x27;2024-06-12&#x27;</span>),</span><br><span class="line">((<span class="keyword">SELECT</span> id <span class="keyword">FROM</span> emp <span class="keyword">WHERE</span> name <span class="operator">=</span> <span class="string">&#x27;王五&#x27;</span> LIMIT <span class="number">1</span>), <span class="number">50.00</span>, <span class="string">&#x27;2024-06-15&#x27;</span>);</span><br></pre></td></tr></table></figure>
+
+<p><strong>示例基表</strong>（<strong><code>emp.id</code></strong>、<strong><code>orders.id</code></strong> 为自增，你机器上具体数字可能与下表不同；<strong>下列「示例结果」按「姓名 &#x2F; 部门名」语义推算</strong>，与 <strong><code>EXPLAIN</code></strong> 对照时以你库中 <strong><code>id</code></strong> 为准）。</p>
+<table>
+<thead>
+<tr>
+<th>表</th>
+<th>要点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>dept</strong></td>
+<td><strong>3</strong> 行固定</td>
+</tr>
+<tr>
+<td><strong>emp</strong></td>
+<td><strong>5</strong> 行；<strong>钱七</strong> 无 <strong><code>dept_id</code></strong>；<strong>赵六</strong> 无 <strong><code>salary</code></strong></td>
+</tr>
+<tr>
+<td><strong>orders</strong></td>
+<td><strong>张三</strong> 两行、<strong>李四</strong> 一行、<strong>王五</strong> 一行</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="一、多表连接-JOIN"><a href="#一、多表连接-JOIN" class="headerlink" title="一、多表连接 JOIN"></a>一、多表连接 JOIN</h2><h3 id="1-INNER-JOIN"><a href="#1-INNER-JOIN" class="headerlink" title="1. INNER JOIN"></a>1. INNER JOIN</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> e.id, e.name, d.name <span class="keyword">AS</span> dept_name, e.salary</span><br><span class="line"><span class="keyword">FROM</span> emp e</span><br><span class="line"><span class="keyword">JOIN</span> dept d <span class="keyword">ON</span> e.dept_id <span class="operator">=</span> d.id;</span><br></pre></td></tr></table></figure>
+
+<p><strong>示例结果</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>id（示意）</th>
+<th>name</th>
+<th>dept_name</th>
+<th>salary</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>…</td>
+<td>张三</td>
+<td>研发</td>
+<td>15000</td>
+</tr>
+<tr>
+<td>…</td>
+<td>李四</td>
+<td>研发</td>
+<td>18000</td>
+</tr>
+<tr>
+<td>…</td>
+<td>王五</td>
+<td>市场</td>
+<td>12000</td>
+</tr>
+<tr>
+<td>…</td>
+<td>赵六</td>
+<td>市场</td>
+<td>NULL</td>
+</tr>
+</tbody></table>
+<h3 id="2-LEFT-JOIN"><a href="#2-LEFT-JOIN" class="headerlink" title="2. LEFT JOIN"></a>2. LEFT JOIN</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> e.name, d.name <span class="keyword">AS</span> dept_name</span><br><span class="line"><span class="keyword">FROM</span> emp e</span><br><span class="line"><span class="keyword">LEFT</span> <span class="keyword">JOIN</span> dept d <span class="keyword">ON</span> e.dept_id <span class="operator">=</span> d.id;</span><br></pre></td></tr></table></figure>
+
+<p><strong>示例结果</strong>：多一行 <strong>钱七 &#x2F; NULL</strong>。</p>
+<h3 id="3-多表-聚合"><a href="#3-多表-聚合" class="headerlink" title="3. 多表 + 聚合"></a>3. 多表 + 聚合</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> e.name,</span><br><span class="line">       d.name <span class="keyword">AS</span> dept_name,</span><br><span class="line">       <span class="built_in">COUNT</span>(o.id) <span class="keyword">AS</span> order_cnt,</span><br><span class="line">       <span class="built_in">COALESCE</span>(<span class="built_in">SUM</span>(o.amount), <span class="number">0</span>) <span class="keyword">AS</span> total_amount</span><br><span class="line"><span class="keyword">FROM</span> emp e</span><br><span class="line"><span class="keyword">LEFT</span> <span class="keyword">JOIN</span> dept d <span class="keyword">ON</span> e.dept_id <span class="operator">=</span> d.id</span><br><span class="line"><span class="keyword">LEFT</span> <span class="keyword">JOIN</span> orders o <span class="keyword">ON</span> o.emp_id <span class="operator">=</span> e.id</span><br><span class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span> e.id, e.name, d.name;</span><br></pre></td></tr></table></figure>
+
+<p><strong>示例结果</strong>（与 <strong>MySQL</strong> 版语义一致）：张三 <strong>2</strong> 笔合计 <strong>300.50</strong>；李四 <strong>300</strong>；王五 <strong>50</strong>；赵六、钱七 <strong>0</strong>。</p>
+<hr>
+<h2 id="二、子查询与-EXISTS"><a href="#二、子查询与-EXISTS" class="headerlink" title="二、子查询与 EXISTS"></a>二、子查询与 EXISTS</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> name <span class="keyword">FROM</span> emp</span><br><span class="line"><span class="keyword">WHERE</span> dept_id <span class="keyword">IN</span> (<span class="keyword">SELECT</span> id <span class="keyword">FROM</span> dept <span class="keyword">WHERE</span> name <span class="keyword">IN</span> (<span class="string">&#x27;研发&#x27;</span>, <span class="string">&#x27;市场&#x27;</span>));</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> e.name</span><br><span class="line"><span class="keyword">FROM</span> emp e</span><br><span class="line"><span class="keyword">WHERE</span> <span class="keyword">EXISTS</span> (<span class="keyword">SELECT</span> <span class="number">1</span> <span class="keyword">FROM</span> orders o <span class="keyword">WHERE</span> o.emp_id <span class="operator">=</span> e.id);</span><br></pre></td></tr></table></figure>
+
+<p><strong>示例结果</strong>：<strong><code>IN</code></strong> 列出 <strong>张三、李四、王五、赵六<code>**；**</code>EXISTS&#96;</strong> 仅 <strong>张三、李四、王五</strong>。</p>
+<hr>
+<h2 id="三、UNION-ALL"><a href="#三、UNION-ALL" class="headerlink" title="三、UNION ALL"></a>三、UNION ALL</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> name, <span class="string">&#x27;emp&#x27;</span>::text <span class="keyword">AS</span> src <span class="keyword">FROM</span> emp <span class="keyword">WHERE</span> dept_id <span class="operator">=</span> <span class="number">1</span></span><br><span class="line"><span class="keyword">UNION</span> <span class="keyword">ALL</span></span><br><span class="line"><span class="keyword">SELECT</span> name, <span class="string">&#x27;dept&#x27;</span> <span class="keyword">FROM</span> dept <span class="keyword">WHERE</span> id <span class="operator">=</span> <span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+
+<p><strong>示例结果</strong>：<strong>张三、李四、研发</strong> 三行。</p>
+<hr>
+<h2 id="四、公共表表达式-WITH（CTE）"><a href="#四、公共表表达式-WITH（CTE）" class="headerlink" title="四、公共表表达式 WITH（CTE）"></a>四、公共表表达式 WITH（CTE）</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">WITH</span> dept_stat <span class="keyword">AS</span> (</span><br><span class="line">    <span class="keyword">SELECT</span> dept_id,</span><br><span class="line">           <span class="built_in">COUNT</span>(<span class="operator">*</span>) <span class="keyword">AS</span> emp_cnt,</span><br><span class="line">           <span class="built_in">AVG</span>(salary) <span class="keyword">AS</span> avg_sal</span><br><span class="line">    <span class="keyword">FROM</span> emp</span><br><span class="line">    <span class="keyword">WHERE</span> salary <span class="keyword">IS</span> <span class="keyword">NOT NULL</span></span><br><span class="line">    <span class="keyword">GROUP</span> <span class="keyword">BY</span> dept_id</span><br><span class="line">)</span><br><span class="line"><span class="keyword">SELECT</span> d.name, ds.emp_cnt, ROUND(ds.avg_sal::<span class="type">numeric</span>, <span class="number">2</span>) <span class="keyword">AS</span> avg_salary</span><br><span class="line"><span class="keyword">FROM</span> dept_stat ds</span><br><span class="line"><span class="keyword">JOIN</span> dept d <span class="keyword">ON</span> d.id <span class="operator">=</span> ds.dept_id;</span><br></pre></td></tr></table></figure>
+
+<p><strong>示例结果</strong>：<strong>研发 2 &#x2F; 16500</strong>；<strong>市场 1 &#x2F; 12000</strong>（<strong><code>dept_id</code> 为 NULL</strong> 的分组不与 <strong><code>dept</code></strong> 连接）。</p>
+<hr>
+<h2 id="五、窗口函数"><a href="#五、窗口函数" class="headerlink" title="五、窗口函数"></a>五、窗口函数</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> id, name, dept_id, salary,</span><br><span class="line">       <span class="built_in">row_number</span>() <span class="keyword">OVER</span> (<span class="keyword">PARTITION</span> <span class="keyword">BY</span> dept_id <span class="keyword">ORDER</span> <span class="keyword">BY</span> salary <span class="keyword">DESC</span> <span class="keyword">NULLS LAST</span>) <span class="keyword">AS</span> rn_in_dept</span><br><span class="line"><span class="keyword">FROM</span> emp</span><br><span class="line"><span class="keyword">WHERE</span> dept_id <span class="keyword">IS</span> <span class="keyword">NOT NULL</span>;</span><br></pre></td></tr></table></figure>
+
+<p><strong><code>running_sum</code></strong>：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> emp_id, order_date, amount,</span><br><span class="line">       <span class="built_in">SUM</span>(amount) <span class="keyword">OVER</span> (</span><br><span class="line">           <span class="keyword">PARTITION</span> <span class="keyword">BY</span> emp_id <span class="keyword">ORDER</span> <span class="keyword">BY</span> order_date</span><br><span class="line">           <span class="keyword">ROWS</span> <span class="keyword">BETWEEN</span> UNBOUNDED PRECEDING <span class="keyword">AND</span> <span class="keyword">CURRENT</span> <span class="type">ROW</span></span><br><span class="line">       ) <span class="keyword">AS</span> running_sum</span><br><span class="line"><span class="keyword">FROM</span> orders;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="六、DISTINCT-ON（PostgreSQL-特色）"><a href="#六、DISTINCT-ON（PostgreSQL-特色）" class="headerlink" title="六、DISTINCT ON（PostgreSQL 特色）"></a>六、DISTINCT ON（PostgreSQL 特色）</h2><p>每个 <strong><code>(dept_id)</code></strong> 分区取 <strong><code>ORDER BY</code></strong> 的第一行（常用「每组最新一条」）：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">DISTINCT</span> <span class="keyword">ON</span> (dept_id) dept_id, name, hire_date</span><br><span class="line"><span class="keyword">FROM</span> emp</span><br><span class="line"><span class="keyword">WHERE</span> dept_id <span class="keyword">IS</span> <span class="keyword">NOT NULL</span></span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> dept_id, hire_date <span class="keyword">DESC</span>;</span><br></pre></td></tr></table></figure>
+
+<p><strong>示例结果</strong>（<strong><code>ORDER BY dept_id, hire_date DESC</code></strong>：每个 <strong><code>dept_id</code></strong> 取入职日期<strong>最新</strong>的一行）：</p>
+<table>
+<thead>
+<tr>
+<th>dept_id</th>
+<th>name</th>
+<th>hire_date</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>张三</td>
+<td>2020-03-01</td>
+</tr>
+<tr>
+<td>2</td>
+<td>赵六</td>
+<td>2022-05-20</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="七、聚合-FILTER（PostgreSQL）"><a href="#七、聚合-FILTER（PostgreSQL）" class="headerlink" title="七、聚合 FILTER（PostgreSQL）"></a>七、聚合 FILTER（PostgreSQL）</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span></span><br><span class="line">    <span class="built_in">COUNT</span>(<span class="operator">*</span>) <span class="keyword">FILTER</span> (<span class="keyword">WHERE</span> dept_id <span class="operator">=</span> <span class="number">1</span>) <span class="keyword">AS</span> dept1_cnt,</span><br><span class="line">    <span class="built_in">COUNT</span>(<span class="operator">*</span>) <span class="keyword">FILTER</span> (<span class="keyword">WHERE</span> dept_id <span class="operator">=</span> <span class="number">2</span>) <span class="keyword">AS</span> dept2_cnt</span><br><span class="line"><span class="keyword">FROM</span> emp;</span><br></pre></td></tr></table></figure>
+
+<p><strong>示例结果</strong>：<strong>2 &#x2F; 2</strong>。</p>
+<hr>
+<h2 id="八、字符串聚合-string-agg"><a href="#八、字符串聚合-string-agg" class="headerlink" title="八、字符串聚合 string_agg"></a>八、字符串聚合 string_agg</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> d.name <span class="keyword">AS</span> dept_name,</span><br><span class="line">       string_agg(e.name, <span class="string">&#x27; | &#x27;</span> <span class="keyword">ORDER</span> <span class="keyword">BY</span> e.salary <span class="keyword">DESC</span> <span class="keyword">NULLS LAST</span>) <span class="keyword">AS</span> members</span><br><span class="line"><span class="keyword">FROM</span> dept d</span><br><span class="line"><span class="keyword">LEFT</span> <span class="keyword">JOIN</span> emp e <span class="keyword">ON</span> e.dept_id <span class="operator">=</span> d.id</span><br><span class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span> d.id, d.name;</span><br></pre></td></tr></table></figure>
+
+<p><strong>示例结果</strong>（<strong><code>ORDER BY salary DESC NULLS LAST</code></strong>；箭头表示 <strong><code>string_agg</code></strong> 用 <strong><code>&#39; | &#39;</code></strong> 拼接顺序）：<strong>研发</strong> → <strong>李四 → 张三</strong>；<strong>市场</strong> → <strong>王五 → 赵六</strong>；<strong>财务</strong> → <strong>NULL</strong>。</p>
+<hr>
+<h2 id="九、分页-LIMIT-OFFSET"><a href="#九、分页-LIMIT-OFFSET" class="headerlink" title="九、分页 LIMIT &#x2F; OFFSET"></a>九、分页 LIMIT &#x2F; OFFSET</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> id, name, hire_date</span><br><span class="line"><span class="keyword">FROM</span> emp</span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> hire_date <span class="keyword">DESC</span> <span class="keyword">NULLS LAST</span>, id <span class="keyword">DESC</span></span><br><span class="line">LIMIT <span class="number">10</span> <span class="keyword">OFFSET</span> <span class="number">0</span>;</span><br></pre></td></tr></table></figure>
+
+<p>深 <strong><code>OFFSET</code></strong> 大表性能差，生产常用<strong>键集分页</strong>（<strong><code>WHERE (hire_date, id) &lt; ($1,$2)</code></strong> 一类）。</p>
+<hr>
+<h2 id="十、RETURNING（与-DML-搭配，查询向补充）"><a href="#十、RETURNING（与-DML-搭配，查询向补充）" class="headerlink" title="十、RETURNING（与 DML 搭配，查询向补充）"></a>十、RETURNING（与 DML 搭配，查询向补充）</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 示例：插入并返回生成主键（需与业务事务搭配）</span></span><br><span class="line"><span class="keyword">INSERT INTO</span> dept (id, name) <span class="keyword">VALUES</span> (<span class="number">9</span>, <span class="string">&#x27;法务&#x27;</span>)</span><br><span class="line"><span class="keyword">ON</span> CONFLICT (id) DO NOTHING</span><br><span class="line">RETURNING id, name;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="十一、速查小结"><a href="#十一、速查小结" class="headerlink" title="十一、速查小结"></a>十一、速查小结</h2><table>
+<thead>
+<tr>
+<th>场景</th>
+<th>PostgreSQL 典型写法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>多表</td>
+<td><strong><code>JOIN</code> &#x2F; <code>LEFT JOIN</code></strong></td>
+</tr>
+<tr>
+<td>去重取每组一条</td>
+<td><strong><code>DISTINCT ON (…) … ORDER BY</code></strong></td>
+</tr>
+<tr>
+<td>条件计数</td>
+<td><strong><code>COUNT(*) FILTER (WHERE …)</code></strong></td>
+</tr>
+<tr>
+<td>拼串</td>
+<td><strong><code>string_agg(expr, sep ORDER BY …)</code></strong></td>
+</tr>
+<tr>
+<td>可读拆分</td>
+<td><strong><code>WITH</code></strong></td>
+</tr>
+<tr>
+<td>组内排序编号</td>
+<td><strong><code>row_number() OVER (PARTITION BY …)</code></strong></td>
+</tr>
+</tbody></table>
+<p>更多执行计划与索引：<strong><code>PostgreSQL索引与性能优化.md</code></strong>。</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/03/PostgreSQL/PostgreSQL%E5%BC%95%E6%93%8E/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/05/03/PostgreSQL/PostgreSQL%E5%BC%95%E6%93%8E/" class="post-title-link" itemprop="url">PostgreSQL 存储与执行模型概览</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2026-05-03 16:44:52 / 修改时间：16:46:11" itemprop="dateCreated datePublished" datetime="2026-05-03T16:44:52+08:00">2026-05-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/PostgreSQL/" itemprop="url" rel="index"><span itemprop="name">PostgreSQL</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>742</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>2 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p><strong>PostgreSQL</strong> <strong>没有</strong>与 <strong>MySQL</strong> 建表子句 <strong><code>ENGINE=InnoDB / MyISAM</code></strong> 等价的「多存储引擎二选一」模型：进程内是一套统一的<strong>后台执行与存储子系统</strong>（常说的 <strong>PostgreSQL 引擎</strong>多指<strong>整个数据库内核版本</strong>，而非可选插件式表引擎）。若需对照 <strong>MySQL 存储引擎</strong>，请读同目录 <strong><code>MySQL引擎.md</code></strong>。</p>
+<p>姊妹文：<strong><code>PostgreSQL并发与MVCC入门.md</code></strong>（快照与行锁）、<strong><code>PostgreSQL索引与性能优化.md</code></strong>（<strong><code>EXPLAIN</code>、<code>VACUUM</code></strong>）、<strong><code>PostgreSQL-Docker.md</code></strong>（<strong><code>$PGDATA</code></strong> 与部署）。</p>
+<hr>
+<h2 id="一、表数据默认怎么存：Heap（堆表）"><a href="#一、表数据默认怎么存：Heap（堆表）" class="headerlink" title="一、表数据默认怎么存：Heap（堆表）"></a>一、表数据默认怎么存：Heap（堆表）</h2><ul>
+<li>普通 <strong><code>CREATE TABLE</code></strong> 默认即 <strong>heap</strong> 表：行以<strong>堆页</strong>存放，通过 <strong>tid（块号 + 行号）</strong> 定位。  </li>
+<li><strong>MVCC</strong> 在元组头维护版本信息（<strong><code>xmin</code> &#x2F; <code>xmax</code></strong> 等），更新与删除产生<strong>新版本&#x2F;死元组</strong>，依赖 <strong><code>VACUUM</code></strong> 回收（见 <strong><code>PostgreSQL索引与性能优化.md</code></strong>）。  </li>
+<li>与 <strong>InnoDB 聚簇索引即整表</strong>不同：<strong>PostgreSQL</strong> 主键索引是<strong>二级索引</strong>，<strong>堆上</strong>存行，主键查找通常「<strong>索引 → 回表 tid</strong>」。</li>
+</ul>
+<hr>
+<h2 id="二、表访问方法（Table-Access-Method）"><a href="#二、表访问方法（Table-Access-Method）" class="headerlink" title="二、表访问方法（Table Access Method）"></a>二、表访问方法（Table Access Method）</h2><p><strong>PostgreSQL 12+</strong> 起，表可指定 <strong><code>USING heap</code></strong>（默认）；理论上可挂<strong>自定义表访问方法</strong>（需扩展提供）。<br>生产常见仍是 <strong>heap</strong>；列存、混存等多在<strong>扩展或外部产品</strong>（如某些分析型方案）中实现，<strong>不等价于 MySQL 换一个 <code>ENGINE</code> 字符串</strong>。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 默认即 heap，一般无需写出</span></span><br><span class="line"><span class="keyword">CREATE TABLE</span> t (id <span class="type">int</span> <span class="keyword">PRIMARY KEY</span>, v text);</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="三、与「引擎」易混的几个概念"><a href="#三、与「引擎」易混的几个概念" class="headerlink" title="三、与「引擎」易混的几个概念"></a>三、与「引擎」易混的几个概念</h2><table>
+<thead>
+<tr>
+<th>概念</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong><code>TABLESPACE</code></strong></td>
+<td>表&#x2F;索引的<strong>文件放置位置</strong>（如 <strong><code>pg_default</code></strong>），不是另一种行存储引擎。</td>
+</tr>
+<tr>
+<td><strong>TOAST</strong></td>
+<td>大字段<strong>行外存储</strong>机制，对用户基本透明。</td>
+</tr>
+<tr>
+<td><strong>Foreign Data Wrapper（FDW）</strong></td>
+<td><strong>外部表</strong>：数据在远程；语法像本地表，<strong>语义与本地 heap 完全不同</strong>，不是换存储引擎。</td>
+</tr>
+<tr>
+<td><strong>内置索引类型</strong></td>
+<td><strong>B-Tree、Hash、GiST、GIN、BRIN</strong> 等是<strong>索引访问方法</strong>，不是替换 heap 的「表引擎」。</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="四、和-MySQL-InnoDB-的粗对照（选型沟通用）"><a href="#四、和-MySQL-InnoDB-的粗对照（选型沟通用）" class="headerlink" title="四、和 MySQL InnoDB 的粗对照（选型沟通用）"></a>四、和 MySQL InnoDB 的粗对照（选型沟通用）</h2><table>
+<thead>
+<tr>
+<th>话题</th>
+<th>MySQL（<strong><code>MySQL引擎.md</code></strong>）</th>
+<th>PostgreSQL（本文）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>建表选「引擎」</td>
+<td><strong><code>ENGINE=InnoDB</code></strong> 等</td>
+<td><strong>无</strong>；默认 <strong>heap</strong> + 统一内核</td>
+</tr>
+<tr>
+<td>行存与主键</td>
+<td><strong>InnoDB</strong> 聚簇主键与数据同树</td>
+<td><strong>堆行 + 主键索引</strong></td>
+</tr>
+<tr>
+<td>并发读写的核心</td>
+<td><strong>InnoDB MVCC + 锁</strong></td>
+<td><strong>MVCC + 行锁</strong>（见 <strong><code>PostgreSQL并发与MVCC入门.md</code></strong>）</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="五、实务建议"><a href="#五、实务建议" class="headerlink" title="五、实务建议"></a>五、实务建议</h2><ol>
+<li>学习 <strong>PostgreSQL</strong> 时少问「用哪个引擎」，多问<strong>索引类型、执行计划、<code>VACUUM</code>、隔离级别与锁</strong>。  </li>
+<li>需要列存、分片、多副本高可用时，在<strong>架构层</strong>选专用扩展或产品（如 <strong>Citus</strong>、云厂商数仓、读写分离），而不是在 <strong><code>CREATE TABLE</code></strong> 里找一个 <strong><code>ENGINE</code></strong> 开关。  </li>
+<li>版本升级（<strong><code>14 → 16 → 17</code></strong>）会带执行器与优化器演进，「升级引擎」口语上常指<strong>升级主版本</strong>，与 <strong>MySQL</strong> 的 <strong>ENGINE</strong> 不是同一概念。</li>
+</ol>
+<hr>
+<h2 id="六、延伸阅读"><a href="#六、延伸阅读" class="headerlink" title="六、延伸阅读"></a>六、延伸阅读</h2><table>
+<thead>
+<tr>
+<th>文档</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong><code>PostgreSQL.md</code></strong></td>
+<td><strong>DDL</strong>、<strong><code>SCHEMA</code></strong></td>
+</tr>
+<tr>
+<td><strong><code>PostgreSQL高级查询.md</code></strong></td>
+<td>复杂 <strong>SQL</strong></td>
+</tr>
+<tr>
+<td><strong><code>PostgreSQL索引与性能优化.md</code></strong></td>
+<td><strong><code>EXPLAIN</code>、备份与 WAL 概念</strong></td>
+</tr>
+<tr>
+<td><strong><code>PostgreSQL-Docker.md</code></strong></td>
+<td>镜像、卷、<strong><code>POSTGRES_*</code></strong></td>
+</tr>
+</tbody></table>
+<p>以上描述以官方文档与当前大版本行为为准；内核细节以源码与 <strong>Wiki</strong> 为最终解释。</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -2946,489 +3389,6 @@
 
 
 
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/PostgreSQL/PostgreSQL-Docker/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="miracle">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="my">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | my">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/05/01/PostgreSQL/PostgreSQL-Docker/" class="post-title-link" itemprop="url">Docker 部署 PostgreSQL</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2026-05-01 21:55:09" itemprop="dateCreated datePublished" datetime="2026-05-01T21:55:09+08:00">2026-05-01</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-03 16:39:28" itemprop="dateModified" datetime="2026-05-03T16:39:28+08:00">2026-05-03</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/PostgreSQL/" itemprop="url" rel="index"><span itemprop="name">PostgreSQL</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>1.4k</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>5 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>在 <strong>Docker</strong> 中运行 <strong>PostgreSQL</strong>，适合本地开发、与 <strong>Compose</strong> 编排其它服务、或在 <strong>Kubernetes</strong> 中单实例部署。下文给出<strong>镜像选型</strong>、<strong>一条命令起容器</strong>、<strong>Compose 一键起栈</strong>与<strong>一份多文档 K8s 清单</strong>；密码与数据卷请按环境自行替换，勿把生产密钥提交进仓库。</p>
-<hr>
-<h1 id="一、前置条件"><a href="#一、前置条件" class="headerlink" title="一、前置条件"></a>一、前置条件</h1><p>本机已安装 <strong><code>docker</code></strong>，并能使用 <strong><code>docker compose</code></strong>（<strong>Compose V2</strong> 插件，命令为 <strong><code>docker compose</code></strong>；若仍使用旧版独立程序，则将下文中的 <strong><code>docker compose</code></strong> 换成 <strong><code>docker-compose</code></strong>）。</p>
-<p>验证：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker version</span><br><span class="line">docker compose version</span><br></pre></td></tr></table></figure>
-
-<p>满足即可，与宿主机操作系统无关。</p>
-<hr>
-<h1 id="二、PostgreSQL-镜像选择"><a href="#二、PostgreSQL-镜像选择" class="headerlink" title="二、PostgreSQL 镜像选择"></a>二、PostgreSQL 镜像选择</h1><h2 id="1-官方镜像（推荐）"><a href="#1-官方镜像（推荐）" class="headerlink" title="1. 官方镜像（推荐）"></a>1. 官方镜像（推荐）</h2><ul>
-<li><strong>仓库</strong>：<strong><code>postgres</code></strong>（Docker Hub 官方库，由 <strong>PostgreSQL</strong> &#x2F; <strong>Docker Official Images</strong> 维护）。  </li>
-<li><strong>常用标签</strong>：  <ul>
-<li><strong><code>postgres:16</code></strong>：<strong>16.x</strong> 当前常用大版本。  </li>
-<li><strong><code>postgres:17</code></strong> 或 <strong><code>postgres:latest</code></strong>：较新线（以 <a target="_blank" rel="noopener external nofollow noreferrer" href="https://hub.docker.com/_/postgres/tags">Docker Hub postgres tags</a> 为准）。</li>
-</ul>
-</li>
-<li><strong>生产建议</strong>：固定小版本标签（如 <strong><code>postgres:16.6</code></strong>）或记录 <strong>digest</strong>，避免 <strong><code>latest</code></strong> 漂移导致行为变化。</li>
-</ul>
-<h2 id="2-变体说明"><a href="#2-变体说明" class="headerlink" title="2. 变体说明"></a>2. 变体说明</h2><table>
-<thead>
-<tr>
-<th>需求</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>超级用户与库</strong></td>
-<td><strong><code>POSTGRES_USER</code></strong> 为数据库超级用户名（默认 <strong><code>postgres</code></strong>）；<strong><code>POSTGRES_PASSWORD</code></strong> 为其密码；<strong><code>POSTGRES_DB</code></strong> 为首次创建的库名（未设置时默认与 <strong><code>POSTGRES_USER</code></strong> 同名）。</td>
-</tr>
-<tr>
-<td><strong>ARM64</strong>（Apple Silicon 等）</td>
-<td>官方 <strong><code>postgres</code></strong> 多架构镜像一般可直接拉取；若某标签缺架构，换标签或查 Hub <strong>OS&#x2F;ARCH</strong>。</td>
-</tr>
-<tr>
-<td><strong>极简&#x2F;定制</strong></td>
-<td>社区有 <strong><code>bitnami/postgresql</code></strong> 等，环境变量与数据路径与官方不同，切换镜像时需对照该镜像文档。</td>
-</tr>
-</tbody></table>
-<h2 id="3-编码与本地化"><a href="#3-编码与本地化" class="headerlink" title="3. 编码与本地化"></a>3. 编码与本地化</h2><p>需要固定库编码、排序规则时，可通过 <strong><code>POSTGRES_INITDB_ARGS</code></strong> 传入 <strong><code>initdb</code></strong> 参数（如 <strong><code>--encoding=UTF8 --locale=C</code></strong>），与业务 <strong><code>client_encoding</code></strong>、迁移脚本约定一致。</p>
-<hr>
-<p><strong>1Panel（推荐）</strong>：在 <strong>Linux</strong> 宿主机上若希望少手写命令、仍以容器方式跑 <strong>PostgreSQL</strong>，可先安装 <a target="_blank" rel="noopener external nofollow noreferrer" href="https://1panel.cn/"><strong>1Panel</strong></a>（开源 <strong>Linux</strong> 运维面板），在 <strong>「应用商店」</strong> 中选择 <strong>PostgreSQL</strong> 一键部署：由面板管理镜像版本、数据持久化、端口与备份等。与下文 <strong><code>docker run</code> &#x2F; Compose &#x2F; K8s&#96;</strong> 的环境变量、卷路径对齐或排障时，自 <strong># 三</strong> 起各节仍可作对照。</p>
-<hr>
-<h1 id="三、单容器一键部署（docker-run）"><a href="#三、单容器一键部署（docker-run）" class="headerlink" title="三、单容器一键部署（docker run）"></a>三、单容器一键部署（<code>docker run</code>）</h1><p>在<strong>当前目录</strong>先建数据与初始化目录（仅首次）：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">mkdir</span> -p ./pg-data ./pg-init</span><br></pre></td></tr></table></figure>
-
-<p><strong>一条命令</strong>启动（请按需改账号、密码、库名、端口、卷路径；示例仅供本地）：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -d --name postgres-dev -e POSTGRES_USER=app -e POSTGRES_PASSWORD=dev-change-me -e POSTGRES_DB=appdb -p 5432:5432 -v <span class="string">&quot;<span class="subst">$(pwd)</span>/pg-data:/var/lib/postgresql/data&quot;</span> -v <span class="string">&quot;<span class="subst">$(pwd)</span>/pg-init:/docker-entrypoint-initdb.d:ro&quot;</span> postgres:16</span><br></pre></td></tr></table></figure>
-
-<p>常用运维一条命令：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker logs -f postgres-dev</span><br><span class="line">docker stop postgres-dev &amp;&amp; docker <span class="built_in">rm</span> postgres-dev</span><br></pre></td></tr></table></figure>
-
-<p>本机连接示例：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">psql <span class="string">&quot;postgresql://app:dev-change-me@127.0.0.1:5432/appdb&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p><strong><code>./pg-init</code></strong> 下 <strong><code>.sql</code> &#x2F; <code>.sh</code></strong> 仅在<strong>首次初始化空数据目录</strong>时执行；已有数据卷时不会重复执行。</p>
-<hr>
-<h1 id="四、Docker-Compose-一键部署"><a href="#四、Docker-Compose-一键部署" class="headerlink" title="四、Docker Compose 一键部署"></a>四、Docker Compose 一键部署</h1><p>将下面内容保存为 <strong><code>docker-compose.postgres.yml</code></strong>（与 <strong><code># 一</code></strong> 要求一致：已能执行 <strong><code>docker compose</code></strong>）。敏感项建议放在同目录 <strong><code>.env</code></strong>（加入 <strong><code>.gitignore</code></strong>），勿长期写死在仓库。</p>
-<p><strong>一条命令</strong>启动全栈（在 <strong><code>docker-compose.postgres.yml</code></strong> 所在目录执行）：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker compose -f docker-compose.postgres.yml up -d</span><br></pre></td></tr></table></figure>
-
-<p>以下为 <strong><code>docker-compose.postgres.yml</code></strong> 全文：<strong><code>version</code></strong>、<strong><code>name</code></strong>、<strong>命名卷</strong>、<strong>健康检查</strong>。</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">version:</span> <span class="string">&quot;3.8&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="attr">name:</span> <span class="string">postgres-stack</span></span><br><span class="line"></span><br><span class="line"><span class="attr">services:</span></span><br><span class="line">  <span class="attr">postgres:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">postgres:16</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">postgres-16</span></span><br><span class="line">    <span class="attr">restart:</span> <span class="string">unless-stopped</span></span><br><span class="line">    <span class="attr">environment:</span></span><br><span class="line">      <span class="attr">POSTGRES_USER:</span> <span class="string">$&#123;POSTGRES_USER:-app&#125;</span></span><br><span class="line">      <span class="attr">POSTGRES_PASSWORD:</span> <span class="string">$&#123;POSTGRES_PASSWORD:-dev-change-me&#125;</span></span><br><span class="line">      <span class="attr">POSTGRES_DB:</span> <span class="string">$&#123;POSTGRES_DB:-appdb&#125;</span></span><br><span class="line">      <span class="attr">TZ:</span> <span class="string">Asia/Shanghai</span></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;5432:5432&quot;</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">pg_data:/var/lib/postgresql/data</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">./pg-init:/docker-entrypoint-initdb.d:ro</span></span><br><span class="line">    <span class="attr">healthcheck:</span></span><br><span class="line">      <span class="attr">test:</span> [<span class="string">&quot;CMD-SHELL&quot;</span>, <span class="string">&quot;pg_isready -U \&quot;$$POSTGRES_USER\&quot; -d \&quot;$$POSTGRES_DB\&quot; || exit 1&quot;</span>]</span><br><span class="line">      <span class="attr">interval:</span> <span class="string">5s</span></span><br><span class="line">      <span class="attr">timeout:</span> <span class="string">5s</span></span><br><span class="line">      <span class="attr">retries:</span> <span class="number">30</span></span><br><span class="line">      <span class="attr">start_period:</span> <span class="string">30s</span></span><br><span class="line"></span><br><span class="line"><span class="attr">volumes:</span></span><br><span class="line">  <span class="attr">pg_data:</span></span><br><span class="line">    <span class="attr">driver:</span> <span class="string">local</span></span><br></pre></td></tr></table></figure>
-
-<p>同目录可选 <strong><code>.env</code></strong>（勿提交）：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">POSTGRES_USER=app</span><br><span class="line">POSTGRES_PASSWORD=your-strong-password</span><br><span class="line">POSTGRES_DB=appdb</span><br></pre></td></tr></table></figure>
-
-<p>查看状态、日志、停止并删除容器（保留数据卷）：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">docker compose -f docker-compose.postgres.yml ps</span><br><span class="line">docker compose -f docker-compose.postgres.yml logs -f postgres</span><br><span class="line">docker compose -f docker-compose.postgres.yml down</span><br></pre></td></tr></table></figure>
-
-<p><strong><code>down</code></strong> 默认保留命名卷 <strong><code>pg_data</code></strong>；若需清空数据加 <strong><code>docker compose ... down -v</code></strong>（<strong>会删库</strong>）。</p>
-<hr>
-<h1 id="五、Kubernetes-一键部署（单文件完整清单）"><a href="#五、Kubernetes-一键部署（单文件完整清单）" class="headerlink" title="五、Kubernetes 一键部署（单文件完整清单）"></a>五、Kubernetes 一键部署（单文件完整清单）</h1><p>将下面内容保存为 <strong><code>postgres-k8s.yaml</code></strong> 后，<strong>一条命令</strong>应用：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl apply -f postgres-k8s.yaml</span><br></pre></td></tr></table></figure>
-
-<p>清单含 <strong>Secret</strong>（超级用户与库名）、<strong>PVC</strong>、<strong>Deployment</strong>、<strong>ClusterIP Service</strong>。未写 <strong><code>storageClassName</code></strong> 时使用集群默认 <strong>StorageClass</strong>；无默认 <strong>SC</strong> 时请在 <strong>PVC</strong> 中补上 <strong><code>storageClassName</code></strong>。命名空间为 <strong><code>default</code></strong>，可按需修改 <strong><code>metadata.namespace</code></strong>。</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Secret</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">postgres-secret</span></span><br><span class="line">  <span class="attr">namespace:</span> <span class="string">default</span></span><br><span class="line"><span class="attr">type:</span> <span class="string">Opaque</span></span><br><span class="line"><span class="attr">stringData:</span></span><br><span class="line">  <span class="attr">POSTGRES_USER:</span> <span class="string">&quot;app&quot;</span></span><br><span class="line">  <span class="attr">POSTGRES_PASSWORD:</span> <span class="string">&quot;请替换为强密码&quot;</span></span><br><span class="line">  <span class="attr">POSTGRES_DB:</span> <span class="string">&quot;appdb&quot;</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">PersistentVolumeClaim</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">postgres-data</span></span><br><span class="line">  <span class="attr">namespace:</span> <span class="string">default</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">accessModes:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">ReadWriteOnce</span></span><br><span class="line">  <span class="attr">resources:</span></span><br><span class="line">    <span class="attr">requests:</span></span><br><span class="line">      <span class="attr">storage:</span> <span class="string">20Gi</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">apps/v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Deployment</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">postgres</span></span><br><span class="line">  <span class="attr">namespace:</span> <span class="string">default</span></span><br><span class="line">  <span class="attr">labels:</span></span><br><span class="line">    <span class="attr">app:</span> <span class="string">postgres</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">replicas:</span> <span class="number">1</span></span><br><span class="line">  <span class="attr">selector:</span></span><br><span class="line">    <span class="attr">matchLabels:</span></span><br><span class="line">      <span class="attr">app:</span> <span class="string">postgres</span></span><br><span class="line">  <span class="attr">strategy:</span></span><br><span class="line">    <span class="attr">type:</span> <span class="string">Recreate</span></span><br><span class="line">  <span class="attr">template:</span></span><br><span class="line">    <span class="attr">metadata:</span></span><br><span class="line">      <span class="attr">labels:</span></span><br><span class="line">        <span class="attr">app:</span> <span class="string">postgres</span></span><br><span class="line">    <span class="attr">spec:</span></span><br><span class="line">      <span class="attr">containers:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">postgres</span></span><br><span class="line">          <span class="attr">image:</span> <span class="string">postgres:16</span></span><br><span class="line">          <span class="attr">ports:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">containerPort:</span> <span class="number">5432</span></span><br><span class="line">              <span class="attr">name:</span> <span class="string">postgres</span></span><br><span class="line">          <span class="attr">env:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">POSTGRES_USER</span></span><br><span class="line">              <span class="attr">valueFrom:</span></span><br><span class="line">                <span class="attr">secretKeyRef:</span></span><br><span class="line">                  <span class="attr">name:</span> <span class="string">postgres-secret</span></span><br><span class="line">                  <span class="attr">key:</span> <span class="string">POSTGRES_USER</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">POSTGRES_PASSWORD</span></span><br><span class="line">              <span class="attr">valueFrom:</span></span><br><span class="line">                <span class="attr">secretKeyRef:</span></span><br><span class="line">                  <span class="attr">name:</span> <span class="string">postgres-secret</span></span><br><span class="line">                  <span class="attr">key:</span> <span class="string">POSTGRES_PASSWORD</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">POSTGRES_DB</span></span><br><span class="line">              <span class="attr">valueFrom:</span></span><br><span class="line">                <span class="attr">secretKeyRef:</span></span><br><span class="line">                  <span class="attr">name:</span> <span class="string">postgres-secret</span></span><br><span class="line">                  <span class="attr">key:</span> <span class="string">POSTGRES_DB</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">TZ</span></span><br><span class="line">              <span class="attr">value:</span> <span class="string">&quot;Asia/Shanghai&quot;</span></span><br><span class="line">          <span class="attr">volumeMounts:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">data</span></span><br><span class="line">              <span class="attr">mountPath:</span> <span class="string">/var/lib/postgresql/data</span></span><br><span class="line">          <span class="attr">readinessProbe:</span></span><br><span class="line">            <span class="attr">exec:</span></span><br><span class="line">              <span class="attr">command:</span></span><br><span class="line">                <span class="bullet">-</span> <span class="string">/bin/sh</span></span><br><span class="line">                <span class="bullet">-</span> <span class="string">-c</span></span><br><span class="line">                <span class="bullet">-</span> <span class="string">&#x27;pg_isready -U &quot;$POSTGRES_USER&quot; -d &quot;$POSTGRES_DB&quot;&#x27;</span></span><br><span class="line">            <span class="attr">initialDelaySeconds:</span> <span class="number">10</span></span><br><span class="line">            <span class="attr">periodSeconds:</span> <span class="number">5</span></span><br><span class="line">            <span class="attr">timeoutSeconds:</span> <span class="number">3</span></span><br><span class="line">            <span class="attr">failureThreshold:</span> <span class="number">24</span></span><br><span class="line">          <span class="attr">livenessProbe:</span></span><br><span class="line">            <span class="attr">tcpSocket:</span></span><br><span class="line">              <span class="attr">port:</span> <span class="number">5432</span></span><br><span class="line">            <span class="attr">initialDelaySeconds:</span> <span class="number">60</span></span><br><span class="line">            <span class="attr">periodSeconds:</span> <span class="number">10</span></span><br><span class="line">            <span class="attr">timeoutSeconds:</span> <span class="number">5</span></span><br><span class="line">            <span class="attr">failureThreshold:</span> <span class="number">6</span></span><br><span class="line">          <span class="attr">resources:</span></span><br><span class="line">            <span class="attr">requests:</span></span><br><span class="line">              <span class="attr">memory:</span> <span class="string">&quot;256Mi&quot;</span></span><br><span class="line">              <span class="attr">cpu:</span> <span class="string">&quot;250m&quot;</span></span><br><span class="line">            <span class="attr">limits:</span></span><br><span class="line">              <span class="attr">memory:</span> <span class="string">&quot;1Gi&quot;</span></span><br><span class="line">              <span class="attr">cpu:</span> <span class="string">&quot;1000m&quot;</span></span><br><span class="line">      <span class="attr">volumes:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">data</span></span><br><span class="line">          <span class="attr">persistentVolumeClaim:</span></span><br><span class="line">            <span class="attr">claimName:</span> <span class="string">postgres-data</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Service</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">postgres</span></span><br><span class="line">  <span class="attr">namespace:</span> <span class="string">default</span></span><br><span class="line">  <span class="attr">labels:</span></span><br><span class="line">    <span class="attr">app:</span> <span class="string">postgres</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">type:</span> <span class="string">ClusterIP</span></span><br><span class="line">  <span class="attr">selector:</span></span><br><span class="line">    <span class="attr">app:</span> <span class="string">postgres</span></span><br><span class="line">  <span class="attr">ports:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">postgres</span></span><br><span class="line">      <span class="attr">port:</span> <span class="number">5432</span></span><br><span class="line">      <span class="attr">targetPort:</span> <span class="number">5432</span></span><br></pre></td></tr></table></figure>
-
-<p>查看资源与连接前检查：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl get pods,svc,pvc -l app=postgres</span><br></pre></td></tr></table></figure>
-
-<p>集群内连接串示例（按 <strong>namespace</strong> 与 <strong>Secret</strong> 中密码替换）：<strong><code>postgresql://app:请替换@postgres.default.svc.cluster.local:5432/appdb?sslmode=disable</code></strong>（生产请改为 <strong><code>sslmode=require</code></strong> 并配置 <strong>TLS</strong>）。</p>
-<p><strong>说明</strong>：<strong><code>strategy: Recreate</code></strong> 避免 <strong>RWO</strong> 卷被多副本 <strong>RollingUpdate</strong> 同时挂载；高可用、复制、自动故障转移请使用 <strong>Patroni</strong>、<strong>CloudNativePG</strong> 等 <strong>Operator</strong> 或 <strong>StatefulSet</strong> 方案，勿直接水平扩展上述 <strong>Deployment</strong>。</p>
-<hr>
-<h1 id="六、小结"><a href="#六、小结" class="headerlink" title="六、小结"></a>六、小结</h1><table>
-<thead>
-<tr>
-<th>项</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>前置</strong></td>
-<td>已安装 <strong><code>docker</code></strong> 与 <strong><code>docker compose</code></strong>（或 <strong><code>docker-compose</code></strong>）</td>
-</tr>
-<tr>
-<td><strong>镜像</strong></td>
-<td>优先官方 <strong><code>postgres:16</code></strong> &#x2F; 固定补丁标签；核对 <strong><code>POSTGRES_*</code></strong> 与客户端驱动版本</td>
-</tr>
-<tr>
-<td><strong>单容器</strong></td>
-<td><strong><code>mkdir</code></strong> 后一条 <strong><code>docker run ...</code></strong></td>
-</tr>
-<tr>
-<td><strong>Compose</strong></td>
-<td>保存 <strong><code>docker-compose.postgres.yml</code></strong> 后 <strong><code>docker compose -f ... up -d</code></strong></td>
-</tr>
-<tr>
-<td><strong>Kubernetes</strong></td>
-<td>保存 <strong><code>postgres-k8s.yaml</code></strong> 后 <strong><code>kubectl apply -f ...</code></strong></td>
-</tr>
-</tbody></table>
-<p>同目录可参考：<strong><code>PostgreSQL.md</code></strong>（<strong>DDL</strong>）、<strong><code>PostgreSQL高级查询.md</code></strong>、<strong><code>PostgreSQL索引与性能优化.md</code></strong>、<strong><code>PostgreSQL并发与MVCC入门.md</code></strong>。</p>
-<p>生产环境请配合备份、监控、网络策略与 <strong>TLS</strong>；<strong>Secret</strong> 建议对接 <strong>External Secrets</strong> &#x2F; <strong>Sealed Secrets</strong> 等管控流程。</p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/Linux/WSL-Rocky/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="miracle">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="my">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | my">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/05/01/Linux/WSL-Rocky/" class="post-title-link" itemprop="url">Windows 上 WSL（Rocky Linux）与 Docker Desktop</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2026-05-01 20:40:26" itemprop="dateCreated datePublished" datetime="2026-05-01T20:40:26+08:00">2026-05-01</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-02 23:48:50" itemprop="dateModified" datetime="2026-05-02T23:48:50+08:00">2026-05-02</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>2k</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>7 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>在 <strong>Windows 10&#x2F;11</strong> 上通过 <strong>WSL2</strong> 运行 <strong>Rocky Linux</strong>，可与 <strong>Docker Desktop</strong> 共用同一套引擎：容器在 <strong>Docker Desktop</strong> 的 <strong>Linux</strong> 后端里跑，你在 <strong>Rocky Linux</strong> 终端里直接使用 <strong><code>docker</code></strong> 命令。下面按「准备 → 启用 <strong>WSL</strong> → 安装 <strong>Rocky Linux</strong> → <strong>Docker Desktop</strong> 集成 → 首次配置 → 日常维护」顺序说明；<strong>Rocky Linux</strong> 安装以官方文档为准，<strong>Docker</strong> 以 <strong>Docker Desktop</strong> 文档为准。</p>
-<hr>
-<h1 id="一、环境与版本说明"><a href="#一、环境与版本说明" class="headerlink" title="一、环境与版本说明"></a>一、环境与版本说明</h1><ol>
-<li><strong>操作系统</strong>：<strong>Windows 10</strong>（建议 22H2 及以后）或 <strong>Windows 11</strong>。  </li>
-<li><strong>体系结构</strong>：下载 <strong>Rocky Linux</strong> 镜像时选 <strong>x86_64</strong> 或 <strong>aarch64</strong>，与 <strong>Windows</strong>、<strong>Docker Desktop</strong> 安装包一致。  </li>
-<li><strong>WSL</strong>：使用 <strong>WSL2</strong>；<strong>Docker Desktop</strong> 的 <strong>WSL 2</strong> 后端依赖此版本。  </li>
-<li><strong>Rocky Linux</strong>：官方 <strong><code>.wsl</code></strong> 镜像（推荐）或 <strong><code>wsl --import</code></strong>。  </li>
-<li><strong>权威文档</strong>：  <ul>
-<li><strong>Rocky Linux</strong>（本文默认 <strong>10</strong>，文档内可切换版本）：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://docs.rockylinux.org/10/guides/interoperability/import_rocky_to_wsl/">Import Rocky Linux to WSL or WSL2</a>  </li>
-<li><strong>Microsoft</strong>：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://learn.microsoft.com/zh-cn/windows/wsl/install">安装 WSL</a>  </li>
-<li><strong>Docker</strong>：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://docs.docker.com/desktop/setup/install/windows-install/">Docker Desktop on Windows</a>、<a target="_blank" rel="noopener external nofollow noreferrer" href="https://docs.docker.com/desktop/wsl/">WSL 与 Docker Desktop</a></li>
-</ul>
-</li>
-</ol>
-<hr>
-<h1 id="二、硬件与-Windows-功能准备"><a href="#二、硬件与-Windows-功能准备" class="headerlink" title="二、硬件与 Windows 功能准备"></a>二、硬件与 Windows 功能准备</h1><h2 id="1-BIOS-UEFI"><a href="#1-BIOS-UEFI" class="headerlink" title="1. BIOS &#x2F; UEFI"></a>1. BIOS &#x2F; UEFI</h2><p>开启 <strong>CPU 虚拟化</strong>（<strong>Intel VT-x</strong>、<strong>AMD-V</strong>）。<strong>WSL2</strong> 与 <strong>Docker Desktop</strong> 均依赖。</p>
-<h2 id="2-启用可选组件（图形界面）"><a href="#2-启用可选组件（图形界面）" class="headerlink" title="2. 启用可选组件（图形界面）"></a>2. 启用可选组件（图形界面）</h2><ol>
-<li><strong>Win + R</strong> → <strong><code>optionalfeatures</code></strong> → 勾选 <strong>适用于 Linux 的 Windows 子系统</strong>、<strong>虚拟机平台</strong>。  </li>
-<li>重启。</li>
-</ol>
-<h2 id="3-商店版-WSL（推荐）"><a href="#3-商店版-WSL（推荐）" class="headerlink" title="3. 商店版 WSL（推荐）"></a>3. 商店版 WSL（推荐）</h2><p>从 <strong>Microsoft Store</strong> 安装 <a target="_blank" rel="noopener external nofollow noreferrer" href="https://apps.microsoft.com/detail/9p9tqf7mrm4r">Windows Subsystem for Linux</a>。</p>
-<hr>
-<h1 id="三、用-PowerShell-启用并更新-WSL"><a href="#三、用-PowerShell-启用并更新-WSL" class="headerlink" title="三、用 PowerShell 启用并更新 WSL"></a>三、用 PowerShell 启用并更新 WSL</h1><p>在 <strong>以管理员身份运行</strong> 的 <strong>PowerShell</strong> 中执行。</p>
-<h2 id="1-安装-WSL-组件（若尚未安装）"><a href="#1-安装-WSL-组件（若尚未安装）" class="headerlink" title="1. 安装 WSL 组件（若尚未安装）"></a>1. 安装 WSL 组件（若尚未安装）</h2><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wsl <span class="literal">--install</span>  <span class="comment"># 默认安装Ubuntu，这里不使用此命令，使用 安装 Rocky Linux 命令</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="2-默认使用-WSL2"><a href="#2-默认使用-WSL2" class="headerlink" title="2. 默认使用 WSL2"></a>2. 默认使用 WSL2</h2><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wsl <span class="literal">--set-default-version</span> <span class="number">2</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="3-更新-WSL"><a href="#3-更新-WSL" class="headerlink" title="3. 更新 WSL"></a>3. 更新 WSL</h2><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wsl <span class="literal">--update</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="4-验证"><a href="#4-验证" class="headerlink" title="4. 验证"></a>4. 验证</h2><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">wsl <span class="literal">--version</span></span><br><span class="line">wsl <span class="literal">--status</span></span><br></pre></td></tr></table></figure>
-
-<hr>
-<h1 id="四、安装-Rocky-Linux（推荐：官方-wsl-镜像）"><a href="#四、安装-Rocky-Linux（推荐：官方-wsl-镜像）" class="headerlink" title="四、安装 Rocky Linux（推荐：官方 .wsl 镜像）"></a>四、安装 Rocky Linux（推荐：官方 <code>.wsl</code> 镜像）</h1><h2 id="1-下载镜像（默认-Rocky-Linux-10）"><a href="#1-下载镜像（默认-Rocky-Linux-10）" class="headerlink" title="1. 下载镜像（默认 Rocky Linux 10）"></a>1. 下载镜像（默认 <strong>Rocky Linux 10</strong>）</h2><p><strong>Rocky Linux 10</strong>（<strong>x86_64</strong>）：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://dl.rockylinux.org/pub/rocky/10/images/x86_64/Rocky-10-WSL-Base.latest.x86_64.wsl">https://dl.rockylinux.org/pub/rocky/10/images/x86_64/Rocky-10-WSL-Base.latest.x86_64.wsl</a><br><strong>aarch64</strong>：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://dl.rockylinux.org/pub/rocky/10/images/aarch64/Rocky-10-WSL-Base.latest.aarch64.wsl">https://dl.rockylinux.org/pub/rocky/10/images/aarch64/Rocky-10-WSL-Base.latest.aarch64.wsl</a></p>
-<h2 id="2-命令行安装"><a href="#2-命令行安装" class="headerlink" title="2. 命令行安装"></a>2. 命令行安装</h2><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wsl <span class="literal">--install</span> <span class="literal">--from-file</span> <span class="string">&quot;D:\download\Rocky-10-WSL-Base.latest.x86_64.wsl&quot;</span> <span class="literal">--name</span> Rocky<span class="literal">-10</span></span><br></pre></td></tr></table></figure>
-
-<p>将路径、<code>--name</code> 改成你的实际值。安装后 <strong>Windows Terminal</strong> 下拉里可出现 <strong>Rocky-10</strong>。</p>
-<h2 id="3-双击安装（可选）"><a href="#3-双击安装（可选）" class="headerlink" title="3. 双击安装（可选）"></a>3. 双击安装（可选）</h2><p>资源管理器中双击 <strong><code>.wsl</code></strong> 按向导安装。</p>
-<hr>
-<h1 id="五、安装与配置-Docker-Desktop（配合-WSL2）"><a href="#五、安装与配置-Docker-Desktop（配合-WSL2）" class="headerlink" title="五、安装与配置 Docker Desktop（配合 WSL2）"></a>五、安装与配置 Docker Desktop（配合 WSL2）</h1><h2 id="1-下载并安装"><a href="#1-下载并安装" class="headerlink" title="1. 下载并安装"></a>1. 下载并安装</h2><ol>
-<li>打开 <a target="_blank" rel="noopener external nofollow noreferrer" href="https://www.docker.com/products/docker-desktop/">https://www.docker.com/products/docker-desktop/</a> ，下载 <strong>Docker Desktop for Windows</strong>。  </li>
-<li>安装向导中保持 <strong>Use WSL 2 instead of Hyper-V</strong>（或等价选项，以当前安装界面为准）。  </li>
-<li>安装结束若提示注销或重启，按提示操作。</li>
-</ol>
-<h2 id="2-确认使用-WSL-2-后端"><a href="#2-确认使用-WSL-2-后端" class="headerlink" title="2. 确认使用 WSL 2 后端"></a>2. 确认使用 WSL 2 后端</h2><p>打开 <strong>Docker Desktop</strong> → <strong>Settings</strong>（设置）→ <strong>General</strong>（常规）：</p>
-<ul>
-<li>勾选 <strong>Use the WSL 2 based engine</strong>（使用基于 <strong>WSL 2</strong> 的引擎）。</li>
-</ul>
-<p>应用后必要时 <strong>Restart Docker Desktop</strong>。</p>
-<h2 id="3-与-Rocky-Linux-发行版集成（核心）"><a href="#3-与-Rocky-Linux-发行版集成（核心）" class="headerlink" title="3. 与 Rocky Linux 发行版集成（核心）"></a>3. 与 Rocky Linux 发行版集成（核心）</h2><p><strong>Settings</strong> → <strong>Resources</strong> → <strong>WSL integration</strong>（<strong>WSL</strong> 集成）：</p>
-<ol>
-<li>打开 <strong>Enable integration with my default Wsl distro</strong>（与默认 <strong>WSL</strong> 发行版集成）（按需）。  </li>
-<li>在 <strong>Enable integration with additional distros</strong> 中，<strong>打开</strong>你的 <strong>Rocky Linux</strong> 名称（例如 <strong>Rocky-10</strong>）。  </li>
-<li>点击 <strong>Apply &amp; restart</strong>。</li>
-</ol>
-<p>之后在 <strong><code>wsl -d Rocky-10</code></strong> 的 shell 中应能直接执行 <strong><code>docker</code></strong>、<strong><code>docker compose</code></strong>，实际引擎由 <strong>Docker Desktop</strong> 提供，无需在 <strong>Rocky</strong> 里再装 <strong><code>dockerd</code></strong> 或配置 <strong>rootful</strong> 独立引擎（避免与 <strong>Desktop</strong> 抢端口、重复占资源）。</p>
-<h2 id="4-验证（在-Rocky-Linux-内）"><a href="#4-验证（在-Rocky-Linux-内）" class="headerlink" title="4. 验证（在 Rocky Linux 内）"></a>4. 验证（在 Rocky Linux 内）</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker version</span><br><span class="line">docker compose version</span><br></pre></td></tr></table></figure>
-
-<p>若提示找不到 <strong><code>docker</code></strong>：回到上一步检查该发行版集成开关，并执行 <strong><code>wsl --shutdown</code></strong> 后重新打开 <strong>Docker Desktop</strong> 与 <strong>WSL</strong> 终端。</p>
-<h2 id="5-镜像加速与构建缓存（Docker-Engine）"><a href="#5-镜像加速与构建缓存（Docker-Engine）" class="headerlink" title="5. 镜像加速与构建缓存（Docker Engine）"></a>5. 镜像加速与构建缓存（Docker Engine）</h2><p>在 <strong>Docker Desktop</strong> → <strong>Settings</strong>（设置）→ <strong>Docker Engine</strong> 中编辑 <strong>JSON</strong>（与引擎配置同源，保存后 <strong>Apply &amp; restart</strong> 生效）。若已有其它键（如 <strong><code>insecure-registries</code></strong>），请把下面片段<strong>合并</strong>进现有对象，不要整段覆盖导致丢配置。</p>
-<ul>
-<li><strong><code>registry-mirrors</code></strong>：拉取镜像时优先走列表中的镜像站，减轻访问 <strong><code>docker.io</code></strong> 的延迟与失败（镜像站可用性与合规以你网络环境为准，可日后替换为团队提供的地址）。  </li>
-<li><strong><code>builder.gc</code></strong>：为 <strong>BuildKit</strong> 构建缓存开启自动回收，<strong><code>defaultKeepStorage</code></strong> 限制默认保留量（示例 <strong>20GB</strong>），避免构建缓存占满磁盘。</li>
-</ul>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;builder&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;gc&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;defaultKeepStorage&quot;</span><span class="punctuation">:</span> <span class="string">&quot;20GB&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;enabled&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;experimental&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">false</span></span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;registry-mirrors&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">    <span class="string">&quot;https://docker.1ms.run&quot;</span></span><br><span class="line">  <span class="punctuation">]</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
-
-<p>修改后点击 <strong>Apply &amp; restart</strong>；再在 <strong>Rocky</strong> 或 <strong>PowerShell</strong> 中执行 <strong><code>docker info</code></strong>，在输出里确认 <strong><code>Registry Mirrors</code></strong> 已包含上述地址。</p>
-<h2 id="6-文件与性能建议"><a href="#6-文件与性能建议" class="headerlink" title="6. 文件与性能建议"></a>6. 文件与性能建议</h2><ul>
-<li><p>项目代码放在 <strong>WSL 发行版自己的 Linux 文件系统里</strong>（例如在 <strong><code>wsl -d Rocky-10</code></strong> 里用 <strong><code>~/project</code></strong>，即 <strong><code>/home/你的用户/project</code></strong>），不要放在 <strong><code>/mnt/c/...</code></strong> 下做大量编译与 <strong>Docker</strong> 构建，可减少跨系统 <strong>I&#x2F;O</strong> 延迟。  </p>
-</li>
-<li><p><strong>Docker Desktop</strong> 的 <strong>Settings → Resources</strong> 可调 <strong>CPU</strong>、内存、磁盘镜像上限，与 <strong>Rocky</strong> 其它进程共用本机资源，按机器配置酌情调大。</p>
-</li>
-</ul>
-<h2 id="7-与「在-Rocky-里单独装-Docker-Engine」的区别"><a href="#7-与「在-Rocky-里单独装-Docker-Engine」的区别" class="headerlink" title="7. 与「在 Rocky 里单独装 Docker Engine」的区别"></a>7. 与「在 Rocky 里单独装 Docker Engine」的区别</h2><table>
-<thead>
-<tr>
-<th>方式</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>Docker Desktop + WSL 集成</strong>（本文推荐）</td>
-<td>一个图形界面管理引擎、更新与证书；<strong>Rocky</strong> 内仅 <strong>CLI</strong> 连到 <strong>Desktop</strong></td>
-</tr>
-<tr>
-<td><strong>Rocky 内 <code>dnf install docker-ce</code> 并跑 <code>dockerd</code></strong></td>
-<td>与 <strong>Desktop</strong> 两套引擎易冲突，一般不叠加以 <strong>Desktop</strong> 为主场景</td>
-</tr>
-</tbody></table>
-<p>若必须仅用发行版内 <strong>dockerd</strong>（无 <strong>Desktop</strong>），应关闭 <strong>Docker Desktop</strong> 的 <strong>WSL</strong> 集成或卸载 <strong>Desktop</strong>，并自行处理 <strong>iptables</strong>&#x2F;<strong>cgroup</strong> 等与 <strong>WSL</strong> 文档差异。</p>
-<hr>
-<h1 id="七、Rocky-Linux-首次进入与基础配置"><a href="#七、Rocky-Linux-首次进入与基础配置" class="headerlink" title="七、Rocky Linux 首次进入与基础配置"></a>七、Rocky Linux 首次进入与基础配置</h1><h2 id="1-进入发行版"><a href="#1-进入发行版" class="headerlink" title="1. 进入发行版"></a>1. 进入发行版</h2><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wsl <span class="literal">-d</span> Rocky<span class="literal">-10</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="2-是否需要「登录」、如何设置与验证-root-密码"><a href="#2-是否需要「登录」、如何设置与验证-root-密码" class="headerlink" title="2. 是否需要「登录」、如何设置与验证 root 密码"></a>2. 是否需要「登录」、如何设置与验证 <strong>root</strong> 密码</h2><p><strong>是否要登录</strong>：<strong>WSL</strong> 从 <strong>Windows Terminal</strong>、<strong><code>wsl -d Rocky-10</code></strong> 等方式进入时，一般是<strong>直接进入已配置的默认 Linux 用户的 shell</strong>，不会像 <strong>SSH</strong> 那样再在终端里提示输入一次用户名（除非你主动执行 <strong><code>login</code></strong>、<strong><code>su</code></strong> 等）。首次安装某些发行版时会交互式让你创建 <strong>UNIX</strong> 用户名与密码；<strong>Rocky</strong> 官方 <strong><code>.wsl</code></strong> 导入后的默认用户以该镜像说明为准（常见为 <strong><code>root</code></strong> 或需自行建普通用户，见下节）。</p>
-<p><strong>root 密码是什么、要不要设</strong>：<strong>root</strong> 账户始终存在；若从未执行过 <strong><code>passwd</code></strong>，<strong>root</strong> 可能没有可用登录密码（或镜像预置了密码，以发行版文档为准）。日常维护建议用<strong>带 <code>sudo</code> 的普通用户</strong>；需要 <strong>root shell</strong> 时再切。</p>
-<p><strong>设置 root 密码</strong>（在已能 <strong><code>sudo</code></strong> 的普通用户下）：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> passwd root  <span class="comment"># pi=3.1415</span></span><br></pre></td></tr></table></figure>
-
-<p>若当前 shell <strong>已是 root</strong>（提示符常为 <strong><code>#</code></strong> 且 <strong><code>whoami</code></strong> 输出 <strong><code>root</code></strong>），直接：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">passwd</span><br></pre></td></tr></table></figure>
-
-<p><strong>如何验证 root 密码是否生效</strong>：在同一发行版里执行 <strong><code>su -</code></strong>，提示 <strong><code>Password:</code></strong> 时输入刚设的 root 密码；成功则进入 root 的登录 shell（<strong><code>whoami</code></strong> 应输出 <strong><code>root</code></strong>）。用 <strong><code>exit</code></strong> 退出。注意 <strong><code>sudo -i</code></strong> 校验的通常是<strong>当前用户</strong>的 <strong><code>sudo</code></strong> 凭据，不是专门用来「试 root 密码」的命令。</p>
-<p><strong>从 Windows 侧以 root 进入（忘记普通用户密码时）</strong>：在 <strong>PowerShell</strong> 中执行 <strong><code>wsl -d Rocky-10 -u root</code></strong>，一般无需先知道普通用户密码；进入后再 <strong><code>passwd youruser</code></strong> 重置普通用户，或 <strong><code>passwd root</code></strong> 重置 root。</p>
-<h2 id="3-用户与-sudo"><a href="#3-用户与-sudo" class="headerlink" title="3. 用户与 sudo"></a>3. 用户与 sudo</h2><p>按需创建普通用户并加入 <strong><code>wheel</code></strong>：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> useradd -m -G wheel youruser</span><br><span class="line"><span class="built_in">sudo</span> passwd youruser</span><br></pre></td></tr></table></figure>
-
-<h2 id="4-系统更新"><a href="#4-系统更新" class="headerlink" title="4. 系统更新"></a>4. 系统更新</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> dnf -y update</span><br></pre></td></tr></table></figure>
-
-<h2 id="5-设为默认-WSL-发行版（可选）"><a href="#5-设为默认-WSL-发行版（可选）" class="headerlink" title="5. 设为默认 WSL 发行版（可选）"></a>5. 设为默认 WSL 发行版（可选）</h2><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wsl <span class="literal">--set-default</span> Rocky<span class="literal">-10</span></span><br></pre></td></tr></table></figure>
-
-<hr>
-<h1 id="八、日常维护与常用命令（Windows-侧）"><a href="#八、日常维护与常用命令（Windows-侧）" class="headerlink" title="八、日常维护与常用命令（Windows 侧）"></a>八、日常维护与常用命令（Windows 侧）</h1><table>
-<thead>
-<tr>
-<th>目的</th>
-<th>命令示例</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>列出发行版及 <strong>WSL</strong> 版本</td>
-<td><code>wsl -l -v</code></td>
-</tr>
-<tr>
-<td>关闭所有 <strong>WSL</strong></td>
-<td><code>wsl --shutdown</code></td>
-</tr>
-<tr>
-<td>删除某发行版（<strong>数据清空</strong>）</td>
-<td><code>wsl --unregister Rocky-10</code></td>
-</tr>
-<tr>
-<td>导出备份</td>
-<td><code>wsl --export Rocky-10 D:\backup\rocky-10.tar</code></td>
-</tr>
-</tbody></table>
-<p><strong>Docker Desktop</strong> 升级、重置可在 <strong>Windows</strong>「应用和功能」或 <strong>Docker Desktop</strong> 自带 <strong>Troubleshoot</strong> 中处理；与 <strong>WSL</strong> 内核相关的问题优先 <strong><code>wsl --update</code></strong>。</p>
-<hr>
-<h1 id="九、小结"><a href="#九、小结" class="headerlink" title="九、小结"></a>九、小结</h1><table>
-<thead>
-<tr>
-<th>步骤</th>
-<th>内容</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>基础</td>
-<td><strong>BIOS</strong> 虚拟化、<strong>WSL</strong> + <strong>虚拟机平台</strong>、<strong>WSL2</strong>、<strong><code>wsl --update</code></strong></td>
-</tr>
-<tr>
-<td><strong>Rocky Linux</strong></td>
-<td>默认 <strong>10</strong>：<strong><code>Rocky-10-WSL-Base.latest.*.wsl</code></strong> + <strong><code>--name Rocky-10</code></strong>；<strong>9</strong> 同理换包名与 <strong><code>--name</code></strong></td>
-</tr>
-<tr>
-<td><strong>Docker Desktop</strong></td>
-<td>安装时选 <strong>WSL 2</strong> 引擎；<strong>Settings → WSL integration</strong> 勾选 <strong>Rocky</strong> 发行版</td>
-</tr>
-<tr>
-<td>镜像加速</td>
-<td><strong>Settings → Docker Engine</strong>：<strong><code>registry-mirrors</code></strong> + <strong><code>builder.gc</code></strong>（见 <strong>五、5</strong>）</td>
-</tr>
-<tr>
-<td>验证</td>
-<td><strong>Rocky</strong> 内 <strong><code>docker run hello-world</code></strong></td>
-</tr>
-<tr>
-<td>用户与 <strong>root</strong></td>
-<td><strong>WSL</strong> 一般无二次「登录」；<strong><code>sudo passwd root</code></strong> 设密码，<strong><code>su -</code></strong> 验证；必要时 <strong><code>wsl -u root</code></strong>（见 <strong>七、2</strong>）</td>
-</tr>
-<tr>
-<td>实践建议</td>
-<td>代码放 <strong>Rocky 等发行版内 Linux 路径</strong>（如 <strong><code>~/project</code></strong>）；勿长期用 <strong><code>/mnt/c</code></strong> 做重编译；避免与发行版内独立 <strong><code>dockerd</code></strong> 混用</td>
-</tr>
-</tbody></table>
-<p><strong>Rocky Linux 9 &#x2F; 10</strong> 切换请对照官方 <strong>WSL</strong> 文档对应版本页；<strong>Docker Desktop</strong> 与 <strong>Windows</strong> 大版本兼容性以 <strong>Docker</strong> 发行说明为准。</p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
   <nav class="pagination">
     <a class="extend prev" rel="prev" title="上一页" aria-label="上一页" href="/page/2/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/17/">17</a><a class="extend next" rel="next" title="下一页" aria-label="下一页" href="/page/4/"><i class="fa fa-angle-right"></i></a>
   </nav>
@@ -3452,13 +3412,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">150k</span>
+    <span title="站点总字数">152k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">8:19</span>
+    <span title="站点阅读时长">8:26</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动
@@ -3483,16 +3443,33 @@
   <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
 </noscript>
 
+
 <script>
 (function () {
+  function normalizeClipboard(s) {
+    return (s || '').replace(/\u00a0/g, ' ');
+  }
+
+  /** When innerText is empty, treat <br> as newlines (matches Hexo fenced + line_number HTML). */
+  function plainTextFromElement(el) {
+    if (!el) return '';
+    var t = el.innerText;
+    if (t != null && t !== '') return normalizeClipboard(t);
+    var clone = el.cloneNode(true);
+    clone.querySelectorAll('br').forEach(function (br) {
+      br.parentNode.replaceChild(document.createTextNode('\n'), br);
+    });
+    return normalizeClipboard(clone.textContent || '');
+  }
+
   function extractFromFigure(fig) {
     if (!fig) return '';
     var cell = fig.querySelector('td.code') || fig.querySelector('.code');
-    var block = cell || fig.querySelector('code');
-    if (!block) return '';
-    var pre = block.querySelector('pre');
-    var source = pre || block;
-    return (source.textContent || '').replace(/\u00a0/g, ' ');
+    if (cell) return plainTextFromElement(cell);
+    var pre = fig.querySelector('pre');
+    if (pre) return plainTextFromElement(pre);
+    var code = fig.querySelector('code');
+    return code ? plainTextFromElement(code) : '';
   }
 
   function extractForCopyBtn(btn) {
@@ -3503,7 +3480,7 @@
       var innerFig = wrap.querySelector('figure.highlight');
       if (innerFig) return extractFromFigure(innerFig);
       var preOnly = wrap.querySelector('pre');
-      if (preOnly) return (preOnly.textContent || '').replace(/\u00a0/g, ' ');
+      if (preOnly) return plainTextFromElement(preOnly);
     }
     return '';
   }

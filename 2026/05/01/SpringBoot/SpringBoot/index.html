@@ -28,7 +28,7 @@
 <meta property="og:description" content="Spring Boot 在 Spring Framework 之上提供约定优于配置的起步依赖、内嵌 Servlet 容器与生产级运维钩子，用少量配置即可跑起 Web、数据访问、消息 等能力。下文从官方文档入口、环境、创建第一个应用、主类与配置到常用延伸，按步骤写清楚；与 Spring Cloud 同栈的 BOM 与 Gradle 细节见站内 Spring Cloud Alibaba 与 Gradl">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-05-01T04:13:55.000Z">
-<meta property="article:modified_time" content="2026-05-04T14:12:00.852Z">
+<meta property="article:modified_time" content="2026-05-08T13:38:25.394Z">
 <meta property="article:author" content="miracle">
 <meta property="article:tag" content="Gradle">
 <meta property="article:tag" content="Java">
@@ -168,7 +168,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E5%AE%98%E7%BD%91%E4%B8%8E%E6%96%87%E6%A1%A3"><span class="nav-number">1.</span> <span class="nav-text">一、官网与文档</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87"><span class="nav-number">2.</span> <span class="nav-text">二、环境准备</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-JDK"><span class="nav-number">2.1.</span> <span class="nav-text">1. JDK</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-IDE%EF%BC%88%E5%8F%AF%E9%80%89%E4%BD%86%E6%8E%A8%E8%8D%90%EF%BC%89"><span class="nav-number">2.2.</span> <span class="nav-text">2. IDE（可选但推荐）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7"><span class="nav-number">2.3.</span> <span class="nav-text">3. 构建工具</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E5%88%9B%E5%BB%BA%E7%AC%AC%E4%B8%80%E4%B8%AA-Spring-Boot-%E5%BA%94%E7%94%A8"><span class="nav-number">3.</span> <span class="nav-text">三、创建第一个 Spring Boot 应用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-Spring-Initializr%EF%BC%88%E6%9C%80%E5%BF%AB%EF%BC%89"><span class="nav-number">3.1.</span> <span class="nav-text">1. Spring Initializr（最快）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-IntelliJ-IDEA-%E5%90%91%E5%AF%BC"><span class="nav-number">3.2.</span> <span class="nav-text">2. IntelliJ IDEA 向导</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E4%B8%8E%E6%89%8B%E5%86%99%E6%9E%84%E5%BB%BA%E8%84%9A%E6%9C%AC%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="nav-number">3.3.</span> <span class="nav-text">3. 与手写构建脚本的关系</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E5%B7%A5%E7%A8%8B%E9%AA%A8%E6%9E%B6%E4%B8%8E%E5%90%AF%E5%8A%A8"><span class="nav-number">4.</span> <span class="nav-text">四、工程骨架与启动</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E4%B8%BB%E7%B1%BB"><span class="nav-number">4.1.</span> <span class="nav-text">1. 主类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E9%85%8D%E7%BD%AE%EF%BC%9Aapplication-properties-%E6%88%96-application-yaml"><span class="nav-number">4.2.</span> <span class="nav-text">2. 配置：application.properties 或 application.yaml</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E8%BF%90%E8%A1%8C%E6%96%B9%E5%BC%8F"><span class="nav-number">4.3.</span> <span class="nav-text">3. 运行方式</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E5%B8%B8%E7%94%A8%E8%83%BD%E5%8A%9B%E4%B8%8E%E5%BB%B6%E4%BC%B8"><span class="nav-number">5.</span> <span class="nav-text">五、常用能力与延伸</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-Actuator-%E4%B8%8E-Profile"><span class="nav-number">5.1.</span> <span class="nav-text">1. Actuator 与 Profile</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E4%B8%8E-Spring-Cloud-%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="nav-number">5.2.</span> <span class="nav-text">2. 与 Spring Cloud 的关系</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E5%AE%B9%E5%99%A8%E5%8C%96%E4%B8%8E%E9%83%A8%E7%BD%B2"><span class="nav-number">5.3.</span> <span class="nav-text">3. 容器化与部署</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E5%B0%8F%E7%BB%93"><span class="nav-number">6.</span> <span class="nav-text">六、小结</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E5%AE%98%E7%BD%91%E4%B8%8E%E6%96%87%E6%A1%A3"><span class="nav-number">1.</span> <span class="nav-text">一、官网与文档</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87"><span class="nav-number">2.</span> <span class="nav-text">二、环境准备</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-JDK"><span class="nav-number">2.1.</span> <span class="nav-text">1. JDK</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-IDE%EF%BC%88%E5%8F%AF%E9%80%89%E4%BD%86%E6%8E%A8%E8%8D%90%EF%BC%89"><span class="nav-number">2.2.</span> <span class="nav-text">2. IDE（可选但推荐）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7"><span class="nav-number">2.3.</span> <span class="nav-text">3. 构建工具</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E5%88%9B%E5%BB%BA%E7%AC%AC%E4%B8%80%E4%B8%AA-Spring-Boot-%E5%BA%94%E7%94%A8"><span class="nav-number">3.</span> <span class="nav-text">三、创建第一个 Spring Boot 应用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-Spring-Initializr%EF%BC%88%E6%9C%80%E5%BF%AB%EF%BC%89"><span class="nav-number">3.1.</span> <span class="nav-text">1. Spring Initializr（最快）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-IntelliJ-IDEA-%E5%90%91%E5%AF%BC"><span class="nav-number">3.2.</span> <span class="nav-text">2. IntelliJ IDEA 向导</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E4%B8%8E%E6%89%8B%E5%86%99%E6%9E%84%E5%BB%BA%E8%84%9A%E6%9C%AC%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="nav-number">3.3.</span> <span class="nav-text">3. 与手写构建脚本的关系</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E5%B7%A5%E7%A8%8B%E9%AA%A8%E6%9E%B6%E4%B8%8E%E5%90%AF%E5%8A%A8"><span class="nav-number">4.</span> <span class="nav-text">四、工程骨架与启动</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E4%B8%BB%E7%B1%BB"><span class="nav-number">4.1.</span> <span class="nav-text">1. 主类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E9%85%8D%E7%BD%AE%EF%BC%9Aapplication-properties-%E6%88%96-application-yaml"><span class="nav-number">4.2.</span> <span class="nav-text">2. 配置：application.properties 或 application.yaml</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E8%BF%90%E8%A1%8C%E6%96%B9%E5%BC%8F"><span class="nav-number">4.3.</span> <span class="nav-text">3. 运行方式</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E5%B8%B8%E7%94%A8%E8%83%BD%E5%8A%9B%E4%B8%8E%E5%BB%B6%E4%BC%B8"><span class="nav-number">5.</span> <span class="nav-text">五、常用能力与延伸</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-Actuator-%E4%B8%8E-Profile"><span class="nav-number">5.1.</span> <span class="nav-text">1. Actuator 与 Profile</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Actuator%E4%BD%BF%E7%94%A8"><span class="nav-number">5.1.1.</span> <span class="nav-text">Actuator使用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#build-gradle%EF%BC%88%E6%9C%80%E5%B8%B8%E7%94%A8%EF%BC%89"><span class="nav-number">5.1.1.1.</span> <span class="nav-text">build.gradle（最常用）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Gradle-%E9%A1%B9%E7%9B%AE%E9%85%8D%E5%A5%97-YML-%E9%85%8D%E7%BD%AE"><span class="nav-number">5.1.1.2.</span> <span class="nav-text">Gradle 项目配套 YML 配置</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AE%BF%E9%97%AE%E5%9C%B0%E5%9D%80%EF%BC%88%E4%B8%8D%E5%8F%98%EF%BC%89"><span class="nav-number">5.1.1.3.</span> <span class="nav-text">访问地址（不变）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%BE%AE%E6%9C%8D%E5%8A%A1%E5%BF%85%E5%BC%80%EF%BC%88Nacos-%E5%81%A5%E5%BA%B7%E6%A3%80%E6%9F%A5%E4%BE%9D%E8%B5%96%EF%BC%89"><span class="nav-number">5.1.1.4.</span> <span class="nav-text">微服务必开（Nacos 健康检查依赖）</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E4%B8%8E-Spring-Cloud-%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="nav-number">5.2.</span> <span class="nav-text">2. 与 Spring Cloud 的关系</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E5%AE%B9%E5%99%A8%E5%8C%96%E4%B8%8E%E9%83%A8%E7%BD%B2"><span class="nav-number">5.3.</span> <span class="nav-text">3. 容器化与部署</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E5%B0%8F%E7%BB%93"><span class="nav-number">6.</span> <span class="nav-text">六、小结</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -181,7 +181,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">164</span>
+          <span class="site-state-item-count">166</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -266,7 +266,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-04 22:12:00" itemprop="dateModified" datetime="2026-05-04T22:12:00+08:00">2026-05-04</time>
+      <time title="修改时间：2026-05-08 21:38:25" itemprop="dateModified" datetime="2026-05-08T21:38:25+08:00">2026-05-08</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -285,7 +285,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>1.1k</span>
+      <span>1.2k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -310,12 +310,32 @@
 <li><strong>Spring Initializr</strong>（在线生成工程）：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://start.spring.io/">https://start.spring.io/</a>  </li>
 <li><strong>Spring Guides</strong>：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://spring.io/guides">https://spring.io/guides</a></li>
 </ul>
-<p>版本线简述：<strong>Spring Boot 3.5.x</strong> 为 <strong>3.x</strong> 长期支持线之一；<strong>Spring Boot 4.0.x</strong> 与 <strong>Spring Framework 7</strong>、<strong>Spring Cloud 2025.1.x</strong> 同世代，站内 <strong>SCA 2025.1.x</strong> 示例采用 <strong>Boot 4.0.x</strong>。新建工程前请到 <strong>Spring Boot</strong> 发行说明核对与你所选 <strong>JDK</strong>、依赖的兼容性。</p>
+<p>版本线简述：</p>
+<table>
+<thead>
+<tr>
+<th>条目</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Spring Boot 3.5.x</strong></td>
+<td><strong>3.x</strong> 长期支持线之一</td>
+</tr>
+<tr>
+<td><strong>Spring Boot 4.0.x</strong></td>
+<td>与 <strong>Spring Framework 7</strong>、<strong>Spring Cloud 2025.1.x</strong> 同世代</td>
+</tr>
+<tr>
+<td>站内 <strong>SCA 2025.1.x</strong> 示例</td>
+<td>采用 <strong>Spring Boot 4.0.x</strong></td>
+</tr>
+</tbody></table>
 <hr>
 <h1 id="二、环境准备"><a href="#二、环境准备" class="headerlink" title="二、环境准备"></a>二、环境准备</h1><h2 id="1-JDK"><a href="#1-JDK" class="headerlink" title="1. JDK"></a>1. JDK</h2><p><strong>Spring Boot 3.x &#x2F; 4.x</strong> 要求 <strong>Java 17</strong> 及以上（部分组件推荐 <strong>21</strong>）。终端验证：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">java -version</span><br><span class="line">javac -version</span><br></pre></td></tr></table></figure>
 
-<h2 id="2-IDE（可选但推荐）"><a href="#2-IDE（可选但推荐）" class="headerlink" title="2. IDE（可选但推荐）"></a>2. IDE（可选但推荐）</h2><p><strong>IntelliJ IDEA</strong>、<strong>VS Code</strong>（<strong>Extension Pack for Java</strong>）、<strong>Eclipse</strong> 均可；下文以「能打开 <strong>Maven</strong> &#x2F; <strong>Gradle</strong> 工程并运行 <strong><code>main</code></strong>」为前提。</p>
+<h2 id="2-IDE（可选但推荐）"><a href="#2-IDE（可选但推荐）" class="headerlink" title="2. IDE（可选但推荐）"></a>2. IDE（可选但推荐）</h2><p><strong>IntelliJ IDEA</strong>、<strong>VS Code</strong>（<strong>Extension Pack for Java</strong>）；下文以「能打开 <strong>Maven</strong> &#x2F; <strong>Gradle</strong> 工程并运行 <strong><code>main</code></strong>」为前提。</p>
 <h2 id="3-构建工具"><a href="#3-构建工具" class="headerlink" title="3. 构建工具"></a>3. 构建工具</h2><ul>
 <li><strong>Maven</strong>：多数示例以 <strong><code>pom.xml</code></strong> 展示依赖；本机需能执行 <strong><code>mvn</code></strong>。  </li>
 <li><strong>Gradle</strong>：推荐 <strong>Kotlin DSL</strong>（<strong><code>build.gradle.kts</code></strong>）；安装、<strong>Wrapper</strong> 与国内镜像见 <strong><code>source/_posts/Java/gradle.md</code></strong>。</li>
@@ -365,6 +385,20 @@
 <li><strong>Actuator</strong>：依赖 <strong><code>spring-boot-starter-actuator</code></strong>，暴露 <strong><code>/actuator/health</code></strong> 等端点；生产务必限制暴露面并加鉴权。  </li>
 <li><strong>Profile</strong>：用 <strong><code>spring.profiles.active</code></strong> 区分 <strong><code>dev</code> &#x2F; <code>prod</code></strong>，配合 <strong><code>application-dev.yaml</code></strong> 等多文件配置。</li>
 </ul>
+<h3 id="Actuator使用"><a href="#Actuator使用" class="headerlink" title="Actuator使用"></a>Actuator使用</h3><p>没问题，我直接给你 <strong>Gradle 版本</strong> 的 Actuator 依赖 + 完整可复制配置，和 Maven 效果完全一样。</p>
+<h4 id="build-gradle（最常用）"><a href="#build-gradle（最常用）" class="headerlink" title="build.gradle（最常用）"></a>build.gradle（最常用）</h4><figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">dependencies &#123;</span><br><span class="line">    <span class="comment">// SpringBoot Actuator 监控</span></span><br><span class="line">    implementation <span class="string">&#x27;org.springframework.boot:spring-boot-starter-actuator&#x27;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h4 id="Gradle-项目配套-YML-配置"><a href="#Gradle-项目配套-YML-配置" class="headerlink" title="Gradle 项目配套 YML 配置"></a>Gradle 项目配套 YML 配置</h4><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">management:</span></span><br><span class="line">  <span class="attr">endpoints:</span></span><br><span class="line">    <span class="attr">web:</span></span><br><span class="line">      <span class="attr">exposure:</span></span><br><span class="line">        <span class="attr">include:</span> <span class="string">health,info,beans,env,metrics</span>  <span class="comment"># 暴露需要的端点</span></span><br><span class="line">  <span class="attr">endpoint:</span></span><br><span class="line">    <span class="attr">health:</span></span><br><span class="line">      <span class="attr">show-details:</span> <span class="string">always</span>  <span class="comment"># 显示健康检查详情</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h4 id="访问地址（不变）"><a href="#访问地址（不变）" class="headerlink" title="访问地址（不变）"></a>访问地址（不变）</h4><p>启动后访问：</p>
+<ul>
+<li>健康检查：<code>http://localhost:端口/actuator/health</code></li>
+<li>所有端点：<code>http://localhost:端口/actuator</code></li>
+</ul>
+<hr>
+<h4 id="微服务必开（Nacos-健康检查依赖）"><a href="#微服务必开（Nacos-健康检查依赖）" class="headerlink" title="微服务必开（Nacos 健康检查依赖）"></a>微服务必开（Nacos 健康检查依赖）</h4><p>只要引入这个依赖，Nacos 就会自动检测服务健康状态，<strong>不用额外配置</strong>。</p>
 <h2 id="2-与-Spring-Cloud-的关系"><a href="#2-与-Spring-Cloud-的关系" class="headerlink" title="2. 与 Spring Cloud 的关系"></a>2. 与 Spring Cloud 的关系</h2><p><strong>Spring Boot</strong> 解决「单应用如何快速装配与运行」；<strong>Spring Cloud</strong> 在 <strong>Boot</strong> 之上提供注册发现、配置中心、网关等<strong>分布式系统</strong>能力。微服务路线在掌握 <strong>Boot</strong> 后，可按 <a href="/2026/05/01/SpringCloudAlibaba/">Spring Cloud Alibaba 与 Gradle 从零搭建</a> 引入 <strong>BOM</strong> 与 <strong>Nacos</strong> 等组件。</p>
 <h2 id="3-容器化与部署"><a href="#3-容器化与部署" class="headerlink" title="3. 容器化与部署"></a>3. 容器化与部署</h2><p><strong>Boot</strong> 应用通常打包为 <strong><code>jar</code></strong>（<strong><code>java -jar</code></strong> 运行）或制作为容器镜像；与 <strong>Docker</strong>、<strong>Kubernetes</strong> 相关的端口、探针、<strong>JVM</strong> 参数需与 <strong><code>server.port</code></strong>、<strong>Actuator</strong> 路径一并规划，详见 <strong>Spring Boot</strong> 文档中 <strong>Deployment</strong>、<strong>Container Images</strong> 等章节。</p>
 <hr>
@@ -458,13 +492,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">150k</span>
+    <span title="站点总字数">152k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">8:19</span>
+    <span title="站点阅读时长">8:26</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动
@@ -489,16 +523,33 @@
   <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
 </noscript>
 
+
 <script>
 (function () {
+  function normalizeClipboard(s) {
+    return (s || '').replace(/\u00a0/g, ' ');
+  }
+
+  /** When innerText is empty, treat <br> as newlines (matches Hexo fenced + line_number HTML). */
+  function plainTextFromElement(el) {
+    if (!el) return '';
+    var t = el.innerText;
+    if (t != null && t !== '') return normalizeClipboard(t);
+    var clone = el.cloneNode(true);
+    clone.querySelectorAll('br').forEach(function (br) {
+      br.parentNode.replaceChild(document.createTextNode('\n'), br);
+    });
+    return normalizeClipboard(clone.textContent || '');
+  }
+
   function extractFromFigure(fig) {
     if (!fig) return '';
     var cell = fig.querySelector('td.code') || fig.querySelector('.code');
-    var block = cell || fig.querySelector('code');
-    if (!block) return '';
-    var pre = block.querySelector('pre');
-    var source = pre || block;
-    return (source.textContent || '').replace(/\u00a0/g, ' ');
+    if (cell) return plainTextFromElement(cell);
+    var pre = fig.querySelector('pre');
+    if (pre) return plainTextFromElement(pre);
+    var code = fig.querySelector('code');
+    return code ? plainTextFromElement(code) : '';
   }
 
   function extractForCopyBtn(btn) {
@@ -509,7 +560,7 @@
       var innerFig = wrap.querySelector('figure.highlight');
       if (innerFig) return extractFromFigure(innerFig);
       var preOnly = wrap.querySelector('pre');
-      if (preOnly) return (preOnly.textContent || '').replace(/\u00a0/g, ' ');
+      if (preOnly) return plainTextFromElement(preOnly);
     }
     return '';
   }

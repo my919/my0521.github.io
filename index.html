@@ -172,7 +172,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">164</span>
+          <span class="site-state-item-count">166</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -211,6 +211,320 @@
     </div>
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/08/SpringBoot/SpringBoot%E5%A4%9A%E7%8E%AF%E5%A2%83%E5%8D%8F%E5%90%8C/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/05/08/SpringBoot/SpringBoot%E5%A4%9A%E7%8E%AF%E5%A2%83%E5%8D%8F%E5%90%8C/" class="post-title-link" itemprop="url">SpringBoot多环境协同</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2026-05-08 21:42:43 / 修改时间：21:45:10" itemprop="dateCreated datePublished" datetime="2026-05-08T21:42:43+08:00">2026-05-08</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/SpringBoot/" itemprop="url" rel="index"><span itemprop="name">SpringBoot</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>465</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>2 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p><strong>Profile + application-share.yml（公共配置） + 多环境配置（dev&#x2F;test&#x2F;prod）并存方案</strong></p>
+<hr>
+<h1 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">共享配置：application-share.yml→ 所有环境共用</span><br><span class="line">环境配置：application-dev.yml  → 开发环境</span><br><span class="line">环境配置：application-test.yml → 测试环境</span><br><span class="line">环境配置：application-prod.yml → 生产环境</span><br></pre></td></tr></table></figure>
+<p><strong>最终效果：</strong></p>
+<ol>
+<li>项目启动先加载 <strong>application-share.yml（公共）</strong></li>
+<li>再加载 <strong>当前环境配置（dev&#x2F;test&#x2F;prod）</strong></li>
+<li>环境配置 &gt; 共享配置（相同key覆盖）</li>
+<li>Nacos &#x2F; 本地文件 都支持这种结构</li>
+</ol>
+<hr>
+<h1 id="二、SpringBoot-激活多环境方式"><a href="#二、SpringBoot-激活多环境方式" class="headerlink" title="二、SpringBoot 激活多环境方式"></a>二、SpringBoot 激活多环境方式</h1><h2 id="1-application-yml-主配置"><a href="#1-application-yml-主配置" class="headerlink" title="1. application.yml 主配置"></a>1. application.yml 主配置</h2><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">profiles:</span></span><br><span class="line">    <span class="comment"># 激活环境 + 加载共享配置</span></span><br><span class="line">    <span class="attr">include:</span> <span class="string">share</span></span><br><span class="line">    <span class="attr">active:</span> <span class="string">dev</span>  <span class="comment"># dev / test / prod</span></span><br></pre></td></tr></table></figure>
+<p>✅ <strong>作用：</strong></p>
+<ul>
+<li><code>active: dev</code>：激活 <code>application-dev.yml</code></li>
+<li><code>include: share</code>：<strong>额外加载共享配置 <code>application-share.yml</code></strong></li>
+</ul>
+<p>这就是你要的 <strong>共享文件 + 环境文件并存</strong></p>
+<hr>
+<h1 id="三、文件结构（标准规范）"><a href="#三、文件结构（标准规范）" class="headerlink" title="三、文件结构（标准规范）"></a>三、文件结构（标准规范）</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">resources/</span><br><span class="line"> ├── application.yml          # 主配置（只写激活环境）</span><br><span class="line"> ├── application-share.yml     # 公共共享配置</span><br><span class="line"> ├── application-dev.yml       # 开发环境</span><br><span class="line"> ├── application-test.yml      # 测试环境</span><br><span class="line"> ├── application-prod.yml      # 生产环境</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="四、加载优先级（从低-→-高）"><a href="#四、加载优先级（从低-→-高）" class="headerlink" title="四、加载优先级（从低 → 高）"></a>四、加载优先级（从低 → 高）</h1><ol>
+<li><code>application.yml</code>（最低）</li>
+<li><code>application-share.yml</code>（公共）</li>
+<li><code>application-dev.yml</code>（当前环境，最高）</li>
+</ol>
+<p><strong>相同配置项：环境配置会覆盖共享配置！</strong><br>非常适合：</p>
+<ul>
+<li>公共：端口、前缀、MyBatis、框架配置</li>
+<li>环境：数据库、Redis、Nacos地址</li>
+</ul>
+<hr>
+<h1 id="五、如果是-Nacos-配置中心（你一定会用到）"><a href="#五、如果是-Nacos-配置中心（你一定会用到）" class="headerlink" title="五、如果是 Nacos 配置中心（你一定会用到）"></a>五、如果是 Nacos 配置中心（你一定会用到）</h1><h2 id="1-共享配置：share-yaml"><a href="#1-共享配置：share-yaml" class="headerlink" title="1. 共享配置：share.yaml"></a>1. 共享配置：share.yaml</h2><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 公共配置：所有环境共用</span></span><br><span class="line"><span class="attr">mybatis:</span></span><br><span class="line">  <span class="attr">mapper-locations:</span> <span class="string">classpath:mapper/*.xml</span></span><br><span class="line">  <span class="attr">configuration:</span></span><br><span class="line">    <span class="attr">map-underscore-to-camel-case:</span> <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="2-环境配置：service-demo-dev-yaml"><a href="#2-环境配置：service-demo-dev-yaml" class="headerlink" title="2. 环境配置：service-demo-dev.yaml"></a>2. 环境配置：service-demo-dev.yaml</h2><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 只写环境相关</span></span><br><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">datasource:</span></span><br><span class="line">    <span class="attr">url:</span> <span class="string">jdbc:mysql://dev-ip:3306/db</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="3-bootstrap-yml-加载共享-环境配置"><a href="#3-bootstrap-yml-加载共享-环境配置" class="headerlink" title="3. bootstrap.yml 加载共享 + 环境配置"></a>3. bootstrap.yml 加载共享 + 环境配置</h2><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">application:</span></span><br><span class="line">    <span class="attr">name:</span> <span class="string">service-demo</span></span><br><span class="line">  <span class="attr">cloud:</span></span><br><span class="line">    <span class="attr">nacos:</span></span><br><span class="line">      <span class="attr">config:</span></span><br><span class="line">        <span class="attr">server-addr:</span> <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span><span class="string">:8848</span></span><br><span class="line">        <span class="attr">file-extension:</span> <span class="string">yaml</span></span><br><span class="line">        <span class="comment"># 加载共享配置（share.yaml）</span></span><br><span class="line">        <span class="string">shared-configs[0]:</span></span><br><span class="line">          <span class="attr">data-id:</span> <span class="string">share.yaml</span></span><br><span class="line">          <span class="attr">refresh:</span> <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+<p>✅ Nacos 会自动加载：</p>
+<ol>
+<li><code>share.yaml</code>（公共）</li>
+<li><code>service-demo-dev.yaml</code>（环境）</li>
+</ol>
+<hr>
+<h1 id="六、最核心一句话（必背）"><a href="#六、最核心一句话（必背）" class="headerlink" title="六、最核心一句话（必背）"></a>六、最核心一句话（必背）</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">spring.profiles.include: share</span><br></pre></td></tr></table></figure>
+<p>这一行就是让 <strong>共享配置 share.yml</strong> 和 <strong>当前环境配置 dev&#x2F;test&#x2F;prod.yml</strong> 同时生效的关键。</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/08/Java/Java%E6%9C%AC%E5%9C%B0%E6%8C%81%E4%B9%85%E5%8C%96%E9%98%9F%E5%88%97/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/05/08/Java/Java%E6%9C%AC%E5%9C%B0%E6%8C%81%E4%B9%85%E5%8C%96%E9%98%9F%E5%88%97/" class="post-title-link" itemprop="url">Java本地持久化队列</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2026-05-08 21:03:28 / 修改时间：21:54:32" itemprop="dateCreated datePublished" datetime="2026-05-08T21:03:28+08:00">2026-05-08</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>1.3k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>4 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p><strong>最适合 Java 本地持久化队列</strong>的<strong>顶级开源库</strong>，全部是<strong>单机、磁盘持久化、可序列化、无中间件、生产可用</strong>，以下是<strong>最优选型 + 最简 Demo</strong>。</p>
+<h1 id="🔥-最佳推荐（3-个真正的本地持久化队列）"><a href="#🔥-最佳推荐（3-个真正的本地持久化队列）" class="headerlink" title="🔥 最佳推荐（3 个真正的本地持久化队列）"></a>🔥 最佳推荐（3 个真正的本地持久化队列）</h1><p>按<strong>易用性、性能、成熟度</strong>排序：</p>
+<h2 id="1-Chronicle-Queue（企业级首选，零依赖、高性能）"><a href="#1-Chronicle-Queue（企业级首选，零依赖、高性能）" class="headerlink" title="1. Chronicle Queue（企业级首选，零依赖、高性能）"></a>1. Chronicle Queue（企业级首选，零依赖、高性能）</h2><p><strong>最适合你：本地持久化 + 可序列化 + 超高吞吐 + 重启不丢</strong></p>
+<ul>
+<li>纯 Java 本地队列</li>
+<li><strong>磁盘持久化（MMAP）</strong></li>
+<li>支持任意对象序列化</li>
+<li>无锁、低延迟、生产级稳定</li>
+<li>支持多线程读写</li>
+<li>重启自动恢复数据</li>
+</ul>
+<p><strong>Maven 依赖</strong></p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">dependencies &#123;</span><br><span class="line">    implementation <span class="string">&#x27;net.openhft:chronicle-queue:5.25ea13&#x27;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>最简 Demo（入队 + 出队 + 持久化）</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> net.openhft.chronicle.queue.ChronicleQueue;</span><br><span class="line"><span class="keyword">import</span> net.openhft.chronicle.queue.ExcerptAppender;</span><br><span class="line"><span class="keyword">import</span> net.openhft.chronicle.queue.ExcerptTailer;</span><br><span class="line"><span class="keyword">import</span> net.openhft.chronicle.wire.DocumentContext;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 本地持久化队列</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ChronicleQueueDemo</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="comment">// 数据会持久化到 ./queue-data 目录</span></span><br><span class="line">        <span class="keyword">try</span> (<span class="type">ChronicleQueue</span> <span class="variable">queue</span> <span class="operator">=</span> ChronicleQueue.single(<span class="string">&quot;./queue-data&quot;</span>)) &#123;</span><br><span class="line">            </span><br><span class="line">            <span class="comment">// ========== 1. 入队（持久化到磁盘） ==========</span></span><br><span class="line">            <span class="type">ExcerptAppender</span> <span class="variable">appender</span> <span class="operator">=</span> queue.acquireAppender();</span><br><span class="line">            <span class="keyword">try</span> (<span class="type">DocumentContext</span> <span class="variable">ctx</span> <span class="operator">=</span> appender.writingDocument()) &#123;</span><br><span class="line">                ctx.wire().write(<span class="string">&quot;task&quot;</span>).text(<span class="string">&quot;我的本地持久化任务&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// ========== 2. 出队（读取磁盘数据） ==========</span></span><br><span class="line">            <span class="type">ExcerptTailer</span> <span class="variable">tailer</span> <span class="operator">=</span> queue.createTailer();</span><br><span class="line">            <span class="keyword">try</span> (<span class="type">DocumentContext</span> <span class="variable">ctx</span> <span class="operator">=</span> tailer.readingDocument()) &#123;</span><br><span class="line">                <span class="type">String</span> <span class="variable">task</span> <span class="operator">=</span> ctx.wire().read(<span class="string">&quot;task&quot;</span>).text();</span><br><span class="line">                System.out.println(<span class="string">&quot;出队任务：&quot;</span> + task);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>特点：</strong></p>
+<ul>
+<li>关机、重启、kill 进程 <strong>都不丢数据</strong></li>
+<li>支持超大队列（GB 级）</li>
+<li>序列化自动完成</li>
+<li>金融系统广泛使用</li>
+</ul>
+<hr>
+<h2 id="2-LMDBQueue（极轻量、嵌入式、超快）"><a href="#2-LMDBQueue（极轻量、嵌入式、超快）" class="headerlink" title="2. LMDBQueue（极轻量、嵌入式、超快）"></a>2. LMDBQueue（极轻量、嵌入式、超快）</h2><p><strong>极简本地持久化队列</strong></p>
+<ul>
+<li>基于 LMDB 嵌入式数据库</li>
+<li>极快、极小、稳定</li>
+<li>支持 key&#x2F;value 持久化</li>
+<li>天然支持序列化</li>
+</ul>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">dependencies &#123;</span><br><span class="line">    implementation <span class="string">&#x27;org.lmdbjava:lmdbjava:0.8.3&#x27;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="3-MapDB（嵌入式-Java-数据库，自带持久化队列）"><a href="#3-MapDB（嵌入式-Java-数据库，自带持久化队列）" class="headerlink" title="3. MapDB（嵌入式 Java 数据库，自带持久化队列）"></a>3. MapDB（嵌入式 Java 数据库，自带持久化队列）</h2><p><strong>最简单、最容易上手</strong></p>
+<ul>
+<li>一行代码创建持久化队列</li>
+<li>支持序列化</li>
+<li>纯 Java</li>
+<li>适合小项目、后台任务</li>
+</ul>
+<p><strong>Maven</strong></p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">dependencies &#123;</span><br><span class="line">    implementation <span class="string">&#x27;org.mapdb:mapdb:3.0.8&#x27;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>Demo（超级简单）</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.mapdb.DB;</span><br><span class="line"><span class="keyword">import</span> org.mapdb.DBMaker;</span><br><span class="line"><span class="keyword">import</span> java.util.Queue;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 本地持久化队列</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MapDBQueueDemo</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="comment">// 持久化到文件 queue.db</span></span><br><span class="line">        <span class="type">DB</span> <span class="variable">db</span> <span class="operator">=</span> DBMaker.fileDB(<span class="string">&quot;queue.db&quot;</span>).make();</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 获取持久化队列</span></span><br><span class="line">        Queue&lt;String&gt; queue = db.stack(<span class="string">&quot;taskQueue&quot;</span>).createOrOpen();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 入队（会落盘）</span></span><br><span class="line">        queue.add(<span class="string">&quot;用户注册任务&quot;</span>);</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 出队</span></span><br><span class="line">        <span class="type">String</span> <span class="variable">task</span> <span class="operator">=</span> queue.poll();</span><br><span class="line">        System.out.println(task);</span><br><span class="line"></span><br><span class="line">        db.close();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>优点：5 分钟集成</strong></p>
+<hr>
+<h1 id="Java-本地持久化队列工具类（基于-MapDB）"><a href="#Java-本地持久化队列工具类（基于-MapDB）" class="headerlink" title="Java 本地持久化队列工具类（基于 MapDB）"></a>Java 本地持久化队列工具类（基于 MapDB）</h1><p>特点：</p>
+<ul>
+<li><strong>纯本地磁盘持久化</strong>，重启不丢任务</li>
+<li><strong>自动序列化任意对象</strong></li>
+<li>线程安全、开箱即用</li>
+<li>Gradle 依赖、工具类封装好，直接复制就能用</li>
+<li>支持入队、出队、清空、获取队列大小</li>
+</ul>
+<h2 id="一、Gradle-依赖"><a href="#一、Gradle-依赖" class="headerlink" title="一、Gradle 依赖"></a>一、Gradle 依赖</h2><figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// build.gradle</span></span><br><span class="line">dependencies &#123;</span><br><span class="line">    implementation <span class="string">&#x27;org.mapdb:mapdb:3.0.8&#x27;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="二、可序列化任务基类"><a href="#二、可序列化任务基类" class="headerlink" title="二、可序列化任务基类"></a>二、可序列化任务基类</h2><p>所有自定义任务<strong>直接继承</strong>即可，不用额外配置：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.io.Serializable;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 本地队列可序列化任务基类</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">class</span> <span class="title class_">BaseTask</span> <span class="keyword">implements</span> <span class="title class_">Serializable</span> &#123;</span><br><span class="line">    <span class="comment">// 任务唯一标识</span></span><br><span class="line">    <span class="keyword">public</span> String taskId;</span><br><span class="line">    <span class="comment">// 任务创建时间</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">long</span> createTime;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">BaseTask</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.taskId = java.util.UUID.randomUUID().toString();</span><br><span class="line">        <span class="built_in">this</span>.createTime = System.currentTimeMillis();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="三、本地持久化队列工具类"><a href="#三、本地持久化队列工具类" class="headerlink" title="三、本地持久化队列工具类"></a>三、本地持久化队列工具类</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.mapdb.DB;</span><br><span class="line"><span class="keyword">import</span> org.mapdb.DBMaker;</span><br><span class="line"><span class="keyword">import</span> java.util.Queue;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 本地磁盘持久化队列工具类</span></span><br><span class="line"><span class="comment"> * 支持任意序列化对象、重启恢复、线程安全</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> &lt;T&gt; 任务类型（继承 BaseTask 实现 Serializable）</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">LocalPersistentQueue</span>&lt;T <span class="keyword">extends</span> <span class="title class_">BaseTask</span>&gt; &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> DB db;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Queue&lt;T&gt; queue;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 创建/打开持久化队列</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> dbFilePath 队列存储文件路径</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> queueName  队列名称</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">LocalPersistentQueue</span><span class="params">(String dbFilePath, String queueName)</span> &#123;</span><br><span class="line">        <span class="comment">// 打开/创建本地数据库文件</span></span><br><span class="line">        <span class="built_in">this</span>.db = DBMaker</span><br><span class="line">                .fileDB(dbFilePath)</span><br><span class="line">                .fileMmapEnable()      <span class="comment">// 内存映射，高性能</span></span><br><span class="line">                .transactionDisable()  <span class="comment">// 关闭事务，提升性能</span></span><br><span class="line">                .make();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 获取或创建持久化队列</span></span><br><span class="line">        <span class="built_in">this</span>.queue = db</span><br><span class="line">                .queue(queueName)</span><br><span class="line">                .createOrOpen();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 入队</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="type">boolean</span> <span class="title function_">enqueue</span><span class="params">(T task)</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (task == <span class="literal">null</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> queue.offer(task);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 出队，队列为空返回 null</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">synchronized</span> T <span class="title function_">dequeue</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> queue.poll();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 查看队首元素，不出队</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">synchronized</span> T <span class="title function_">peek</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> queue.peek();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 获取队列任务数量</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="type">int</span> <span class="title function_">size</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> queue.size();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 队列是否为空</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="type">boolean</span> <span class="title function_">isEmpty</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> queue.isEmpty();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 清空队列</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title function_">clear</span><span class="params">()</span> &#123;</span><br><span class="line">        queue.clear();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 关闭资源（程序退出时调用）</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">close</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (!db.isClosed()) &#123;</span><br><span class="line">            db.close();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="四、使用示例"><a href="#四、使用示例" class="headerlink" title="四、使用示例"></a>四、使用示例</h2><h3 id="1-自定义业务任务"><a href="#1-自定义业务任务" class="headerlink" title="1. 自定义业务任务"></a>1. 自定义业务任务</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 自定义业务任务</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">OrderTask</span> <span class="keyword">extends</span> <span class="title class_">BaseTask</span> &#123;</span><br><span class="line">    <span class="comment">// 自定义业务字段</span></span><br><span class="line">    <span class="keyword">public</span> String orderNo;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">long</span> userId;</span><br><span class="line">    <span class="keyword">public</span> String content;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">OrderTask</span><span class="params">(String orderNo, <span class="type">long</span> userId, String content)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.orderNo = orderNo;</span><br><span class="line">        <span class="built_in">this</span>.userId = userId;</span><br><span class="line">        <span class="built_in">this</span>.content = content;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-生产-消费测试"><a href="#2-生产-消费测试" class="headerlink" title="2. 生产 &amp; 消费测试"></a>2. 生产 &amp; 消费测试</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">QueueTest</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="comment">// 初始化持久化队列，数据存在 ./task-queue.db 文件</span></span><br><span class="line">        LocalPersistentQueue&lt;OrderTask&gt; taskQueue =</span><br><span class="line">                <span class="keyword">new</span> <span class="title class_">LocalPersistentQueue</span>&lt;&gt;(<span class="string">&quot;./task-queue.db&quot;</span>, <span class="string">&quot;orderQueue&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 1. 生产任务入队</span></span><br><span class="line">        taskQueue.enqueue(<span class="keyword">new</span> <span class="title class_">OrderTask</span>(<span class="string">&quot;ORD_001&quot;</span>, <span class="number">10001L</span>, <span class="string">&quot;订单超时取消&quot;</span>));</span><br><span class="line">        taskQueue.enqueue(<span class="keyword">new</span> <span class="title class_">OrderTask</span>(<span class="string">&quot;ORD_002&quot;</span>, <span class="number">10002L</span>, <span class="string">&quot;订单发货通知&quot;</span>));</span><br><span class="line"></span><br><span class="line">        System.out.println(<span class="string">&quot;当前队列任务数：&quot;</span> + taskQueue.size());</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 2. 消费任务出队</span></span><br><span class="line">        <span class="keyword">while</span> (!taskQueue.isEmpty()) &#123;</span><br><span class="line">            <span class="type">OrderTask</span> <span class="variable">task</span> <span class="operator">=</span> taskQueue.dequeue();</span><br><span class="line">            System.out.printf(<span class="string">&quot;执行任务：taskId=%s, orderNo=%s, content=%s%n&quot;</span>,</span><br><span class="line">                    task.taskId, task.orderNo, task.content);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 3. 关闭资源</span></span><br><span class="line">        taskQueue.close();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="五、核心特性"><a href="#五、核心特性" class="headerlink" title="五、核心特性"></a>五、核心特性</h2><ol>
+<li><strong>重启不丢数据</strong><br>程序停止、重启后，重新 new 相同路径和队列名，自动加载历史任务。</li>
+<li><strong>自动序列化</strong><br>只要继承 <code>BaseTask</code>（实现 <code>Serializable</code>），任意业务对象直接入队。</li>
+<li><strong>线程安全</strong><br>方法加 <code>synchronized</code>，支持多线程生产、多线程消费。</li>
+<li><strong>轻量无中间件</strong><br>纯本地文件存储，不需要 Redis&#x2F;MQ。</li>
+</ol>
+<h2 id="六、使用注意"><a href="#六、使用注意" class="headerlink" title="六、使用注意"></a>六、使用注意</h2><ol>
+<li>任务类<strong>所有字段必须可序列化</strong>，不要包含非序列化对象；</li>
+<li>程序优雅退出时务必调用 <code>close()</code>；</li>
+<li>不要多个进程同时打开同一个 db 文件，会锁文件报错。</li>
+</ol>
+<hr>
+<h1 id="总结（"><a href="#总结（" class="headerlink" title="总结（"></a>总结（</h1><h2 id="真正的-Java-本地持久化队列-磁盘存储-重启不丢失-可序列化"><a href="#真正的-Java-本地持久化队列-磁盘存储-重启不丢失-可序列化" class="headerlink" title="真正的 Java 本地持久化队列 &#x3D; 磁盘存储 + 重启不丢失 + 可序列化"></a>真正的 Java 本地持久化队列 &#x3D; 磁盘存储 + 重启不丢失 + 可序列化</h2><p><strong>最强成熟方案：Chronicle Queue</strong><br><strong>最简单方案：MapDB</strong></p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -1444,324 +1758,6 @@
 
 
 
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/03/Redis/Geospatial%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E3%80%81%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%E5%8F%8A%E6%A1%88%E4%BE%8B/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="miracle">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="my">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | my">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/05/03/Redis/Geospatial%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E3%80%81%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%E5%8F%8A%E6%A1%88%E4%BE%8B/" class="post-title-link" itemprop="url">Redis Geospatial 数据类型、应用场景及案例</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-      
-
-      <time title="创建时间：2026-05-03 17:32:00 / 修改时间：17:42:49" itemprop="dateCreated datePublished" datetime="2026-05-03T17:32:00+08:00">2026-05-03</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Redis/" itemprop="url" rel="index"><span itemprop="name">Redis</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>411</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>1 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p><strong>Redis 3.2+</strong> 提供 <strong>GEO</strong> 相关命令：底层用 <strong>Sorted Set</strong> 存储<strong>经编码的坐标</strong>，对外提供<strong>距离计算、半径查询、哈希</strong>等能力。适合「<strong>附近的人 &#x2F; 门店</strong>」等 <strong>LBS</strong>。</p>
-<hr>
-<h1 id="一、Geospatial-是什么"><a href="#一、Geospatial-是什么" class="headerlink" title="一、Geospatial 是什么"></a>一、Geospatial 是什么</h1><ol>
-<li>数据仍落在 <strong>ZSet</strong> 上：<strong><code>TYPE key</code></strong> 一般为 <strong><code>zset</code></strong>；<strong>member</strong> 为地点 <strong>ID</strong>，<strong>score</strong> 为 <strong>Geohash 编码</strong>（使用者通常只调 <strong>GEO</strong> 命令）。  </li>
-<li>坐标使用<strong>经度、纬度</strong>（<strong><code>GEOADD</code></strong> 参数顺序为 <strong><code>lon lat</code></strong>，勿写反）。  </li>
-<li>地球模型为<strong>球面</strong>近似，极高精度场景需自行评估误差。</li>
-</ol>
-<hr>
-<h1 id="二、常用命令"><a href="#二、常用命令" class="headerlink" title="二、常用命令"></a>二、常用命令</h1><table>
-<thead>
-<tr>
-<th>命令</th>
-<th>作用</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong><code>GEOADD key lon lat member</code></strong></td>
-<td>添加或更新坐标</td>
-</tr>
-<tr>
-<td><strong><code>GEODIST key m1 m2 [单位]</code></strong></td>
-<td>两点距离；单位 <strong><code>m</code> &#x2F; <code>km</code> &#x2F; <code>ft</code> &#x2F; <code>mi</code></strong></td>
-</tr>
-<tr>
-<td><strong><code>GEORADIUS</code> &#x2F; <code>GEORADIUSBYMEMBER</code></strong></td>
-<td>以坐标点 &#x2F; 已知成员为中心，半径内成员（新版本有 <strong><code>GEOSEARCH</code></strong>，以文档为准）</td>
-</tr>
-<tr>
-<td><strong><code>GEOPOS</code> &#x2F; <code>GEOHASH</code></strong></td>
-<td>取坐标 &#x2F; <strong>Geohash</strong> 字符串</td>
-</tr>
-</tbody></table>
-<hr>
-<h1 id="三、典型应用场景"><a href="#三、典型应用场景" class="headerlink" title="三、典型应用场景"></a>三、典型应用场景</h1><ol>
-<li><strong>附近门店</strong>：<strong><code>GEOADD shops …</code></strong>，用户定位后 <strong><code>GEORADIUS</code></strong>。  </li>
-<li><strong>配送范围校验</strong>：<strong><code>GEODIST</code></strong> 与阈值比较。  </li>
-<li><strong>与外部地图</strong>：<strong>Redis</strong> 做<strong>粗筛</strong>，精确路径导航交给地图 <strong>API</strong>。</li>
-</ol>
-<hr>
-<h1 id="四、综合案例（redis-cli）"><a href="#四、综合案例（redis-cli）" class="headerlink" title="四、综合案例（redis-cli）"></a>四、综合案例（<code>redis-cli</code>）</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">redis-cli GEOADD cities:cn 121.4737 31.2304 <span class="string">&quot;Shanghai&quot;</span> 116.4074 39.9042 <span class="string">&quot;Beijing&quot;</span></span><br><span class="line">redis-cli GEODIST cities:cn Shanghai Beijing km</span><br><span class="line">redis-cli GEORADIUS cities:cn 120.0 31.0 300 km WITHDIST ASC</span><br><span class="line">redis-cli GEOHASH cities:cn Shanghai</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h1 id="五、注意事项"><a href="#五、注意事项" class="headerlink" title="五、注意事项"></a>五、注意事项</h1><ol>
-<li><strong>经度纬度顺序</strong>：<strong><code>lon</code> 在前 <code>lat</code> 在后</strong>。  </li>
-<li><strong>跨版本 API</strong>：<strong>Redis 6.2+</strong> 引入 <strong><code>GEOSEARCH</code></strong> 等，生产以<strong>当前版本文档</strong>为准。  </li>
-<li><strong>数据量</strong>：全国级 <strong>POI</strong> 全进一个 <strong>key</strong> 可能过大，可按<strong>城市分片</strong>多个 <strong>GEO key</strong>。</li>
-</ol>
-<hr>
-<h1 id="六、延伸阅读"><a href="#六、延伸阅读" class="headerlink" title="六、延伸阅读"></a>六、延伸阅读</h1><table>
-<thead>
-<tr>
-<th>文档</th>
-<th>内容</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong><code>ZSet数据类型、应用场景及案例.md</code></strong></td>
-<td><strong>score</strong> 排序与排行榜（非 <strong>GEO</strong> 语义时直接用 <strong>ZSet</strong>）</td>
-</tr>
-<tr>
-<td><strong><code>Redis-Docker.md</code></strong></td>
-<td>端口与密码</td>
-</tr>
-</tbody></table>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/03/Redis/Bitmap%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E3%80%81%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%E5%8F%8A%E6%A1%88%E4%BE%8B/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="miracle">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="my">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | my">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/05/03/Redis/Bitmap%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E3%80%81%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%E5%8F%8A%E6%A1%88%E4%BE%8B/" class="post-title-link" itemprop="url">Redis Bitmap 数据类型、应用场景及案例</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-      
-
-      <time title="创建时间：2026-05-03 17:31:37 / 修改时间：17:42:40" itemprop="dateCreated datePublished" datetime="2026-05-03T17:31:37+08:00">2026-05-03</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Redis/" itemprop="url" rel="index"><span itemprop="name">Redis</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>474</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>2 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p><strong>Bitmap</strong> 不是独立「类型名」出现在 <strong><code>TYPE</code></strong> 里：底层仍是 <strong>String</strong>，通过 <strong><code>SETBIT</code> &#x2F; <code>GETBIT</code></strong> 把值当作<strong>位数组</strong>操作（偏移上限很大，实际受配置 <strong><code>proto-max-bulk-len</code></strong> 与内存约束）。适合<strong>签到、日活标记、布隆过滤器的底层</strong>等。</p>
-<hr>
-<h1 id="一、Bitmap-是什么"><a href="#一、Bitmap-是什么" class="headerlink" title="一、Bitmap 是什么"></a>一、Bitmap 是什么</h1><ol>
-<li>按<strong>位偏移</strong>读写 <strong>0&#x2F;1</strong>，可 <strong><code>BITCOUNT</code></strong> 统计 <strong>1</strong> 的个数，<strong><code>BITOP AND/OR/XOR/NOT</code></strong> 做位运算。  </li>
-<li><strong>省空间</strong>：大量布尔标记时比「每个用户一个 <strong>String key</strong>」更紧凑（仍要算总内存）。  </li>
-<li><strong>offset</strong> 从 <strong>0</strong> 开始；未设置位视为 <strong>0</strong>。</li>
-</ol>
-<hr>
-<h1 id="二、常用命令"><a href="#二、常用命令" class="headerlink" title="二、常用命令"></a>二、常用命令</h1><table>
-<thead>
-<tr>
-<th>命令</th>
-<th>作用</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong><code>SETBIT key offset value</code></strong></td>
-<td><strong>value</strong> 为 <strong>0 或 1</strong></td>
-</tr>
-<tr>
-<td><strong><code>GETBIT key offset</code></strong></td>
-<td>读某一位</td>
-</tr>
-<tr>
-<td><strong><code>BITCOUNT key [start end]</code></strong></td>
-<td>统计 <strong>1</strong> 的个数（字节区间可选）</td>
-</tr>
-<tr>
-<td><strong><code>BITOP operation destkey key [key ...]</code></strong></td>
-<td>多 <strong>key</strong> 位运算写入 <strong>dest</strong></td>
-</tr>
-<tr>
-<td><strong><code>BITPOS</code></strong></td>
-<td>找第一个 <strong>0&#x2F;1</strong> 的位置</td>
-</tr>
-</tbody></table>
-<hr>
-<h1 id="三、典型应用场景"><a href="#三、典型应用场景" class="headerlink" title="三、典型应用场景"></a>三、典型应用场景</h1><ol>
-<li><strong>签到</strong>：<strong><code>sign:2026:05:user:1001</code></strong> 用日期映射 <strong>offset</strong>（需统一<strong>映射规则</strong>防冲突）。  </li>
-<li><strong>日活标记</strong>：<strong><code>dau:2026-05-03</code></strong> 下 <strong>offset &#x3D; 用户整型 ID</strong>（<strong>ID 空间稀疏</strong>时浪费内存，要评估）。  </li>
-<li><strong>与 HyperLogLog</strong>：<strong>Bitmap</strong> 偏「<strong>谁来了</strong>」的<strong>位图</strong>；<strong>UV 近似</strong>可用 <strong>HLL</strong>。</li>
-</ol>
-<hr>
-<h1 id="四、综合案例（redis-cli）"><a href="#四、综合案例（redis-cli）" class="headerlink" title="四、综合案例（redis-cli）"></a>四、综合案例（<code>redis-cli</code>）</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">redis-cli SETBIT sign:user:1 0 1</span><br><span class="line">redis-cli SETBIT sign:user:1 1 1</span><br><span class="line">redis-cli GETBIT sign:user:1 0</span><br><span class="line">redis-cli BITCOUNT sign:user:1</span><br><span class="line"></span><br><span class="line">redis-cli SETBIT bm:a 0 1</span><br><span class="line">redis-cli SETBIT bm:a 2 1</span><br><span class="line">redis-cli SETBIT bm:b 1 1</span><br><span class="line">redis-cli BITOP AND bm:and bm:a bm:b</span><br><span class="line">redis-cli GET bm:and</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h1 id="五、注意事项"><a href="#五、注意事项" class="headerlink" title="五、注意事项"></a>五、注意事项</h1><ol>
-<li><strong>稀疏 ID</strong>：用户 <strong>ID</strong> 为 <strong>十亿级</strong> 时，<strong><code>SETBIT dau 1000000000 1</code></strong> 会促使<strong>底层分配很长空间</strong>，可能<strong>极度浪费</strong>；需<strong>分桶</strong>（按用户段拆 <strong>key</strong>）或换结构。  </li>
-<li><strong>TTL</strong>：位图也是 <strong>String</strong>，可 <strong><code>EXPIRE</code></strong>。  </li>
-<li><strong>统计口径</strong>：<strong><code>BITCOUNT</code></strong> 是「<strong>1 的个数</strong>」，业务上对应「签到天数」等要先设计好 <strong>offset</strong> 含义。</li>
-</ol>
-<hr>
-<h1 id="六、延伸阅读"><a href="#六、延伸阅读" class="headerlink" title="六、延伸阅读"></a>六、延伸阅读</h1><table>
-<thead>
-<tr>
-<th>文档</th>
-<th>内容</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong><code>HyperLogLog数据类型、应用场景及案例.md</code></strong></td>
-<td>近似 <strong>UV</strong></td>
-</tr>
-<tr>
-<td><strong><code>String数据类型、应用场景及案例.md</code></strong></td>
-<td>普通 <strong>KV</strong></td>
-</tr>
-</tbody></table>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
   <nav class="pagination">
     <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/17/">17</a><a class="extend next" rel="next" title="下一页" aria-label="下一页" href="/page/2/"><i class="fa fa-angle-right"></i></a>
   </nav>
@@ -1785,13 +1781,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">150k</span>
+    <span title="站点总字数">152k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">8:19</span>
+    <span title="站点阅读时长">8:26</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动
@@ -1816,16 +1812,33 @@
   <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
 </noscript>
 
+
 <script>
 (function () {
+  function normalizeClipboard(s) {
+    return (s || '').replace(/\u00a0/g, ' ');
+  }
+
+  /** When innerText is empty, treat <br> as newlines (matches Hexo fenced + line_number HTML). */
+  function plainTextFromElement(el) {
+    if (!el) return '';
+    var t = el.innerText;
+    if (t != null && t !== '') return normalizeClipboard(t);
+    var clone = el.cloneNode(true);
+    clone.querySelectorAll('br').forEach(function (br) {
+      br.parentNode.replaceChild(document.createTextNode('\n'), br);
+    });
+    return normalizeClipboard(clone.textContent || '');
+  }
+
   function extractFromFigure(fig) {
     if (!fig) return '';
     var cell = fig.querySelector('td.code') || fig.querySelector('.code');
-    var block = cell || fig.querySelector('code');
-    if (!block) return '';
-    var pre = block.querySelector('pre');
-    var source = pre || block;
-    return (source.textContent || '').replace(/\u00a0/g, ' ');
+    if (cell) return plainTextFromElement(cell);
+    var pre = fig.querySelector('pre');
+    if (pre) return plainTextFromElement(pre);
+    var code = fig.querySelector('code');
+    return code ? plainTextFromElement(code) : '';
   }
 
   function extractForCopyBtn(btn) {
@@ -1836,7 +1849,7 @@
       var innerFig = wrap.querySelector('figure.highlight');
       if (innerFig) return extractFromFigure(innerFig);
       var preOnly = wrap.querySelector('pre');
-      if (preOnly) return (preOnly.textContent || '').replace(/\u00a0/g, ' ');
+      if (preOnly) return plainTextFromElement(preOnly);
     }
     return '';
   }

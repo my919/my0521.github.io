@@ -172,7 +172,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">164</span>
+          <span class="site-state-item-count">166</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -211,6 +211,324 @@
     </div>
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/03/Redis/Geospatial%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E3%80%81%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%E5%8F%8A%E6%A1%88%E4%BE%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/05/03/Redis/Geospatial%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E3%80%81%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%E5%8F%8A%E6%A1%88%E4%BE%8B/" class="post-title-link" itemprop="url">Redis Geospatial 数据类型、应用场景及案例</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2026-05-03 17:32:00 / 修改时间：17:42:49" itemprop="dateCreated datePublished" datetime="2026-05-03T17:32:00+08:00">2026-05-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Redis/" itemprop="url" rel="index"><span itemprop="name">Redis</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>411</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>1 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p><strong>Redis 3.2+</strong> 提供 <strong>GEO</strong> 相关命令：底层用 <strong>Sorted Set</strong> 存储<strong>经编码的坐标</strong>，对外提供<strong>距离计算、半径查询、哈希</strong>等能力。适合「<strong>附近的人 &#x2F; 门店</strong>」等 <strong>LBS</strong>。</p>
+<hr>
+<h1 id="一、Geospatial-是什么"><a href="#一、Geospatial-是什么" class="headerlink" title="一、Geospatial 是什么"></a>一、Geospatial 是什么</h1><ol>
+<li>数据仍落在 <strong>ZSet</strong> 上：<strong><code>TYPE key</code></strong> 一般为 <strong><code>zset</code></strong>；<strong>member</strong> 为地点 <strong>ID</strong>，<strong>score</strong> 为 <strong>Geohash 编码</strong>（使用者通常只调 <strong>GEO</strong> 命令）。  </li>
+<li>坐标使用<strong>经度、纬度</strong>（<strong><code>GEOADD</code></strong> 参数顺序为 <strong><code>lon lat</code></strong>，勿写反）。  </li>
+<li>地球模型为<strong>球面</strong>近似，极高精度场景需自行评估误差。</li>
+</ol>
+<hr>
+<h1 id="二、常用命令"><a href="#二、常用命令" class="headerlink" title="二、常用命令"></a>二、常用命令</h1><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong><code>GEOADD key lon lat member</code></strong></td>
+<td>添加或更新坐标</td>
+</tr>
+<tr>
+<td><strong><code>GEODIST key m1 m2 [单位]</code></strong></td>
+<td>两点距离；单位 <strong><code>m</code> &#x2F; <code>km</code> &#x2F; <code>ft</code> &#x2F; <code>mi</code></strong></td>
+</tr>
+<tr>
+<td><strong><code>GEORADIUS</code> &#x2F; <code>GEORADIUSBYMEMBER</code></strong></td>
+<td>以坐标点 &#x2F; 已知成员为中心，半径内成员（新版本有 <strong><code>GEOSEARCH</code></strong>，以文档为准）</td>
+</tr>
+<tr>
+<td><strong><code>GEOPOS</code> &#x2F; <code>GEOHASH</code></strong></td>
+<td>取坐标 &#x2F; <strong>Geohash</strong> 字符串</td>
+</tr>
+</tbody></table>
+<hr>
+<h1 id="三、典型应用场景"><a href="#三、典型应用场景" class="headerlink" title="三、典型应用场景"></a>三、典型应用场景</h1><ol>
+<li><strong>附近门店</strong>：<strong><code>GEOADD shops …</code></strong>，用户定位后 <strong><code>GEORADIUS</code></strong>。  </li>
+<li><strong>配送范围校验</strong>：<strong><code>GEODIST</code></strong> 与阈值比较。  </li>
+<li><strong>与外部地图</strong>：<strong>Redis</strong> 做<strong>粗筛</strong>，精确路径导航交给地图 <strong>API</strong>。</li>
+</ol>
+<hr>
+<h1 id="四、综合案例（redis-cli）"><a href="#四、综合案例（redis-cli）" class="headerlink" title="四、综合案例（redis-cli）"></a>四、综合案例（<code>redis-cli</code>）</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">redis-cli GEOADD cities:cn 121.4737 31.2304 <span class="string">&quot;Shanghai&quot;</span> 116.4074 39.9042 <span class="string">&quot;Beijing&quot;</span></span><br><span class="line">redis-cli GEODIST cities:cn Shanghai Beijing km</span><br><span class="line">redis-cli GEORADIUS cities:cn 120.0 31.0 300 km WITHDIST ASC</span><br><span class="line">redis-cli GEOHASH cities:cn Shanghai</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="五、注意事项"><a href="#五、注意事项" class="headerlink" title="五、注意事项"></a>五、注意事项</h1><ol>
+<li><strong>经度纬度顺序</strong>：<strong><code>lon</code> 在前 <code>lat</code> 在后</strong>。  </li>
+<li><strong>跨版本 API</strong>：<strong>Redis 6.2+</strong> 引入 <strong><code>GEOSEARCH</code></strong> 等，生产以<strong>当前版本文档</strong>为准。  </li>
+<li><strong>数据量</strong>：全国级 <strong>POI</strong> 全进一个 <strong>key</strong> 可能过大，可按<strong>城市分片</strong>多个 <strong>GEO key</strong>。</li>
+</ol>
+<hr>
+<h1 id="六、延伸阅读"><a href="#六、延伸阅读" class="headerlink" title="六、延伸阅读"></a>六、延伸阅读</h1><table>
+<thead>
+<tr>
+<th>文档</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong><code>ZSet数据类型、应用场景及案例.md</code></strong></td>
+<td><strong>score</strong> 排序与排行榜（非 <strong>GEO</strong> 语义时直接用 <strong>ZSet</strong>）</td>
+</tr>
+<tr>
+<td><strong><code>Redis-Docker.md</code></strong></td>
+<td>端口与密码</td>
+</tr>
+</tbody></table>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/03/Redis/Bitmap%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E3%80%81%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%E5%8F%8A%E6%A1%88%E4%BE%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/05/03/Redis/Bitmap%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E3%80%81%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%E5%8F%8A%E6%A1%88%E4%BE%8B/" class="post-title-link" itemprop="url">Redis Bitmap 数据类型、应用场景及案例</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2026-05-03 17:31:37 / 修改时间：17:42:40" itemprop="dateCreated datePublished" datetime="2026-05-03T17:31:37+08:00">2026-05-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Redis/" itemprop="url" rel="index"><span itemprop="name">Redis</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>474</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>2 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p><strong>Bitmap</strong> 不是独立「类型名」出现在 <strong><code>TYPE</code></strong> 里：底层仍是 <strong>String</strong>，通过 <strong><code>SETBIT</code> &#x2F; <code>GETBIT</code></strong> 把值当作<strong>位数组</strong>操作（偏移上限很大，实际受配置 <strong><code>proto-max-bulk-len</code></strong> 与内存约束）。适合<strong>签到、日活标记、布隆过滤器的底层</strong>等。</p>
+<hr>
+<h1 id="一、Bitmap-是什么"><a href="#一、Bitmap-是什么" class="headerlink" title="一、Bitmap 是什么"></a>一、Bitmap 是什么</h1><ol>
+<li>按<strong>位偏移</strong>读写 <strong>0&#x2F;1</strong>，可 <strong><code>BITCOUNT</code></strong> 统计 <strong>1</strong> 的个数，<strong><code>BITOP AND/OR/XOR/NOT</code></strong> 做位运算。  </li>
+<li><strong>省空间</strong>：大量布尔标记时比「每个用户一个 <strong>String key</strong>」更紧凑（仍要算总内存）。  </li>
+<li><strong>offset</strong> 从 <strong>0</strong> 开始；未设置位视为 <strong>0</strong>。</li>
+</ol>
+<hr>
+<h1 id="二、常用命令"><a href="#二、常用命令" class="headerlink" title="二、常用命令"></a>二、常用命令</h1><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong><code>SETBIT key offset value</code></strong></td>
+<td><strong>value</strong> 为 <strong>0 或 1</strong></td>
+</tr>
+<tr>
+<td><strong><code>GETBIT key offset</code></strong></td>
+<td>读某一位</td>
+</tr>
+<tr>
+<td><strong><code>BITCOUNT key [start end]</code></strong></td>
+<td>统计 <strong>1</strong> 的个数（字节区间可选）</td>
+</tr>
+<tr>
+<td><strong><code>BITOP operation destkey key [key ...]</code></strong></td>
+<td>多 <strong>key</strong> 位运算写入 <strong>dest</strong></td>
+</tr>
+<tr>
+<td><strong><code>BITPOS</code></strong></td>
+<td>找第一个 <strong>0&#x2F;1</strong> 的位置</td>
+</tr>
+</tbody></table>
+<hr>
+<h1 id="三、典型应用场景"><a href="#三、典型应用场景" class="headerlink" title="三、典型应用场景"></a>三、典型应用场景</h1><ol>
+<li><strong>签到</strong>：<strong><code>sign:2026:05:user:1001</code></strong> 用日期映射 <strong>offset</strong>（需统一<strong>映射规则</strong>防冲突）。  </li>
+<li><strong>日活标记</strong>：<strong><code>dau:2026-05-03</code></strong> 下 <strong>offset &#x3D; 用户整型 ID</strong>（<strong>ID 空间稀疏</strong>时浪费内存，要评估）。  </li>
+<li><strong>与 HyperLogLog</strong>：<strong>Bitmap</strong> 偏「<strong>谁来了</strong>」的<strong>位图</strong>；<strong>UV 近似</strong>可用 <strong>HLL</strong>。</li>
+</ol>
+<hr>
+<h1 id="四、综合案例（redis-cli）"><a href="#四、综合案例（redis-cli）" class="headerlink" title="四、综合案例（redis-cli）"></a>四、综合案例（<code>redis-cli</code>）</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">redis-cli SETBIT sign:user:1 0 1</span><br><span class="line">redis-cli SETBIT sign:user:1 1 1</span><br><span class="line">redis-cli GETBIT sign:user:1 0</span><br><span class="line">redis-cli BITCOUNT sign:user:1</span><br><span class="line"></span><br><span class="line">redis-cli SETBIT bm:a 0 1</span><br><span class="line">redis-cli SETBIT bm:a 2 1</span><br><span class="line">redis-cli SETBIT bm:b 1 1</span><br><span class="line">redis-cli BITOP AND bm:and bm:a bm:b</span><br><span class="line">redis-cli GET bm:and</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="五、注意事项"><a href="#五、注意事项" class="headerlink" title="五、注意事项"></a>五、注意事项</h1><ol>
+<li><strong>稀疏 ID</strong>：用户 <strong>ID</strong> 为 <strong>十亿级</strong> 时，<strong><code>SETBIT dau 1000000000 1</code></strong> 会促使<strong>底层分配很长空间</strong>，可能<strong>极度浪费</strong>；需<strong>分桶</strong>（按用户段拆 <strong>key</strong>）或换结构。  </li>
+<li><strong>TTL</strong>：位图也是 <strong>String</strong>，可 <strong><code>EXPIRE</code></strong>。  </li>
+<li><strong>统计口径</strong>：<strong><code>BITCOUNT</code></strong> 是「<strong>1 的个数</strong>」，业务上对应「签到天数」等要先设计好 <strong>offset</strong> 含义。</li>
+</ol>
+<hr>
+<h1 id="六、延伸阅读"><a href="#六、延伸阅读" class="headerlink" title="六、延伸阅读"></a>六、延伸阅读</h1><table>
+<thead>
+<tr>
+<th>文档</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong><code>HyperLogLog数据类型、应用场景及案例.md</code></strong></td>
+<td>近似 <strong>UV</strong></td>
+</tr>
+<tr>
+<td><strong><code>String数据类型、应用场景及案例.md</code></strong></td>
+<td>普通 <strong>KV</strong></td>
+</tr>
+</tbody></table>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -1581,449 +1899,6 @@
 
 
 
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/03/PostgreSQL/PostgreSQL%E9%AB%98%E7%BA%A7%E6%9F%A5%E8%AF%A2/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="miracle">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="my">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | my">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/05/03/PostgreSQL/PostgreSQL%E9%AB%98%E7%BA%A7%E6%9F%A5%E8%AF%A2/" class="post-title-link" itemprop="url">PostgreSQL 高级查询示例</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-      
-
-      <time title="创建时间：2026-05-03 17:00:00 / 修改时间：16:39:23" itemprop="dateCreated datePublished" datetime="2026-05-03T17:00:00+08:00">2026-05-03</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/PostgreSQL/" itemprop="url" rel="index"><span itemprop="name">PostgreSQL</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>1.1k</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>4 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>面向 <strong><code>SELECT</code></strong> 与常用分析写法；示例可在任意库执行（下文用 <strong><code>pg_demo</code></strong> 模式对象，<strong><code>DROP … IF EXISTS</code></strong> 便于重复跑）。</p>
-<p>姊妹文：<strong><code>PostgreSQL.md</code></strong>（<strong>DDL</strong>）、<strong><code>PostgreSQL索引与性能优化.md</code></strong>（<strong><code>EXPLAIN</code></strong>）、<strong><code>PostgreSQL并发与MVCC入门.md</code></strong>（锁与快照）。</p>
-<hr>
-<h2 id="示例数据（一键建表）"><a href="#示例数据（一键建表）" class="headerlink" title="示例数据（一键建表）"></a>示例数据（一键建表）</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">DROP</span> <span class="keyword">TABLE</span> IF <span class="keyword">EXISTS</span> orders, emp, dept CASCADE;</span><br><span class="line"></span><br><span class="line"><span class="keyword">CREATE TABLE</span> dept (</span><br><span class="line">    id <span class="type">integer</span> <span class="keyword">PRIMARY KEY</span>,</span><br><span class="line">    name <span class="type">varchar</span>(<span class="number">50</span>) <span class="keyword">NOT NULL</span></span><br><span class="line">);</span><br><span class="line"></span><br><span class="line"><span class="keyword">CREATE TABLE</span> emp (</span><br><span class="line">    id <span class="type">bigint</span> <span class="keyword">PRIMARY KEY</span> GENERATED ALWAYS <span class="keyword">AS</span> <span class="keyword">IDENTITY</span>,</span><br><span class="line">    name <span class="type">varchar</span>(<span class="number">50</span>) <span class="keyword">NOT NULL</span>,</span><br><span class="line">    dept_id <span class="type">integer</span> <span class="keyword">REFERENCES</span> dept (id),</span><br><span class="line">    salary <span class="type">numeric</span>(<span class="number">10</span>,<span class="number">2</span>),</span><br><span class="line">    hire_date <span class="type">date</span></span><br><span class="line">);</span><br><span class="line"></span><br><span class="line"><span class="keyword">CREATE TABLE</span> orders (</span><br><span class="line">    id <span class="type">bigint</span> <span class="keyword">PRIMARY KEY</span> GENERATED ALWAYS <span class="keyword">AS</span> <span class="keyword">IDENTITY</span>,</span><br><span class="line">    emp_id <span class="type">bigint</span> <span class="keyword">NOT NULL</span> <span class="keyword">REFERENCES</span> emp (id),</span><br><span class="line">    amount <span class="type">numeric</span>(<span class="number">10</span>,<span class="number">2</span>) <span class="keyword">NOT NULL</span>,</span><br><span class="line">    order_date <span class="type">date</span> <span class="keyword">NOT NULL</span></span><br><span class="line">);</span><br><span class="line"></span><br><span class="line"><span class="keyword">INSERT INTO</span> dept (id, name) <span class="keyword">VALUES</span></span><br><span class="line">(<span class="number">1</span>, <span class="string">&#x27;研发&#x27;</span>), (<span class="number">2</span>, <span class="string">&#x27;市场&#x27;</span>), (<span class="number">3</span>, <span class="string">&#x27;财务&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">INSERT INTO</span> emp (name, dept_id, salary, hire_date) <span class="keyword">VALUES</span></span><br><span class="line">(<span class="string">&#x27;张三&#x27;</span>, <span class="number">1</span>, <span class="number">15000</span>, <span class="string">&#x27;2020-03-01&#x27;</span>),</span><br><span class="line">(<span class="string">&#x27;李四&#x27;</span>, <span class="number">1</span>, <span class="number">18000</span>, <span class="string">&#x27;2019-07-15&#x27;</span>),</span><br><span class="line">(<span class="string">&#x27;王五&#x27;</span>, <span class="number">2</span>, <span class="number">12000</span>, <span class="string">&#x27;2021-01-10&#x27;</span>),</span><br><span class="line">(<span class="string">&#x27;赵六&#x27;</span>, <span class="number">2</span>, <span class="keyword">NULL</span>, <span class="string">&#x27;2022-05-20&#x27;</span>),</span><br><span class="line">(<span class="string">&#x27;钱七&#x27;</span>, <span class="keyword">NULL</span>, <span class="number">9000</span>, <span class="string">&#x27;2023-11-01&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">INSERT INTO</span> orders (emp_id, amount, order_date) <span class="keyword">VALUES</span></span><br><span class="line">((<span class="keyword">SELECT</span> id <span class="keyword">FROM</span> emp <span class="keyword">WHERE</span> name <span class="operator">=</span> <span class="string">&#x27;张三&#x27;</span> LIMIT <span class="number">1</span>), <span class="number">100.00</span>, <span class="string">&#x27;2024-06-01&#x27;</span>),</span><br><span class="line">((<span class="keyword">SELECT</span> id <span class="keyword">FROM</span> emp <span class="keyword">WHERE</span> name <span class="operator">=</span> <span class="string">&#x27;张三&#x27;</span> LIMIT <span class="number">1</span>), <span class="number">200.50</span>, <span class="string">&#x27;2024-06-10&#x27;</span>),</span><br><span class="line">((<span class="keyword">SELECT</span> id <span class="keyword">FROM</span> emp <span class="keyword">WHERE</span> name <span class="operator">=</span> <span class="string">&#x27;李四&#x27;</span> LIMIT <span class="number">1</span>), <span class="number">300.00</span>, <span class="string">&#x27;2024-06-12&#x27;</span>),</span><br><span class="line">((<span class="keyword">SELECT</span> id <span class="keyword">FROM</span> emp <span class="keyword">WHERE</span> name <span class="operator">=</span> <span class="string">&#x27;王五&#x27;</span> LIMIT <span class="number">1</span>), <span class="number">50.00</span>, <span class="string">&#x27;2024-06-15&#x27;</span>);</span><br></pre></td></tr></table></figure>
-
-<p><strong>示例基表</strong>（<strong><code>emp.id</code></strong>、<strong><code>orders.id</code></strong> 为自增，你机器上具体数字可能与下表不同；<strong>下列「示例结果」按「姓名 &#x2F; 部门名」语义推算</strong>，与 <strong><code>EXPLAIN</code></strong> 对照时以你库中 <strong><code>id</code></strong> 为准）。</p>
-<table>
-<thead>
-<tr>
-<th>表</th>
-<th>要点</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>dept</strong></td>
-<td><strong>3</strong> 行固定</td>
-</tr>
-<tr>
-<td><strong>emp</strong></td>
-<td><strong>5</strong> 行；<strong>钱七</strong> 无 <strong><code>dept_id</code></strong>；<strong>赵六</strong> 无 <strong><code>salary</code></strong></td>
-</tr>
-<tr>
-<td><strong>orders</strong></td>
-<td><strong>张三</strong> 两行、<strong>李四</strong> 一行、<strong>王五</strong> 一行</td>
-</tr>
-</tbody></table>
-<hr>
-<h2 id="一、多表连接-JOIN"><a href="#一、多表连接-JOIN" class="headerlink" title="一、多表连接 JOIN"></a>一、多表连接 JOIN</h2><h3 id="1-INNER-JOIN"><a href="#1-INNER-JOIN" class="headerlink" title="1. INNER JOIN"></a>1. INNER JOIN</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> e.id, e.name, d.name <span class="keyword">AS</span> dept_name, e.salary</span><br><span class="line"><span class="keyword">FROM</span> emp e</span><br><span class="line"><span class="keyword">JOIN</span> dept d <span class="keyword">ON</span> e.dept_id <span class="operator">=</span> d.id;</span><br></pre></td></tr></table></figure>
-
-<p><strong>示例结果</strong>：</p>
-<table>
-<thead>
-<tr>
-<th>id（示意）</th>
-<th>name</th>
-<th>dept_name</th>
-<th>salary</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>…</td>
-<td>张三</td>
-<td>研发</td>
-<td>15000</td>
-</tr>
-<tr>
-<td>…</td>
-<td>李四</td>
-<td>研发</td>
-<td>18000</td>
-</tr>
-<tr>
-<td>…</td>
-<td>王五</td>
-<td>市场</td>
-<td>12000</td>
-</tr>
-<tr>
-<td>…</td>
-<td>赵六</td>
-<td>市场</td>
-<td>NULL</td>
-</tr>
-</tbody></table>
-<h3 id="2-LEFT-JOIN"><a href="#2-LEFT-JOIN" class="headerlink" title="2. LEFT JOIN"></a>2. LEFT JOIN</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> e.name, d.name <span class="keyword">AS</span> dept_name</span><br><span class="line"><span class="keyword">FROM</span> emp e</span><br><span class="line"><span class="keyword">LEFT</span> <span class="keyword">JOIN</span> dept d <span class="keyword">ON</span> e.dept_id <span class="operator">=</span> d.id;</span><br></pre></td></tr></table></figure>
-
-<p><strong>示例结果</strong>：多一行 <strong>钱七 &#x2F; NULL</strong>。</p>
-<h3 id="3-多表-聚合"><a href="#3-多表-聚合" class="headerlink" title="3. 多表 + 聚合"></a>3. 多表 + 聚合</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> e.name,</span><br><span class="line">       d.name <span class="keyword">AS</span> dept_name,</span><br><span class="line">       <span class="built_in">COUNT</span>(o.id) <span class="keyword">AS</span> order_cnt,</span><br><span class="line">       <span class="built_in">COALESCE</span>(<span class="built_in">SUM</span>(o.amount), <span class="number">0</span>) <span class="keyword">AS</span> total_amount</span><br><span class="line"><span class="keyword">FROM</span> emp e</span><br><span class="line"><span class="keyword">LEFT</span> <span class="keyword">JOIN</span> dept d <span class="keyword">ON</span> e.dept_id <span class="operator">=</span> d.id</span><br><span class="line"><span class="keyword">LEFT</span> <span class="keyword">JOIN</span> orders o <span class="keyword">ON</span> o.emp_id <span class="operator">=</span> e.id</span><br><span class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span> e.id, e.name, d.name;</span><br></pre></td></tr></table></figure>
-
-<p><strong>示例结果</strong>（与 <strong>MySQL</strong> 版语义一致）：张三 <strong>2</strong> 笔合计 <strong>300.50</strong>；李四 <strong>300</strong>；王五 <strong>50</strong>；赵六、钱七 <strong>0</strong>。</p>
-<hr>
-<h2 id="二、子查询与-EXISTS"><a href="#二、子查询与-EXISTS" class="headerlink" title="二、子查询与 EXISTS"></a>二、子查询与 EXISTS</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> name <span class="keyword">FROM</span> emp</span><br><span class="line"><span class="keyword">WHERE</span> dept_id <span class="keyword">IN</span> (<span class="keyword">SELECT</span> id <span class="keyword">FROM</span> dept <span class="keyword">WHERE</span> name <span class="keyword">IN</span> (<span class="string">&#x27;研发&#x27;</span>, <span class="string">&#x27;市场&#x27;</span>));</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> e.name</span><br><span class="line"><span class="keyword">FROM</span> emp e</span><br><span class="line"><span class="keyword">WHERE</span> <span class="keyword">EXISTS</span> (<span class="keyword">SELECT</span> <span class="number">1</span> <span class="keyword">FROM</span> orders o <span class="keyword">WHERE</span> o.emp_id <span class="operator">=</span> e.id);</span><br></pre></td></tr></table></figure>
-
-<p><strong>示例结果</strong>：<strong><code>IN</code></strong> 列出 <strong>张三、李四、王五、赵六<code>**；**</code>EXISTS&#96;</strong> 仅 <strong>张三、李四、王五</strong>。</p>
-<hr>
-<h2 id="三、UNION-ALL"><a href="#三、UNION-ALL" class="headerlink" title="三、UNION ALL"></a>三、UNION ALL</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> name, <span class="string">&#x27;emp&#x27;</span>::text <span class="keyword">AS</span> src <span class="keyword">FROM</span> emp <span class="keyword">WHERE</span> dept_id <span class="operator">=</span> <span class="number">1</span></span><br><span class="line"><span class="keyword">UNION</span> <span class="keyword">ALL</span></span><br><span class="line"><span class="keyword">SELECT</span> name, <span class="string">&#x27;dept&#x27;</span> <span class="keyword">FROM</span> dept <span class="keyword">WHERE</span> id <span class="operator">=</span> <span class="number">1</span>;</span><br></pre></td></tr></table></figure>
-
-<p><strong>示例结果</strong>：<strong>张三、李四、研发</strong> 三行。</p>
-<hr>
-<h2 id="四、公共表表达式-WITH（CTE）"><a href="#四、公共表表达式-WITH（CTE）" class="headerlink" title="四、公共表表达式 WITH（CTE）"></a>四、公共表表达式 WITH（CTE）</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">WITH</span> dept_stat <span class="keyword">AS</span> (</span><br><span class="line">    <span class="keyword">SELECT</span> dept_id,</span><br><span class="line">           <span class="built_in">COUNT</span>(<span class="operator">*</span>) <span class="keyword">AS</span> emp_cnt,</span><br><span class="line">           <span class="built_in">AVG</span>(salary) <span class="keyword">AS</span> avg_sal</span><br><span class="line">    <span class="keyword">FROM</span> emp</span><br><span class="line">    <span class="keyword">WHERE</span> salary <span class="keyword">IS</span> <span class="keyword">NOT NULL</span></span><br><span class="line">    <span class="keyword">GROUP</span> <span class="keyword">BY</span> dept_id</span><br><span class="line">)</span><br><span class="line"><span class="keyword">SELECT</span> d.name, ds.emp_cnt, ROUND(ds.avg_sal::<span class="type">numeric</span>, <span class="number">2</span>) <span class="keyword">AS</span> avg_salary</span><br><span class="line"><span class="keyword">FROM</span> dept_stat ds</span><br><span class="line"><span class="keyword">JOIN</span> dept d <span class="keyword">ON</span> d.id <span class="operator">=</span> ds.dept_id;</span><br></pre></td></tr></table></figure>
-
-<p><strong>示例结果</strong>：<strong>研发 2 &#x2F; 16500</strong>；<strong>市场 1 &#x2F; 12000</strong>（<strong><code>dept_id</code> 为 NULL</strong> 的分组不与 <strong><code>dept</code></strong> 连接）。</p>
-<hr>
-<h2 id="五、窗口函数"><a href="#五、窗口函数" class="headerlink" title="五、窗口函数"></a>五、窗口函数</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> id, name, dept_id, salary,</span><br><span class="line">       <span class="built_in">row_number</span>() <span class="keyword">OVER</span> (<span class="keyword">PARTITION</span> <span class="keyword">BY</span> dept_id <span class="keyword">ORDER</span> <span class="keyword">BY</span> salary <span class="keyword">DESC</span> <span class="keyword">NULLS LAST</span>) <span class="keyword">AS</span> rn_in_dept</span><br><span class="line"><span class="keyword">FROM</span> emp</span><br><span class="line"><span class="keyword">WHERE</span> dept_id <span class="keyword">IS</span> <span class="keyword">NOT NULL</span>;</span><br></pre></td></tr></table></figure>
-
-<p><strong><code>running_sum</code></strong>：</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> emp_id, order_date, amount,</span><br><span class="line">       <span class="built_in">SUM</span>(amount) <span class="keyword">OVER</span> (</span><br><span class="line">           <span class="keyword">PARTITION</span> <span class="keyword">BY</span> emp_id <span class="keyword">ORDER</span> <span class="keyword">BY</span> order_date</span><br><span class="line">           <span class="keyword">ROWS</span> <span class="keyword">BETWEEN</span> UNBOUNDED PRECEDING <span class="keyword">AND</span> <span class="keyword">CURRENT</span> <span class="type">ROW</span></span><br><span class="line">       ) <span class="keyword">AS</span> running_sum</span><br><span class="line"><span class="keyword">FROM</span> orders;</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="六、DISTINCT-ON（PostgreSQL-特色）"><a href="#六、DISTINCT-ON（PostgreSQL-特色）" class="headerlink" title="六、DISTINCT ON（PostgreSQL 特色）"></a>六、DISTINCT ON（PostgreSQL 特色）</h2><p>每个 <strong><code>(dept_id)</code></strong> 分区取 <strong><code>ORDER BY</code></strong> 的第一行（常用「每组最新一条」）：</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">DISTINCT</span> <span class="keyword">ON</span> (dept_id) dept_id, name, hire_date</span><br><span class="line"><span class="keyword">FROM</span> emp</span><br><span class="line"><span class="keyword">WHERE</span> dept_id <span class="keyword">IS</span> <span class="keyword">NOT NULL</span></span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> dept_id, hire_date <span class="keyword">DESC</span>;</span><br></pre></td></tr></table></figure>
-
-<p><strong>示例结果</strong>（<strong><code>ORDER BY dept_id, hire_date DESC</code></strong>：每个 <strong><code>dept_id</code></strong> 取入职日期<strong>最新</strong>的一行）：</p>
-<table>
-<thead>
-<tr>
-<th>dept_id</th>
-<th>name</th>
-<th>hire_date</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>1</td>
-<td>张三</td>
-<td>2020-03-01</td>
-</tr>
-<tr>
-<td>2</td>
-<td>赵六</td>
-<td>2022-05-20</td>
-</tr>
-</tbody></table>
-<hr>
-<h2 id="七、聚合-FILTER（PostgreSQL）"><a href="#七、聚合-FILTER（PostgreSQL）" class="headerlink" title="七、聚合 FILTER（PostgreSQL）"></a>七、聚合 FILTER（PostgreSQL）</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span></span><br><span class="line">    <span class="built_in">COUNT</span>(<span class="operator">*</span>) <span class="keyword">FILTER</span> (<span class="keyword">WHERE</span> dept_id <span class="operator">=</span> <span class="number">1</span>) <span class="keyword">AS</span> dept1_cnt,</span><br><span class="line">    <span class="built_in">COUNT</span>(<span class="operator">*</span>) <span class="keyword">FILTER</span> (<span class="keyword">WHERE</span> dept_id <span class="operator">=</span> <span class="number">2</span>) <span class="keyword">AS</span> dept2_cnt</span><br><span class="line"><span class="keyword">FROM</span> emp;</span><br></pre></td></tr></table></figure>
-
-<p><strong>示例结果</strong>：<strong>2 &#x2F; 2</strong>。</p>
-<hr>
-<h2 id="八、字符串聚合-string-agg"><a href="#八、字符串聚合-string-agg" class="headerlink" title="八、字符串聚合 string_agg"></a>八、字符串聚合 string_agg</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> d.name <span class="keyword">AS</span> dept_name,</span><br><span class="line">       string_agg(e.name, <span class="string">&#x27; | &#x27;</span> <span class="keyword">ORDER</span> <span class="keyword">BY</span> e.salary <span class="keyword">DESC</span> <span class="keyword">NULLS LAST</span>) <span class="keyword">AS</span> members</span><br><span class="line"><span class="keyword">FROM</span> dept d</span><br><span class="line"><span class="keyword">LEFT</span> <span class="keyword">JOIN</span> emp e <span class="keyword">ON</span> e.dept_id <span class="operator">=</span> d.id</span><br><span class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span> d.id, d.name;</span><br></pre></td></tr></table></figure>
-
-<p><strong>示例结果</strong>（<strong><code>ORDER BY salary DESC NULLS LAST</code></strong>；箭头表示 <strong><code>string_agg</code></strong> 用 <strong><code>&#39; | &#39;</code></strong> 拼接顺序）：<strong>研发</strong> → <strong>李四 → 张三</strong>；<strong>市场</strong> → <strong>王五 → 赵六</strong>；<strong>财务</strong> → <strong>NULL</strong>。</p>
-<hr>
-<h2 id="九、分页-LIMIT-OFFSET"><a href="#九、分页-LIMIT-OFFSET" class="headerlink" title="九、分页 LIMIT &#x2F; OFFSET"></a>九、分页 LIMIT &#x2F; OFFSET</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> id, name, hire_date</span><br><span class="line"><span class="keyword">FROM</span> emp</span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> hire_date <span class="keyword">DESC</span> <span class="keyword">NULLS LAST</span>, id <span class="keyword">DESC</span></span><br><span class="line">LIMIT <span class="number">10</span> <span class="keyword">OFFSET</span> <span class="number">0</span>;</span><br></pre></td></tr></table></figure>
-
-<p>深 <strong><code>OFFSET</code></strong> 大表性能差，生产常用<strong>键集分页</strong>（<strong><code>WHERE (hire_date, id) &lt; ($1,$2)</code></strong> 一类）。</p>
-<hr>
-<h2 id="十、RETURNING（与-DML-搭配，查询向补充）"><a href="#十、RETURNING（与-DML-搭配，查询向补充）" class="headerlink" title="十、RETURNING（与 DML 搭配，查询向补充）"></a>十、RETURNING（与 DML 搭配，查询向补充）</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 示例：插入并返回生成主键（需与业务事务搭配）</span></span><br><span class="line"><span class="keyword">INSERT INTO</span> dept (id, name) <span class="keyword">VALUES</span> (<span class="number">9</span>, <span class="string">&#x27;法务&#x27;</span>)</span><br><span class="line"><span class="keyword">ON</span> CONFLICT (id) DO NOTHING</span><br><span class="line">RETURNING id, name;</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="十一、速查小结"><a href="#十一、速查小结" class="headerlink" title="十一、速查小结"></a>十一、速查小结</h2><table>
-<thead>
-<tr>
-<th>场景</th>
-<th>PostgreSQL 典型写法</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>多表</td>
-<td><strong><code>JOIN</code> &#x2F; <code>LEFT JOIN</code></strong></td>
-</tr>
-<tr>
-<td>去重取每组一条</td>
-<td><strong><code>DISTINCT ON (…) … ORDER BY</code></strong></td>
-</tr>
-<tr>
-<td>条件计数</td>
-<td><strong><code>COUNT(*) FILTER (WHERE …)</code></strong></td>
-</tr>
-<tr>
-<td>拼串</td>
-<td><strong><code>string_agg(expr, sep ORDER BY …)</code></strong></td>
-</tr>
-<tr>
-<td>可读拆分</td>
-<td><strong><code>WITH</code></strong></td>
-</tr>
-<tr>
-<td>组内排序编号</td>
-<td><strong><code>row_number() OVER (PARTITION BY …)</code></strong></td>
-</tr>
-</tbody></table>
-<p>更多执行计划与索引：<strong><code>PostgreSQL索引与性能优化.md</code></strong>。</p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/03/PostgreSQL/PostgreSQL%E5%BC%95%E6%93%8E/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="miracle">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="my">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | my">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/05/03/PostgreSQL/PostgreSQL%E5%BC%95%E6%93%8E/" class="post-title-link" itemprop="url">PostgreSQL 存储与执行模型概览</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-      
-
-      <time title="创建时间：2026-05-03 16:44:52 / 修改时间：16:46:11" itemprop="dateCreated datePublished" datetime="2026-05-03T16:44:52+08:00">2026-05-03</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/PostgreSQL/" itemprop="url" rel="index"><span itemprop="name">PostgreSQL</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>742</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>2 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p><strong>PostgreSQL</strong> <strong>没有</strong>与 <strong>MySQL</strong> 建表子句 <strong><code>ENGINE=InnoDB / MyISAM</code></strong> 等价的「多存储引擎二选一」模型：进程内是一套统一的<strong>后台执行与存储子系统</strong>（常说的 <strong>PostgreSQL 引擎</strong>多指<strong>整个数据库内核版本</strong>，而非可选插件式表引擎）。若需对照 <strong>MySQL 存储引擎</strong>，请读同目录 <strong><code>MySQL引擎.md</code></strong>。</p>
-<p>姊妹文：<strong><code>PostgreSQL并发与MVCC入门.md</code></strong>（快照与行锁）、<strong><code>PostgreSQL索引与性能优化.md</code></strong>（<strong><code>EXPLAIN</code>、<code>VACUUM</code></strong>）、<strong><code>PostgreSQL-Docker.md</code></strong>（<strong><code>$PGDATA</code></strong> 与部署）。</p>
-<hr>
-<h2 id="一、表数据默认怎么存：Heap（堆表）"><a href="#一、表数据默认怎么存：Heap（堆表）" class="headerlink" title="一、表数据默认怎么存：Heap（堆表）"></a>一、表数据默认怎么存：Heap（堆表）</h2><ul>
-<li>普通 <strong><code>CREATE TABLE</code></strong> 默认即 <strong>heap</strong> 表：行以<strong>堆页</strong>存放，通过 <strong>tid（块号 + 行号）</strong> 定位。  </li>
-<li><strong>MVCC</strong> 在元组头维护版本信息（<strong><code>xmin</code> &#x2F; <code>xmax</code></strong> 等），更新与删除产生<strong>新版本&#x2F;死元组</strong>，依赖 <strong><code>VACUUM</code></strong> 回收（见 <strong><code>PostgreSQL索引与性能优化.md</code></strong>）。  </li>
-<li>与 <strong>InnoDB 聚簇索引即整表</strong>不同：<strong>PostgreSQL</strong> 主键索引是<strong>二级索引</strong>，<strong>堆上</strong>存行，主键查找通常「<strong>索引 → 回表 tid</strong>」。</li>
-</ul>
-<hr>
-<h2 id="二、表访问方法（Table-Access-Method）"><a href="#二、表访问方法（Table-Access-Method）" class="headerlink" title="二、表访问方法（Table Access Method）"></a>二、表访问方法（Table Access Method）</h2><p><strong>PostgreSQL 12+</strong> 起，表可指定 <strong><code>USING heap</code></strong>（默认）；理论上可挂<strong>自定义表访问方法</strong>（需扩展提供）。<br>生产常见仍是 <strong>heap</strong>；列存、混存等多在<strong>扩展或外部产品</strong>（如某些分析型方案）中实现，<strong>不等价于 MySQL 换一个 <code>ENGINE</code> 字符串</strong>。</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 默认即 heap，一般无需写出</span></span><br><span class="line"><span class="keyword">CREATE TABLE</span> t (id <span class="type">int</span> <span class="keyword">PRIMARY KEY</span>, v text);</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="三、与「引擎」易混的几个概念"><a href="#三、与「引擎」易混的几个概念" class="headerlink" title="三、与「引擎」易混的几个概念"></a>三、与「引擎」易混的几个概念</h2><table>
-<thead>
-<tr>
-<th>概念</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong><code>TABLESPACE</code></strong></td>
-<td>表&#x2F;索引的<strong>文件放置位置</strong>（如 <strong><code>pg_default</code></strong>），不是另一种行存储引擎。</td>
-</tr>
-<tr>
-<td><strong>TOAST</strong></td>
-<td>大字段<strong>行外存储</strong>机制，对用户基本透明。</td>
-</tr>
-<tr>
-<td><strong>Foreign Data Wrapper（FDW）</strong></td>
-<td><strong>外部表</strong>：数据在远程；语法像本地表，<strong>语义与本地 heap 完全不同</strong>，不是换存储引擎。</td>
-</tr>
-<tr>
-<td><strong>内置索引类型</strong></td>
-<td><strong>B-Tree、Hash、GiST、GIN、BRIN</strong> 等是<strong>索引访问方法</strong>，不是替换 heap 的「表引擎」。</td>
-</tr>
-</tbody></table>
-<hr>
-<h2 id="四、和-MySQL-InnoDB-的粗对照（选型沟通用）"><a href="#四、和-MySQL-InnoDB-的粗对照（选型沟通用）" class="headerlink" title="四、和 MySQL InnoDB 的粗对照（选型沟通用）"></a>四、和 MySQL InnoDB 的粗对照（选型沟通用）</h2><table>
-<thead>
-<tr>
-<th>话题</th>
-<th>MySQL（<strong><code>MySQL引擎.md</code></strong>）</th>
-<th>PostgreSQL（本文）</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>建表选「引擎」</td>
-<td><strong><code>ENGINE=InnoDB</code></strong> 等</td>
-<td><strong>无</strong>；默认 <strong>heap</strong> + 统一内核</td>
-</tr>
-<tr>
-<td>行存与主键</td>
-<td><strong>InnoDB</strong> 聚簇主键与数据同树</td>
-<td><strong>堆行 + 主键索引</strong></td>
-</tr>
-<tr>
-<td>并发读写的核心</td>
-<td><strong>InnoDB MVCC + 锁</strong></td>
-<td><strong>MVCC + 行锁</strong>（见 <strong><code>PostgreSQL并发与MVCC入门.md</code></strong>）</td>
-</tr>
-</tbody></table>
-<hr>
-<h2 id="五、实务建议"><a href="#五、实务建议" class="headerlink" title="五、实务建议"></a>五、实务建议</h2><ol>
-<li>学习 <strong>PostgreSQL</strong> 时少问「用哪个引擎」，多问<strong>索引类型、执行计划、<code>VACUUM</code>、隔离级别与锁</strong>。  </li>
-<li>需要列存、分片、多副本高可用时，在<strong>架构层</strong>选专用扩展或产品（如 <strong>Citus</strong>、云厂商数仓、读写分离），而不是在 <strong><code>CREATE TABLE</code></strong> 里找一个 <strong><code>ENGINE</code></strong> 开关。  </li>
-<li>版本升级（<strong><code>14 → 16 → 17</code></strong>）会带执行器与优化器演进，「升级引擎」口语上常指<strong>升级主版本</strong>，与 <strong>MySQL</strong> 的 <strong>ENGINE</strong> 不是同一概念。</li>
-</ol>
-<hr>
-<h2 id="六、延伸阅读"><a href="#六、延伸阅读" class="headerlink" title="六、延伸阅读"></a>六、延伸阅读</h2><table>
-<thead>
-<tr>
-<th>文档</th>
-<th>内容</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong><code>PostgreSQL.md</code></strong></td>
-<td><strong>DDL</strong>、<strong><code>SCHEMA</code></strong></td>
-</tr>
-<tr>
-<td><strong><code>PostgreSQL高级查询.md</code></strong></td>
-<td>复杂 <strong>SQL</strong></td>
-</tr>
-<tr>
-<td><strong><code>PostgreSQL索引与性能优化.md</code></strong></td>
-<td><strong><code>EXPLAIN</code>、备份与 WAL 概念</strong></td>
-</tr>
-<tr>
-<td><strong><code>PostgreSQL-Docker.md</code></strong></td>
-<td>镜像、卷、<strong><code>POSTGRES_*</code></strong></td>
-</tr>
-</tbody></table>
-<p>以上描述以官方文档与当前大版本行为为准；内核细节以源码与 <strong>Wiki</strong> 为最终解释。</p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
   <nav class="pagination">
     <a class="extend prev" rel="prev" title="上一页" aria-label="上一页" href="/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/17/">17</a><a class="extend next" rel="next" title="下一页" aria-label="下一页" href="/page/3/"><i class="fa fa-angle-right"></i></a>
   </nav>
@@ -2047,13 +1922,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">150k</span>
+    <span title="站点总字数">152k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">8:19</span>
+    <span title="站点阅读时长">8:26</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动
@@ -2078,16 +1953,33 @@
   <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
 </noscript>
 
+
 <script>
 (function () {
+  function normalizeClipboard(s) {
+    return (s || '').replace(/\u00a0/g, ' ');
+  }
+
+  /** When innerText is empty, treat <br> as newlines (matches Hexo fenced + line_number HTML). */
+  function plainTextFromElement(el) {
+    if (!el) return '';
+    var t = el.innerText;
+    if (t != null && t !== '') return normalizeClipboard(t);
+    var clone = el.cloneNode(true);
+    clone.querySelectorAll('br').forEach(function (br) {
+      br.parentNode.replaceChild(document.createTextNode('\n'), br);
+    });
+    return normalizeClipboard(clone.textContent || '');
+  }
+
   function extractFromFigure(fig) {
     if (!fig) return '';
     var cell = fig.querySelector('td.code') || fig.querySelector('.code');
-    var block = cell || fig.querySelector('code');
-    if (!block) return '';
-    var pre = block.querySelector('pre');
-    var source = pre || block;
-    return (source.textContent || '').replace(/\u00a0/g, ' ');
+    if (cell) return plainTextFromElement(cell);
+    var pre = fig.querySelector('pre');
+    if (pre) return plainTextFromElement(pre);
+    var code = fig.querySelector('code');
+    return code ? plainTextFromElement(code) : '';
   }
 
   function extractForCopyBtn(btn) {
@@ -2098,7 +1990,7 @@
       var innerFig = wrap.querySelector('figure.highlight');
       if (innerFig) return extractFromFigure(innerFig);
       var preOnly = wrap.querySelector('pre');
-      if (preOnly) return (preOnly.textContent || '').replace(/\u00a0/g, ' ');
+      if (preOnly) return plainTextFromElement(preOnly);
     }
     return '';
   }

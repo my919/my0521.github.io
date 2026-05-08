@@ -172,7 +172,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">164</span>
+          <span class="site-state-item-count">166</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -211,6 +211,489 @@
     </div>
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/PostgreSQL/PostgreSQL-Docker/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/05/01/PostgreSQL/PostgreSQL-Docker/" class="post-title-link" itemprop="url">Docker 部署 PostgreSQL</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-05-01 21:55:09" itemprop="dateCreated datePublished" datetime="2026-05-01T21:55:09+08:00">2026-05-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-05-03 16:39:28" itemprop="dateModified" datetime="2026-05-03T16:39:28+08:00">2026-05-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/PostgreSQL/" itemprop="url" rel="index"><span itemprop="name">PostgreSQL</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>1.4k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>5 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>在 <strong>Docker</strong> 中运行 <strong>PostgreSQL</strong>，适合本地开发、与 <strong>Compose</strong> 编排其它服务、或在 <strong>Kubernetes</strong> 中单实例部署。下文给出<strong>镜像选型</strong>、<strong>一条命令起容器</strong>、<strong>Compose 一键起栈</strong>与<strong>一份多文档 K8s 清单</strong>；密码与数据卷请按环境自行替换，勿把生产密钥提交进仓库。</p>
+<hr>
+<h1 id="一、前置条件"><a href="#一、前置条件" class="headerlink" title="一、前置条件"></a>一、前置条件</h1><p>本机已安装 <strong><code>docker</code></strong>，并能使用 <strong><code>docker compose</code></strong>（<strong>Compose V2</strong> 插件，命令为 <strong><code>docker compose</code></strong>；若仍使用旧版独立程序，则将下文中的 <strong><code>docker compose</code></strong> 换成 <strong><code>docker-compose</code></strong>）。</p>
+<p>验证：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker version</span><br><span class="line">docker compose version</span><br></pre></td></tr></table></figure>
+
+<p>满足即可，与宿主机操作系统无关。</p>
+<hr>
+<h1 id="二、PostgreSQL-镜像选择"><a href="#二、PostgreSQL-镜像选择" class="headerlink" title="二、PostgreSQL 镜像选择"></a>二、PostgreSQL 镜像选择</h1><h2 id="1-官方镜像（推荐）"><a href="#1-官方镜像（推荐）" class="headerlink" title="1. 官方镜像（推荐）"></a>1. 官方镜像（推荐）</h2><ul>
+<li><strong>仓库</strong>：<strong><code>postgres</code></strong>（Docker Hub 官方库，由 <strong>PostgreSQL</strong> &#x2F; <strong>Docker Official Images</strong> 维护）。  </li>
+<li><strong>常用标签</strong>：  <ul>
+<li><strong><code>postgres:16</code></strong>：<strong>16.x</strong> 当前常用大版本。  </li>
+<li><strong><code>postgres:17</code></strong> 或 <strong><code>postgres:latest</code></strong>：较新线（以 <a target="_blank" rel="noopener external nofollow noreferrer" href="https://hub.docker.com/_/postgres/tags">Docker Hub postgres tags</a> 为准）。</li>
+</ul>
+</li>
+<li><strong>生产建议</strong>：固定小版本标签（如 <strong><code>postgres:16.6</code></strong>）或记录 <strong>digest</strong>，避免 <strong><code>latest</code></strong> 漂移导致行为变化。</li>
+</ul>
+<h2 id="2-变体说明"><a href="#2-变体说明" class="headerlink" title="2. 变体说明"></a>2. 变体说明</h2><table>
+<thead>
+<tr>
+<th>需求</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>超级用户与库</strong></td>
+<td><strong><code>POSTGRES_USER</code></strong> 为数据库超级用户名（默认 <strong><code>postgres</code></strong>）；<strong><code>POSTGRES_PASSWORD</code></strong> 为其密码；<strong><code>POSTGRES_DB</code></strong> 为首次创建的库名（未设置时默认与 <strong><code>POSTGRES_USER</code></strong> 同名）。</td>
+</tr>
+<tr>
+<td><strong>ARM64</strong>（Apple Silicon 等）</td>
+<td>官方 <strong><code>postgres</code></strong> 多架构镜像一般可直接拉取；若某标签缺架构，换标签或查 Hub <strong>OS&#x2F;ARCH</strong>。</td>
+</tr>
+<tr>
+<td><strong>极简&#x2F;定制</strong></td>
+<td>社区有 <strong><code>bitnami/postgresql</code></strong> 等，环境变量与数据路径与官方不同，切换镜像时需对照该镜像文档。</td>
+</tr>
+</tbody></table>
+<h2 id="3-编码与本地化"><a href="#3-编码与本地化" class="headerlink" title="3. 编码与本地化"></a>3. 编码与本地化</h2><p>需要固定库编码、排序规则时，可通过 <strong><code>POSTGRES_INITDB_ARGS</code></strong> 传入 <strong><code>initdb</code></strong> 参数（如 <strong><code>--encoding=UTF8 --locale=C</code></strong>），与业务 <strong><code>client_encoding</code></strong>、迁移脚本约定一致。</p>
+<hr>
+<p><strong>1Panel（推荐）</strong>：在 <strong>Linux</strong> 宿主机上若希望少手写命令、仍以容器方式跑 <strong>PostgreSQL</strong>，可先安装 <a target="_blank" rel="noopener external nofollow noreferrer" href="https://1panel.cn/"><strong>1Panel</strong></a>（开源 <strong>Linux</strong> 运维面板），在 <strong>「应用商店」</strong> 中选择 <strong>PostgreSQL</strong> 一键部署：由面板管理镜像版本、数据持久化、端口与备份等。与下文 <strong><code>docker run</code> &#x2F; Compose &#x2F; K8s&#96;</strong> 的环境变量、卷路径对齐或排障时，自 <strong># 三</strong> 起各节仍可作对照。</p>
+<hr>
+<h1 id="三、单容器一键部署（docker-run）"><a href="#三、单容器一键部署（docker-run）" class="headerlink" title="三、单容器一键部署（docker run）"></a>三、单容器一键部署（<code>docker run</code>）</h1><p>在<strong>当前目录</strong>先建数据与初始化目录（仅首次）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">mkdir</span> -p ./pg-data ./pg-init</span><br></pre></td></tr></table></figure>
+
+<p><strong>一条命令</strong>启动（请按需改账号、密码、库名、端口、卷路径；示例仅供本地）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -d --name postgres-dev -e POSTGRES_USER=app -e POSTGRES_PASSWORD=dev-change-me -e POSTGRES_DB=appdb -p 5432:5432 -v <span class="string">&quot;<span class="subst">$(pwd)</span>/pg-data:/var/lib/postgresql/data&quot;</span> -v <span class="string">&quot;<span class="subst">$(pwd)</span>/pg-init:/docker-entrypoint-initdb.d:ro&quot;</span> postgres:16</span><br></pre></td></tr></table></figure>
+
+<p>常用运维一条命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker logs -f postgres-dev</span><br><span class="line">docker stop postgres-dev &amp;&amp; docker <span class="built_in">rm</span> postgres-dev</span><br></pre></td></tr></table></figure>
+
+<p>本机连接示例：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">psql <span class="string">&quot;postgresql://app:dev-change-me@127.0.0.1:5432/appdb&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p><strong><code>./pg-init</code></strong> 下 <strong><code>.sql</code> &#x2F; <code>.sh</code></strong> 仅在<strong>首次初始化空数据目录</strong>时执行；已有数据卷时不会重复执行。</p>
+<hr>
+<h1 id="四、Docker-Compose-一键部署"><a href="#四、Docker-Compose-一键部署" class="headerlink" title="四、Docker Compose 一键部署"></a>四、Docker Compose 一键部署</h1><p>将下面内容保存为 <strong><code>docker-compose.postgres.yml</code></strong>（与 <strong><code># 一</code></strong> 要求一致：已能执行 <strong><code>docker compose</code></strong>）。敏感项建议放在同目录 <strong><code>.env</code></strong>（加入 <strong><code>.gitignore</code></strong>），勿长期写死在仓库。</p>
+<p><strong>一条命令</strong>启动全栈（在 <strong><code>docker-compose.postgres.yml</code></strong> 所在目录执行）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker compose -f docker-compose.postgres.yml up -d</span><br></pre></td></tr></table></figure>
+
+<p>以下为 <strong><code>docker-compose.postgres.yml</code></strong> 全文：<strong><code>version</code></strong>、<strong><code>name</code></strong>、<strong>命名卷</strong>、<strong>健康检查</strong>。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">version:</span> <span class="string">&quot;3.8&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="attr">name:</span> <span class="string">postgres-stack</span></span><br><span class="line"></span><br><span class="line"><span class="attr">services:</span></span><br><span class="line">  <span class="attr">postgres:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">postgres:16</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">postgres-16</span></span><br><span class="line">    <span class="attr">restart:</span> <span class="string">unless-stopped</span></span><br><span class="line">    <span class="attr">environment:</span></span><br><span class="line">      <span class="attr">POSTGRES_USER:</span> <span class="string">$&#123;POSTGRES_USER:-app&#125;</span></span><br><span class="line">      <span class="attr">POSTGRES_PASSWORD:</span> <span class="string">$&#123;POSTGRES_PASSWORD:-dev-change-me&#125;</span></span><br><span class="line">      <span class="attr">POSTGRES_DB:</span> <span class="string">$&#123;POSTGRES_DB:-appdb&#125;</span></span><br><span class="line">      <span class="attr">TZ:</span> <span class="string">Asia/Shanghai</span></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;5432:5432&quot;</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">pg_data:/var/lib/postgresql/data</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">./pg-init:/docker-entrypoint-initdb.d:ro</span></span><br><span class="line">    <span class="attr">healthcheck:</span></span><br><span class="line">      <span class="attr">test:</span> [<span class="string">&quot;CMD-SHELL&quot;</span>, <span class="string">&quot;pg_isready -U \&quot;$$POSTGRES_USER\&quot; -d \&quot;$$POSTGRES_DB\&quot; || exit 1&quot;</span>]</span><br><span class="line">      <span class="attr">interval:</span> <span class="string">5s</span></span><br><span class="line">      <span class="attr">timeout:</span> <span class="string">5s</span></span><br><span class="line">      <span class="attr">retries:</span> <span class="number">30</span></span><br><span class="line">      <span class="attr">start_period:</span> <span class="string">30s</span></span><br><span class="line"></span><br><span class="line"><span class="attr">volumes:</span></span><br><span class="line">  <span class="attr">pg_data:</span></span><br><span class="line">    <span class="attr">driver:</span> <span class="string">local</span></span><br></pre></td></tr></table></figure>
+
+<p>同目录可选 <strong><code>.env</code></strong>（勿提交）：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">POSTGRES_USER=app</span><br><span class="line">POSTGRES_PASSWORD=your-strong-password</span><br><span class="line">POSTGRES_DB=appdb</span><br></pre></td></tr></table></figure>
+
+<p>查看状态、日志、停止并删除容器（保留数据卷）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">docker compose -f docker-compose.postgres.yml ps</span><br><span class="line">docker compose -f docker-compose.postgres.yml logs -f postgres</span><br><span class="line">docker compose -f docker-compose.postgres.yml down</span><br></pre></td></tr></table></figure>
+
+<p><strong><code>down</code></strong> 默认保留命名卷 <strong><code>pg_data</code></strong>；若需清空数据加 <strong><code>docker compose ... down -v</code></strong>（<strong>会删库</strong>）。</p>
+<hr>
+<h1 id="五、Kubernetes-一键部署（单文件完整清单）"><a href="#五、Kubernetes-一键部署（单文件完整清单）" class="headerlink" title="五、Kubernetes 一键部署（单文件完整清单）"></a>五、Kubernetes 一键部署（单文件完整清单）</h1><p>将下面内容保存为 <strong><code>postgres-k8s.yaml</code></strong> 后，<strong>一条命令</strong>应用：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl apply -f postgres-k8s.yaml</span><br></pre></td></tr></table></figure>
+
+<p>清单含 <strong>Secret</strong>（超级用户与库名）、<strong>PVC</strong>、<strong>Deployment</strong>、<strong>ClusterIP Service</strong>。未写 <strong><code>storageClassName</code></strong> 时使用集群默认 <strong>StorageClass</strong>；无默认 <strong>SC</strong> 时请在 <strong>PVC</strong> 中补上 <strong><code>storageClassName</code></strong>。命名空间为 <strong><code>default</code></strong>，可按需修改 <strong><code>metadata.namespace</code></strong>。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Secret</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">postgres-secret</span></span><br><span class="line">  <span class="attr">namespace:</span> <span class="string">default</span></span><br><span class="line"><span class="attr">type:</span> <span class="string">Opaque</span></span><br><span class="line"><span class="attr">stringData:</span></span><br><span class="line">  <span class="attr">POSTGRES_USER:</span> <span class="string">&quot;app&quot;</span></span><br><span class="line">  <span class="attr">POSTGRES_PASSWORD:</span> <span class="string">&quot;请替换为强密码&quot;</span></span><br><span class="line">  <span class="attr">POSTGRES_DB:</span> <span class="string">&quot;appdb&quot;</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">PersistentVolumeClaim</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">postgres-data</span></span><br><span class="line">  <span class="attr">namespace:</span> <span class="string">default</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">accessModes:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">ReadWriteOnce</span></span><br><span class="line">  <span class="attr">resources:</span></span><br><span class="line">    <span class="attr">requests:</span></span><br><span class="line">      <span class="attr">storage:</span> <span class="string">20Gi</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">apps/v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Deployment</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">postgres</span></span><br><span class="line">  <span class="attr">namespace:</span> <span class="string">default</span></span><br><span class="line">  <span class="attr">labels:</span></span><br><span class="line">    <span class="attr">app:</span> <span class="string">postgres</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">replicas:</span> <span class="number">1</span></span><br><span class="line">  <span class="attr">selector:</span></span><br><span class="line">    <span class="attr">matchLabels:</span></span><br><span class="line">      <span class="attr">app:</span> <span class="string">postgres</span></span><br><span class="line">  <span class="attr">strategy:</span></span><br><span class="line">    <span class="attr">type:</span> <span class="string">Recreate</span></span><br><span class="line">  <span class="attr">template:</span></span><br><span class="line">    <span class="attr">metadata:</span></span><br><span class="line">      <span class="attr">labels:</span></span><br><span class="line">        <span class="attr">app:</span> <span class="string">postgres</span></span><br><span class="line">    <span class="attr">spec:</span></span><br><span class="line">      <span class="attr">containers:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">postgres</span></span><br><span class="line">          <span class="attr">image:</span> <span class="string">postgres:16</span></span><br><span class="line">          <span class="attr">ports:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">containerPort:</span> <span class="number">5432</span></span><br><span class="line">              <span class="attr">name:</span> <span class="string">postgres</span></span><br><span class="line">          <span class="attr">env:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">POSTGRES_USER</span></span><br><span class="line">              <span class="attr">valueFrom:</span></span><br><span class="line">                <span class="attr">secretKeyRef:</span></span><br><span class="line">                  <span class="attr">name:</span> <span class="string">postgres-secret</span></span><br><span class="line">                  <span class="attr">key:</span> <span class="string">POSTGRES_USER</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">POSTGRES_PASSWORD</span></span><br><span class="line">              <span class="attr">valueFrom:</span></span><br><span class="line">                <span class="attr">secretKeyRef:</span></span><br><span class="line">                  <span class="attr">name:</span> <span class="string">postgres-secret</span></span><br><span class="line">                  <span class="attr">key:</span> <span class="string">POSTGRES_PASSWORD</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">POSTGRES_DB</span></span><br><span class="line">              <span class="attr">valueFrom:</span></span><br><span class="line">                <span class="attr">secretKeyRef:</span></span><br><span class="line">                  <span class="attr">name:</span> <span class="string">postgres-secret</span></span><br><span class="line">                  <span class="attr">key:</span> <span class="string">POSTGRES_DB</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">TZ</span></span><br><span class="line">              <span class="attr">value:</span> <span class="string">&quot;Asia/Shanghai&quot;</span></span><br><span class="line">          <span class="attr">volumeMounts:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">data</span></span><br><span class="line">              <span class="attr">mountPath:</span> <span class="string">/var/lib/postgresql/data</span></span><br><span class="line">          <span class="attr">readinessProbe:</span></span><br><span class="line">            <span class="attr">exec:</span></span><br><span class="line">              <span class="attr">command:</span></span><br><span class="line">                <span class="bullet">-</span> <span class="string">/bin/sh</span></span><br><span class="line">                <span class="bullet">-</span> <span class="string">-c</span></span><br><span class="line">                <span class="bullet">-</span> <span class="string">&#x27;pg_isready -U &quot;$POSTGRES_USER&quot; -d &quot;$POSTGRES_DB&quot;&#x27;</span></span><br><span class="line">            <span class="attr">initialDelaySeconds:</span> <span class="number">10</span></span><br><span class="line">            <span class="attr">periodSeconds:</span> <span class="number">5</span></span><br><span class="line">            <span class="attr">timeoutSeconds:</span> <span class="number">3</span></span><br><span class="line">            <span class="attr">failureThreshold:</span> <span class="number">24</span></span><br><span class="line">          <span class="attr">livenessProbe:</span></span><br><span class="line">            <span class="attr">tcpSocket:</span></span><br><span class="line">              <span class="attr">port:</span> <span class="number">5432</span></span><br><span class="line">            <span class="attr">initialDelaySeconds:</span> <span class="number">60</span></span><br><span class="line">            <span class="attr">periodSeconds:</span> <span class="number">10</span></span><br><span class="line">            <span class="attr">timeoutSeconds:</span> <span class="number">5</span></span><br><span class="line">            <span class="attr">failureThreshold:</span> <span class="number">6</span></span><br><span class="line">          <span class="attr">resources:</span></span><br><span class="line">            <span class="attr">requests:</span></span><br><span class="line">              <span class="attr">memory:</span> <span class="string">&quot;256Mi&quot;</span></span><br><span class="line">              <span class="attr">cpu:</span> <span class="string">&quot;250m&quot;</span></span><br><span class="line">            <span class="attr">limits:</span></span><br><span class="line">              <span class="attr">memory:</span> <span class="string">&quot;1Gi&quot;</span></span><br><span class="line">              <span class="attr">cpu:</span> <span class="string">&quot;1000m&quot;</span></span><br><span class="line">      <span class="attr">volumes:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">data</span></span><br><span class="line">          <span class="attr">persistentVolumeClaim:</span></span><br><span class="line">            <span class="attr">claimName:</span> <span class="string">postgres-data</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Service</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">postgres</span></span><br><span class="line">  <span class="attr">namespace:</span> <span class="string">default</span></span><br><span class="line">  <span class="attr">labels:</span></span><br><span class="line">    <span class="attr">app:</span> <span class="string">postgres</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">type:</span> <span class="string">ClusterIP</span></span><br><span class="line">  <span class="attr">selector:</span></span><br><span class="line">    <span class="attr">app:</span> <span class="string">postgres</span></span><br><span class="line">  <span class="attr">ports:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">postgres</span></span><br><span class="line">      <span class="attr">port:</span> <span class="number">5432</span></span><br><span class="line">      <span class="attr">targetPort:</span> <span class="number">5432</span></span><br></pre></td></tr></table></figure>
+
+<p>查看资源与连接前检查：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl get pods,svc,pvc -l app=postgres</span><br></pre></td></tr></table></figure>
+
+<p>集群内连接串示例（按 <strong>namespace</strong> 与 <strong>Secret</strong> 中密码替换）：<strong><code>postgresql://app:请替换@postgres.default.svc.cluster.local:5432/appdb?sslmode=disable</code></strong>（生产请改为 <strong><code>sslmode=require</code></strong> 并配置 <strong>TLS</strong>）。</p>
+<p><strong>说明</strong>：<strong><code>strategy: Recreate</code></strong> 避免 <strong>RWO</strong> 卷被多副本 <strong>RollingUpdate</strong> 同时挂载；高可用、复制、自动故障转移请使用 <strong>Patroni</strong>、<strong>CloudNativePG</strong> 等 <strong>Operator</strong> 或 <strong>StatefulSet</strong> 方案，勿直接水平扩展上述 <strong>Deployment</strong>。</p>
+<hr>
+<h1 id="六、小结"><a href="#六、小结" class="headerlink" title="六、小结"></a>六、小结</h1><table>
+<thead>
+<tr>
+<th>项</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>前置</strong></td>
+<td>已安装 <strong><code>docker</code></strong> 与 <strong><code>docker compose</code></strong>（或 <strong><code>docker-compose</code></strong>）</td>
+</tr>
+<tr>
+<td><strong>镜像</strong></td>
+<td>优先官方 <strong><code>postgres:16</code></strong> &#x2F; 固定补丁标签；核对 <strong><code>POSTGRES_*</code></strong> 与客户端驱动版本</td>
+</tr>
+<tr>
+<td><strong>单容器</strong></td>
+<td><strong><code>mkdir</code></strong> 后一条 <strong><code>docker run ...</code></strong></td>
+</tr>
+<tr>
+<td><strong>Compose</strong></td>
+<td>保存 <strong><code>docker-compose.postgres.yml</code></strong> 后 <strong><code>docker compose -f ... up -d</code></strong></td>
+</tr>
+<tr>
+<td><strong>Kubernetes</strong></td>
+<td>保存 <strong><code>postgres-k8s.yaml</code></strong> 后 <strong><code>kubectl apply -f ...</code></strong></td>
+</tr>
+</tbody></table>
+<p>同目录可参考：<strong><code>PostgreSQL.md</code></strong>（<strong>DDL</strong>）、<strong><code>PostgreSQL高级查询.md</code></strong>、<strong><code>PostgreSQL索引与性能优化.md</code></strong>、<strong><code>PostgreSQL并发与MVCC入门.md</code></strong>。</p>
+<p>生产环境请配合备份、监控、网络策略与 <strong>TLS</strong>；<strong>Secret</strong> 建议对接 <strong>External Secrets</strong> &#x2F; <strong>Sealed Secrets</strong> 等管控流程。</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/Linux/WSL-Rocky/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/05/01/Linux/WSL-Rocky/" class="post-title-link" itemprop="url">Windows 上 WSL（Rocky Linux）与 Docker Desktop</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-05-01 20:40:26" itemprop="dateCreated datePublished" datetime="2026-05-01T20:40:26+08:00">2026-05-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-05-02 23:48:50" itemprop="dateModified" datetime="2026-05-02T23:48:50+08:00">2026-05-02</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>2k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>7 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>在 <strong>Windows 10&#x2F;11</strong> 上通过 <strong>WSL2</strong> 运行 <strong>Rocky Linux</strong>，可与 <strong>Docker Desktop</strong> 共用同一套引擎：容器在 <strong>Docker Desktop</strong> 的 <strong>Linux</strong> 后端里跑，你在 <strong>Rocky Linux</strong> 终端里直接使用 <strong><code>docker</code></strong> 命令。下面按「准备 → 启用 <strong>WSL</strong> → 安装 <strong>Rocky Linux</strong> → <strong>Docker Desktop</strong> 集成 → 首次配置 → 日常维护」顺序说明；<strong>Rocky Linux</strong> 安装以官方文档为准，<strong>Docker</strong> 以 <strong>Docker Desktop</strong> 文档为准。</p>
+<hr>
+<h1 id="一、环境与版本说明"><a href="#一、环境与版本说明" class="headerlink" title="一、环境与版本说明"></a>一、环境与版本说明</h1><ol>
+<li><strong>操作系统</strong>：<strong>Windows 10</strong>（建议 22H2 及以后）或 <strong>Windows 11</strong>。  </li>
+<li><strong>体系结构</strong>：下载 <strong>Rocky Linux</strong> 镜像时选 <strong>x86_64</strong> 或 <strong>aarch64</strong>，与 <strong>Windows</strong>、<strong>Docker Desktop</strong> 安装包一致。  </li>
+<li><strong>WSL</strong>：使用 <strong>WSL2</strong>；<strong>Docker Desktop</strong> 的 <strong>WSL 2</strong> 后端依赖此版本。  </li>
+<li><strong>Rocky Linux</strong>：官方 <strong><code>.wsl</code></strong> 镜像（推荐）或 <strong><code>wsl --import</code></strong>。  </li>
+<li><strong>权威文档</strong>：  <ul>
+<li><strong>Rocky Linux</strong>（本文默认 <strong>10</strong>，文档内可切换版本）：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://docs.rockylinux.org/10/guides/interoperability/import_rocky_to_wsl/">Import Rocky Linux to WSL or WSL2</a>  </li>
+<li><strong>Microsoft</strong>：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://learn.microsoft.com/zh-cn/windows/wsl/install">安装 WSL</a>  </li>
+<li><strong>Docker</strong>：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://docs.docker.com/desktop/setup/install/windows-install/">Docker Desktop on Windows</a>、<a target="_blank" rel="noopener external nofollow noreferrer" href="https://docs.docker.com/desktop/wsl/">WSL 与 Docker Desktop</a></li>
+</ul>
+</li>
+</ol>
+<hr>
+<h1 id="二、硬件与-Windows-功能准备"><a href="#二、硬件与-Windows-功能准备" class="headerlink" title="二、硬件与 Windows 功能准备"></a>二、硬件与 Windows 功能准备</h1><h2 id="1-BIOS-UEFI"><a href="#1-BIOS-UEFI" class="headerlink" title="1. BIOS &#x2F; UEFI"></a>1. BIOS &#x2F; UEFI</h2><p>开启 <strong>CPU 虚拟化</strong>（<strong>Intel VT-x</strong>、<strong>AMD-V</strong>）。<strong>WSL2</strong> 与 <strong>Docker Desktop</strong> 均依赖。</p>
+<h2 id="2-启用可选组件（图形界面）"><a href="#2-启用可选组件（图形界面）" class="headerlink" title="2. 启用可选组件（图形界面）"></a>2. 启用可选组件（图形界面）</h2><ol>
+<li><strong>Win + R</strong> → <strong><code>optionalfeatures</code></strong> → 勾选 <strong>适用于 Linux 的 Windows 子系统</strong>、<strong>虚拟机平台</strong>。  </li>
+<li>重启。</li>
+</ol>
+<h2 id="3-商店版-WSL（推荐）"><a href="#3-商店版-WSL（推荐）" class="headerlink" title="3. 商店版 WSL（推荐）"></a>3. 商店版 WSL（推荐）</h2><p>从 <strong>Microsoft Store</strong> 安装 <a target="_blank" rel="noopener external nofollow noreferrer" href="https://apps.microsoft.com/detail/9p9tqf7mrm4r">Windows Subsystem for Linux</a>。</p>
+<hr>
+<h1 id="三、用-PowerShell-启用并更新-WSL"><a href="#三、用-PowerShell-启用并更新-WSL" class="headerlink" title="三、用 PowerShell 启用并更新 WSL"></a>三、用 PowerShell 启用并更新 WSL</h1><p>在 <strong>以管理员身份运行</strong> 的 <strong>PowerShell</strong> 中执行。</p>
+<h2 id="1-安装-WSL-组件（若尚未安装）"><a href="#1-安装-WSL-组件（若尚未安装）" class="headerlink" title="1. 安装 WSL 组件（若尚未安装）"></a>1. 安装 WSL 组件（若尚未安装）</h2><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wsl <span class="literal">--install</span>  <span class="comment"># 默认安装Ubuntu，这里不使用此命令，使用 安装 Rocky Linux 命令</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="2-默认使用-WSL2"><a href="#2-默认使用-WSL2" class="headerlink" title="2. 默认使用 WSL2"></a>2. 默认使用 WSL2</h2><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wsl <span class="literal">--set-default-version</span> <span class="number">2</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="3-更新-WSL"><a href="#3-更新-WSL" class="headerlink" title="3. 更新 WSL"></a>3. 更新 WSL</h2><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wsl <span class="literal">--update</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="4-验证"><a href="#4-验证" class="headerlink" title="4. 验证"></a>4. 验证</h2><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">wsl <span class="literal">--version</span></span><br><span class="line">wsl <span class="literal">--status</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="四、安装-Rocky-Linux（推荐：官方-wsl-镜像）"><a href="#四、安装-Rocky-Linux（推荐：官方-wsl-镜像）" class="headerlink" title="四、安装 Rocky Linux（推荐：官方 .wsl 镜像）"></a>四、安装 Rocky Linux（推荐：官方 <code>.wsl</code> 镜像）</h1><h2 id="1-下载镜像（默认-Rocky-Linux-10）"><a href="#1-下载镜像（默认-Rocky-Linux-10）" class="headerlink" title="1. 下载镜像（默认 Rocky Linux 10）"></a>1. 下载镜像（默认 <strong>Rocky Linux 10</strong>）</h2><p><strong>Rocky Linux 10</strong>（<strong>x86_64</strong>）：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://dl.rockylinux.org/pub/rocky/10/images/x86_64/Rocky-10-WSL-Base.latest.x86_64.wsl">https://dl.rockylinux.org/pub/rocky/10/images/x86_64/Rocky-10-WSL-Base.latest.x86_64.wsl</a><br><strong>aarch64</strong>：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://dl.rockylinux.org/pub/rocky/10/images/aarch64/Rocky-10-WSL-Base.latest.aarch64.wsl">https://dl.rockylinux.org/pub/rocky/10/images/aarch64/Rocky-10-WSL-Base.latest.aarch64.wsl</a></p>
+<h2 id="2-命令行安装"><a href="#2-命令行安装" class="headerlink" title="2. 命令行安装"></a>2. 命令行安装</h2><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wsl <span class="literal">--install</span> <span class="literal">--from-file</span> <span class="string">&quot;D:\download\Rocky-10-WSL-Base.latest.x86_64.wsl&quot;</span> <span class="literal">--name</span> Rocky<span class="literal">-10</span></span><br></pre></td></tr></table></figure>
+
+<p>将路径、<code>--name</code> 改成你的实际值。安装后 <strong>Windows Terminal</strong> 下拉里可出现 <strong>Rocky-10</strong>。</p>
+<h2 id="3-双击安装（可选）"><a href="#3-双击安装（可选）" class="headerlink" title="3. 双击安装（可选）"></a>3. 双击安装（可选）</h2><p>资源管理器中双击 <strong><code>.wsl</code></strong> 按向导安装。</p>
+<hr>
+<h1 id="五、安装与配置-Docker-Desktop（配合-WSL2）"><a href="#五、安装与配置-Docker-Desktop（配合-WSL2）" class="headerlink" title="五、安装与配置 Docker Desktop（配合 WSL2）"></a>五、安装与配置 Docker Desktop（配合 WSL2）</h1><h2 id="1-下载并安装"><a href="#1-下载并安装" class="headerlink" title="1. 下载并安装"></a>1. 下载并安装</h2><ol>
+<li>打开 <a target="_blank" rel="noopener external nofollow noreferrer" href="https://www.docker.com/products/docker-desktop/">https://www.docker.com/products/docker-desktop/</a> ，下载 <strong>Docker Desktop for Windows</strong>。  </li>
+<li>安装向导中保持 <strong>Use WSL 2 instead of Hyper-V</strong>（或等价选项，以当前安装界面为准）。  </li>
+<li>安装结束若提示注销或重启，按提示操作。</li>
+</ol>
+<h2 id="2-确认使用-WSL-2-后端"><a href="#2-确认使用-WSL-2-后端" class="headerlink" title="2. 确认使用 WSL 2 后端"></a>2. 确认使用 WSL 2 后端</h2><p>打开 <strong>Docker Desktop</strong> → <strong>Settings</strong>（设置）→ <strong>General</strong>（常规）：</p>
+<ul>
+<li>勾选 <strong>Use the WSL 2 based engine</strong>（使用基于 <strong>WSL 2</strong> 的引擎）。</li>
+</ul>
+<p>应用后必要时 <strong>Restart Docker Desktop</strong>。</p>
+<h2 id="3-与-Rocky-Linux-发行版集成（核心）"><a href="#3-与-Rocky-Linux-发行版集成（核心）" class="headerlink" title="3. 与 Rocky Linux 发行版集成（核心）"></a>3. 与 Rocky Linux 发行版集成（核心）</h2><p><strong>Settings</strong> → <strong>Resources</strong> → <strong>WSL integration</strong>（<strong>WSL</strong> 集成）：</p>
+<ol>
+<li>打开 <strong>Enable integration with my default Wsl distro</strong>（与默认 <strong>WSL</strong> 发行版集成）（按需）。  </li>
+<li>在 <strong>Enable integration with additional distros</strong> 中，<strong>打开</strong>你的 <strong>Rocky Linux</strong> 名称（例如 <strong>Rocky-10</strong>）。  </li>
+<li>点击 <strong>Apply &amp; restart</strong>。</li>
+</ol>
+<p>之后在 <strong><code>wsl -d Rocky-10</code></strong> 的 shell 中应能直接执行 <strong><code>docker</code></strong>、<strong><code>docker compose</code></strong>，实际引擎由 <strong>Docker Desktop</strong> 提供，无需在 <strong>Rocky</strong> 里再装 <strong><code>dockerd</code></strong> 或配置 <strong>rootful</strong> 独立引擎（避免与 <strong>Desktop</strong> 抢端口、重复占资源）。</p>
+<h2 id="4-验证（在-Rocky-Linux-内）"><a href="#4-验证（在-Rocky-Linux-内）" class="headerlink" title="4. 验证（在 Rocky Linux 内）"></a>4. 验证（在 Rocky Linux 内）</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker version</span><br><span class="line">docker compose version</span><br></pre></td></tr></table></figure>
+
+<p>若提示找不到 <strong><code>docker</code></strong>：回到上一步检查该发行版集成开关，并执行 <strong><code>wsl --shutdown</code></strong> 后重新打开 <strong>Docker Desktop</strong> 与 <strong>WSL</strong> 终端。</p>
+<h2 id="5-镜像加速与构建缓存（Docker-Engine）"><a href="#5-镜像加速与构建缓存（Docker-Engine）" class="headerlink" title="5. 镜像加速与构建缓存（Docker Engine）"></a>5. 镜像加速与构建缓存（Docker Engine）</h2><p>在 <strong>Docker Desktop</strong> → <strong>Settings</strong>（设置）→ <strong>Docker Engine</strong> 中编辑 <strong>JSON</strong>（与引擎配置同源，保存后 <strong>Apply &amp; restart</strong> 生效）。若已有其它键（如 <strong><code>insecure-registries</code></strong>），请把下面片段<strong>合并</strong>进现有对象，不要整段覆盖导致丢配置。</p>
+<ul>
+<li><strong><code>registry-mirrors</code></strong>：拉取镜像时优先走列表中的镜像站，减轻访问 <strong><code>docker.io</code></strong> 的延迟与失败（镜像站可用性与合规以你网络环境为准，可日后替换为团队提供的地址）。  </li>
+<li><strong><code>builder.gc</code></strong>：为 <strong>BuildKit</strong> 构建缓存开启自动回收，<strong><code>defaultKeepStorage</code></strong> 限制默认保留量（示例 <strong>20GB</strong>），避免构建缓存占满磁盘。</li>
+</ul>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;builder&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;gc&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;defaultKeepStorage&quot;</span><span class="punctuation">:</span> <span class="string">&quot;20GB&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;enabled&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;experimental&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">false</span></span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;registry-mirrors&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">    <span class="string">&quot;https://docker.1ms.run&quot;</span></span><br><span class="line">  <span class="punctuation">]</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>修改后点击 <strong>Apply &amp; restart</strong>；再在 <strong>Rocky</strong> 或 <strong>PowerShell</strong> 中执行 <strong><code>docker info</code></strong>，在输出里确认 <strong><code>Registry Mirrors</code></strong> 已包含上述地址。</p>
+<h2 id="6-文件与性能建议"><a href="#6-文件与性能建议" class="headerlink" title="6. 文件与性能建议"></a>6. 文件与性能建议</h2><ul>
+<li><p>项目代码放在 <strong>WSL 发行版自己的 Linux 文件系统里</strong>（例如在 <strong><code>wsl -d Rocky-10</code></strong> 里用 <strong><code>~/project</code></strong>，即 <strong><code>/home/你的用户/project</code></strong>），不要放在 <strong><code>/mnt/c/...</code></strong> 下做大量编译与 <strong>Docker</strong> 构建，可减少跨系统 <strong>I&#x2F;O</strong> 延迟。  </p>
+</li>
+<li><p><strong>Docker Desktop</strong> 的 <strong>Settings → Resources</strong> 可调 <strong>CPU</strong>、内存、磁盘镜像上限，与 <strong>Rocky</strong> 其它进程共用本机资源，按机器配置酌情调大。</p>
+</li>
+</ul>
+<h2 id="7-与「在-Rocky-里单独装-Docker-Engine」的区别"><a href="#7-与「在-Rocky-里单独装-Docker-Engine」的区别" class="headerlink" title="7. 与「在 Rocky 里单独装 Docker Engine」的区别"></a>7. 与「在 Rocky 里单独装 Docker Engine」的区别</h2><table>
+<thead>
+<tr>
+<th>方式</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Docker Desktop + WSL 集成</strong>（本文推荐）</td>
+<td>一个图形界面管理引擎、更新与证书；<strong>Rocky</strong> 内仅 <strong>CLI</strong> 连到 <strong>Desktop</strong></td>
+</tr>
+<tr>
+<td><strong>Rocky 内 <code>dnf install docker-ce</code> 并跑 <code>dockerd</code></strong></td>
+<td>与 <strong>Desktop</strong> 两套引擎易冲突，一般不叠加以 <strong>Desktop</strong> 为主场景</td>
+</tr>
+</tbody></table>
+<p>若必须仅用发行版内 <strong>dockerd</strong>（无 <strong>Desktop</strong>），应关闭 <strong>Docker Desktop</strong> 的 <strong>WSL</strong> 集成或卸载 <strong>Desktop</strong>，并自行处理 <strong>iptables</strong>&#x2F;<strong>cgroup</strong> 等与 <strong>WSL</strong> 文档差异。</p>
+<hr>
+<h1 id="七、Rocky-Linux-首次进入与基础配置"><a href="#七、Rocky-Linux-首次进入与基础配置" class="headerlink" title="七、Rocky Linux 首次进入与基础配置"></a>七、Rocky Linux 首次进入与基础配置</h1><h2 id="1-进入发行版"><a href="#1-进入发行版" class="headerlink" title="1. 进入发行版"></a>1. 进入发行版</h2><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wsl <span class="literal">-d</span> Rocky<span class="literal">-10</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="2-是否需要「登录」、如何设置与验证-root-密码"><a href="#2-是否需要「登录」、如何设置与验证-root-密码" class="headerlink" title="2. 是否需要「登录」、如何设置与验证 root 密码"></a>2. 是否需要「登录」、如何设置与验证 <strong>root</strong> 密码</h2><p><strong>是否要登录</strong>：<strong>WSL</strong> 从 <strong>Windows Terminal</strong>、<strong><code>wsl -d Rocky-10</code></strong> 等方式进入时，一般是<strong>直接进入已配置的默认 Linux 用户的 shell</strong>，不会像 <strong>SSH</strong> 那样再在终端里提示输入一次用户名（除非你主动执行 <strong><code>login</code></strong>、<strong><code>su</code></strong> 等）。首次安装某些发行版时会交互式让你创建 <strong>UNIX</strong> 用户名与密码；<strong>Rocky</strong> 官方 <strong><code>.wsl</code></strong> 导入后的默认用户以该镜像说明为准（常见为 <strong><code>root</code></strong> 或需自行建普通用户，见下节）。</p>
+<p><strong>root 密码是什么、要不要设</strong>：<strong>root</strong> 账户始终存在；若从未执行过 <strong><code>passwd</code></strong>，<strong>root</strong> 可能没有可用登录密码（或镜像预置了密码，以发行版文档为准）。日常维护建议用<strong>带 <code>sudo</code> 的普通用户</strong>；需要 <strong>root shell</strong> 时再切。</p>
+<p><strong>设置 root 密码</strong>（在已能 <strong><code>sudo</code></strong> 的普通用户下）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> passwd root  <span class="comment"># pi=3.1415</span></span><br></pre></td></tr></table></figure>
+
+<p>若当前 shell <strong>已是 root</strong>（提示符常为 <strong><code>#</code></strong> 且 <strong><code>whoami</code></strong> 输出 <strong><code>root</code></strong>），直接：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">passwd</span><br></pre></td></tr></table></figure>
+
+<p><strong>如何验证 root 密码是否生效</strong>：在同一发行版里执行 <strong><code>su -</code></strong>，提示 <strong><code>Password:</code></strong> 时输入刚设的 root 密码；成功则进入 root 的登录 shell（<strong><code>whoami</code></strong> 应输出 <strong><code>root</code></strong>）。用 <strong><code>exit</code></strong> 退出。注意 <strong><code>sudo -i</code></strong> 校验的通常是<strong>当前用户</strong>的 <strong><code>sudo</code></strong> 凭据，不是专门用来「试 root 密码」的命令。</p>
+<p><strong>从 Windows 侧以 root 进入（忘记普通用户密码时）</strong>：在 <strong>PowerShell</strong> 中执行 <strong><code>wsl -d Rocky-10 -u root</code></strong>，一般无需先知道普通用户密码；进入后再 <strong><code>passwd youruser</code></strong> 重置普通用户，或 <strong><code>passwd root</code></strong> 重置 root。</p>
+<h2 id="3-用户与-sudo"><a href="#3-用户与-sudo" class="headerlink" title="3. 用户与 sudo"></a>3. 用户与 sudo</h2><p>按需创建普通用户并加入 <strong><code>wheel</code></strong>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> useradd -m -G wheel youruser</span><br><span class="line"><span class="built_in">sudo</span> passwd youruser</span><br></pre></td></tr></table></figure>
+
+<h2 id="4-系统更新"><a href="#4-系统更新" class="headerlink" title="4. 系统更新"></a>4. 系统更新</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> dnf -y update</span><br></pre></td></tr></table></figure>
+
+<h2 id="5-设为默认-WSL-发行版（可选）"><a href="#5-设为默认-WSL-发行版（可选）" class="headerlink" title="5. 设为默认 WSL 发行版（可选）"></a>5. 设为默认 WSL 发行版（可选）</h2><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wsl <span class="literal">--set-default</span> Rocky<span class="literal">-10</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="八、日常维护与常用命令（Windows-侧）"><a href="#八、日常维护与常用命令（Windows-侧）" class="headerlink" title="八、日常维护与常用命令（Windows 侧）"></a>八、日常维护与常用命令（Windows 侧）</h1><table>
+<thead>
+<tr>
+<th>目的</th>
+<th>命令示例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>列出发行版及 <strong>WSL</strong> 版本</td>
+<td><code>wsl -l -v</code></td>
+</tr>
+<tr>
+<td>关闭所有 <strong>WSL</strong></td>
+<td><code>wsl --shutdown</code></td>
+</tr>
+<tr>
+<td>删除某发行版（<strong>数据清空</strong>）</td>
+<td><code>wsl --unregister Rocky-10</code></td>
+</tr>
+<tr>
+<td>导出备份</td>
+<td><code>wsl --export Rocky-10 D:\backup\rocky-10.tar</code></td>
+</tr>
+</tbody></table>
+<p><strong>Docker Desktop</strong> 升级、重置可在 <strong>Windows</strong>「应用和功能」或 <strong>Docker Desktop</strong> 自带 <strong>Troubleshoot</strong> 中处理；与 <strong>WSL</strong> 内核相关的问题优先 <strong><code>wsl --update</code></strong>。</p>
+<hr>
+<h1 id="九、小结"><a href="#九、小结" class="headerlink" title="九、小结"></a>九、小结</h1><table>
+<thead>
+<tr>
+<th>步骤</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>基础</td>
+<td><strong>BIOS</strong> 虚拟化、<strong>WSL</strong> + <strong>虚拟机平台</strong>、<strong>WSL2</strong>、<strong><code>wsl --update</code></strong></td>
+</tr>
+<tr>
+<td><strong>Rocky Linux</strong></td>
+<td>默认 <strong>10</strong>：<strong><code>Rocky-10-WSL-Base.latest.*.wsl</code></strong> + <strong><code>--name Rocky-10</code></strong>；<strong>9</strong> 同理换包名与 <strong><code>--name</code></strong></td>
+</tr>
+<tr>
+<td><strong>Docker Desktop</strong></td>
+<td>安装时选 <strong>WSL 2</strong> 引擎；<strong>Settings → WSL integration</strong> 勾选 <strong>Rocky</strong> 发行版</td>
+</tr>
+<tr>
+<td>镜像加速</td>
+<td><strong>Settings → Docker Engine</strong>：<strong><code>registry-mirrors</code></strong> + <strong><code>builder.gc</code></strong>（见 <strong>五、5</strong>）</td>
+</tr>
+<tr>
+<td>验证</td>
+<td><strong>Rocky</strong> 内 <strong><code>docker run hello-world</code></strong></td>
+</tr>
+<tr>
+<td>用户与 <strong>root</strong></td>
+<td><strong>WSL</strong> 一般无二次「登录」；<strong><code>sudo passwd root</code></strong> 设密码，<strong><code>su -</code></strong> 验证；必要时 <strong><code>wsl -u root</code></strong>（见 <strong>七、2</strong>）</td>
+</tr>
+<tr>
+<td>实践建议</td>
+<td>代码放 <strong>Rocky 等发行版内 Linux 路径</strong>（如 <strong><code>~/project</code></strong>）；勿长期用 <strong><code>/mnt/c</code></strong> 做重编译；避免与发行版内独立 <strong><code>dockerd</code></strong> 混用</td>
+</tr>
+</tbody></table>
+<p><strong>Rocky Linux 9 &#x2F; 10</strong> 切换请对照官方 <strong>WSL</strong> 文档对应版本页；<strong>Docker Desktop</strong> 与 <strong>Windows</strong> 大版本兼容性以 <strong>Docker</strong> 发行说明为准。</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -1805,402 +2288,6 @@
 
 
 
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/SpringCloud/Nacos/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="miracle">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="my">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | my">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/05/01/SpringCloud/Nacos/" class="post-title-link" itemprop="url">Nacos 版本选型与容器化部署（对齐 Spring Cloud Alibaba）</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2026-05-01 14:55:07" itemprop="dateCreated datePublished" datetime="2026-05-01T14:55:07+08:00">2026-05-01</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-04 22:11:26" itemprop="dateModified" datetime="2026-05-04T22:11:26+08:00">2026-05-04</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/SpringCloud/" itemprop="url" rel="index"><span itemprop="name">SpringCloud</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>2.6k</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>9 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p><strong>Nacos</strong> 作注册中心与配置中心时，<strong>Server 大版本应与客户端同世代</strong>，并与 <strong>Spring Cloud Alibaba（SCA）</strong> BOM 里管理的 <strong>nacos-client</strong> 一致。站内 Gradle 搭建与 SCA BOM 选型见 <a href="/2026/05/01/SpringCloudAlibaba/">Spring Cloud Alibaba 与 Gradle 从零搭建</a>。</p>
-<hr>
-<h2 id="与-Spring-Cloud-Alibaba-的版本关系"><a href="#与-Spring-Cloud-Alibaba-的版本关系" class="headerlink" title="与 Spring Cloud Alibaba 的版本关系"></a>与 Spring Cloud Alibaba 的版本关系</h2><h3 id="SCA-2025-1-x-主线"><a href="#SCA-2025-1-x-主线" class="headerlink" title="SCA 2025.1.x 主线"></a>SCA 2025.1.x 主线</h3><table>
-<thead>
-<tr>
-<th>组件</th>
-<th>建议版本</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>Spring Cloud Alibaba BOM</td>
-<td><strong>2025.1.0.0</strong>（及后续 <strong>2025.1.0.x</strong> 补丁）</td>
-<td>以 <a target="_blank" rel="noopener" href="https://github.com/alibaba/spring-cloud-alibaba/releases">GitHub Releases</a> 为准</td>
-</tr>
-<tr>
-<td>nacos-client（由 BOM 管理）</td>
-<td><strong>3.1.1</strong></td>
-<td><strong>2025.1.0.0</strong> 发行说明明确从 3.0.3 升级至 <strong>3.1.1</strong></td>
-</tr>
-<tr>
-<td><strong>Nacos Server</strong></td>
-<td><strong>3.1.x</strong>，本文镜像钉 <strong>v3.1.1</strong></td>
-<td>与 <strong>nacos-client 3.1.x</strong> 同世代；镜像见 <a target="_blank" rel="noopener external nofollow noreferrer" href="https://hub.docker.com/r/nacos/nacos-server/tags">Docker Hub nacos&#x2F;nacos-server</a></td>
-</tr>
-</tbody></table>
-<p>应用侧 <code>spring.cloud.nacos.discovery.server-addr</code> 仍指向 <strong>8848</strong> 所在地址即可；客户端由 SCA 与 <strong>Nacos</strong> 协议栈处理 <strong>gRPC</strong> 等端口，一般无需在业务配置里手写 <strong>9848&#x2F;9849</strong>。</p>
-<hr>
-<h2 id="Nacos-3-x-端口与控制台"><a href="#Nacos-3-x-端口与控制台" class="headerlink" title="Nacos 3.x 端口与控制台"></a>Nacos 3.x 端口与控制台</h2><p><strong>Nacos 3.x</strong> 默认将<strong>控制台</strong>与核心进程分离：控制台常见为 <strong>8080</strong>（路径 <strong><code>/index.html</code></strong>），<strong>8848</strong> 仍为服务端主端口；容器示例还会映射 <strong>9848</strong>（及集群场景下相关端口）。与 <strong>Nacos 2.x</strong> 单端口习惯不同，部署防火墙与 <strong>Service</strong> 端口时要同时放行控制台与客户端所需端口。官方说明见 <a target="_blank" rel="noopener" href="https://github.com/nacos-group/nacos-docker">nacos-group&#x2F;nacos-docker</a> README。</p>
-<p>自 <strong>Nacos 2.2.1</strong> 起镜像不再内置默认 <strong><code>NACOS_AUTH_*</code></strong>，<strong>必须</strong>自行传入，否则启动报错；<strong>Nacos 3.x</strong> 快速启动示例同样要求 <strong><code>NACOS_AUTH_TOKEN</code></strong>、<strong><code>NACOS_AUTH_IDENTITY_KEY</code></strong>、<strong><code>NACOS_AUTH_IDENTITY_VALUE</code></strong>。以下为占位符，<strong>生产环境请换成高强度随机值并纳入密钥管理</strong>。</p>
-<hr>
-<h2 id="Docker-单容器"><a href="#Docker-单容器" class="headerlink" title="Docker 单容器"></a>Docker 单容器</h2><p><strong>Standalone + 内嵌存储（开发&#x2F;本地验证）</strong>，镜像与 SCA <strong>2025.1.0.0</strong> 对齐为 <strong>v3.1.1</strong>：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 请先导出为真实密钥，勿将示例值用于生产</span></span><br><span class="line"><span class="built_in">export</span> NACOS_AUTH_TOKEN=<span class="string">&#x27;请替换为长度足够的随机串&#x27;</span></span><br><span class="line"><span class="built_in">export</span> NACOS_AUTH_IDENTITY_KEY=<span class="string">&#x27;serverIdentityKey&#x27;</span></span><br><span class="line"><span class="built_in">export</span> NACOS_AUTH_IDENTITY_VALUE=<span class="string">&#x27;serverIdentityValue&#x27;</span></span><br><span class="line"></span><br><span class="line">docker run -d --name nacos \</span><br><span class="line">  -e MODE=standalone \</span><br><span class="line">  -e NACOS_AUTH_TOKEN \</span><br><span class="line">  -e NACOS_AUTH_IDENTITY_KEY \</span><br><span class="line">  -e NACOS_AUTH_IDENTITY_VALUE \</span><br><span class="line">  -p 8080:8080 \</span><br><span class="line">  -p 8848:8848 \</span><br><span class="line">  -p 9848:9848 \</span><br><span class="line">  nacos/nacos-server:v3.1.1</span><br></pre></td></tr></table></figure>
-
-<p><strong>ARM64</strong>（如 Apple Silicon）可选用 <strong><code>nacos/nacos-server:v3.1.1-slim</code></strong>（官方 README 说明 <strong>-slim</strong> 支持 <strong>arm</strong>）。</p>
-<p>控制台：<strong><a target="_blank" rel="noopener external nofollow noreferrer" href="http://127.0.0.1:8080/index.html">http://127.0.0.1:8080/index.html</a></strong> ，默认用户 <strong><code>nacos</code> &#x2F; <code>nacos</code></strong>（首次登录后应修改密码）。业务注册地址示例：<strong><code>127.0.0.1:8848</code></strong>。</p>
-<p>可选 JVM 与数据源等环境变量见官方 <a target="_blank" rel="noopener" href="https://github.com/nacos-group/nacos-docker#common-property-configuration">Common property configuration</a>（如 <strong><code>JVM_XMS</code></strong> &#x2F; <strong><code>JVM_XMX</code></strong>）。<strong>外置 MySQL</strong> 的建库、<strong>schema</strong> 与 <strong><code>MYSQL_*</code></strong> 环境变量见下文 <strong><code>## 外置 MySQL（容器连接库表）</code></strong>。</p>
-<hr>
-<h2 id="Docker-Compose"><a href="#Docker-Compose" class="headerlink" title="Docker Compose"></a>Docker Compose</h2><p>下面为完整 <strong><code>docker-compose.yml</code></strong>（<strong>Compose file format 3.8</strong>），与上文 <strong>Docker</strong> 单容器参数等价；<strong><code>env_file</code></strong> 可再拆出 <strong><code>.env</code></strong>，此处为单文件自包含示例（<strong><code>NACOS_AUTH_*</code> 仍为占位，部署前请替换</strong>）。</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">version:</span> <span class="string">&quot;3.8&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="attr">name:</span> <span class="string">nacos-standalone-derby</span></span><br><span class="line"></span><br><span class="line"><span class="attr">services:</span></span><br><span class="line">  <span class="attr">nacos:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">nacos/nacos-server:v3.1.1</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">nacos-standalone-derby</span></span><br><span class="line">    <span class="attr">restart:</span> <span class="string">unless-stopped</span></span><br><span class="line">    <span class="attr">environment:</span></span><br><span class="line">      <span class="attr">MODE:</span> <span class="string">standalone</span></span><br><span class="line">      <span class="attr">NACOS_AUTH_TOKEN:</span> <span class="string">&quot;请替换为长度足够的随机串&quot;</span></span><br><span class="line">      <span class="attr">NACOS_AUTH_IDENTITY_KEY:</span> <span class="string">&quot;serverIdentityKey&quot;</span></span><br><span class="line">      <span class="attr">NACOS_AUTH_IDENTITY_VALUE:</span> <span class="string">&quot;serverIdentityValue&quot;</span></span><br><span class="line">      <span class="comment"># JVM_XMS: &quot;512m&quot;</span></span><br><span class="line">      <span class="comment"># JVM_XMX: &quot;512m&quot;</span></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;8080:8080&quot;</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;8848:8848&quot;</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;9848:9848&quot;</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">nacos_data:/home/nacos/data</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">nacos_logs:/home/nacos/logs</span></span><br><span class="line"></span><br><span class="line"><span class="attr">volumes:</span></span><br><span class="line">  <span class="attr">nacos_data:</span></span><br><span class="line">    <span class="attr">driver:</span> <span class="string">local</span></span><br><span class="line">  <span class="attr">nacos_logs:</span></span><br><span class="line">    <span class="attr">driver:</span> <span class="string">local</span></span><br><span class="line"></span><br><span class="line"><span class="attr">networks:</span></span><br><span class="line">  <span class="attr">default:</span></span><br><span class="line">    <span class="attr">name:</span> <span class="string">nacos-standalone-derby-net</span></span><br><span class="line">    <span class="attr">driver:</span> <span class="string">bridge</span></span><br></pre></td></tr></table></figure>
-
-<p>若希望密钥不进 <strong>Compose</strong> 文件，可改回 <strong><code>environment: ${VAR}</code></strong> 并同目录提供 <strong><code>.env</code></strong>（加入 <strong><code>.gitignore</code></strong>）。</p>
-<p>启动：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker compose -f docker-compose.yml up -d</span><br></pre></td></tr></table></figure>
-
-<p><strong>集群</strong>或控制台与节点拆分等，可直接复用官方 <strong><code>example/</code></strong> 下 <strong><code>cluster-hostname.yaml</code></strong>、<strong><code>standalone-independent-mysql.yaml</code></strong>（仅 <strong>Nacos 3.x</strong>）等，并把镜像版本改为 <strong><code>v3.1.1</code></strong>；与 <strong>MySQL</strong> 同库的 <strong>Compose</strong> 见下文。</p>
-<hr>
-<h2 id="外置-MySQL（容器连接库表）"><a href="#外置-MySQL（容器连接库表）" class="headerlink" title="外置 MySQL（容器连接库表）"></a>外置 MySQL（容器连接库表）</h2><p><strong>Nacos</strong> 官方镜像通过环境变量切换存储：<strong>不设置</strong> <strong><code>SPRING_DATASOURCE_PLATFORM</code></strong>（或为空）时使用内嵌 <strong>Derby</strong>；设为 <strong><code>mysql</code></strong> 时使用外置 <strong>MySQL</strong>。变量名与 <strong><code>nacos-docker</code></strong> 中 <strong><code>env/nacos-standalone-mysql.env</code></strong> 一致。</p>
-<h3 id="1-前置：建库与表结构"><a href="#1-前置：建库与表结构" class="headerlink" title="1. 前置：建库与表结构"></a>1. 前置：建库与表结构</h3><ol>
-<li>在 <strong>MySQL 8.x</strong> 中创建库（示例库名 <strong><code>nacos_devtest</code></strong>），字符集 <strong><code>utf8mb4</code></strong> &#x2F; 排序规则 <strong><code>utf8mb4_unicode_ci</code></strong>（与官方 <strong>Compose</strong> 一致即可）。  </li>
-<li>为 <strong>Nacos</strong> 单独业务账号并授权该库（<strong>最小权限</strong>）。  </li>
-<li><strong>首次部署前</strong>在目标库执行与 <strong>Server 版本匹配</strong> 的 <strong><code>mysql-schema.sql</code></strong>（官方仓库路径随版本调整，当前可在 <strong>Nacos</strong> 仓库中查找 <strong><code>mysql-schema.sql</code></strong>，例如 <a target="_blank" rel="noopener" href="https://github.com/alibaba/nacos/tree/develop/plugin-default-impl/nacos-default-datasource-plugin/nacos-datasource-plugin-mysql/src/main/resources/META-INF">nacos 仓库内 mysql 插件资源目录</a> 下的脚本；升级 <strong>Server</strong> 大版本时务必对照发行说明是否需迁移脚本）。  </li>
-<li>容器网络： <strong><code>MYSQL_SERVICE_HOST</code></strong> 必须填 <strong>Nacos 容器能解析到的地址</strong>——同 <strong>Compose</strong> 栈内用服务名（如 <strong><code>mysql</code></strong>）；宿主机上的库在 <strong>Linux</strong> 上常用宿主机网关 <strong>IP</strong> 或 <strong><code>host.docker.internal</code></strong>（视 <strong>Docker</strong> 版本而定），<strong>不要用</strong> <strong><code>127.0.0.1</code></strong> 指宿主机上的 <strong>MySQL</strong>。</li>
-</ol>
-<h3 id="2-常用环境变量（官方镜像）"><a href="#2-常用环境变量（官方镜像）" class="headerlink" title="2. 常用环境变量（官方镜像）"></a>2. 常用环境变量（官方镜像）</h3><table>
-<thead>
-<tr>
-<th>变量</th>
-<th>含义</th>
-<th>示例</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong><code>SPRING_DATASOURCE_PLATFORM</code></strong></td>
-<td>固定为 <strong><code>mysql</code></strong> 启用外置库</td>
-<td><strong><code>mysql</code></strong></td>
-</tr>
-<tr>
-<td><strong><code>MYSQL_SERVICE_HOST</code></strong></td>
-<td><strong>MySQL</strong> 主机名或 <strong>IP</strong></td>
-<td><strong><code>mysql</code></strong>（同网络服务名）</td>
-</tr>
-<tr>
-<td><strong><code>MYSQL_SERVICE_PORT</code></strong></td>
-<td>端口</td>
-<td><strong><code>3306</code></strong></td>
-</tr>
-<tr>
-<td><strong><code>MYSQL_SERVICE_DB_NAME</code></strong></td>
-<td>库名</td>
-<td><strong><code>nacos_devtest</code></strong></td>
-</tr>
-<tr>
-<td><strong><code>MYSQL_SERVICE_USER</code></strong> &#x2F; <strong><code>MYSQL_SERVICE_PASSWORD</code></strong></td>
-<td>账号密码</td>
-<td>由你方创建</td>
-</tr>
-<tr>
-<td><strong><code>MYSQL_SERVICE_DB_PARAM</code></strong></td>
-<td><strong>JDBC</strong> 查询串（时区、<strong>SSL</strong> 等）</td>
-<td>见下方示例</td>
-</tr>
-<tr>
-<td><strong><code>MYSQL_DATABASE_NUM</code></strong></td>
-<td>多数据源数量</td>
-<td>一般为 <strong><code>1</code></strong>，默认可不写</td>
-</tr>
-</tbody></table>
-<p><strong><code>MYSQL_SERVICE_DB_PARAM</code></strong> 可与官方示例一致（按需改时区、<strong>SSL</strong>）：</p>
-<p><code>characterEncoding=utf8&amp;connectTimeout=1000&amp;socketTimeout=3000&amp;autoReconnect=true&amp;useUnicode=true&amp;useSSL=false&amp;serverTimezone=Asia/Shanghai&amp;allowPublicKeyRetrieval=true</code></p>
-<p>仍须保留 <strong><code>NACOS_AUTH_*</code></strong> 等与鉴权相关的变量（见上文 <strong>Standalone</strong> 示例）。</p>
-<h3 id="3-Docker-单容器（指向已有-MySQL）"><a href="#3-Docker-单容器（指向已有-MySQL）" class="headerlink" title="3. Docker 单容器（指向已有 MySQL）"></a>3. Docker 单容器（指向已有 MySQL）</h3><p>在 <strong><code>SPRING_DATASOURCE_PLATFORM=mysql</code></strong> 及 <strong><code>MYSQL_*</code></strong> 齐全的前提下启动（<strong><code>MYSQL_SERVICE_HOST</code></strong> 改为可达地址）：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> NACOS_AUTH_TOKEN=<span class="string">&#x27;…&#x27;</span></span><br><span class="line"><span class="built_in">export</span> NACOS_AUTH_IDENTITY_KEY=<span class="string">&#x27;…&#x27;</span></span><br><span class="line"><span class="built_in">export</span> NACOS_AUTH_IDENTITY_VALUE=<span class="string">&#x27;…&#x27;</span></span><br><span class="line"></span><br><span class="line">docker run -d --name nacos \</span><br><span class="line">  -e MODE=standalone \</span><br><span class="line">  -e SPRING_DATASOURCE_PLATFORM=mysql \</span><br><span class="line">  -e MYSQL_SERVICE_HOST=你的MySQL主机 \</span><br><span class="line">  -e MYSQL_SERVICE_PORT=3306 \</span><br><span class="line">  -e MYSQL_SERVICE_DB_NAME=nacos_devtest \</span><br><span class="line">  -e MYSQL_SERVICE_USER=nacos \</span><br><span class="line">  -e MYSQL_SERVICE_PASSWORD=<span class="string">&#x27;你的密码&#x27;</span> \</span><br><span class="line">  -e MYSQL_SERVICE_DB_PARAM=<span class="string">&#x27;characterEncoding=utf8&amp;connectTimeout=1000&amp;socketTimeout=3000&amp;autoReconnect=true&amp;useUnicode=true&amp;useSSL=false&amp;serverTimezone=Asia/Shanghai&amp;allowPublicKeyRetrieval=true&#x27;</span> \</span><br><span class="line">  -e NACOS_AUTH_TOKEN -e NACOS_AUTH_IDENTITY_KEY -e NACOS_AUTH_IDENTITY_VALUE \</span><br><span class="line">  -p 8080:8080 -p 8848:8848 -p 9848:9848 \</span><br><span class="line">  nacos/nacos-server:v3.1.1</span><br></pre></td></tr></table></figure>
-
-<h3 id="4-Docker-Compose（Nacos-MySQL-同栈）"><a href="#4-Docker-Compose（Nacos-MySQL-同栈）" class="headerlink" title="4. Docker Compose（Nacos + MySQL 同栈）"></a>4. Docker Compose（Nacos + MySQL 同栈）</h3><p>与 <strong><code>nacos-docker</code></strong> 的 <strong><code>example/standalone-mysql.yaml</code></strong> 思路一致：<strong><code>mysql</code></strong> 先就绪并导入 <strong>schema</strong>，<strong><code>nacos</code></strong> 通过服务名连库。完整 <strong><code>docker-compose.mysql.yml</code></strong> 如下（<strong><code>./mysql-init/</code></strong> 下放置官方 <strong><code>mysql-schema.sql</code></strong> 后首次启动会自动建表；<strong><code>MYSQL_ROOT_PASSWORD</code></strong>、<strong><code>NACOS_AUTH_*</code></strong> 等均为占位）。</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">version:</span> <span class="string">&quot;3.8&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="attr">name:</span> <span class="string">nacos-standalone-mysql</span></span><br><span class="line"></span><br><span class="line"><span class="attr">services:</span></span><br><span class="line">  <span class="attr">mysql:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">mysql:8.0</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">nacos-mysql</span></span><br><span class="line">    <span class="attr">restart:</span> <span class="string">unless-stopped</span></span><br><span class="line">    <span class="attr">environment:</span></span><br><span class="line">      <span class="attr">MYSQL_ROOT_PASSWORD:</span> <span class="string">&quot;root-change-me&quot;</span></span><br><span class="line">      <span class="attr">MYSQL_DATABASE:</span> <span class="string">&quot;nacos_devtest&quot;</span></span><br><span class="line">      <span class="attr">MYSQL_USER:</span> <span class="string">&quot;nacos&quot;</span></span><br><span class="line">      <span class="attr">MYSQL_PASSWORD:</span> <span class="string">&quot;nacos-change-me&quot;</span></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;3306:3306&quot;</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">mysql_data:/var/lib/mysql</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">./mysql-init:/docker-entrypoint-initdb.d:ro</span></span><br><span class="line">    <span class="attr">command:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;--character-set-server=utf8mb4&quot;</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;--collation-server=utf8mb4_unicode_ci&quot;</span></span><br><span class="line">    <span class="attr">healthcheck:</span></span><br><span class="line">      <span class="attr">test:</span> [<span class="string">&quot;CMD&quot;</span>, <span class="string">&quot;mysqladmin&quot;</span>, <span class="string">&quot;ping&quot;</span>, <span class="string">&quot;-h&quot;</span>, <span class="string">&quot;localhost&quot;</span>, <span class="string">&quot;-uroot&quot;</span>, <span class="string">&quot;-proot-change-me&quot;</span>]</span><br><span class="line">      <span class="attr">interval:</span> <span class="string">5s</span></span><br><span class="line">      <span class="attr">timeout:</span> <span class="string">10s</span></span><br><span class="line">      <span class="attr">retries:</span> <span class="number">30</span></span><br><span class="line">      <span class="attr">start_period:</span> <span class="string">40s</span></span><br><span class="line"></span><br><span class="line">  <span class="attr">nacos:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">nacos/nacos-server:v3.1.1</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">nacos-standalone-mysql</span></span><br><span class="line">    <span class="attr">restart:</span> <span class="string">unless-stopped</span></span><br><span class="line">    <span class="attr">depends_on:</span></span><br><span class="line">      <span class="attr">mysql:</span></span><br><span class="line">        <span class="attr">condition:</span> <span class="string">service_healthy</span></span><br><span class="line">    <span class="attr">environment:</span></span><br><span class="line">      <span class="attr">MODE:</span> <span class="string">standalone</span></span><br><span class="line">      <span class="attr">SPRING_DATASOURCE_PLATFORM:</span> <span class="string">mysql</span></span><br><span class="line">      <span class="attr">MYSQL_SERVICE_HOST:</span> <span class="string">mysql</span></span><br><span class="line">      <span class="attr">MYSQL_SERVICE_PORT:</span> <span class="string">&quot;3306&quot;</span></span><br><span class="line">      <span class="attr">MYSQL_SERVICE_DB_NAME:</span> <span class="string">nacos_devtest</span></span><br><span class="line">      <span class="attr">MYSQL_SERVICE_USER:</span> <span class="string">nacos</span></span><br><span class="line">      <span class="attr">MYSQL_SERVICE_PASSWORD:</span> <span class="string">nacos-change-me</span></span><br><span class="line">      <span class="attr">MYSQL_SERVICE_DB_PARAM:</span> <span class="string">&quot;characterEncoding=utf8&amp;connectTimeout=1000&amp;socketTimeout=3000&amp;autoReconnect=true&amp;useUnicode=true&amp;useSSL=false&amp;serverTimezone=Asia/Shanghai&amp;allowPublicKeyRetrieval=true&quot;</span></span><br><span class="line">      <span class="attr">NACOS_AUTH_TOKEN:</span> <span class="string">&quot;请替换为长度足够的随机串&quot;</span></span><br><span class="line">      <span class="attr">NACOS_AUTH_IDENTITY_KEY:</span> <span class="string">&quot;serverIdentityKey&quot;</span></span><br><span class="line">      <span class="attr">NACOS_AUTH_IDENTITY_VALUE:</span> <span class="string">&quot;serverIdentityValue&quot;</span></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;8080:8080&quot;</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;8848:8848&quot;</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;9848:9848&quot;</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">nacos_data:/home/nacos/data</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">nacos_logs:/home/nacos/logs</span></span><br><span class="line"></span><br><span class="line"><span class="attr">volumes:</span></span><br><span class="line">  <span class="attr">mysql_data:</span></span><br><span class="line">    <span class="attr">driver:</span> <span class="string">local</span></span><br><span class="line">  <span class="attr">nacos_data:</span></span><br><span class="line">    <span class="attr">driver:</span> <span class="string">local</span></span><br><span class="line">  <span class="attr">nacos_logs:</span></span><br><span class="line">    <span class="attr">driver:</span> <span class="string">local</span></span><br><span class="line"></span><br><span class="line"><span class="attr">networks:</span></span><br><span class="line">  <span class="attr">default:</span></span><br><span class="line">    <span class="attr">name:</span> <span class="string">nacos-standalone-mysql-net</span></span><br><span class="line">    <span class="attr">driver:</span> <span class="string">bridge</span></span><br></pre></td></tr></table></figure>
-
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker compose -f docker-compose.mysql.yml up -d</span><br></pre></td></tr></table></figure>
-
-<p>生产请把敏感项改为 <strong><code>.env</code> &#x2F; 外部 Secret</strong>；官方 <strong><code>mysql-init.sh</code></strong>、<strong><code>env/mysql.env</code></strong> 见 <a target="_blank" rel="noopener" href="https://github.com/nacos-group/nacos-docker">nacos-docker</a>。</p>
-<h3 id="5-Kubernetes（单文件完整清单）"><a href="#5-Kubernetes（单文件完整清单）" class="headerlink" title="5. Kubernetes（单文件完整清单）"></a>5. Kubernetes（单文件完整清单）</h3><p>集群内 <strong>MySQL + Nacos</strong> 可用下面<strong>一份多文档 YAML</strong> 一次应用（<strong><code>default</code></strong> 命名空间；<strong><code>nacos-data</code> &#x2F; <code>nacos-logs</code></strong> 的 <strong>PVC</strong> 未写 <strong><code>storageClassName</code></strong> 时将使用集群默认 <strong>StorageClass</strong>，无默认时请自行补上）。<strong>MySQL</strong> 数据目录示例为 <strong><code>emptyDir</code></strong>，仅适合演示；上生产请为 <strong>MySQL</strong> 使用 <strong>PVC</strong>（或云托管库），并在库就绪后按上文「前置」导入 <strong><code>mysql-schema.sql</code></strong>。<strong>MySQL</strong> 就绪探针使用 <strong><code>tcpSocket</code></strong> 检测 <strong>3306</strong>。</p>
-<p><strong><code>nacos-stack-mysql.yaml</code></strong>（完整示例）：</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Secret</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">nacos-auth</span></span><br><span class="line">  <span class="attr">namespace:</span> <span class="string">default</span></span><br><span class="line"><span class="attr">type:</span> <span class="string">Opaque</span></span><br><span class="line"><span class="attr">stringData:</span></span><br><span class="line">  <span class="attr">NACOS_AUTH_TOKEN:</span> <span class="string">&quot;请替换为长度足够的随机串&quot;</span></span><br><span class="line">  <span class="attr">NACOS_AUTH_IDENTITY_KEY:</span> <span class="string">&quot;serverIdentityKey&quot;</span></span><br><span class="line">  <span class="attr">NACOS_AUTH_IDENTITY_VALUE:</span> <span class="string">&quot;serverIdentityValue&quot;</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Secret</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">nacos-db</span></span><br><span class="line">  <span class="attr">namespace:</span> <span class="string">default</span></span><br><span class="line"><span class="attr">type:</span> <span class="string">Opaque</span></span><br><span class="line"><span class="attr">stringData:</span></span><br><span class="line">  <span class="attr">MYSQL_ROOT_PASSWORD:</span> <span class="string">&quot;root-change-me&quot;</span></span><br><span class="line">  <span class="attr">MYSQL_APP_USER:</span> <span class="string">&quot;nacos&quot;</span></span><br><span class="line">  <span class="attr">MYSQL_APP_PASSWORD:</span> <span class="string">&quot;nacos-change-me&quot;</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">PersistentVolumeClaim</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">nacos-data</span></span><br><span class="line">  <span class="attr">namespace:</span> <span class="string">default</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">accessModes:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">ReadWriteOnce</span></span><br><span class="line">  <span class="attr">resources:</span></span><br><span class="line">    <span class="attr">requests:</span></span><br><span class="line">      <span class="attr">storage:</span> <span class="string">10Gi</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">PersistentVolumeClaim</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">nacos-logs</span></span><br><span class="line">  <span class="attr">namespace:</span> <span class="string">default</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">accessModes:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">ReadWriteOnce</span></span><br><span class="line">  <span class="attr">resources:</span></span><br><span class="line">    <span class="attr">requests:</span></span><br><span class="line">      <span class="attr">storage:</span> <span class="string">5Gi</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Service</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">mysql</span></span><br><span class="line">  <span class="attr">namespace:</span> <span class="string">default</span></span><br><span class="line">  <span class="attr">labels:</span></span><br><span class="line">    <span class="attr">app:</span> <span class="string">mysql</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">type:</span> <span class="string">ClusterIP</span></span><br><span class="line">  <span class="attr">selector:</span></span><br><span class="line">    <span class="attr">app:</span> <span class="string">mysql</span></span><br><span class="line">  <span class="attr">ports:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">mysql</span></span><br><span class="line">      <span class="attr">port:</span> <span class="number">3306</span></span><br><span class="line">      <span class="attr">targetPort:</span> <span class="number">3306</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">apps/v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Deployment</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">mysql</span></span><br><span class="line">  <span class="attr">namespace:</span> <span class="string">default</span></span><br><span class="line">  <span class="attr">labels:</span></span><br><span class="line">    <span class="attr">app:</span> <span class="string">mysql</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">replicas:</span> <span class="number">1</span></span><br><span class="line">  <span class="attr">selector:</span></span><br><span class="line">    <span class="attr">matchLabels:</span></span><br><span class="line">      <span class="attr">app:</span> <span class="string">mysql</span></span><br><span class="line">  <span class="attr">template:</span></span><br><span class="line">    <span class="attr">metadata:</span></span><br><span class="line">      <span class="attr">labels:</span></span><br><span class="line">        <span class="attr">app:</span> <span class="string">mysql</span></span><br><span class="line">    <span class="attr">spec:</span></span><br><span class="line">      <span class="attr">containers:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">mysql</span></span><br><span class="line">          <span class="attr">image:</span> <span class="string">mysql:8.0</span></span><br><span class="line">          <span class="attr">ports:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">containerPort:</span> <span class="number">3306</span></span><br><span class="line">              <span class="attr">name:</span> <span class="string">mysql</span></span><br><span class="line">          <span class="attr">env:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">MYSQL_ROOT_PASSWORD</span></span><br><span class="line">              <span class="attr">valueFrom:</span></span><br><span class="line">                <span class="attr">secretKeyRef:</span></span><br><span class="line">                  <span class="attr">name:</span> <span class="string">nacos-db</span></span><br><span class="line">                  <span class="attr">key:</span> <span class="string">MYSQL_ROOT_PASSWORD</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">MYSQL_DATABASE</span></span><br><span class="line">              <span class="attr">value:</span> <span class="string">&quot;nacos_devtest&quot;</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">MYSQL_USER</span></span><br><span class="line">              <span class="attr">valueFrom:</span></span><br><span class="line">                <span class="attr">secretKeyRef:</span></span><br><span class="line">                  <span class="attr">name:</span> <span class="string">nacos-db</span></span><br><span class="line">                  <span class="attr">key:</span> <span class="string">MYSQL_APP_USER</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">MYSQL_PASSWORD</span></span><br><span class="line">              <span class="attr">valueFrom:</span></span><br><span class="line">                <span class="attr">secretKeyRef:</span></span><br><span class="line">                  <span class="attr">name:</span> <span class="string">nacos-db</span></span><br><span class="line">                  <span class="attr">key:</span> <span class="string">MYSQL_APP_PASSWORD</span></span><br><span class="line">          <span class="attr">args:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="string">&quot;--character-set-server=utf8mb4&quot;</span></span><br><span class="line">            <span class="bullet">-</span> <span class="string">&quot;--collation-server=utf8mb4_unicode_ci&quot;</span></span><br><span class="line">          <span class="attr">volumeMounts:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">mysql-data</span></span><br><span class="line">              <span class="attr">mountPath:</span> <span class="string">/var/lib/mysql</span></span><br><span class="line">          <span class="attr">readinessProbe:</span></span><br><span class="line">            <span class="attr">tcpSocket:</span></span><br><span class="line">              <span class="attr">port:</span> <span class="number">3306</span></span><br><span class="line">            <span class="attr">initialDelaySeconds:</span> <span class="number">15</span></span><br><span class="line">            <span class="attr">periodSeconds:</span> <span class="number">5</span></span><br><span class="line">            <span class="attr">timeoutSeconds:</span> <span class="number">3</span></span><br><span class="line">            <span class="attr">failureThreshold:</span> <span class="number">30</span></span><br><span class="line">      <span class="attr">volumes:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">mysql-data</span></span><br><span class="line">          <span class="attr">emptyDir:</span> &#123;&#125;</span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">apps/v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Deployment</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">nacos</span></span><br><span class="line">  <span class="attr">namespace:</span> <span class="string">default</span></span><br><span class="line">  <span class="attr">labels:</span></span><br><span class="line">    <span class="attr">app:</span> <span class="string">nacos</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">replicas:</span> <span class="number">1</span></span><br><span class="line">  <span class="attr">selector:</span></span><br><span class="line">    <span class="attr">matchLabels:</span></span><br><span class="line">      <span class="attr">app:</span> <span class="string">nacos</span></span><br><span class="line">  <span class="attr">template:</span></span><br><span class="line">    <span class="attr">metadata:</span></span><br><span class="line">      <span class="attr">labels:</span></span><br><span class="line">        <span class="attr">app:</span> <span class="string">nacos</span></span><br><span class="line">    <span class="attr">spec:</span></span><br><span class="line">      <span class="attr">initContainers:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">wait-mysql</span></span><br><span class="line">          <span class="attr">image:</span> <span class="string">busybox:1.36</span></span><br><span class="line">          <span class="attr">command:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="string">sh</span></span><br><span class="line">            <span class="bullet">-</span> <span class="string">-c</span></span><br><span class="line">            <span class="bullet">-</span> <span class="string">|</span></span><br><span class="line"><span class="string">              until nc -z mysql 3306; do echo waiting for mysql; sleep 2; done</span></span><br><span class="line"><span class="string"></span>      <span class="attr">volumes:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">nacos-data</span></span><br><span class="line">          <span class="attr">persistentVolumeClaim:</span></span><br><span class="line">            <span class="attr">claimName:</span> <span class="string">nacos-data</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">nacos-logs</span></span><br><span class="line">          <span class="attr">persistentVolumeClaim:</span></span><br><span class="line">            <span class="attr">claimName:</span> <span class="string">nacos-logs</span></span><br><span class="line">      <span class="attr">containers:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">nacos</span></span><br><span class="line">          <span class="attr">image:</span> <span class="string">nacos/nacos-server:v3.1.1</span></span><br><span class="line">          <span class="attr">ports:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">containerPort:</span> <span class="number">8080</span></span><br><span class="line">              <span class="attr">name:</span> <span class="string">console</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">containerPort:</span> <span class="number">8848</span></span><br><span class="line">              <span class="attr">name:</span> <span class="string">http</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">containerPort:</span> <span class="number">9848</span></span><br><span class="line">              <span class="attr">name:</span> <span class="string">grpc-client</span></span><br><span class="line">          <span class="attr">volumeMounts:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">nacos-data</span></span><br><span class="line">              <span class="attr">mountPath:</span> <span class="string">/home/nacos/data</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">nacos-logs</span></span><br><span class="line">              <span class="attr">mountPath:</span> <span class="string">/home/nacos/logs</span></span><br><span class="line">          <span class="attr">env:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">MODE</span></span><br><span class="line">              <span class="attr">value:</span> <span class="string">&quot;standalone&quot;</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">SPRING_DATASOURCE_PLATFORM</span></span><br><span class="line">              <span class="attr">value:</span> <span class="string">&quot;mysql&quot;</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">MYSQL_SERVICE_HOST</span></span><br><span class="line">              <span class="attr">value:</span> <span class="string">&quot;mysql&quot;</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">MYSQL_SERVICE_PORT</span></span><br><span class="line">              <span class="attr">value:</span> <span class="string">&quot;3306&quot;</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">MYSQL_SERVICE_DB_NAME</span></span><br><span class="line">              <span class="attr">value:</span> <span class="string">&quot;nacos_devtest&quot;</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">MYSQL_SERVICE_USER</span></span><br><span class="line">              <span class="attr">valueFrom:</span></span><br><span class="line">                <span class="attr">secretKeyRef:</span></span><br><span class="line">                  <span class="attr">name:</span> <span class="string">nacos-db</span></span><br><span class="line">                  <span class="attr">key:</span> <span class="string">MYSQL_APP_USER</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">MYSQL_SERVICE_PASSWORD</span></span><br><span class="line">              <span class="attr">valueFrom:</span></span><br><span class="line">                <span class="attr">secretKeyRef:</span></span><br><span class="line">                  <span class="attr">name:</span> <span class="string">nacos-db</span></span><br><span class="line">                  <span class="attr">key:</span> <span class="string">MYSQL_APP_PASSWORD</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">MYSQL_SERVICE_DB_PARAM</span></span><br><span class="line">              <span class="attr">value:</span> <span class="string">&quot;characterEncoding=utf8&amp;connectTimeout=1000&amp;socketTimeout=3000&amp;autoReconnect=true&amp;useUnicode=true&amp;useSSL=false&amp;serverTimezone=Asia/Shanghai&amp;allowPublicKeyRetrieval=true&quot;</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">NACOS_AUTH_TOKEN</span></span><br><span class="line">              <span class="attr">valueFrom:</span></span><br><span class="line">                <span class="attr">secretKeyRef:</span></span><br><span class="line">                  <span class="attr">name:</span> <span class="string">nacos-auth</span></span><br><span class="line">                  <span class="attr">key:</span> <span class="string">NACOS_AUTH_TOKEN</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">NACOS_AUTH_IDENTITY_KEY</span></span><br><span class="line">              <span class="attr">valueFrom:</span></span><br><span class="line">                <span class="attr">secretKeyRef:</span></span><br><span class="line">                  <span class="attr">name:</span> <span class="string">nacos-auth</span></span><br><span class="line">                  <span class="attr">key:</span> <span class="string">NACOS_AUTH_IDENTITY_KEY</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">NACOS_AUTH_IDENTITY_VALUE</span></span><br><span class="line">              <span class="attr">valueFrom:</span></span><br><span class="line">                <span class="attr">secretKeyRef:</span></span><br><span class="line">                  <span class="attr">name:</span> <span class="string">nacos-auth</span></span><br><span class="line">                  <span class="attr">key:</span> <span class="string">NACOS_AUTH_IDENTITY_VALUE</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Service</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">nacos</span></span><br><span class="line">  <span class="attr">namespace:</span> <span class="string">default</span></span><br><span class="line">  <span class="attr">labels:</span></span><br><span class="line">    <span class="attr">app:</span> <span class="string">nacos</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">type:</span> <span class="string">ClusterIP</span></span><br><span class="line">  <span class="attr">selector:</span></span><br><span class="line">    <span class="attr">app:</span> <span class="string">nacos</span></span><br><span class="line">  <span class="attr">ports:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">console</span></span><br><span class="line">      <span class="attr">port:</span> <span class="number">8080</span></span><br><span class="line">      <span class="attr">targetPort:</span> <span class="number">8080</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">http</span></span><br><span class="line">      <span class="attr">port:</span> <span class="number">8848</span></span><br><span class="line">      <span class="attr">targetPort:</span> <span class="number">8848</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">grpc-client</span></span><br><span class="line">      <span class="attr">port:</span> <span class="number">9848</span></span><br><span class="line">      <span class="attr">targetPort:</span> <span class="number">9848</span></span><br></pre></td></tr></table></figure>
-
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl apply -f nacos-stack-mysql.yaml</span><br></pre></td></tr></table></figure>
-
-<p><strong>MySQL</strong> Pod 就绪后，请在 <strong><code>nacos_devtest</code></strong> 中执行官方 <strong><code>mysql-schema.sql</code></strong>（与「前置」一致），再视需要重启 <strong>Nacos</strong> Pod 以连库成功。</p>
-<hr>
-<h2 id="Kubernetes（内嵌-Derby，单文件完整清单）"><a href="#Kubernetes（内嵌-Derby，单文件完整清单）" class="headerlink" title="Kubernetes（内嵌 Derby，单文件完整清单）"></a>Kubernetes（内嵌 Derby，单文件完整清单）</h2><p>与 <strong>MySQL</strong> 方案并列：内嵌 <strong>Derby</strong> 时只需 <strong>Nacos</strong> 本体，可用 <strong><code>nacos-stack-derby.yaml</code></strong> 一次创建 <strong>Secret、PVC、Deployment、Service</strong>（<strong><code>default</code></strong> 命名空间；<strong>PVC</strong> 未指定 <strong><code>storageClassName</code></strong> 时使用集群默认 <strong>StorageClass</strong>）。</p>
-<p><strong><code>nacos-stack-derby.yaml</code></strong>：</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Secret</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">nacos-auth</span></span><br><span class="line">  <span class="attr">namespace:</span> <span class="string">default</span></span><br><span class="line"><span class="attr">type:</span> <span class="string">Opaque</span></span><br><span class="line"><span class="attr">stringData:</span></span><br><span class="line">  <span class="attr">NACOS_AUTH_TOKEN:</span> <span class="string">&quot;请替换为长度足够的随机串&quot;</span></span><br><span class="line">  <span class="attr">NACOS_AUTH_IDENTITY_KEY:</span> <span class="string">&quot;serverIdentityKey&quot;</span></span><br><span class="line">  <span class="attr">NACOS_AUTH_IDENTITY_VALUE:</span> <span class="string">&quot;serverIdentityValue&quot;</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">PersistentVolumeClaim</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">nacos-data</span></span><br><span class="line">  <span class="attr">namespace:</span> <span class="string">default</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">accessModes:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">ReadWriteOnce</span></span><br><span class="line">  <span class="attr">resources:</span></span><br><span class="line">    <span class="attr">requests:</span></span><br><span class="line">      <span class="attr">storage:</span> <span class="string">10Gi</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">PersistentVolumeClaim</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">nacos-logs</span></span><br><span class="line">  <span class="attr">namespace:</span> <span class="string">default</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">accessModes:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">ReadWriteOnce</span></span><br><span class="line">  <span class="attr">resources:</span></span><br><span class="line">    <span class="attr">requests:</span></span><br><span class="line">      <span class="attr">storage:</span> <span class="string">5Gi</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">apps/v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Deployment</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">nacos</span></span><br><span class="line">  <span class="attr">namespace:</span> <span class="string">default</span></span><br><span class="line">  <span class="attr">labels:</span></span><br><span class="line">    <span class="attr">app:</span> <span class="string">nacos</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">replicas:</span> <span class="number">1</span></span><br><span class="line">  <span class="attr">selector:</span></span><br><span class="line">    <span class="attr">matchLabels:</span></span><br><span class="line">      <span class="attr">app:</span> <span class="string">nacos</span></span><br><span class="line">  <span class="attr">template:</span></span><br><span class="line">    <span class="attr">metadata:</span></span><br><span class="line">      <span class="attr">labels:</span></span><br><span class="line">        <span class="attr">app:</span> <span class="string">nacos</span></span><br><span class="line">    <span class="attr">spec:</span></span><br><span class="line">      <span class="attr">volumes:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">nacos-data</span></span><br><span class="line">          <span class="attr">persistentVolumeClaim:</span></span><br><span class="line">            <span class="attr">claimName:</span> <span class="string">nacos-data</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">nacos-logs</span></span><br><span class="line">          <span class="attr">persistentVolumeClaim:</span></span><br><span class="line">            <span class="attr">claimName:</span> <span class="string">nacos-logs</span></span><br><span class="line">      <span class="attr">containers:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">nacos</span></span><br><span class="line">          <span class="attr">image:</span> <span class="string">nacos/nacos-server:v3.1.1</span></span><br><span class="line">          <span class="attr">ports:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">containerPort:</span> <span class="number">8080</span></span><br><span class="line">              <span class="attr">name:</span> <span class="string">console</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">containerPort:</span> <span class="number">8848</span></span><br><span class="line">              <span class="attr">name:</span> <span class="string">http</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">containerPort:</span> <span class="number">9848</span></span><br><span class="line">              <span class="attr">name:</span> <span class="string">grpc-client</span></span><br><span class="line">          <span class="attr">volumeMounts:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">nacos-data</span></span><br><span class="line">              <span class="attr">mountPath:</span> <span class="string">/home/nacos/data</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">nacos-logs</span></span><br><span class="line">              <span class="attr">mountPath:</span> <span class="string">/home/nacos/logs</span></span><br><span class="line">          <span class="attr">env:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">MODE</span></span><br><span class="line">              <span class="attr">value:</span> <span class="string">&quot;standalone&quot;</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">NACOS_AUTH_TOKEN</span></span><br><span class="line">              <span class="attr">valueFrom:</span></span><br><span class="line">                <span class="attr">secretKeyRef:</span></span><br><span class="line">                  <span class="attr">name:</span> <span class="string">nacos-auth</span></span><br><span class="line">                  <span class="attr">key:</span> <span class="string">NACOS_AUTH_TOKEN</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">NACOS_AUTH_IDENTITY_KEY</span></span><br><span class="line">              <span class="attr">valueFrom:</span></span><br><span class="line">                <span class="attr">secretKeyRef:</span></span><br><span class="line">                  <span class="attr">name:</span> <span class="string">nacos-auth</span></span><br><span class="line">                  <span class="attr">key:</span> <span class="string">NACOS_AUTH_IDENTITY_KEY</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">NACOS_AUTH_IDENTITY_VALUE</span></span><br><span class="line">              <span class="attr">valueFrom:</span></span><br><span class="line">                <span class="attr">secretKeyRef:</span></span><br><span class="line">                  <span class="attr">name:</span> <span class="string">nacos-auth</span></span><br><span class="line">                  <span class="attr">key:</span> <span class="string">NACOS_AUTH_IDENTITY_VALUE</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Service</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">nacos</span></span><br><span class="line">  <span class="attr">namespace:</span> <span class="string">default</span></span><br><span class="line">  <span class="attr">labels:</span></span><br><span class="line">    <span class="attr">app:</span> <span class="string">nacos</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">type:</span> <span class="string">ClusterIP</span></span><br><span class="line">  <span class="attr">selector:</span></span><br><span class="line">    <span class="attr">app:</span> <span class="string">nacos</span></span><br><span class="line">  <span class="attr">ports:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">console</span></span><br><span class="line">      <span class="attr">port:</span> <span class="number">8080</span></span><br><span class="line">      <span class="attr">targetPort:</span> <span class="number">8080</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">http</span></span><br><span class="line">      <span class="attr">port:</span> <span class="number">8848</span></span><br><span class="line">      <span class="attr">targetPort:</span> <span class="number">8848</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">grpc-client</span></span><br><span class="line">      <span class="attr">port:</span> <span class="number">9848</span></span><br><span class="line">      <span class="attr">targetPort:</span> <span class="number">9848</span></span><br></pre></td></tr></table></figure>
-
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl apply -f nacos-stack-derby.yaml</span><br></pre></td></tr></table></figure>
-
-<p>集群内 <strong><code>server-addr</code></strong> 示例：<strong><code>nacos.default.svc.cluster.local:8848</code></strong>。<strong>ReadWriteOnce</strong> 与多副本 <strong>Deployment</strong> 不兼容；<strong>Nacos</strong> 集群请改用 <strong>StatefulSet</strong> 或 <strong>RWX</strong> 存储，勿多副本共用单块 <strong>RWO</strong> 卷。</p>
-<hr>
-<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ul>
-<li><strong>Nacos</strong> 官网：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://nacos.io/">https://nacos.io/</a>  </li>
-<li><strong>Nacos Docker</strong> 仓库与 <strong>Compose</strong> 示例：<a target="_blank" rel="noopener" href="https://github.com/nacos-group/nacos-docker">https://github.com/nacos-group/nacos-docker</a>  </li>
-<li><strong>Spring Cloud Alibaba</strong> 版本说明：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://sca.aliyun.com/docs/2025.x/overview/version-explain/">https://sca.aliyun.com/docs/2025.x/overview/version-explain/</a>  </li>
-<li><strong>SCA 2025.1.0.0 Release</strong>（含 <strong>nacos-client 3.1.1</strong>）：<a target="_blank" rel="noopener" href="https://github.com/alibaba/spring-cloud-alibaba/releases/tag/2025.1.0.0">https://github.com/alibaba/spring-cloud-alibaba/releases/tag/2025.1.0.0</a></li>
-</ul>
-<p>按上表固定 <strong>Server v3.1.1</strong> 与 <a href="/2026/05/01/SpringCloudAlibaba/">Spring Cloud Alibaba 与 Gradle 从零搭建</a> 一文中的 <strong>SCA 2025.1.0.0</strong>，即可在本地或 <strong>Kubernetes</strong> 上与示例工程对齐完成注册发现验证；上生产前请完成鉴权密钥、存储与高可用方案评审。</p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/OpenSSL/OpenSSL/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="miracle">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="my">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | my">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/05/01/OpenSSL/OpenSSL/" class="post-title-link" itemprop="url">OpenSSL</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2026-05-01 13:43:11" itemprop="dateCreated datePublished" datetime="2026-05-01T13:43:11+08:00">2026-05-01</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-05 11:35:56" itemprop="dateModified" datetime="2026-05-05T11:35:56+08:00">2026-05-05</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/OpenSSL/" itemprop="url" rel="index"><span itemprop="name">OpenSSL</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>717</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>2 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="OpenSSL-证书与密钥-完整指南"><a href="#OpenSSL-证书与密钥-完整指南" class="headerlink" title="OpenSSL 证书与密钥 完整指南"></a>OpenSSL 证书与密钥 完整指南</h1><h2 id="OpenSSL-是生成、管理非对称密钥和数字证书的标准工具，广泛用于-HTTPS、SSL-TLS、身份认证、加密通信等场景。"><a href="#OpenSSL-是生成、管理非对称密钥和数字证书的标准工具，广泛用于-HTTPS、SSL-TLS、身份认证、加密通信等场景。" class="headerlink" title="OpenSSL 是生成、管理非对称密钥和数字证书的标准工具，广泛用于 HTTPS、SSL&#x2F;TLS、身份认证、加密通信等场景。"></a>OpenSSL 是生成、管理<strong>非对称密钥</strong>和<strong>数字证书</strong>的标准工具，广泛用于 HTTPS、SSL&#x2F;TLS、身份认证、加密通信等场景。</h2><h2 id="一、核心概念（快速看懂）"><a href="#一、核心概念（快速看懂）" class="headerlink" title="一、核心概念（快速看懂）"></a>一、核心概念（快速看懂）</h2><ol>
-<li><strong>私钥（private key）</strong>：.key &#x2F; .pem，必须保密，用于解密、签名</li>
-<li><strong>公钥（public key）</strong>：从私钥导出，公开分发，用于加密、验签</li>
-<li><strong>证书（certificate）</strong>：.crt &#x2F; .pem，包含公钥 + 身份信息 + 签名，证明公钥合法</li>
-<li><strong>CSR（证书签名请求）</strong>：.csr，向 CA 机构申请正式证书的文件</li>
-</ol>
-<hr>
-<h2 id="二、最常用命令（直接用）"><a href="#二、最常用命令（直接用）" class="headerlink" title="二、最常用命令（直接用）"></a>二、最常用命令（直接用）</h2><h3 id="1-生成-RSA-私钥（无密码）"><a href="#1-生成-RSA-私钥（无密码）" class="headerlink" title="1. 生成 RSA 私钥（无密码）"></a>1. 生成 RSA 私钥（无密码）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl genrsa -out private.key 2048</span><br></pre></td></tr></table></figure>
-<ul>
-<li>2048 是密钥长度（安全推荐）</li>
-<li>生成后<strong>千万不要泄露</strong></li>
-</ul>
-<h3 id="2-生成带密码保护的私钥（更安全）"><a href="#2-生成带密码保护的私钥（更安全）" class="headerlink" title="2. 生成带密码保护的私钥（更安全）"></a>2. 生成带密码保护的私钥（更安全）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl genrsa -aes256 -out private.key 2048</span><br></pre></td></tr></table></figure>
-<p>每次使用会要求输入密码。</p>
-<h3 id="3-从私钥导出公钥"><a href="#3-从私钥导出公钥" class="headerlink" title="3. 从私钥导出公钥"></a>3. 从私钥导出公钥</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl rsa -<span class="keyword">in</span> private.key -pubout -out public.key</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="三、生成自签名证书（开发-测试必备）"><a href="#三、生成自签名证书（开发-测试必备）" class="headerlink" title="三、生成自签名证书（开发&#x2F;测试必备）"></a>三、生成自签名证书（开发&#x2F;测试必备）</h2><p><strong>自签名证书 &#x3D; 私钥 + 自己签发的证书</strong><br>适合本地开发、内网测试，不能用于公网生产环境。</p>
-<h3 id="一步生成-私钥-证书（有效期-10-年）"><a href="#一步生成-私钥-证书（有效期-10-年）" class="headerlink" title="一步生成 私钥 + 证书（有效期 10 年）"></a>一步生成 私钥 + 证书（有效期 10 年）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl req -x509 -newkey rsa:2048 -keyout private.key -out cert.crt -days 3650 -nodes</span><br></pre></td></tr></table></figure>
-<ul>
-<li><code>-nodes</code>：私钥不加密</li>
-<li><code>-days 3650</code>：有效期 10 年</li>
-<li>执行后按提示填信息（可以全部回车）</li>
-</ul>
-<p>最终得到两个文件：</p>
-<ul>
-<li><code>private.key</code>：私钥</li>
-<li><code>cert.crt</code>：自签名证书</li>
-</ul>
-<hr>
-<h2 id="四、生成-CSR（向-CA-申请正式证书）"><a href="#四、生成-CSR（向-CA-申请正式证书）" class="headerlink" title="四、生成 CSR（向 CA 申请正式证书）"></a>四、生成 CSR（向 CA 申请正式证书）</h2><p>如果你要申请<strong>阿里云&#x2F;腾讯云&#x2F;Let’s Encrypt</strong> 正规证书，必须先生成 CSR。</p>
-<h3 id="1-生成私钥"><a href="#1-生成私钥" class="headerlink" title="1. 生成私钥"></a>1. 生成私钥</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl genrsa -out private.key 2048</span><br></pre></td></tr></table></figure>
-
-<h3 id="2-生成-CSR-请求文件"><a href="#2-生成-CSR-请求文件" class="headerlink" title="2. 生成 CSR 请求文件"></a>2. 生成 CSR 请求文件</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl req -new -key private.key -out cert.csr</span><br></pre></td></tr></table></figure>
-<p>提交 <code>cert.csr</code> 给 CA 机构，就能拿到正式证书。</p>
-<hr>
-<h2 id="五、证书-密钥查看命令"><a href="#五、证书-密钥查看命令" class="headerlink" title="五、证书&#x2F;密钥查看命令"></a>五、证书&#x2F;密钥查看命令</h2><h3 id="1-查看私钥信息"><a href="#1-查看私钥信息" class="headerlink" title="1. 查看私钥信息"></a>1. 查看私钥信息</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl rsa -<span class="keyword">in</span> private.key -text -noout</span><br></pre></td></tr></table></figure>
-
-<h3 id="2-查看证书信息（最常用）"><a href="#2-查看证书信息（最常用）" class="headerlink" title="2. 查看证书信息（最常用）"></a>2. 查看证书信息（最常用）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl x509 -<span class="keyword">in</span> cert.crt -text -noout</span><br></pre></td></tr></table></figure>
-
-<h3 id="3-查看-CSR-信息"><a href="#3-查看-CSR-信息" class="headerlink" title="3. 查看 CSR 信息"></a>3. 查看 CSR 信息</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl req -<span class="keyword">in</span> cert.csr -text -noout</span><br></pre></td></tr></table></figure>
-
-<h3 id="4-验证-私钥-和-证书-是否匹配"><a href="#4-验证-私钥-和-证书-是否匹配" class="headerlink" title="4. 验证 私钥 和 证书 是否匹配"></a>4. 验证 私钥 和 证书 是否匹配</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">openssl rsa -modulus -<span class="keyword">in</span> private.key -noout | <span class="built_in">md5sum</span></span><br><span class="line">openssl x509 -modulus -<span class="keyword">in</span> cert.crt -noout | <span class="built_in">md5sum</span></span><br></pre></td></tr></table></figure>
-<p>两个 MD5 值<strong>完全相同</strong> &#x3D; 匹配</p>
-<hr>
-<h2 id="六、格式转换（最常见需求）"><a href="#六、格式转换（最常见需求）" class="headerlink" title="六、格式转换（最常见需求）"></a>六、格式转换（最常见需求）</h2><h3 id="1-PEM-转-PKCS-12（-pfx-p12，Windows-IIS-用）"><a href="#1-PEM-转-PKCS-12（-pfx-p12，Windows-IIS-用）" class="headerlink" title="1. PEM 转 PKCS#12（.pfx &#x2F; .p12，Windows&#x2F;IIS 用）"></a>1. PEM 转 PKCS#12（.pfx &#x2F; .p12，Windows&#x2F;IIS 用）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl pkcs12 -<span class="built_in">export</span> -out cert.pfx -inkey private.key -<span class="keyword">in</span> cert.crt</span><br></pre></td></tr></table></figure>
-
-<h3 id="2-从-PFX-提取-私钥-证书"><a href="#2-从-PFX-提取-私钥-证书" class="headerlink" title="2. 从 PFX 提取 私钥 + 证书"></a>2. 从 PFX 提取 私钥 + 证书</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 提取私钥</span></span><br><span class="line">openssl pkcs12 -<span class="keyword">in</span> cert.pfx -nocerts -out private.key</span><br><span class="line"></span><br><span class="line"><span class="comment"># 提取证书</span></span><br><span class="line">openssl pkcs12 -<span class="keyword">in</span> cert.pfx -clcerts -nokeys -out cert.crt</span><br></pre></td></tr></table></figure>
-
-<h3 id="3-DER-转-PEM"><a href="#3-DER-转-PEM" class="headerlink" title="3. DER 转 PEM"></a>3. DER 转 PEM</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl x509 -inform der -<span class="keyword">in</span> cert.der -out cert.crt</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="七、生产环境标准流程"><a href="#七、生产环境标准流程" class="headerlink" title="七、生产环境标准流程"></a>七、生产环境标准流程</h2><ol>
-<li><strong>生成安全私钥</strong>（4096 位，带密码）<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl genrsa -aes256 -out private.key 4096</span><br></pre></td></tr></table></figure></li>
-<li><strong>生成 CSR</strong><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl req -new -key private.key -out cert.csr</span><br></pre></td></tr></table></figure></li>
-<li>提交 CSR 给 CA → 获取<strong>正式证书</strong></li>
-<li><strong>部署证书</strong>（Nginx&#x2F;Apache&#x2F;IIS）</li>
-</ol>
-<hr>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><ol>
-<li>开发用：<strong>自签名证书</strong>（私钥 + crt）</li>
-<li>生产用：<strong>CSR 申请正规证书</strong></li>
-<li>必备命令：生成密钥、查看证书、格式转换、验证匹配</li>
-<li>私钥<strong>绝对不能泄露</strong>，泄露等于证书失效</li>
-</ol>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
   <nav class="pagination">
     <a class="extend prev" rel="prev" title="上一页" aria-label="上一页" href="/page/3/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/17/">17</a><a class="extend next" rel="next" title="下一页" aria-label="下一页" href="/page/5/"><i class="fa fa-angle-right"></i></a>
   </nav>
@@ -2224,13 +2311,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">150k</span>
+    <span title="站点总字数">152k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">8:19</span>
+    <span title="站点阅读时长">8:26</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动
@@ -2255,16 +2342,33 @@
   <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
 </noscript>
 
+
 <script>
 (function () {
+  function normalizeClipboard(s) {
+    return (s || '').replace(/\u00a0/g, ' ');
+  }
+
+  /** When innerText is empty, treat <br> as newlines (matches Hexo fenced + line_number HTML). */
+  function plainTextFromElement(el) {
+    if (!el) return '';
+    var t = el.innerText;
+    if (t != null && t !== '') return normalizeClipboard(t);
+    var clone = el.cloneNode(true);
+    clone.querySelectorAll('br').forEach(function (br) {
+      br.parentNode.replaceChild(document.createTextNode('\n'), br);
+    });
+    return normalizeClipboard(clone.textContent || '');
+  }
+
   function extractFromFigure(fig) {
     if (!fig) return '';
     var cell = fig.querySelector('td.code') || fig.querySelector('.code');
-    var block = cell || fig.querySelector('code');
-    if (!block) return '';
-    var pre = block.querySelector('pre');
-    var source = pre || block;
-    return (source.textContent || '').replace(/\u00a0/g, ' ');
+    if (cell) return plainTextFromElement(cell);
+    var pre = fig.querySelector('pre');
+    if (pre) return plainTextFromElement(pre);
+    var code = fig.querySelector('code');
+    return code ? plainTextFromElement(code) : '';
   }
 
   function extractForCopyBtn(btn) {
@@ -2275,7 +2379,7 @@
       var innerFig = wrap.querySelector('figure.highlight');
       if (innerFig) return extractFromFigure(innerFig);
       var preOnly = wrap.querySelector('pre');
-      if (preOnly) return (preOnly.textContent || '').replace(/\u00a0/g, ' ');
+      if (preOnly) return plainTextFromElement(preOnly);
     }
     return '';
   }
