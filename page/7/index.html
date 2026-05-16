@@ -172,7 +172,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">166</span>
+          <span class="site-state-item-count">182</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -183,7 +183,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">115</span>
+        <span class="site-state-item-count">130</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -220,7 +220,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/Embedded/NFC/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/OpenSSL/OpenSSL/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -238,7 +238,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/05/01/Embedded/NFC/" class="post-title-link" itemprop="url">NFC</a>
+          <a href="/2026/05/01/OpenSSL/OpenSSL/" class="post-title-link" itemprop="url">OpenSSL</a>
         </h2>
 
         <div class="post-meta-container">
@@ -249,14 +249,14 @@
       </span>
       <span class="post-meta-item-text">发表于</span>
 
-      <time title="创建时间：2026-05-01 13:15:54" itemprop="dateCreated datePublished" datetime="2026-05-01T13:15:54+08:00">2026-05-01</time>
+      <time title="创建时间：2026-05-01 13:43:11" itemprop="dateCreated datePublished" datetime="2026-05-01T13:43:11+08:00">2026-05-01</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-04 11:53:54" itemprop="dateModified" datetime="2026-05-04T11:53:54+08:00">2026-05-04</time>
+      <time title="修改时间：2026-05-10 08:25:14" itemprop="dateModified" datetime="2026-05-10T08:25:14+08:00">2026-05-10</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -264,7 +264,418 @@
       </span>
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Embedded/" itemprop="url" rel="index"><span itemprop="name">Embedded</span></a>
+          <a href="/categories/OpenSSL/" itemprop="url" rel="index"><span itemprop="name">OpenSSL</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>1.4k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>5 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="OpenSSL-常用操作完整指南"><a href="#OpenSSL-常用操作完整指南" class="headerlink" title="OpenSSL 常用操作完整指南"></a>OpenSSL 常用操作完整指南</h1><p>OpenSSL 是生成、管理<strong>非对称密钥</strong>和<strong>数字证书</strong>的标准工具，广泛用于 HTTPS、SSL&#x2F;TLS、身份认证、加密通信等场景。同一套命令行还提供<strong>文件摘要</strong>、<strong>Base64</strong>、<strong>对称&#x2F;非对称加解密</strong>与<strong>签名验签</strong>等能力。</p>
+<hr>
+<h2 id="一、核心概念（快速看懂）"><a href="#一、核心概念（快速看懂）" class="headerlink" title="一、核心概念（快速看懂）"></a>一、核心概念（快速看懂）</h2><ol>
+<li><strong>私钥（private key）</strong>：.key &#x2F; .pem，必须保密，用于解密、签名</li>
+<li><strong>公钥（public key）</strong>：从私钥导出，公开分发，用于加密、验签</li>
+<li><strong>证书（certificate）</strong>：.crt &#x2F; .pem，包含公钥 + 身份信息 + 签名，证明公钥合法</li>
+<li><strong>CSR（证书签名请求）</strong>：.csr，向 CA 机构申请正式证书的文件</li>
+</ol>
+<hr>
+<h2 id="二、摘要与编码（不依赖证书）"><a href="#二、摘要与编码（不依赖证书）" class="headerlink" title="二、摘要与编码（不依赖证书）"></a>二、摘要与编码（不依赖证书）</h2><h3 id="1-文件摘要（MD5、SHA-256）"><a href="#1-文件摘要（MD5、SHA-256）" class="headerlink" title="1. 文件摘要（MD5、SHA-256）"></a>1. 文件摘要（MD5、SHA-256）</h3><p>对任意文件计算密码学摘要，常用于校验下载包、比对文件是否一致。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">openssl md5 /path/to/file.bin</span><br><span class="line">openssl dgst -md5 /path/to/file.bin</span><br><span class="line"></span><br><span class="line">openssl sha256 /path/to/file.bin</span><br><span class="line">openssl dgst -sha256 /path/to/file.bin</span><br></pre></td></tr></table></figure>
+
+<p>其他算法同理，例如 <code>-sha512</code>、<code>-sha1</code>（<strong>SHA-1 已不推荐用于安全场景</strong>）。</p>
+<h3 id="2-字符串-管道内容哈希"><a href="#2-字符串-管道内容哈希" class="headerlink" title="2. 字符串 &#x2F; 管道内容哈希"></a>2. 字符串 &#x2F; 管道内容哈希</h3><p>把待哈希内容通过标准输入喂给 <code>dgst</code>。注意 <strong><code>echo</code> 默认会带换行</strong>，校验短字符串时一般用 <strong><code>echo -n</code></strong>。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> -n <span class="string">&quot;hello&quot;</span> | openssl dgst -md5</span><br><span class="line"><span class="built_in">echo</span> -n <span class="string">&quot;hello&quot;</span> | openssl dgst -sha256</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-Base64-编码与解码"><a href="#3-Base64-编码与解码" class="headerlink" title="3. Base64 编码与解码"></a>3. Base64 编码与解码</h3><p>适合在文本通道里传输二进制，或快速查看二进制内容（<strong>Base64 不是加密</strong>）。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">openssl <span class="built_in">base64</span> -<span class="keyword">in</span> file.bin -out file.b64</span><br><span class="line">openssl <span class="built_in">base64</span> -d -<span class="keyword">in</span> file.b64 -out file.bin</span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span> -n <span class="string">&quot;hello&quot;</span> | openssl <span class="built_in">base64</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;aGVsbG8=&quot;</span> | openssl <span class="built_in">base64</span> -d</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="三、RSA-密钥：生成与导出公钥"><a href="#三、RSA-密钥：生成与导出公钥" class="headerlink" title="三、RSA 密钥：生成与导出公钥"></a>三、RSA 密钥：生成与导出公钥</h2><h3 id="1-生成-RSA-私钥（无密码）"><a href="#1-生成-RSA-私钥（无密码）" class="headerlink" title="1. 生成 RSA 私钥（无密码）"></a>1. 生成 RSA 私钥（无密码）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl genrsa -out private.key 2048</span><br></pre></td></tr></table></figure>
+<ul>
+<li>2048 是密钥长度（安全推荐）</li>
+<li>生成后<strong>千万不要泄露</strong></li>
+</ul>
+<h3 id="2-生成带密码保护的私钥（更安全）"><a href="#2-生成带密码保护的私钥（更安全）" class="headerlink" title="2. 生成带密码保护的私钥（更安全）"></a>2. 生成带密码保护的私钥（更安全）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl genrsa -aes256 -out private.key 2048</span><br></pre></td></tr></table></figure>
+<p>每次使用会要求输入密码。</p>
+<h3 id="3-从私钥导出公钥"><a href="#3-从私钥导出公钥" class="headerlink" title="3. 从私钥导出公钥"></a>3. 从私钥导出公钥</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl rsa -<span class="keyword">in</span> private.key -pubout -out public.key</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="四、对称加解密（enc）"><a href="#四、对称加解密（enc）" class="headerlink" title="四、对称加解密（enc）"></a>四、对称加解密（<code>enc</code>）</h2><p>用口令派生密钥加密文件，算法以 <strong>AES-256-CBC</strong> 为例；<strong>加解密必须使用相同算法与口令</strong>，解密侧需带 <strong><code>-d</code></strong>。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">openssl enc -aes-256-cbc -pbkdf2 -iter 100000 -salt -<span class="keyword">in</span> plain.txt -out cipher.bin -pass pass:YourStrongPassphrase</span><br><span class="line"></span><br><span class="line">openssl enc -aes-256-cbc -d -pbkdf2 -iter 100000 -<span class="keyword">in</span> cipher.bin -out plain.txt -pass pass:YourStrongPassphrase</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><code>-salt</code></strong>：加密时加盐，避免相同明文产生相同密文（若版本默认已加盐，可省略显式写法，以本机 <code>openssl enc -help</code> 为准）。</li>
+<li>生产环境更推荐 <strong>随机二进制密钥 + 明确 KDF&#x2F;模式</strong>（或直接用 <strong>age</strong>、<strong>GnuPG</strong> 等高层工具），口令仅作演示或临时场景。</li>
+</ul>
+<hr>
+<h2 id="五、非对称：公钥加密与私钥解密（RSA）"><a href="#五、非对称：公钥加密与私钥解密（RSA）" class="headerlink" title="五、非对称：公钥加密与私钥解密（RSA）"></a>五、非对称：公钥加密与私钥解密（RSA）</h2><p><strong>RSA 直接加密只适合很短载荷</strong>（长度受密钥与填充限制）；长数据应使用「随机对称密钥加密数据 + RSA 加密对称密钥」等混合方案（TLS、CMS 即类似思路）。</p>
+<p>下面假设已有 <strong>PEM 私钥</strong> <code>private.key</code> 与对应 <strong>公钥</strong> <code>public.key</code>（见上文「从私钥导出公钥」）。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">openssl pkeyutl -encrypt -pubin -inkey public.key -<span class="keyword">in</span> small.txt -out cipher.rsa</span><br><span class="line"></span><br><span class="line">openssl pkeyutl -decrypt -inkey private.key -<span class="keyword">in</span> cipher.rsa -out small.dec</span><br></pre></td></tr></table></figure>
+<p>旧资料中的 <code>openssl rsautl</code> 已逐步被 <strong><code>pkeyutl</code></strong> 取代，新脚本优先用后者。</p>
+<hr>
+<h2 id="六、数字签名与验签"><a href="#六、数字签名与验签" class="headerlink" title="六、数字签名与验签"></a>六、数字签名与验签</h2><p>用<strong>私钥</strong>对消息摘要签名，任意持有<strong>公钥</strong>的一方可验证完整性及来源（前提是公钥可信）。</p>
+<h3 id="1-私钥签名、公钥验签"><a href="#1-私钥签名、公钥验签" class="headerlink" title="1. 私钥签名、公钥验签"></a>1. 私钥签名、公钥验签</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">openssl dgst -sha256 -sign private.key -out sign.sig data.txt</span><br><span class="line"></span><br><span class="line">openssl dgst -sha256 -verify public.key -signature sign.sig data.txt</span><br></pre></td></tr></table></figure>
+<p>验签成功会打印 <code>Verified OK</code>。</p>
+<h3 id="2-从证书提取公钥再验签"><a href="#2-从证书提取公钥再验签" class="headerlink" title="2. 从证书提取公钥再验签"></a>2. 从证书提取公钥再验签</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">openssl x509 -<span class="keyword">in</span> cert.crt -pubkey -noout &gt; cert-pub.pem</span><br><span class="line">openssl dgst -sha256 -verify cert-pub.pem -signature sign.sig data.txt</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="七、生成自签名证书（开发-测试必备）"><a href="#七、生成自签名证书（开发-测试必备）" class="headerlink" title="七、生成自签名证书（开发&#x2F;测试必备）"></a>七、生成自签名证书（开发&#x2F;测试必备）</h2><p><strong>自签名证书 &#x3D; 私钥 + 自己签发的证书</strong><br>适合本地开发、内网测试，不能用于公网生产环境。</p>
+<h3 id="一步生成-私钥-证书（有效期-10-年）"><a href="#一步生成-私钥-证书（有效期-10-年）" class="headerlink" title="一步生成 私钥 + 证书（有效期 10 年）"></a>一步生成 私钥 + 证书（有效期 10 年）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl req -x509 -newkey rsa:2048 -keyout private.key -out cert.crt -days 3650 -nodes</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>-nodes</code>：私钥不加密</li>
+<li><code>-days 3650</code>：有效期 10 年</li>
+<li>执行后按提示填信息（可以全部回车）</li>
+</ul>
+<p>最终得到两个文件：</p>
+<ul>
+<li><code>private.key</code>：私钥</li>
+<li><code>cert.crt</code>：自签名证书</li>
+</ul>
+<hr>
+<h2 id="八、生成-CSR（向-CA-申请正式证书）"><a href="#八、生成-CSR（向-CA-申请正式证书）" class="headerlink" title="八、生成 CSR（向 CA 申请正式证书）"></a>八、生成 CSR（向 CA 申请正式证书）</h2><p>如果你要申请<strong>阿里云&#x2F;腾讯云&#x2F;Let’s Encrypt</strong> 正规证书，必须先生成 CSR。</p>
+<h3 id="1-生成私钥"><a href="#1-生成私钥" class="headerlink" title="1. 生成私钥"></a>1. 生成私钥</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl genrsa -out private.key 2048</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-生成-CSR-请求文件"><a href="#2-生成-CSR-请求文件" class="headerlink" title="2. 生成 CSR 请求文件"></a>2. 生成 CSR 请求文件</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl req -new -key private.key -out cert.csr</span><br></pre></td></tr></table></figure>
+<p>提交 <code>cert.csr</code> 给 CA 机构，就能拿到正式证书。</p>
+<hr>
+<h2 id="九、证书与密钥查看、匹配验证"><a href="#九、证书与密钥查看、匹配验证" class="headerlink" title="九、证书与密钥查看、匹配验证"></a>九、证书与密钥查看、匹配验证</h2><h3 id="1-查看私钥信息"><a href="#1-查看私钥信息" class="headerlink" title="1. 查看私钥信息"></a>1. 查看私钥信息</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl rsa -<span class="keyword">in</span> private.key -text -noout</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-查看证书信息（最常用）"><a href="#2-查看证书信息（最常用）" class="headerlink" title="2. 查看证书信息（最常用）"></a>2. 查看证书信息（最常用）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl x509 -<span class="keyword">in</span> cert.crt -text -noout</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-查看-CSR-信息"><a href="#3-查看-CSR-信息" class="headerlink" title="3. 查看 CSR 信息"></a>3. 查看 CSR 信息</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl req -<span class="keyword">in</span> cert.csr -text -noout</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-验证-私钥-和-证书-是否匹配"><a href="#4-验证-私钥-和-证书-是否匹配" class="headerlink" title="4. 验证 私钥 和 证书 是否匹配"></a>4. 验证 私钥 和 证书 是否匹配</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">openssl rsa -modulus -<span class="keyword">in</span> private.key -noout | <span class="built_in">md5sum</span></span><br><span class="line">openssl x509 -modulus -<span class="keyword">in</span> cert.crt -noout | <span class="built_in">md5sum</span></span><br></pre></td></tr></table></figure>
+<p>两个 MD5 值<strong>完全相同</strong> &#x3D; 匹配</p>
+<hr>
+<h2 id="十、格式转换（最常见需求）"><a href="#十、格式转换（最常见需求）" class="headerlink" title="十、格式转换（最常见需求）"></a>十、格式转换（最常见需求）</h2><h3 id="1-PEM-转-PKCS-12（-pfx-p12，Windows-IIS-用）"><a href="#1-PEM-转-PKCS-12（-pfx-p12，Windows-IIS-用）" class="headerlink" title="1. PEM 转 PKCS#12（.pfx &#x2F; .p12，Windows&#x2F;IIS 用）"></a>1. PEM 转 PKCS#12（.pfx &#x2F; .p12，Windows&#x2F;IIS 用）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl pkcs12 -<span class="built_in">export</span> -out cert.pfx -inkey private.key -<span class="keyword">in</span> cert.crt</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-从-PFX-提取-私钥-证书"><a href="#2-从-PFX-提取-私钥-证书" class="headerlink" title="2. 从 PFX 提取 私钥 + 证书"></a>2. 从 PFX 提取 私钥 + 证书</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 提取私钥</span></span><br><span class="line">openssl pkcs12 -<span class="keyword">in</span> cert.pfx -nocerts -out private.key</span><br><span class="line"></span><br><span class="line"><span class="comment"># 提取证书</span></span><br><span class="line">openssl pkcs12 -<span class="keyword">in</span> cert.pfx -clcerts -nokeys -out cert.crt</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-DER-转-PEM"><a href="#3-DER-转-PEM" class="headerlink" title="3. DER 转 PEM"></a>3. DER 转 PEM</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl x509 -inform der -<span class="keyword">in</span> cert.der -out cert.crt</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="十一、生产环境标准流程"><a href="#十一、生产环境标准流程" class="headerlink" title="十一、生产环境标准流程"></a>十一、生产环境标准流程</h2><ol>
+<li><strong>生成安全私钥</strong>（4096 位，带密码）<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl genrsa -aes256 -out private.key 4096</span><br></pre></td></tr></table></figure></li>
+<li><strong>生成 CSR</strong><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl req -new -key private.key -out cert.csr</span><br></pre></td></tr></table></figure></li>
+<li>提交 CSR 给 CA → 获取<strong>正式证书</strong></li>
+<li><strong>部署证书</strong>（Nginx&#x2F;Apache&#x2F;IIS）</li>
+</ol>
+<hr>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><ol>
+<li><strong>概念</strong>：私钥、公钥、证书、CSR 分工明确；私钥<strong>绝对不能泄露</strong>（证书失效且签名可被伪造）。</li>
+<li><strong>摘要与编码</strong>：<strong><code>md5</code> &#x2F; <code>sha256</code> &#x2F; <code>dgst</code></strong>（文件或管道）；<strong><code>base64</code></strong> 与 <strong><code>-d</code></strong> 解码。</li>
+<li><strong>密钥</strong>：<strong><code>genrsa</code></strong> 生成、<strong><code>-aes256</code></strong> 保护、<strong><code>rsa -pubout</code></strong> 导出公钥。</li>
+<li><strong>加解密</strong>：对称 <strong><code>enc</code></strong>（算法与口令一致）；非对称短数据 <strong><code>pkeyutl</code></strong>；长数据走混合加密或 TLS。</li>
+<li><strong>签名</strong>：<strong><code>dgst -sign</code> &#x2F; <code>-verify</code></strong>；可从 <strong><code>x509 -pubkey</code></strong> 取公钥验签。</li>
+<li><strong>证书</strong>：开发用<strong>自签名</strong>；生产用 <strong>CSR → CA</strong>；会<strong>查看</strong>、<strong>匹配 modulus</strong>、<strong>格式转换</strong>与部署。</li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/OpenSSL/OpenSSL%E5%8A%9F%E8%83%BD/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/05/01/OpenSSL/OpenSSL%E5%8A%9F%E8%83%BD/" class="post-title-link" itemprop="url">OpenSSL功能</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-05-01 13:43:11" itemprop="dateCreated datePublished" datetime="2026-05-01T13:43:11+08:00">2026-05-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-05-05 11:39:05" itemprop="dateModified" datetime="2026-05-05T11:39:05+08:00">2026-05-05</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/OpenSSL/" itemprop="url" rel="index"><span itemprop="name">OpenSSL</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>1.1k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>4 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="OpenSSL-有两层身份："><a href="#OpenSSL-有两层身份：" class="headerlink" title="OpenSSL 有两层身份："></a>OpenSSL 有<strong>两层身份</strong>：</h2><ol>
+<li><strong>命令行工具</strong>（你刚才用的：生成证书、密钥）</li>
+<li><strong>底层密码库</strong>（几乎所有软件的加密都靠它：Nginx、Python、Java、curl、安卓、iOS 等）</li>
+</ol>
+<p><strong>90% 的互联网加密通信，底层都在用 OpenSSL</strong>。</p>
+<hr>
+<h2 id="二、OpenSSL-到底能做什么？"><a href="#二、OpenSSL-到底能做什么？" class="headerlink" title="二、OpenSSL 到底能做什么？"></a>二、OpenSSL 到底能做什么？</h2><h3 id="1-证书体系"><a href="#1-证书体系" class="headerlink" title="1. 证书体系"></a>1. 证书体系</h3><ul>
+<li>生成私钥、公钥</li>
+<li>生成自签名证书（本地&#x2F;内网开发）</li>
+<li>生成 CSR（向 CA 申请正式 HTTPS 证书）</li>
+<li>查看证书信息</li>
+<li>证书格式转换（PEM ↔ PFX ↔ DER）</li>
+</ul>
+<hr>
+<h3 id="2-加密-解密-文件（超级实用）"><a href="#2-加密-解密-文件（超级实用）" class="headerlink" title="2. 加密 &#x2F; 解密 文件（超级实用）"></a>2. 加密 &#x2F; 解密 文件（超级实用）</h3><p>直接用命令加密文件，无需任何软件：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 加密文件</span></span><br><span class="line">openssl enc -aes-256-cbc -<span class="keyword">in</span> 照片.jpg -out 照片.jpg.enc</span><br><span class="line"></span><br><span class="line"><span class="comment"># 解密</span></span><br><span class="line">openssl enc -d -aes-256-cbc -<span class="keyword">in</span> 照片.jpg.enc -out 照片.jpg</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="3-计算哈希（MD5-SHA1-SHA256）"><a href="#3-计算哈希（MD5-SHA1-SHA256）" class="headerlink" title="3. 计算哈希（MD5&#x2F;SHA1&#x2F;SHA256）"></a>3. 计算哈希（MD5&#x2F;SHA1&#x2F;SHA256）</h3><p>校验文件是否被篡改：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl sha256 安装包.exe</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="4-生成随机密码-密钥"><a href="#4-生成随机密码-密钥" class="headerlink" title="4. 生成随机密码&#x2F;密钥"></a>4. 生成随机密码&#x2F;密钥</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 生成 32 位随机密钥</span></span><br><span class="line">openssl rand -hex 32</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="5-测试-HTTPS-SSL-连接"><a href="#5-测试-HTTPS-SSL-连接" class="headerlink" title="5. 测试 HTTPS&#x2F;SSL 连接"></a>5. 测试 HTTPS&#x2F;SSL 连接</h3><p>排查网站证书是否有效：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl s_client -connect www.baidu.com:443</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="6-模拟-HTTPS-服务器"><a href="#6-模拟-HTTPS-服务器" class="headerlink" title="6. 模拟 HTTPS 服务器"></a>6. 模拟 HTTPS 服务器</h3><p><strong>一行命令启动一个 HTTPS 服务器</strong>（本地测试超好用）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl s_server -cert cert.pem -key key.pem -www</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="7-签名-验签"><a href="#7-签名-验签" class="headerlink" title="7. 签名 &amp; 验签"></a>7. 签名 &amp; 验签</h3><p>确保文件不被篡改、来源可靠（软件发布、固件验证必备）：</p>
+<ul>
+<li>私钥签名</li>
+<li>公钥验签</li>
+</ul>
+<hr>
+<h3 id="8-支持所有主流加密算法"><a href="#8-支持所有主流加密算法" class="headerlink" title="8. 支持所有主流加密算法"></a>8. 支持所有主流加密算法</h3><ul>
+<li>RSA、ECC（非对称加密）</li>
+<li>AES、ChaCha20（对称加密）</li>
+<li>SHA256、SHA3、MD5（哈希）</li>
+<li>TLS 1.3 &#x2F; QUIC 等最新协议</li>
+</ul>
+<hr>
+<h2 id="三、哪些软件在底层使用-OpenSSL？"><a href="#三、哪些软件在底层使用-OpenSSL？" class="headerlink" title="三、哪些软件在底层使用 OpenSSL？"></a>三、哪些软件在底层使用 OpenSSL？</h2><ul>
+<li><strong>Nginx &#x2F; Apache</strong>（HTTPS 加密）</li>
+<li><strong>curl &#x2F; wget</strong></li>
+<li><strong>Python &#x2F; PHP &#x2F; Node.js</strong></li>
+<li><strong>Android &#x2F; iOS 系统加密</strong></li>
+<li><strong>Docker &#x2F; Kubernetes</strong></li>
+<li><strong>Wi-Fi 加密、VPN、SSH</strong></li>
+<li><strong>你的浏览器底层密码库</strong></li>
+</ul>
+<p>一句话：<strong>互联网加密的基石</strong>。</p>
+<hr>
+<h2 id="四、极简总结（记这-4-点就够）"><a href="#四、极简总结（记这-4-点就够）" class="headerlink" title="四、极简总结（记这 4 点就够）"></a>四、极简总结（记这 4 点就够）</h2><ol>
+<li><strong>是工具</strong>：生成证书、加密文件、测试 HTTPS</li>
+<li><strong>是库</strong>：几乎所有软件加密都靠它</li>
+<li><strong>全覆盖</strong>：HTTPS、TLS、QUIC、VPN、SSH 全支持</li>
+</ol>
+<hr>
+<h1 id="OpenSSL-搭建局域网全套可信证书（自建根CA-签发服务器证书）"><a href="#OpenSSL-搭建局域网全套可信证书（自建根CA-签发服务器证书）" class="headerlink" title="OpenSSL 搭建局域网全套可信证书（自建根CA + 签发服务器证书）"></a>OpenSSL 搭建<strong>局域网全套可信证书</strong>（自建根CA + 签发服务器证书）</h1><p>核心思路：</p>
+<ol>
+<li>自己做<strong>根CA证书</strong>（相当于自己当权威证书机构）</li>
+<li>用根CA签发<strong>局域网服务器证书</strong>（绑定你的IP：192.168.1.22）</li>
+<li>手机&#x2F;电脑<strong>导入根CA证书</strong>，之后访问 <code>https://192.168.1.22</code> <strong>浏览器绿标、无不安全警告</strong></li>
+</ol>
+<p>全程一条一条复制命令即可，适配你的 IP：<strong>192.168.1.22</strong></p>
+<hr>
+<h2 id="一、目录准备"><a href="#一、目录准备" class="headerlink" title="一、目录准备"></a>一、目录准备</h2><p>新建文件夹，所有文件放这里：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">mkdir</span> -p ~/ssl/lan-ca</span><br><span class="line"><span class="built_in">cd</span> ~/ssl/lan-ca</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="二、第一步：生成-根CA私钥-根CA自签名证书"><a href="#二、第一步：生成-根CA私钥-根CA自签名证书" class="headerlink" title="二、第一步：生成 根CA私钥 + 根CA自签名证书"></a>二、第一步：生成 根CA私钥 + 根CA自签名证书</h2><h3 id="1-生成根CA私钥"><a href="#1-生成根CA私钥" class="headerlink" title="1. 生成根CA私钥"></a>1. 生成根CA私钥</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl genrsa -aes256 -out ca.key 4096</span><br></pre></td></tr></table></figure>
+<p>设置一个密码（记住，后面签发证书要用）</p>
+<h3 id="2-生成根CA证书（有效期10年）"><a href="#2-生成根CA证书（有效期10年）" class="headerlink" title="2. 生成根CA证书（有效期10年）"></a>2. 生成根CA证书（有效期10年）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl req -x509 -new -nodes -key ca.key -sha256 -days 3650 -out ca.crt</span><br></pre></td></tr></table></figure>
+<p>填写信息可随意，一路回车也行。<br>产出：</p>
+<ul>
+<li><code>ca.key</code>：根CA私钥（绝密，别外泄）</li>
+<li><code>ca.crt</code>：<strong>根CA证书</strong>（手机、电脑要安装这个）</li>
+</ul>
+<hr>
+<h2 id="三、第二步：生成服务器私钥-CSR请求"><a href="#三、第二步：生成服务器私钥-CSR请求" class="headerlink" title="三、第二步：生成服务器私钥 + CSR请求"></a>三、第二步：生成服务器私钥 + CSR请求</h2><h3 id="1-生成服务器私钥"><a href="#1-生成服务器私钥" class="headerlink" title="1. 生成服务器私钥"></a>1. 生成服务器私钥</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl genrsa -out server.key 2048</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-生成证书请求-CSR"><a href="#2-生成证书请求-CSR" class="headerlink" title="2. 生成证书请求 CSR"></a>2. 生成证书请求 CSR</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl req -new -key server.key -out server.csr</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="四、第三步：创建SAN扩展配置（关键！支持IP访问）"><a href="#四、第三步：创建SAN扩展配置（关键！支持IP访问）" class="headerlink" title="四、第三步：创建SAN扩展配置（关键！支持IP访问）"></a>四、第三步：创建SAN扩展配置（关键！支持IP访问）</h2><p>新建文件 <code>server.ext</code>，复制下面内容：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">authorityKeyIdentifier</span>=keyid,issuer</span><br><span class="line"><span class="attr">basicConstraints</span>=CA:<span class="literal">FALSE</span></span><br><span class="line"><span class="attr">keyUsage</span> = digitalSignature, keyEncipherment</span><br><span class="line"><span class="attr">subjectAltName</span> = IP:<span class="number">192.168</span>.<span class="number">1.22</span>,IP:<span class="number">127.0</span>.<span class="number">0.1</span>,DNS:localhost</span><br></pre></td></tr></table></figure>
+<hr>
+<h2 id="五、第四步：用根CA签发-局域网可信服务器证书"><a href="#五、第四步：用根CA签发-局域网可信服务器证书" class="headerlink" title="五、第四步：用根CA签发 局域网可信服务器证书"></a>五、第四步：用根CA签发 局域网可信服务器证书</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">openssl x509 -req \</span><br><span class="line">  -<span class="keyword">in</span> server.csr \</span><br><span class="line">  -CA ca.crt -CAkey ca.key \</span><br><span class="line">  -CAcreateserial \</span><br><span class="line">  -out server.crt \</span><br><span class="line">  -days 3650 -sha256 \</span><br><span class="line">  -extfile server.ext</span><br></pre></td></tr></table></figure>
+
+<h3 id="最终拿到4个文件"><a href="#最终拿到4个文件" class="headerlink" title="最终拿到4个文件"></a>最终拿到4个文件</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ca.key       # 根CA私钥（保密）</span><br><span class="line">ca.crt       # 根CA证书（给设备安装信任）</span><br><span class="line">server.key   # 网站/QUIC服务私钥</span><br><span class="line">server.crt   # 网站/QUIC服务证书</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="六、设备导入根CA，实现永久信任"><a href="#六、设备导入根CA，实现永久信任" class="headerlink" title="六、设备导入根CA，实现永久信任"></a>六、设备导入根CA，实现永久信任</h2><h3 id="Windows"><a href="#Windows" class="headerlink" title="Windows"></a>Windows</h3><ol>
+<li>双击 <code>ca.crt</code> → 安装证书</li>
+<li>存储位置：<strong>本地计算机</strong></li>
+<li>放入：<strong>受信任的根证书颁发机构</strong></li>
+<li>下一步到底即可</li>
+</ol>
+<h3 id="Mac"><a href="#Mac" class="headerlink" title="Mac"></a>Mac</h3><p>双击 <code>ca.crt</code> → 钥匙串 → 设为<strong>始终信任</strong></p>
+<h3 id="Android"><a href="#Android" class="headerlink" title="Android"></a>Android</h3><p>把 <code>ca.crt</code> 发到手机，设置 → 安全 → 安装证书 → 选择文件</p>
+<h3 id="iOS"><a href="#iOS" class="headerlink" title="iOS"></a>iOS</h3><p>邮件发 <code>ca.crt</code>，点开安装，再到 设置→通用→关于本机→证书信任设置 开启信任</p>
+<hr>
+<h2 id="七、你的Python-HTTP-3-项目怎么用"><a href="#七、你的Python-HTTP-3-项目怎么用" class="headerlink" title="七、你的Python HTTP&#x2F;3 项目怎么用"></a>七、你的Python HTTP&#x2F;3 项目怎么用</h2><p>服务端配置：</p>
+<ul>
+<li>证书：<code>server.crt</code></li>
+<li>私钥：<code>server.key</code></li>
+</ul>
+<p>Python 客户端运行时：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python xxx.py --host 192.168.1.22 --port 4433 --ca-certs ca.crt</span><br></pre></td></tr></table></figure>
+<p>客户端用 <strong>根CA证书</strong> 校验，完全可信、无警告。</p>
+<hr>
+<h2 id="八、后续换IP怎么办"><a href="#八、后续换IP怎么办" class="headerlink" title="八、后续换IP怎么办"></a>八、后续换IP怎么办</h2><p>如果以后改成 <code>192.168.1.33</code>，只需要：</p>
+<ol>
+<li>修改 <code>server.ext</code> 里的 <code>IP:xxx</code></li>
+<li>重新执行<strong>第四步签发命令</strong>即可，根CA不用重新生成。</li>
+</ol>
+<hr>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/OpenCV/OpenCV/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/05/01/OpenCV/OpenCV/" class="post-title-link" itemprop="url">OpenCV</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-05-01 13:42:38" itemprop="dateCreated datePublished" datetime="2026-05-01T13:42:38+08:00">2026-05-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/OpenCV/" itemprop="url" rel="index"><span itemprop="name">OpenCV</span></a>
         </span>
     </span>
 
@@ -319,7 +730,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/Embedded/Bluetooth/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/FFmpeg/FFmpeg/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -337,7 +748,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/05/01/Embedded/Bluetooth/" class="post-title-link" itemprop="url">Bluetooth</a>
+          <a href="/2026/05/01/FFmpeg/FFmpeg/" class="post-title-link" itemprop="url">FFmpeg</a>
         </h2>
 
         <div class="post-meta-container">
@@ -348,14 +759,7 @@
       </span>
       <span class="post-meta-item-text">发表于</span>
 
-      <time title="创建时间：2026-05-01 13:15:19" itemprop="dateCreated datePublished" datetime="2026-05-01T13:15:19+08:00">2026-05-01</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-04 11:55:06" itemprop="dateModified" datetime="2026-05-04T11:55:06+08:00">2026-05-04</time>
+      <time title="创建时间：2026-05-01 13:41:59" itemprop="dateCreated datePublished" datetime="2026-05-01T13:41:59+08:00">2026-05-01</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -363,7 +767,7 @@
       </span>
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Embedded/" itemprop="url" rel="index"><span itemprop="name">Embedded</span></a>
+          <a href="/categories/FFmpeg/" itemprop="url" rel="index"><span itemprop="name">FFmpeg</span></a>
         </span>
     </span>
 
@@ -418,7 +822,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/Embedded/LoRaWAN/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/GraphQL/GraphQL/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -436,7 +840,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/05/01/Embedded/LoRaWAN/" class="post-title-link" itemprop="url">LoRaWAN</a>
+          <a href="/2026/05/01/GraphQL/GraphQL/" class="post-title-link" itemprop="url">GraphQL</a>
         </h2>
 
         <div class="post-meta-container">
@@ -447,14 +851,14 @@
       </span>
       <span class="post-meta-item-text">发表于</span>
 
-      <time title="创建时间：2026-05-01 13:14:16" itemprop="dateCreated datePublished" datetime="2026-05-01T13:14:16+08:00">2026-05-01</time>
+      <time title="创建时间：2026-05-01 13:38:08" itemprop="dateCreated datePublished" datetime="2026-05-01T13:38:08+08:00">2026-05-01</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-04 11:55:02" itemprop="dateModified" datetime="2026-05-04T11:55:02+08:00">2026-05-04</time>
+      <time title="修改时间：2026-05-05 13:17:26" itemprop="dateModified" datetime="2026-05-05T13:17:26+08:00">2026-05-05</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -462,7 +866,186 @@
       </span>
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Embedded/" itemprop="url" rel="index"><span itemprop="name">Embedded</span></a>
+          <a href="/categories/GraphQL/" itemprop="url" rel="index"><span itemprop="name">GraphQL</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>757</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>3 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p><strong>GraphQL 是由 Meta（原 Facebook）于 2012 年创建、2015 年开源的一种用于 API 的查询语言与运行时</strong>，核心是让客户端<strong>精确请求所需数据</strong>，解决 REST 的“过度获取”和“多次请求”问题。下面从核心概念、优势、与 REST 对比、基本用法四方面详细说明。</p>
+<hr>
+<h3 id="一、核心概念"><a href="#一、核心概念" class="headerlink" title="一、核心概念"></a>一、核心概念</h3><ul>
+<li><strong>Schema（模式）</strong>：用强类型定义数据结构与关系，是 GraphQL 的“契约”，包含：<ul>
+<li><strong>Query</strong>：查询（读操作）入口</li>
+<li><strong>Mutation</strong>：变更（写操作）入口</li>
+<li><strong>Subscription</strong>：订阅（实时更新，基于 WebSocket）</li>
+</ul>
+</li>
+<li><strong>Type（类型）</strong>：定义对象结构，如 <code>User</code>、<code>Post</code>，含字段与类型（标量&#x2F;对象&#x2F;列表&#x2F;非空）。<figure class="highlight graphql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> User <span class="punctuation">&#123;</span></span><br><span class="line">  <span class="symbol">id</span><span class="punctuation">:</span> ID<span class="punctuation">!</span>          <span class="comment"># 非空ID</span></span><br><span class="line">  <span class="symbol">name</span><span class="punctuation">:</span> String<span class="punctuation">!</span>    <span class="comment"># 非空字符串</span></span><br><span class="line">  <span class="symbol">age</span><span class="punctuation">:</span> Int</span><br><span class="line">  <span class="symbol">posts</span><span class="punctuation">:</span> <span class="punctuation">[</span>Post<span class="punctuation">]</span>    <span class="comment"># Post列表</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure></li>
+<li><strong>Resolver（解析器）</strong>：服务端函数，负责<strong>按字段获取&#x2F;处理数据</strong>（数据库、微服务、第三方 API 均可）。</li>
+<li><strong>Query（查询）</strong>：客户端声明式请求，<strong>结构即响应结构</strong>。<figure class="highlight graphql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">query</span> GetUser <span class="punctuation">&#123;</span></span><br><span class="line">  user<span class="punctuation">(</span><span class="symbol">id</span><span class="punctuation">:</span> <span class="string">&quot;1&quot;</span><span class="punctuation">)</span> <span class="punctuation">&#123;</span></span><br><span class="line">    name</span><br><span class="line">    posts <span class="punctuation">&#123;</span> title <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure></li>
+<li><strong>Mutation（变更）</strong>：用于创建&#x2F;更新&#x2F;删除数据，语法类似 Query。<figure class="highlight graphql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">mutation</span> CreateUser <span class="punctuation">&#123;</span></span><br><span class="line">  createUser<span class="punctuation">(</span><span class="symbol">name</span><span class="punctuation">:</span> <span class="string">&quot;Alice&quot;</span><span class="punctuation">)</span> <span class="punctuation">&#123;</span> id name <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<hr>
+<h3 id="二、核心优势（对比-REST）"><a href="#二、核心优势（对比-REST）" class="headerlink" title="二、核心优势（对比 REST）"></a>二、核心优势（对比 REST）</h3><table>
+<thead>
+<tr>
+<th>维度</th>
+<th>GraphQL</th>
+<th>REST</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>数据获取</strong></td>
+<td>客户端精准指定字段，<strong>无过度获取</strong></td>
+<td>固定返回结构，易冗余</td>
+</tr>
+<tr>
+<td><strong>请求次数</strong></td>
+<td><strong>单一请求</strong>获取多资源（如用户+文章）</td>
+<td>需多端点请求，易“请求瀑布”</td>
+</tr>
+<tr>
+<td><strong>版本控制</strong></td>
+<td>Schema 渐进演进，<strong>无需版本号</strong></td>
+<td>需维护 v1&#x2F;v2 多版本</td>
+</tr>
+<tr>
+<td><strong>文档</strong></td>
+<td>基于 Schema <strong>自动生成</strong>（如 GraphiQL）</td>
+<td>需手动维护（Swagger 等）</td>
+</tr>
+<tr>
+<td><strong>实时能力</strong></td>
+<td>原生支持 Subscription（WebSocket）</td>
+<td>需轮询&#x2F;SSE，成本高</td>
+</tr>
+<tr>
+<td><strong>缓存</strong></td>
+<td>依赖客户端&#x2F;实体缓存（如 Apollo）</td>
+<td>天然适配 HTTP 缓存</td>
+</tr>
+</tbody></table>
+<p>关键结论：GraphQL 显著<strong>减少数据传输量与请求次数</strong>，弱网&#x2F;移动端收益极大；REST 更<strong>简单、成熟、缓存友好</strong>，适合简单场景。</p>
+<hr>
+<h3 id="三、工作流程"><a href="#三、工作流程" class="headerlink" title="三、工作流程"></a>三、工作流程</h3><ol>
+<li><strong>定义 Schema</strong>：服务端用 SDL（Schema Definition Language）定义类型、Query、Mutation。</li>
+<li><strong>实现 Resolver</strong>：每个字段对应解析器，对接数据源。</li>
+<li><strong>客户端请求</strong>：发送 POST 到单一端点（如 <code>/graphql</code>），携带 Query&#x2F;Mutation。</li>
+<li><strong>服务端执行</strong>：校验 Query → 调用 Resolver → 按请求结构返回 JSON。</li>
+<li><strong>客户端接收</strong>：响应结构与 Query 完全一致，直接渲染。</li>
+</ol>
+<hr>
+<h3 id="四、适用场景"><a href="#四、适用场景" class="headerlink" title="四、适用场景"></a>四、适用场景</h3><ul>
+<li>✅ <strong>复杂前端应用</strong>（如电商、社交）：多数据关联、按需字段。</li>
+<li>✅ <strong>移动端&#x2F;弱网环境</strong>：减少请求与数据体积。</li>
+<li>✅ <strong>微服务架构</strong>：统一网关聚合多服务数据。</li>
+<li>✅ <strong>实时功能</strong>（聊天、通知、实时看板）：Subscription 原生支持。</li>
+<li>❌ <strong>简单 CRUD 服务</strong>：REST 更轻量、易维护。</li>
+<li>❌ <strong>高缓存吞吐场景</strong>：REST HTTP 缓存更高效。</li>
+</ul>
+<hr>
+<h3 id="五、常用工具"><a href="#五、常用工具" class="headerlink" title="五、常用工具"></a>五、常用工具</h3><ul>
+<li><strong>服务端</strong>：Apollo Server、Relay、Hasura（自动生成 GraphQL）。</li>
+<li><strong>客户端</strong>：Apollo Client（React&#x2F;Vue&#x2F;Angular）、Relay（Meta）、urql。</li>
+<li><strong>开发工具</strong>：GraphiQL（内置 IDE）、Playground、GraphQL Voyager（可视化 Schema）。</li>
+</ul>
+<hr>
+<h3 id="六、示例（对比-REST）"><a href="#六、示例（对比-REST）" class="headerlink" title="六、示例（对比 REST）"></a>六、示例（对比 REST）</h3><p><strong>REST（需 2 次请求）</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">GET /users/1</span><br><span class="line">GET /users/1/posts</span><br></pre></td></tr></table></figure>
+
+<p><strong>GraphQL（1 次请求，按需字段）</strong></p>
+<figure class="highlight graphql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">query</span> <span class="punctuation">&#123;</span></span><br><span class="line">  user<span class="punctuation">(</span><span class="symbol">id</span><span class="punctuation">:</span> <span class="string">&quot;1&quot;</span><span class="punctuation">)</span> <span class="punctuation">&#123;</span></span><br><span class="line">    name</span><br><span class="line">    posts <span class="punctuation">&#123;</span></span><br><span class="line">      title</span><br><span class="line">      createdAt</span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>响应：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;data&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;user&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;Bob&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;posts&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span><span class="punctuation">&#123;</span><span class="attr">&quot;title&quot;</span><span class="punctuation">:</span> <span class="string">&quot;GraphQL 入门&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;createdAt&quot;</span><span class="punctuation">:</span> <span class="string">&quot;2026-01-01&quot;</span><span class="punctuation">&#125;</span><span class="punctuation">]</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/MQ/RocketMQ/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/05/01/MQ/RocketMQ/" class="post-title-link" itemprop="url">RocketMQ</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-05-01 13:35:45" itemprop="dateCreated datePublished" datetime="2026-05-01T13:35:45+08:00">2026-05-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/MQ/" itemprop="url" rel="index"><span itemprop="name">MQ</span></a>
         </span>
     </span>
 
@@ -517,7 +1100,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/Embedded/CoAP/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/MQ/kafka/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -535,7 +1118,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/05/01/Embedded/CoAP/" class="post-title-link" itemprop="url">CoAP</a>
+          <a href="/2026/05/01/MQ/kafka/" class="post-title-link" itemprop="url">Kafka</a>
         </h2>
 
         <div class="post-meta-container">
@@ -546,14 +1129,7 @@
       </span>
       <span class="post-meta-item-text">发表于</span>
 
-      <time title="创建时间：2026-05-01 13:13:28" itemprop="dateCreated datePublished" datetime="2026-05-01T13:13:28+08:00">2026-05-01</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-04 11:55:04" itemprop="dateModified" datetime="2026-05-04T11:55:04+08:00">2026-05-04</time>
+      <time title="创建时间：2026-05-01 13:35:18" itemprop="dateCreated datePublished" datetime="2026-05-01T13:35:18+08:00">2026-05-01</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -561,7 +1137,7 @@
       </span>
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Embedded/" itemprop="url" rel="index"><span itemprop="name">Embedded</span></a>
+          <a href="/categories/MQ/" itemprop="url" rel="index"><span itemprop="name">MQ</span></a>
         </span>
     </span>
 
@@ -616,7 +1192,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/Embedded/LIN/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/Nginx/Nginx/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -634,7 +1210,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/05/01/Embedded/LIN/" class="post-title-link" itemprop="url">LIN</a>
+          <a href="/2026/05/01/Nginx/Nginx/" class="post-title-link" itemprop="url">Nginx</a>
         </h2>
 
         <div class="post-meta-container">
@@ -645,14 +1221,7 @@
       </span>
       <span class="post-meta-item-text">发表于</span>
 
-      <time title="创建时间：2026-05-01 13:12:56" itemprop="dateCreated datePublished" datetime="2026-05-01T13:12:56+08:00">2026-05-01</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-04 11:53:27" itemprop="dateModified" datetime="2026-05-04T11:53:27+08:00">2026-05-04</time>
+      <time title="创建时间：2026-05-01 13:31:50" itemprop="dateCreated datePublished" datetime="2026-05-01T13:31:50+08:00">2026-05-01</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -660,7 +1229,7 @@
       </span>
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Embedded/" itemprop="url" rel="index"><span itemprop="name">Embedded</span></a>
+          <a href="/categories/Nginx/" itemprop="url" rel="index"><span itemprop="name">Nginx</span></a>
         </span>
     </span>
 
@@ -715,7 +1284,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/Embedded/CAN/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/Git/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -733,7 +1302,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/05/01/Embedded/CAN/" class="post-title-link" itemprop="url">CAN</a>
+          <a href="/2026/05/01/Git/" class="post-title-link" itemprop="url">Git 版本控制入门</a>
         </h2>
 
         <div class="post-meta-container">
@@ -743,15 +1312,9 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
+      
 
-      <time title="创建时间：2026-05-01 13:12:23" itemprop="dateCreated datePublished" datetime="2026-05-01T13:12:23+08:00">2026-05-01</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-04 11:55:05" itemprop="dateModified" datetime="2026-05-04T11:55:05+08:00">2026-05-04</time>
+      <time title="创建时间：2026-05-01 13:30:54 / 修改时间：22:42:42" itemprop="dateCreated datePublished" datetime="2026-05-01T13:30:54+08:00">2026-05-01</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -759,7 +1322,7 @@
       </span>
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Embedded/" itemprop="url" rel="index"><span itemprop="name">Embedded</span></a>
+          <a href="/categories/Git/" itemprop="url" rel="index"><span itemprop="name">Git</span></a>
         </span>
     </span>
 
@@ -770,14 +1333,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>0</span>
+      <span>2.4k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>1 分钟</span>
+      <span>8 分钟</span>
     </span>
 </div>
 
@@ -788,7 +1351,256 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          
+          <p><strong>Git</strong> 是分布式版本控制系统，用来记录代码变更、多人协作与回滚历史。下面从「安装与身份 → 建仓库 &#x2F; 克隆 &#x2F; <strong>本地 init 后关联远程</strong> → 日常提交流程 → 分支与合并 → 远程与推送 → 忽略文件 → <strong>误提交后回滚远程</strong> → <strong><code>cherry-pick</code>（挑选提交）</strong>」顺序写清楚；命令在 <strong>Linux &#x2F; macOS</strong> 终端或 <strong>Windows</strong> 的 <strong>Git Bash &#x2F; PowerShell</strong> 中均可使用（路径按你的本机修改）。</p>
+<hr>
+<h1 id="一、安装与验证"><a href="#一、安装与验证" class="headerlink" title="一、安装与验证"></a>一、安装与验证</h1><ol>
+<li>打开官网下载并按向导安装：<strong><a target="_blank" rel="noopener external nofollow noreferrer" href="https://git-scm.com/">https://git-scm.com/</a></strong>  </li>
+<li><strong>Windows</strong> 安装时可勾选 <strong>「Git Bash Here」</strong>，便于在资源管理器右键进入终端。</li>
+</ol>
+<p>验证：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git --version</span><br></pre></td></tr></table></figure>
+
+<p>能输出版本号（如 <strong><code>git version 2.x.x</code></strong>）即表示安装成功。</p>
+<hr>
+<h1 id="二、首次使用前配置身份"><a href="#二、首次使用前配置身份" class="headerlink" title="二、首次使用前配置身份"></a>二、首次使用前配置身份</h1><p>提交记录里会显示作者信息，<strong>每台电脑只需配置一次</strong>（全局）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git config --global user.name <span class="string">&quot;你的名字或昵称&quot;</span></span><br><span class="line">git config --global user.email <span class="string">&quot;你的邮箱@example.com&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>查看是否生效：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git config --global --list</span><br></pre></td></tr></table></figure>
+
+<p>仅某个仓库使用不同身份时，在该仓库目录去掉 <strong><code>--global</code></strong> 再执行一次即可。</p>
+<hr>
+<h1 id="三、创建仓库与克隆"><a href="#三、创建仓库与克隆" class="headerlink" title="三、创建仓库与克隆"></a>三、创建仓库与克隆</h1><h2 id="1-在本地新建仓库"><a href="#1-在本地新建仓库" class="headerlink" title="1. 在本地新建仓库"></a>1. 在本地新建仓库</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> /你的项目目录</span><br><span class="line">git init</span><br></pre></td></tr></table></figure>
+
+<p>当前目录下会出现 <strong><code>.git</code></strong> 隐藏目录，表示已纳入 <strong>Git</strong> 管理。</p>
+<h2 id="2-从远程克隆已有仓库"><a href="#2-从远程克隆已有仓库" class="headerlink" title="2. 从远程克隆已有仓库"></a>2. 从远程克隆已有仓库</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/用户名/仓库名.git</span><br><span class="line"><span class="built_in">cd</span> 仓库名</span><br></pre></td></tr></table></figure>
+
+<p><strong>SSH</strong> 地址形如 <strong><code>git@github.com:用户名/仓库名.git</code></strong>，需先配置好公钥（见平台文档）。</p>
+<h2 id="3-本地-git-init-后关联远程并首次提交、推送"><a href="#3-本地-git-init-后关联远程并首次提交、推送" class="headerlink" title="3. 本地 git init 后关联远程并首次提交、推送"></a>3. 本地 <code>git init</code> 后关联远程并首次提交、推送</h2><p>先在 <strong>Gitee &#x2F; GitHub</strong> 等平台<strong>新建空仓库</strong>（复制页面给出的 <strong>HTTPS</strong> 或 <strong>SSH</strong> 地址）。本地已有代码目录时：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> /你的项目目录</span><br><span class="line">git init</span><br></pre></td></tr></table></figure>
+
+<p>若全局已配置过 <strong><code>user.name</code> &#x2F; <code>user.email</code></strong>（见上文「二」），可直接暂存、提交：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git add .</span><br><span class="line">git commit -m <span class="string">&quot;init: 首次提交&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>关联远程（<strong><code>origin</code></strong> 为常用别名，地址换成你的仓库）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git remote add origin https://gitee.com/你的用户/你的仓库.git</span><br><span class="line">git remote -v</span><br></pre></td></tr></table></figure>
+
+<p>确认本地<strong>默认分支名</strong>与远程一致。远程多为 <strong><code>main</code></strong>；若你本地仍是 <strong><code>master</code></strong>，可改名为 <strong><code>main</code></strong> 再推送：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git branch -M main</span><br><span class="line">git push -u origin main</span><br></pre></td></tr></table></figure>
+
+<p>之后在本仓库内只需 <strong><code>git push</code></strong> &#x2F; <strong><code>git pull</code></strong>（<strong><code>-u</code></strong> 已绑定上游）。</p>
+<p><strong>若新建远程仓库时勾选了「自动生成 README &#x2F; .gitignore」</strong>，远程已有提交，直接 <strong><code>push</code></strong> 会被拒绝。可先拉取再合并（保留双方历史）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git pull origin main --allow-unrelated-histories</span><br></pre></td></tr></table></figure>
+
+<p>解决若有冲突后 <strong><code>git add</code></strong> → <strong><code>git commit</code></strong>，再 <strong><code>git push -u origin main</code></strong>。更省事的做法是：<strong>建远程仓库时不要勾选初始化文件</strong>，保持完全空库，再按上文 <strong><code>push</code></strong> 即可。</p>
+<hr>
+<h1 id="四、日常开发流程（最常用）"><a href="#四、日常开发流程（最常用）" class="headerlink" title="四、日常开发流程（最常用）"></a>四、日常开发流程（最常用）</h1><h2 id="1-查看状态"><a href="#1-查看状态" class="headerlink" title="1. 查看状态"></a>1. 查看状态</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git status</span><br></pre></td></tr></table></figure>
+
+<p>红色为「未暂存」变更，绿色为「已暂存待提交」。</p>
+<h2 id="2-加入暂存区并提交"><a href="#2-加入暂存区并提交" class="headerlink" title="2. 加入暂存区并提交"></a>2. 加入暂存区并提交</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git add .</span><br><span class="line">git commit -m <span class="string">&quot;描述本次修改（写清楚便于以后查找）&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>只暂存某个文件时，把 <strong><code>.</code></strong> 换成路径，例如 <strong><code>git add README.md</code></strong>。</p>
+<h2 id="3-查看历史"><a href="#3-查看历史" class="headerlink" title="3. 查看历史"></a>3. 查看历史</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">log</span> --oneline -10</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="五、分支与合并（简要）"><a href="#五、分支与合并（简要）" class="headerlink" title="五、分支与合并（简要）"></a>五、分支与合并（简要）</h1><h2 id="1-新建并切换分支"><a href="#1-新建并切换分支" class="headerlink" title="1. 新建并切换分支"></a>1. 新建并切换分支</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git branch feature-login</span><br><span class="line">git checkout feature-login</span><br></pre></td></tr></table></figure>
+
+<p><strong>Git 2.23+</strong> 可用一条命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git switch -c feature-login</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-切回主分支并合并"><a href="#2-切回主分支并合并" class="headerlink" title="2. 切回主分支并合并"></a>2. 切回主分支并合并</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git switch main</span><br><span class="line">git merge feature-login</span><br></pre></td></tr></table></figure>
+
+<p>不同团队主分支名可能是 <strong><code>main</code></strong> 或 <strong><code>master</code></strong>，以你仓库默认分支为准。</p>
+<h2 id="3-删除已合并的本地分支（可选）"><a href="#3-删除已合并的本地分支（可选）" class="headerlink" title="3. 删除已合并的本地分支（可选）"></a>3. 删除已合并的本地分支（可选）</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git branch -d feature-login</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="六、远程仓库：添加、拉取与推送"><a href="#六、远程仓库：添加、拉取与推送" class="headerlink" title="六、远程仓库：添加、拉取与推送"></a>六、远程仓库：添加、拉取与推送</h1><h2 id="1-查看是否已配置远程"><a href="#1-查看是否已配置远程" class="headerlink" title="1. 查看是否已配置远程"></a>1. 查看是否已配置远程</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git remote -v</span><br></pre></td></tr></table></figure>
+
+<p>若为空，需要添加；若地址错误，可先 <strong><code>git remote remove origin</code></strong> 再重新添加。</p>
+<h2 id="2-关联远程（origin-为常用别名）"><a href="#2-关联远程（origin-为常用别名）" class="headerlink" title="2. 关联远程（origin 为常用别名）"></a>2. 关联远程（<code>origin</code> 为常用别名）</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git remote add origin https://gitee.com/你的用户/你的仓库.git</span><br></pre></td></tr></table></figure>
+
+<p>若仓库是先在本地 <strong><code>git init</code></strong>、再第一次连远程，从 <strong><code>add</code> &#x2F; <code>commit</code></strong> 到 <strong><code>push</code></strong> 的完整顺序见上文 <strong>「三、3」</strong>。</p>
+<h2 id="3-首次推送"><a href="#3-首次推送" class="headerlink" title="3. 首次推送"></a>3. 首次推送</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git push -u origin main</span><br></pre></td></tr></table></figure>
+
+<p>之后同一分支只需 <strong><code>git push</code></strong>。<strong><code>-u</code></strong> 会记住上游分支，减少下次参数。</p>
+<h2 id="4-拉取他人更新"><a href="#4-拉取他人更新" class="headerlink" title="4. 拉取他人更新"></a>4. 拉取他人更新</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git pull</span><br></pre></td></tr></table></figure>
+
+<p>若本地有未提交修改且与远程冲突，先 <strong><code>commit</code></strong> 或 <strong><code>stash</code></strong> 再拉取，按提示解决冲突。</p>
+<hr>
+<h1 id="七、忽略不必提交的文件（-gitignore）"><a href="#七、忽略不必提交的文件（-gitignore）" class="headerlink" title="七、忽略不必提交的文件（.gitignore）"></a>七、忽略不必提交的文件（<code>.gitignore</code>）</h1><p>在项目根目录新建 <strong><code>.gitignore</code></strong>，每行一个规则，例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">node_modules/</span><br><span class="line">dist/</span><br><span class="line">.env</span><br><span class="line">*.log</span><br><span class="line">.DS_Store</span><br></pre></td></tr></table></figure>
+
+<p>保存后执行 <strong><code>git status</code></strong>，上述路径不应再出现在「待添加」列表中（已被跟踪的文件需先 <strong><code>git rm --cached</code></strong> 再忽略，按需查阅文档）。</p>
+<hr>
+<h1 id="八、误提交后回滚远程分支"><a href="#八、误提交后回滚远程分支" class="headerlink" title="八、误提交后回滚远程分支"></a>八、误提交后回滚远程分支</h1><p>「误提交」分两种：<strong>还没 <code>push</code></strong>（只改本地即可）与 <strong>已经 <code>push</code> 到远程</strong>（需要让远程分支也撤销或抵消）。下面默认远程别名为 <strong><code>origin</code></strong>，分支名为 <strong><code>main</code></strong>，请改成你的实际分支名。</p>
+<h2 id="1-仅误提交在本地、尚未推送"><a href="#1-仅误提交在本地、尚未推送" class="headerlink" title="1. 仅误提交在本地、尚未推送"></a>1. 仅误提交在本地、尚未推送</h2><p>撤销最近一次提交，但<strong>保留工作区修改</strong>（可重新改完再提交）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git reset --soft HEAD~1</span><br></pre></td></tr></table></figure>
+
+<p>撤销最近一次提交，并<strong>取消暂存</strong>（文件仍在工作区，与 <strong><code>git add</code> 前</strong>类似）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git reset --mixed HEAD~1</span><br></pre></td></tr></table></figure>
+
+<p>完全丢弃最近一次提交及其改动（<strong>危险</strong>，慎用）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git reset --hard HEAD~1</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-已推送到远程：用-revert（推荐，适合多人共享分支）"><a href="#2-已推送到远程：用-revert（推荐，适合多人共享分支）" class="headerlink" title="2. 已推送到远程：用 revert（推荐，适合多人共享分支）"></a>2. 已推送到远程：用 <code>revert</code>（推荐，适合多人共享分支）</h2><p><strong><code>git revert</code></strong> 会<strong>新增一条「反向提交」</strong>，不改写已有历史，他人 <strong><code>pull</code></strong> 时不易产生「历史分叉」冲突，适合 <strong><code>main</code> &#x2F; <code>develop</code></strong> 等公共分支。</p>
+<ol>
+<li>查出误提交哈希：</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">log</span> --oneline -5</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>对<strong>单个错误提交</strong>执行还原并推送：</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git revert &lt;错误提交的完整或短哈希&gt; --no-edit</span><br><span class="line">git push origin main</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>若误提交是<strong>合并提交（merge commit）</strong>，需指定主线父提交（一般为 <strong><code>1</code></strong>），具体以 <strong><code>git log</code></strong> 为准：</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git revert -m 1 &lt;merge提交的哈希&gt; --no-edit</span><br><span class="line">git push origin main</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-已推送到远程：用-reset-强推（仅个人分支或团队已约定）"><a href="#3-已推送到远程：用-reset-强推（仅个人分支或团队已约定）" class="headerlink" title="3. 已推送到远程：用 reset + 强推（仅个人分支或团队已约定）"></a>3. 已推送到远程：用 <code>reset</code> + 强推（仅个人分支或团队已约定）</h2><p>若确定<strong>没有他人基于当前远程历史开发</strong>，或误推在自己独占的功能分支上，可把本地分支指回正确提交，再强推覆盖远程：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git reset --hard &lt;正确的提交哈希&gt;</span><br><span class="line">git push --force-with-lease origin main</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>优先使用 <strong><code>--force-with-lease</code></strong>，避免覆盖掉你<strong>未拉取到的</strong>他人新提交；若你明确要无条件覆盖，才考虑 <strong><code>--force</code></strong>（仍须团队同意）。  </li>
+<li><strong>GitHub &#x2F; Gitee</strong> 等对 <strong><code>main</code></strong> 常开启<strong>分支保护</strong>，禁止强推，此时只能用 <strong><code>revert</code></strong> 或走平台「回滚 PR」流程。</li>
+</ul>
+<h2 id="4-协作与分支保护注意"><a href="#4-协作与分支保护注意" class="headerlink" title="4. 协作与分支保护注意"></a>4. 协作与分支保护注意</h2><table>
+<thead>
+<tr>
+<th>情况</th>
+<th>建议</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong><code>main</code> 多人共用</strong></td>
+<td>用 <strong><code>git revert</code></strong>，不要用强推改历史</td>
+</tr>
+<tr>
+<td><strong>个人功能分支</strong></td>
+<td>可与维护者约定后 <strong><code>reset</code> + <code>--force-with-lease</code></strong></td>
+</tr>
+<tr>
+<td><strong>平台禁止 force push</strong></td>
+<td>只能 <strong><code>revert</code></strong> 或在网页端操作</td>
+</tr>
+</tbody></table>
+<p>回滚后通知同事 <strong><code>git pull</code></strong>；若曾 <strong><code>revert</code></strong>，后续再「撤销这次 revert」可用 <strong><code>git revert</code> 那次 revert 产生的提交哈希</strong>。</p>
+<hr>
+<h1 id="九、cherry-pick：把指定提交「摘」到当前分支"><a href="#九、cherry-pick：把指定提交「摘」到当前分支" class="headerlink" title="九、cherry-pick：把指定提交「摘」到当前分支"></a>九、<code>cherry-pick</code>：把指定提交「摘」到当前分支</h1><p><strong><code>git merge</code></strong> 会把另一条分支上的<strong>全部差异</strong>合进来；若你只想把对方分支上的<strong>某几条提交</strong>搬到当前分支（例如 <strong><code>hotfix</code></strong> 上修了一个 <strong>Bug</strong>，要同步到 <strong><code>release</code></strong>，又不想合并整棵分支树），用 <strong><code>git cherry-pick</code></strong>。</p>
+<h2 id="1-基本用法"><a href="#1-基本用法" class="headerlink" title="1. 基本用法"></a>1. 基本用法</h2><p>先切到<strong>要接收改动</strong>的分支，再给出<strong>被挑选提交的哈希</strong>（在对方分支上用 <strong><code>git log --oneline</code></strong> 查看）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git switch release</span><br><span class="line">git cherry-pick abc1234</span><br></pre></td></tr></table></figure>
+
+<p><strong>Git</strong> 会在当前分支<strong>新建一个提交</strong>，内容与 <strong><code>abc1234</code></strong> 的补丁相同（哈希会变，因为父提交不同）。</p>
+<p>一次挑多个提交时，按<strong>时间先后</strong>从左到右列出（先发生的先写）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git cherry-pick 1111111 2222222 3333333</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-连续区间（慎用，先-log-确认范围）"><a href="#2-连续区间（慎用，先-log-确认范围）" class="headerlink" title="2. 连续区间（慎用，先 log 确认范围）"></a>2. 连续区间（慎用，先 <code>log</code> 确认范围）</h2><p>从 <strong><code>A</code> 之后</strong>到 <strong><code>B</code>（含）</strong> 的提交链上挑选，可用（<strong><code>A</code> 本身不会被挑进</strong>，<strong><code>B</code> 会</strong>）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git cherry-pick A^..B</span><br></pre></td></tr></table></figure>
+
+<p>不同仓库历史形状不同，区间语义容易踩坑；不确定时改为<strong>逐个哈希</strong>或<strong>多次单条 <code>cherry-pick</code></strong> 更稳。</p>
+<h2 id="3-冲突与中止"><a href="#3-冲突与中止" class="headerlink" title="3. 冲突与中止"></a>3. 冲突与中止</h2><p>与 <strong><code>merge</code></strong> 类似，可能冲突。改完文件后：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git add .</span><br><span class="line">git cherry-pick --<span class="built_in">continue</span></span><br></pre></td></tr></table></figure>
+
+<p>放弃本次挑选、回到 <strong><code>cherry-pick</code> 之前</strong>的状态：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git cherry-pick --abort</span><br></pre></td></tr></table></figure>
+
+<h2 id="4-常用选项"><a href="#4-常用选项" class="headerlink" title="4. 常用选项"></a>4. 常用选项</h2><table>
+<thead>
+<tr>
+<th>选项</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong><code>-x</code></strong></td>
+<td>在提交说明末尾附一行 <strong><code>(cherry picked from commit …)</code></strong>，便于审计、追溯来源</td>
+</tr>
+<tr>
+<td><strong><code>-n</code> &#x2F; <code>--no-commit</code></strong></td>
+<td>只应用补丁到暂存区 &#x2F; 工作区，<strong>不自动提交</strong>；可连续挑多条再一次性 <strong><code>commit</code></strong>（类似手工 squash）</td>
+</tr>
+</tbody></table>
+<h2 id="5-与-merge-的取舍（简要）"><a href="#5-与-merge-的取舍（简要）" class="headerlink" title="5. 与 merge 的取舍（简要）"></a>5. 与 <code>merge</code> 的取舍（简要）</h2><table>
+<thead>
+<tr>
+<th>需求</th>
+<th>更合适</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>需要对方分支<strong>当前全部内容</strong></td>
+<td><strong><code>git merge</code></strong></td>
+</tr>
+<tr>
+<td>只要<strong>个别提交</strong>、保持当前分支历史线性感</td>
+<td><strong><code>git cherry-pick</code></strong></td>
+</tr>
+</tbody></table>
+<p>若在 <strong><code>main</code></strong> 上 <strong><code>cherry-pick</code></strong> 了已在功能分支合并过的同一补丁，可能产生<strong>重复改动</strong>或冲突，需团队约定「以哪条分支为准」。</p>
+<hr>
+<h1 id="十、小结"><a href="#十、小结" class="headerlink" title="十、小结"></a>十、小结</h1><table>
+<thead>
+<tr>
+<th>场景</th>
+<th>常用命令</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>安装验证</td>
+<td><strong><code>git --version</code></strong></td>
+</tr>
+<tr>
+<td>身份配置</td>
+<td><strong><code>git config --global user.name</code> &#x2F; <code>user.email</code></strong></td>
+</tr>
+<tr>
+<td>新建仓库</td>
+<td><strong><code>git init</code></strong></td>
+</tr>
+<tr>
+<td>本地 init 后连远程</td>
+<td><strong><code>git remote add origin &lt;url&gt;</code></strong> → <strong><code>git add</code> &#x2F; <code>commit</code></strong> → <strong><code>git push -u origin main</code></strong></td>
+</tr>
+<tr>
+<td>克隆</td>
+<td><strong><code>git clone &lt;url&gt;</code></strong></td>
+</tr>
+<tr>
+<td>提交</td>
+<td><strong><code>git add</code></strong> → <strong><code>git commit -m</code></strong></td>
+</tr>
+<tr>
+<td>分支</td>
+<td><strong><code>git switch -c</code></strong> &#x2F; <strong><code>git merge</code></strong></td>
+</tr>
+<tr>
+<td>远程</td>
+<td><strong><code>git remote add</code></strong> → <strong><code>git push -u</code></strong></td>
+</tr>
+<tr>
+<td>同步</td>
+<td><strong><code>git pull</code></strong></td>
+</tr>
+<tr>
+<td>忽略文件</td>
+<td>编辑 <strong><code>.gitignore</code></strong></td>
+</tr>
+<tr>
+<td>远程回滚（安全）</td>
+<td><strong><code>git revert &lt;hash&gt;</code></strong> → <strong><code>git push</code></strong></td>
+</tr>
+<tr>
+<td>远程回滚（改历史）</td>
+<td><strong><code>git reset --hard &lt;hash&gt;</code></strong> → <strong><code>git push --force-with-lease</code></strong></td>
+</tr>
+<tr>
+<td>挑选提交</td>
+<td><strong><code>git cherry-pick &lt;hash&gt;</code></strong>；冲突后 <strong><code>--continue</code></strong> &#x2F; <strong><code>--abort</code></strong></td>
+</tr>
+</tbody></table>
+<p>更高级的主题（<strong><code>rebase</code></strong>、<strong>子模块</strong>、<strong>大文件 LFS</strong> 等）可在熟练上述流程后，按 <a target="_blank" rel="noopener external nofollow noreferrer" href="https://git-scm.com/book/zh/v2">Pro Git 中文版</a> 与团队规范继续深入。</p>
+
       
     </div>
 
@@ -814,7 +1626,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/Embedded/SPI/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/Linux/Linux/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -832,7 +1644,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/05/01/Embedded/SPI/" class="post-title-link" itemprop="url">SPI</a>
+          <a href="/2026/05/01/Linux/Linux/" class="post-title-link" itemprop="url">Linux</a>
         </h2>
 
         <div class="post-meta-container">
@@ -843,14 +1655,7 @@
       </span>
       <span class="post-meta-item-text">发表于</span>
 
-      <time title="创建时间：2026-05-01 13:11:54" itemprop="dateCreated datePublished" datetime="2026-05-01T13:11:54+08:00">2026-05-01</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-04 11:54:09" itemprop="dateModified" datetime="2026-05-04T11:54:09+08:00">2026-05-04</time>
+      <time title="创建时间：2026-05-01 13:29:51" itemprop="dateCreated datePublished" datetime="2026-05-01T13:29:51+08:00">2026-05-01</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -858,304 +1663,7 @@
       </span>
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Embedded/" itemprop="url" rel="index"><span itemprop="name">Embedded</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>0</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>1 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/Embedded/I2C/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="miracle">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="my">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | my">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/05/01/Embedded/I2C/" class="post-title-link" itemprop="url">I2C</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2026-05-01 13:11:31" itemprop="dateCreated datePublished" datetime="2026-05-01T13:11:31+08:00">2026-05-01</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-04 11:55:03" itemprop="dateModified" datetime="2026-05-04T11:55:03+08:00">2026-05-04</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Embedded/" itemprop="url" rel="index"><span itemprop="name">Embedded</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>0</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>1 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/Embedded/RS485/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="miracle">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="my">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | my">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/05/01/Embedded/RS485/" class="post-title-link" itemprop="url">RS485</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2026-05-01 13:10:29" itemprop="dateCreated datePublished" datetime="2026-05-01T13:10:29+08:00">2026-05-01</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-04 11:54:04" itemprop="dateModified" datetime="2026-05-04T11:54:04+08:00">2026-05-04</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Embedded/" itemprop="url" rel="index"><span itemprop="name">Embedded</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>0</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>1 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/Embedded/RS232/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="miracle">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="my">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | my">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/05/01/Embedded/RS232/" class="post-title-link" itemprop="url">RS232</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2026-05-01 13:10:04" itemprop="dateCreated datePublished" datetime="2026-05-01T13:10:04+08:00">2026-05-01</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-04 11:53:59" itemprop="dateModified" datetime="2026-05-04T11:53:59+08:00">2026-05-04</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Embedded/" itemprop="url" rel="index"><span itemprop="name">Embedded</span></a>
+          <a href="/categories/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a>
         </span>
     </span>
 
@@ -1203,7 +1711,7 @@
 
 
   <nav class="pagination">
-    <a class="extend prev" rel="prev" title="上一页" aria-label="上一页" href="/page/6/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><span class="page-number current">7</span><a class="page-number" href="/page/8/">8</a><span class="space">&hellip;</span><a class="page-number" href="/page/17/">17</a><a class="extend next" rel="next" title="下一页" aria-label="下一页" href="/page/8/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" title="上一页" aria-label="上一页" href="/page/6/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><span class="page-number current">7</span><a class="page-number" href="/page/8/">8</a><span class="space">&hellip;</span><a class="page-number" href="/page/19/">19</a><a class="extend next" rel="next" title="下一页" aria-label="下一页" href="/page/8/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 </div>
@@ -1225,13 +1733,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">152k</span>
+    <span title="站点总字数">159k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">8:26</span>
+    <span title="站点阅读时长">8:49</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

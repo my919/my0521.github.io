@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="概述核心链路：下单 POST &#x2F;order&#x2F;place（cloud-order）→ OpenFeign → 扣库存 POST &#x2F;stock&#x2F;goods&#x2F;deduct（cloud-stock）。成功时写入 t_order 并减少 goods.stock；失败时由 Seata 全局事务 回滚（默认开启）。测试数据见 sql&#x2F;test-data-goods.sql。 流程1234567891011121">
+<meta property="og:type" content="article">
+<meta property="og:title" content="订单下单与库存扣减">
+<meta property="og:url" content="http://example.com/2026/05/17/SpringCloud/%E8%AE%A2%E5%8D%95%E4%B8%8B%E5%8D%95%E4%B8%8E%E5%BA%93%E5%AD%98%E6%89%A3%E5%87%8F/index.html">
+<meta property="og:site_name" content="my">
+<meta property="og:description" content="概述核心链路：下单 POST &#x2F;order&#x2F;place（cloud-order）→ OpenFeign → 扣库存 POST &#x2F;stock&#x2F;goods&#x2F;deduct（cloud-stock）。成功时写入 t_order 并减少 goods.stock；失败时由 Seata 全局事务 回滚（默认开启）。测试数据见 sql&#x2F;test-data-goods.sql。 流程1234567891011121">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-05-17T02:30:00.000Z">
+<meta property="article:modified_time" content="2026-05-16T16:14:24.936Z">
+<meta property="article:author" content="miracle">
+<meta property="article:tag" content="OpenFeign">
+<meta property="article:tag" content="Seata">
+<meta property="article:tag" content="库存">
+<meta property="article:tag" content="订单">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/2026/05/17/SpringCloud/%E8%AE%A2%E5%8D%95%E4%B8%8B%E5%8D%95%E4%B8%8E%E5%BA%93%E5%AD%98%E6%89%A3%E5%87%8F/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2026/05/17/SpringCloud/%E8%AE%A2%E5%8D%95%E4%B8%8B%E5%8D%95%E4%B8%8E%E5%BA%93%E5%AD%98%E6%89%A3%E5%87%8F/","path":"2026/05/17/SpringCloud/订单下单与库存扣减/","title":"订单下单与库存扣减"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>订单下单与库存扣减 | my</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js" defer></script>
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="my" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">my</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B5%81%E7%A8%8B"><span class="nav-number">2.</span> <span class="nav-text">流程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%E6%95%B0%E6%8D%AE"><span class="nav-number">3.</span> <span class="nav-text">测试数据</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AF%B7%E6%B1%82%E4%BD%93"><span class="nav-number">4.</span> <span class="nav-text">请求体</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#API"><span class="nav-number">5.</span> <span class="nav-text">API</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%81%94%E8%B0%83%E5%91%BD%E4%BB%A4"><span class="nav-number">6.</span> <span class="nav-text">联调命令</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%AA%8C%E8%AF%81%E6%B8%85%E5%8D%95"><span class="nav-number">7.</span> <span class="nav-text">验证清单</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E4%BD%8D%E7%BD%AE"><span class="nav-number">8.</span> <span class="nav-text">代码位置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98"><span class="nav-number">9.</span> <span class="nav-text">常见问题</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="nav-number">10.</span> <span class="nav-text">参考链接</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">miracle</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">182</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">38</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">130</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/my919" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;my919" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://gitee.com/my919" title="Gitee → https:&#x2F;&#x2F;gitee.com&#x2F;my919" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>Gitee</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:yeal166@163.com" title="E-Mail → mailto:yeal166@163.com" rel="noopener me external nofollow noreferrer" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/17/SpringCloud/%E8%AE%A2%E5%8D%95%E4%B8%8B%E5%8D%95%E4%B8%8E%E5%BA%93%E5%AD%98%E6%89%A3%E5%87%8F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="订单下单与库存扣减 | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          订单下单与库存扣减
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2026-05-17 10:30:00 / 修改时间：00:14:24" itemprop="dateCreated datePublished" datetime="2026-05-17T10:30:00+08:00">2026-05-17</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>618</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>2 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>核心链路：<strong>下单</strong> <code>POST /order/place</code>（<code>cloud-order</code>）→ <strong>OpenFeign</strong> → <strong>扣库存</strong> <code>POST /stock/goods/deduct</code>（<code>cloud-stock</code>）。成功时写入 <code>t_order</code> 并减少 <code>goods.stock</code>；失败时由 <strong>Seata 全局事务</strong> 回滚（默认开启）。测试数据见 <code>sql/test-data-goods.sql</code>。</p>
+<h1 id="流程"><a href="#流程" class="headerlink" title="流程"></a>流程</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">sequenceDiagram</span><br><span class="line">  participant C as Client</span><br><span class="line">  participant G as Gateway</span><br><span class="line">  participant O as cloud-order</span><br><span class="line">  participant S as cloud-stock</span><br><span class="line">  participant DBo as DB order</span><br><span class="line">  participant DBs as DB stock</span><br><span class="line"></span><br><span class="line">  C-&gt;&gt;G: POST /order/place</span><br><span class="line">  G-&gt;&gt;O: 转发</span><br><span class="line">  O-&gt;&gt;O: @GlobalTransactional</span><br><span class="line">  O-&gt;&gt;DBo: INSERT t_order</span><br><span class="line">  O-&gt;&gt;S: Feign deductGoods</span><br><span class="line">  S-&gt;&gt;DBs: UPDATE goods SET stock</span><br><span class="line">  alt stock OK</span><br><span class="line">    O--&gt;&gt;C: code 0</span><br><span class="line">  else stock不足</span><br><span class="line">    S--&gt;&gt;O: 业务异常</span><br><span class="line">    O-&gt;&gt;O: 全局 rollback</span><br><span class="line">    O--&gt;&gt;C: code 1</span><br><span class="line">  end</span><br></pre></td></tr></table></figure>
+
+<h1 id="测试数据"><a href="#测试数据" class="headerlink" title="测试数据"></a>测试数据</h1><table>
+<thead>
+<tr>
+<th>goodsId</th>
+<th>名称</th>
+<th>初始 stock</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>示例商品A</td>
+<td>88</td>
+<td>正常下单</td>
+</tr>
+<tr>
+<td>2</td>
+<td>示例商品B</td>
+<td>50</td>
+<td>正常下单</td>
+</tr>
+<tr>
+<td>3</td>
+<td>低库存商品</td>
+<td>2</td>
+<td>回滚（qty&#x3D;10）</td>
+</tr>
+</tbody></table>
+<p>导入：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql -h 192.168.1.22 -P 30000 -u root -p study &lt; sql/test-data-goods.sql</span><br></pre></td></tr></table></figure>
+
+<h1 id="请求体"><a href="#请求体" class="headerlink" title="请求体"></a>请求体</h1><p><code>sql/place-order-body.json</code>（成功示例）：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;userId&quot;</span><span class="punctuation">:</span> <span class="number">1</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;items&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">    <span class="punctuation">&#123;</span> <span class="attr">&quot;goodsId&quot;</span><span class="punctuation">:</span> <span class="number">1</span><span class="punctuation">,</span> <span class="attr">&quot;quantity&quot;</span><span class="punctuation">:</span> <span class="number">2</span> <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">]</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>回滚示例：<code>sql/swagger-examples/place-order-rollback.json</code>（goodsId&#x3D;3, quantity&#x3D;10）。</p>
+<h1 id="API"><a href="#API" class="headerlink" title="API"></a>API</h1><table>
+<thead>
+<tr>
+<th>方法</th>
+<th>路径</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>POST</td>
+<td><code>/order/place</code></td>
+<td>下单</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/order/{id}</code></td>
+<td>查询订单（id 仅数字，正则 <code>\d+</code>）</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/stock/goods/{id}</code></td>
+<td>查库存</td>
+</tr>
+<tr>
+<td>POST</td>
+<td><code>/stock/goods/deduct</code></td>
+<td>扣减（一般由 order 内部 Feign 调用）</td>
+</tr>
+</tbody></table>
+<p>统一响应：<code>Result</code>，<code>code==0</code> 成功，<code>code==1</code> 业务失败。</p>
+<h1 id="联调命令"><a href="#联调命令" class="headerlink" title="联调命令"></a>联调命令</h1><p><strong>经网关（推荐）</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">curl.exe -s -X POST <span class="string">&quot;http://127.0.0.1:9000/order/place&quot;</span> ^</span><br><span class="line">  -H <span class="string">&quot;Content-Type: application/json&quot;</span> ^</span><br><span class="line">  -d <span class="string">&quot;@sql/place-order-body.json&quot;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Invoke-RestMethod</span> <span class="literal">-Method</span> Post <span class="literal">-Uri</span> <span class="string">&quot;http://127.0.0.1:9000/order/place&quot;</span> `</span><br><span class="line">  <span class="literal">-ContentType</span> <span class="string">&quot;application/json&quot;</span> `</span><br><span class="line">  <span class="literal">-Body</span> (<span class="built_in">Get-Content</span> <span class="string">&quot;sql\place-order-body.json&quot;</span> <span class="literal">-Raw</span>)</span><br></pre></td></tr></table></figure>
+
+<p><strong>查库存</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -s <span class="string">&quot;http://127.0.0.1:9000/stock/goods/1&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>直连 order（绕过网关）</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">curl.exe -s -X POST <span class="string">&quot;http://127.0.0.1:8003/order/place&quot;</span> ^</span><br><span class="line">  -H <span class="string">&quot;Content-Type: application/json&quot;</span> ^</span><br><span class="line">  -d <span class="string">&quot;@sql/place-order-body.json&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="验证清单"><a href="#验证清单" class="headerlink" title="验证清单"></a>验证清单</h1><ol>
+<li><strong>成功</strong>：place 返回 <code>code:0</code>；<code>GET /stock/goods/1</code> 库存减少 2；<code>t_order</code> 新增记录。  </li>
+<li><strong>回滚</strong>：使用 goodsId&#x3D;3、qty&#x3D;10；返回 <code>code:1</code>；goods 3 库存仍为 2；order 日志含 <code>Rollbacked</code>。  </li>
+<li><strong>Seata</strong>：order 日志 <code>Begin new global transaction</code>；TC 30014 可达。  </li>
+<li><strong>单元测试</strong>：<code>mvn -pl cloud-order test</code> → <code>OrderServiceImplTest</code>、<code>OrderPlaceIntegrationTest</code>。</li>
+</ol>
+<h1 id="代码位置"><a href="#代码位置" class="headerlink" title="代码位置"></a>代码位置</h1><table>
+<thead>
+<tr>
+<th>类</th>
+<th>路径</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>OrderController</td>
+<td><code>cloud-order/.../OrderController.java</code></td>
+</tr>
+<tr>
+<td>OrderServiceImpl</td>
+<td><code>cloud-order/.../OrderServiceImpl.java</code></td>
+</tr>
+<tr>
+<td>StockController</td>
+<td><code>cloud-stock/.../StockController.java</code></td>
+</tr>
+<tr>
+<td>Feign Client</td>
+<td><code>cloud-order/.../StockFeignClient.java</code></td>
+</tr>
+</tbody></table>
+<h1 id="常见问题"><a href="#常见问题" class="headerlink" title="常见问题"></a>常见问题</h1><p><strong>Q：PowerShell 里 curl 报 400 或 JSON 错误？</strong><br>A：使用 <code>curl.exe</code> 或 <code>-d &quot;@文件&quot;</code>；勿用 <code>curl</code> 别名；复杂 JSON 用 <code>Invoke-RestMethod</code> + 文件读入。</p>
+<p><strong>Q：<code>GET /order/place</code> 报错？</strong><br>A：place 仅支持 <strong>POST</strong>。</p>
+<p><strong>Q：回滚后 order 表仍有脏数据？</strong><br>A：查 Seata 是否启用、TC 是否连通、<code>undo_log</code> 是否已建；看 order 日志是否 commit 而非 rollback。</p>
+<p><strong>Q：Feign 超时导致不确定状态？</strong><br>A：调大 <code>spring.cloud.openfeign</code> 超时或重试策略；生产建议幂等与查询补偿。</p>
+<h1 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h1><ul>
+<li><a href="./%E9%9B%86%E6%88%90Seata.md">集成Seata.md</a></li>
+<li><a href="./%E9%9B%86%E6%88%90SpringCloudGateway.md">集成SpringCloudGateway.md</a></li>
+<li><a href="../sql/README.md">sql&#x2F;README.md</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%A2%E5%8D%95/" rel="tag"># 订单</a>
+              <a href="/tags/%E5%BA%93%E5%AD%98/" rel="tag"># 库存</a>
+              <a href="/tags/Seata/" rel="tag"># Seata</a>
+              <a href="/tags/OpenFeign/" rel="tag"># OpenFeign</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/05/17/SpringCloud/%E9%9B%86%E6%88%90Sentinel/" rel="prev" title="集成Sentinel">
+                  <i class="fa fa-angle-left"></i> 集成Sentinel
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2026/05/17/SpringCloud/%E9%9B%86%E6%88%90SpringCloudAlibaba/" rel="next" title="集成SpringCloudAlibaba">
+                  集成SpringCloudAlibaba <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">miracle</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">159k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">8:49</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+<script>
+(function () {
+  function normalizeClipboard(s) {
+    return (s || '').replace(/\u00a0/g, ' ');
+  }
+
+  /** When innerText is empty, treat <br> as newlines (matches Hexo fenced + line_number HTML). */
+  function plainTextFromElement(el) {
+    if (!el) return '';
+    var t = el.innerText;
+    if (t != null && t !== '') return normalizeClipboard(t);
+    var clone = el.cloneNode(true);
+    clone.querySelectorAll('br').forEach(function (br) {
+      br.parentNode.replaceChild(document.createTextNode('\n'), br);
+    });
+    return normalizeClipboard(clone.textContent || '');
+  }
+
+  function extractFromFigure(fig) {
+    if (!fig) return '';
+    var cell = fig.querySelector('td.code') || fig.querySelector('.code');
+    if (cell) return plainTextFromElement(cell);
+    var pre = fig.querySelector('pre');
+    if (pre) return plainTextFromElement(pre);
+    var code = fig.querySelector('code');
+    return code ? plainTextFromElement(code) : '';
+  }
+
+  function extractForCopyBtn(btn) {
+    var fig = btn.closest('figure.highlight');
+    if (fig) return extractFromFigure(fig);
+    var wrap = btn.closest('.code-container');
+    if (wrap) {
+      var innerFig = wrap.querySelector('figure.highlight');
+      if (innerFig) return extractFromFigure(innerFig);
+      var preOnly = wrap.querySelector('pre');
+      if (preOnly) return plainTextFromElement(preOnly);
+    }
+    return '';
+  }
+
+  function setCopyIcon(btn, ok) {
+    var i = btn.querySelector('i');
+    if (i) i.className = ok ? 'fa fa-check-circle fa-fw' : 'fa fa-times-circle fa-fw';
+  }
+
+  function writeClipboard(text, btn) {
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(text).then(
+        function () { setCopyIcon(btn, true); },
+        function () { fallbackCopy(text, btn); }
+      );
+    }
+    fallbackCopy(text, btn);
+    return Promise.resolve();
+  }
+
+  function fallbackCopy(text, btn) {
+    try {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed';
+      ta.style.left = '-9999px';
+      document.body.appendChild(ta);
+      ta.select();
+      var ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      setCopyIcon(btn, ok);
+    } catch (e) {
+      setCopyIcon(btn, false);
+    }
+  }
+
+  document.addEventListener(
+    'click',
+    function (e) {
+      var btn = e.target.closest && e.target.closest('.copy-btn');
+      if (!btn) return;
+      if (!btn.closest('figure.highlight') && !btn.closest('.code-container')) return;
+      e.stopPropagation();
+      e.preventDefault();
+      var text = extractForCopyBtn(btn);
+      writeClipboard(text, btn);
+    },
+    true
+  );
+})();
+</script>
+
+</body>
+</html>

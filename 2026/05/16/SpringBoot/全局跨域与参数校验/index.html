@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="全局跨域（CORS）实现 AppCorsProperties：app.cors.* WebMvcConfiguration：实现 WebMvcConfigurer#addCorsMappings  配置示例1234567891011121314app:  cors:    enabled: true    allowed-origin-patterns:      - &quot;http:&#x2F;&#x2F;l">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SpringBoot全局跨域与参数校验">
+<meta property="og:url" content="http://example.com/2026/05/16/SpringBoot/%E5%85%A8%E5%B1%80%E8%B7%A8%E5%9F%9F%E4%B8%8E%E5%8F%82%E6%95%B0%E6%A0%A1%E9%AA%8C/index.html">
+<meta property="og:site_name" content="my">
+<meta property="og:description" content="全局跨域（CORS）实现 AppCorsProperties：app.cors.* WebMvcConfiguration：实现 WebMvcConfigurer#addCorsMappings  配置示例1234567891011121314app:  cors:    enabled: true    allowed-origin-patterns:      - &quot;http:&#x2F;&#x2F;l">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-05-16T02:40:00.000Z">
+<meta property="article:modified_time" content="2026-05-16T12:29:15.313Z">
+<meta property="article:author" content="miracle">
+<meta property="article:tag" content="SpringBoot">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/2026/05/16/SpringBoot/%E5%85%A8%E5%B1%80%E8%B7%A8%E5%9F%9F%E4%B8%8E%E5%8F%82%E6%95%B0%E6%A0%A1%E9%AA%8C/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2026/05/16/SpringBoot/%E5%85%A8%E5%B1%80%E8%B7%A8%E5%9F%9F%E4%B8%8E%E5%8F%82%E6%95%B0%E6%A0%A1%E9%AA%8C/","path":"2026/05/16/SpringBoot/全局跨域与参数校验/","title":"SpringBoot全局跨域与参数校验"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>SpringBoot全局跨域与参数校验 | my</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js" defer></script>
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="my" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">my</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%A8%E5%B1%80%E8%B7%A8%E5%9F%9F%EF%BC%88CORS%EF%BC%89"><span class="nav-number">1.</span> <span class="nav-text">全局跨域（CORS）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0"><span class="nav-number">1.1.</span> <span class="nav-text">实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E7%A4%BA%E4%BE%8B"><span class="nav-number">1.2.</span> <span class="nav-text">配置示例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%AA%8C%E8%AF%81"><span class="nav-number">1.3.</span> <span class="nav-text">验证</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E6%95%B0%E6%A0%A1%E9%AA%8C"><span class="nav-number">2.</span> <span class="nav-text">参数校验</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BE%9D%E8%B5%96"><span class="nav-number">2.1.</span> <span class="nav-text">依赖</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E7%A7%8D%E5%B8%B8%E8%A7%81%E7%94%A8%E6%B3%95"><span class="nav-number">2.2.</span> <span class="nav-text">三种常见用法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%B1%E8%B4%A5%E5%93%8D%E5%BA%94"><span class="nav-number">2.3.</span> <span class="nav-text">失败响应</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%AA%8C%E8%AF%81-1"><span class="nav-number">2.4.</span> <span class="nav-text">验证</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%9B%B8%E5%85%B3%E6%96%87%E4%BB%B6"><span class="nav-number">3.</span> <span class="nav-text">相关文件</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">miracle</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">182</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">38</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">130</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/my919" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;my919" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://gitee.com/my919" title="Gitee → https:&#x2F;&#x2F;gitee.com&#x2F;my919" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>Gitee</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:yeal166@163.com" title="E-Mail → mailto:yeal166@163.com" rel="noopener me external nofollow noreferrer" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/16/SpringBoot/%E5%85%A8%E5%B1%80%E8%B7%A8%E5%9F%9F%E4%B8%8E%E5%8F%82%E6%95%B0%E6%A0%A1%E9%AA%8C/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="SpringBoot全局跨域与参数校验 | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          SpringBoot全局跨域与参数校验
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2026-05-16 10:40:00 / 修改时间：20:29:15" itemprop="dateCreated datePublished" datetime="2026-05-16T10:40:00+08:00">2026-05-16</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/SpringBoot/" itemprop="url" rel="index"><span itemprop="name">SpringBoot</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>293</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>1 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="全局跨域（CORS）"><a href="#全局跨域（CORS）" class="headerlink" title="全局跨域（CORS）"></a>全局跨域（CORS）</h1><h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><ul>
+<li><code>AppCorsProperties</code>：<code>app.cors.*</code></li>
+<li><code>WebMvcConfiguration</code>：实现 <code>WebMvcConfigurer#addCorsMappings</code></li>
+</ul>
+<h2 id="配置示例"><a href="#配置示例" class="headerlink" title="配置示例"></a>配置示例</h2><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">app:</span></span><br><span class="line">  <span class="attr">cors:</span></span><br><span class="line">    <span class="attr">enabled:</span> <span class="literal">true</span></span><br><span class="line">    <span class="attr">allowed-origin-patterns:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;http://localhost:*&quot;</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;http://127.0.0.1:*&quot;</span></span><br><span class="line">    <span class="attr">allowed-methods:</span> [<span class="string">GET</span>, <span class="string">POST</span>, <span class="string">PUT</span>, <span class="string">PATCH</span>, <span class="string">DELETE</span>, <span class="string">OPTIONS</span>]</span><br><span class="line">    <span class="attr">allowed-headers:</span> [<span class="string">&quot;*&quot;</span>]</span><br><span class="line">    <span class="attr">exposed-headers:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">Authorization</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">Idempotency-Key</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">X-Oper-Name</span></span><br><span class="line">    <span class="attr">allow-credentials:</span> <span class="literal">true</span></span><br><span class="line">    <span class="attr">max-age:</span> <span class="number">3600</span></span><br></pre></td></tr></table></figure>
+
+<p>生产环境在 <code>application-prod.yaml</code> 中收窄源站，例如：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">app:</span></span><br><span class="line">  <span class="attr">cors:</span></span><br><span class="line">    <span class="attr">allowed-origin-patterns:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">$&#123;APP_CORS_ORIGINS:https://your-frontend.example.com&#125;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="验证"><a href="#验证" class="headerlink" title="验证"></a>验证</h2><p>浏览器前端从 <code>http://localhost:5173</code> 调用 API，响应头应含 <code>Access-Control-Allow-Origin</code> 等。</p>
+<h1 id="参数校验"><a href="#参数校验" class="headerlink" title="参数校验"></a>参数校验</h1><h2 id="依赖"><a href="#依赖" class="headerlink" title="依赖"></a>依赖</h2><figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">implementation <span class="string">&#x27;org.springframework.boot:spring-boot-starter-validation&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="三种常见用法"><a href="#三种常见用法" class="headerlink" title="三种常见用法"></a>三种常见用法</h2><p><strong>1. Query &#x2F; Path 参数（Controller 类级 <code>@Validated</code>）</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="meta">@Validated</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">TestController</span> &#123;</span><br><span class="line">    <span class="meta">@GetMapping(&quot;validate&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> Result&lt;Integer&gt; <span class="title function_">validate</span><span class="params">(<span class="meta">@RequestParam</span> <span class="meta">@Min(1)</span> <span class="type">int</span> n)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> Result.success(n);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>2. 请求体 DTO（<code>@Valid</code>）</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@PostMapping(&quot;validate-body&quot;)</span></span><br><span class="line"><span class="keyword">public</span> Result&lt;String&gt; <span class="title function_">validateBody</span><span class="params">(<span class="meta">@Valid</span> <span class="meta">@RequestBody</span> ValidateDemoRequest request)</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> Result.success(request.getName());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ValidateDemoRequest</span> &#123;</span><br><span class="line">    <span class="meta">@NotBlank(message = &quot;姓名不能为空&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">    <span class="meta">@Email(message = &quot;邮箱格式不正确&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> String email;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>3. Service 层（接口上 <code>@Validated</code>）</strong></p>
+<p>在 Service 接口方法参数上加约束，抛出 <code>ConstraintViolationException</code>，同样由全局处理器捕获。</p>
+<h2 id="失败响应"><a href="#失败响应" class="headerlink" title="失败响应"></a>失败响应</h2><p>统一 <code>400</code> + <code>Result</code>：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span> <span class="attr">&quot;code&quot;</span><span class="punctuation">:</span> <span class="number">400</span><span class="punctuation">,</span> <span class="attr">&quot;msg&quot;</span><span class="punctuation">:</span> <span class="string">&quot;name: 姓名不能为空&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;data&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">null</span></span> <span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="验证-1"><a href="#验证-1" class="headerlink" title="验证"></a>验证</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">curl <span class="string">&quot;http://localhost:8082/test/validate?n=0&quot;</span></span><br><span class="line">curl -X POST http://localhost:8082/test/validate-body \</span><br><span class="line">  -H <span class="string">&quot;Content-Type: application/json&quot;</span> \</span><br><span class="line">  -d <span class="string">&quot;&#123;\&quot;name\&quot;:\&quot;\&quot;,\&quot;email\&quot;:\&quot;bad\&quot;&#125;&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="相关文件"><a href="#相关文件" class="headerlink" title="相关文件"></a>相关文件</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">config/properties/AppCorsProperties.java</span><br><span class="line">config/WebMvcConfiguration.java</span><br><span class="line">controller/entity/ValidateDemoRequest.java</span><br><span class="line">exception/GlobalExceptionHandler.java</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/SpringBoot/" rel="tag"># SpringBoot</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/05/16/SpringBoot/%E7%BB%9F%E4%B8%80%E8%BF%94%E5%9B%9E%E4%BD%93%E4%B8%8E%E5%85%A8%E5%B1%80%E5%BC%82%E5%B8%B8/" rel="prev" title="SpringBoot统一返回体与全局异常">
+                  <i class="fa fa-angle-left"></i> SpringBoot统一返回体与全局异常
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2026/05/16/SpringBoot/AOP%E6%97%A5%E5%BF%97%E4%B8%8E%E6%93%8D%E4%BD%9C%E5%AE%A1%E8%AE%A1/" rel="next" title="SpringBoot AOP日志与操作审计">
+                  SpringBoot AOP日志与操作审计 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">miracle</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">159k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">8:49</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+<script>
+(function () {
+  function normalizeClipboard(s) {
+    return (s || '').replace(/\u00a0/g, ' ');
+  }
+
+  /** When innerText is empty, treat <br> as newlines (matches Hexo fenced + line_number HTML). */
+  function plainTextFromElement(el) {
+    if (!el) return '';
+    var t = el.innerText;
+    if (t != null && t !== '') return normalizeClipboard(t);
+    var clone = el.cloneNode(true);
+    clone.querySelectorAll('br').forEach(function (br) {
+      br.parentNode.replaceChild(document.createTextNode('\n'), br);
+    });
+    return normalizeClipboard(clone.textContent || '');
+  }
+
+  function extractFromFigure(fig) {
+    if (!fig) return '';
+    var cell = fig.querySelector('td.code') || fig.querySelector('.code');
+    if (cell) return plainTextFromElement(cell);
+    var pre = fig.querySelector('pre');
+    if (pre) return plainTextFromElement(pre);
+    var code = fig.querySelector('code');
+    return code ? plainTextFromElement(code) : '';
+  }
+
+  function extractForCopyBtn(btn) {
+    var fig = btn.closest('figure.highlight');
+    if (fig) return extractFromFigure(fig);
+    var wrap = btn.closest('.code-container');
+    if (wrap) {
+      var innerFig = wrap.querySelector('figure.highlight');
+      if (innerFig) return extractFromFigure(innerFig);
+      var preOnly = wrap.querySelector('pre');
+      if (preOnly) return plainTextFromElement(preOnly);
+    }
+    return '';
+  }
+
+  function setCopyIcon(btn, ok) {
+    var i = btn.querySelector('i');
+    if (i) i.className = ok ? 'fa fa-check-circle fa-fw' : 'fa fa-times-circle fa-fw';
+  }
+
+  function writeClipboard(text, btn) {
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(text).then(
+        function () { setCopyIcon(btn, true); },
+        function () { fallbackCopy(text, btn); }
+      );
+    }
+    fallbackCopy(text, btn);
+    return Promise.resolve();
+  }
+
+  function fallbackCopy(text, btn) {
+    try {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed';
+      ta.style.left = '-9999px';
+      document.body.appendChild(ta);
+      ta.select();
+      var ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      setCopyIcon(btn, ok);
+    } catch (e) {
+      setCopyIcon(btn, false);
+    }
+  }
+
+  document.addEventListener(
+    'click',
+    function (e) {
+      var btn = e.target.closest && e.target.closest('.copy-btn');
+      if (!btn) return;
+      if (!btn.closest('figure.highlight') && !btn.closest('.code-container')) return;
+      e.stopPropagation();
+      e.preventDefault();
+      var text = extractForCopyBtn(btn);
+      writeClipboard(text, btn);
+    },
+    true
+  );
+})();
+</script>
+
+</body>
+</html>

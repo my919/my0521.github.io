@@ -1,0 +1,1718 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="概述本文档描述仓库 sql&#x2F;init.sql 中的 MySQL 8+ 库表设计，覆盖以下业务模块：    模块 表    字典 sys_dict_type、sys_dict_data   RBAC sys_dept、sys_user、sys_role、sys_user_role、sys_menu、sys_role_menu   通用分类 &#x2F; 地址 common_category、user">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL数据库设计">
+<meta property="og:url" content="http://example.com/2026/05/16/MySQL/MySQL%E6%95%B0%E6%8D%AE%E5%BA%93%E8%AE%BE%E8%AE%A1/index.html">
+<meta property="og:site_name" content="my">
+<meta property="og:description" content="概述本文档描述仓库 sql&#x2F;init.sql 中的 MySQL 8+ 库表设计，覆盖以下业务模块：    模块 表    字典 sys_dict_type、sys_dict_data   RBAC sys_dept、sys_user、sys_role、sys_user_role、sys_menu、sys_role_menu   通用分类 &#x2F; 地址 common_category、user">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-05-16T06:30:00.000Z">
+<meta property="article:modified_time" content="2026-05-16T13:08:30.547Z">
+<meta property="article:author" content="miracle">
+<meta property="article:tag" content="MySQL">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/2026/05/16/MySQL/MySQL%E6%95%B0%E6%8D%AE%E5%BA%93%E8%AE%BE%E8%AE%A1/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2026/05/16/MySQL/MySQL%E6%95%B0%E6%8D%AE%E5%BA%93%E8%AE%BE%E8%AE%A1/","path":"2026/05/16/MySQL/MySQL数据库设计/","title":"MySQL数据库设计"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>MySQL数据库设计 | my</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js" defer></script>
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="my" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">my</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AE%BE%E8%AE%A1%E7%BA%A6%E5%AE%9A"><span class="nav-number">2.</span> <span class="nav-text">设计约定</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A8%A1%E5%9D%97%E5%85%B3%E7%B3%BB"><span class="nav-number">3.</span> <span class="nav-text">模块关系</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="nav-number">4.</span> <span class="nav-text">初始化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E7%BD%AE%E6%9D%A1%E4%BB%B6"><span class="nav-number">4.1.</span> <span class="nav-text">前置条件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%89%A7%E8%A1%8C%E8%84%9A%E6%9C%AC"><span class="nav-number">4.2.</span> <span class="nav-text">执行脚本</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%A1%A8%E6%B8%85%E5%8D%95"><span class="nav-number">5.</span> <span class="nav-text">表清单</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E5%AD%97%E5%85%B8"><span class="nav-number">6.</span> <span class="nav-text">一、字典</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#sys-dict-type%EF%BC%88%E5%AD%97%E5%85%B8%E7%B1%BB%E5%9E%8B%E8%A1%A8%EF%BC%89"><span class="nav-number">6.1.</span> <span class="nav-text">sys_dict_type（字典类型表）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#sys-dict-data%EF%BC%88%E5%AD%97%E5%85%B8%E6%95%B0%E6%8D%AE%E8%A1%A8%EF%BC%89"><span class="nav-number">6.2.</span> <span class="nav-text">sys_dict_data（字典数据表）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81RBAC"><span class="nav-number">7.</span> <span class="nav-text">二、RBAC</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#sys-dept%EF%BC%88%E9%83%A8%E9%97%A8%E8%A1%A8%EF%BC%89"><span class="nav-number">7.1.</span> <span class="nav-text">sys_dept（部门表）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#sys-user%EF%BC%88%E7%B3%BB%E7%BB%9F%E7%94%A8%E6%88%B7%E8%A1%A8%EF%BC%89"><span class="nav-number">7.2.</span> <span class="nav-text">sys_user（系统用户表）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#sys-role%EF%BC%88%E8%A7%92%E8%89%B2%E8%A1%A8%EF%BC%89"><span class="nav-number">7.3.</span> <span class="nav-text">sys_role（角色表）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#sys-user-role%EF%BC%88%E7%94%A8%E6%88%B7%E8%A7%92%E8%89%B2%E5%85%B3%E8%81%94%E8%A1%A8%EF%BC%89"><span class="nav-number">7.4.</span> <span class="nav-text">sys_user_role（用户角色关联表）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#sys-menu%EF%BC%88%E8%8F%9C%E5%8D%95%E6%9D%83%E9%99%90%E8%A1%A8%EF%BC%89"><span class="nav-number">7.5.</span> <span class="nav-text">sys_menu（菜单权限表）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#sys-role-menu%EF%BC%88%E8%A7%92%E8%89%B2%E8%8F%9C%E5%8D%95%E5%85%B3%E8%81%94%E8%A1%A8%EF%BC%89"><span class="nav-number">7.6.</span> <span class="nav-text">sys_role_menu（角色菜单关联表）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E9%80%9A%E7%94%A8%E5%88%86%E7%B1%BB%E4%B8%8E%E6%94%B6%E8%B4%A7%E5%9C%B0%E5%9D%80"><span class="nav-number">8.</span> <span class="nav-text">三、通用分类与收货地址</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#common-category%EF%BC%88%E9%80%9A%E7%94%A8%E6%A0%91%E5%BD%A2%E5%88%86%E7%B1%BB%E8%A1%A8%EF%BC%89"><span class="nav-number">8.1.</span> <span class="nav-text">common_category（通用树形分类表）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#user-address%EF%BC%88%E7%94%A8%E6%88%B7%E6%94%B6%E8%B4%A7%E5%9C%B0%E5%9D%80%E8%A1%A8%EF%BC%89"><span class="nav-number">8.2.</span> <span class="nav-text">user_address（用户收货地址表）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E5%95%86%E5%93%81%EF%BC%88SPU-SKU%EF%BC%89"><span class="nav-number">9.</span> <span class="nav-text">四、商品（SPU &#x2F; SKU）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#goods%EF%BC%88%E5%95%86%E5%93%81%E4%B8%BB%E8%A1%A8%EF%BC%89"><span class="nav-number">9.1.</span> <span class="nav-text">goods（商品主表）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#goods-sku%EF%BC%88%E5%95%86%E5%93%81-SKU-%E8%A1%A8%EF%BC%89"><span class="nav-number">9.2.</span> <span class="nav-text">goods_sku（商品 SKU 表）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E8%AE%A2%E5%8D%95"><span class="nav-number">10.</span> <span class="nav-text">五、订单</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#order-main%EF%BC%88%E8%AE%A2%E5%8D%95%E4%B8%BB%E8%A1%A8%EF%BC%89"><span class="nav-number">10.1.</span> <span class="nav-text">order_main（订单主表）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%A2%E5%8D%95%E7%8A%B6%E6%80%81%EF%BC%88order-status%EF%BC%89"><span class="nav-number">10.1.1.</span> <span class="nav-text">订单状态（order_status）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#order-item%EF%BC%88%E8%AE%A2%E5%8D%95%E6%98%8E%E7%BB%86%E8%A1%A8%EF%BC%89"><span class="nav-number">10.2.</span> <span class="nav-text">order_item（订单明细表）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E6%97%A5%E5%BF%97"><span class="nav-number">11.</span> <span class="nav-text">六、日志</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#sys-oper-log%EF%BC%88%E7%B3%BB%E7%BB%9F%E6%93%8D%E4%BD%9C%E6%97%A5%E5%BF%97%EF%BC%89"><span class="nav-number">11.1.</span> <span class="nav-text">sys_oper_log（系统操作日志）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#sys-login-log%EF%BC%88%E7%99%BB%E5%BD%95%E6%97%A5%E5%BF%97%EF%BC%89"><span class="nav-number">11.2.</span> <span class="nav-text">sys_login_log（登录日志）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%8E%E5%BA%94%E7%94%A8%E5%B1%82%E7%9A%84%E5%AF%B9%E5%BA%94"><span class="nav-number">12.</span> <span class="nav-text">与应用层的对应</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98"><span class="nav-number">13.</span> <span class="nav-text">常见问题</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%84%9A%E6%9C%AC%E6%89%A7%E8%A1%8C%E5%90%8E%E8%A1%A8%E5%B7%B2%E5%AD%98%E5%9C%A8"><span class="nav-number">13.1.</span> <span class="nav-text">脚本执行后表已存在</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%BB%E8%BE%91%E5%88%A0%E9%99%A4%E6%9F%A5%E8%AF%A2%E4%B8%8D%E5%88%B0%E6%95%B0%E6%8D%AE"><span class="nav-number">13.2.</span> <span class="nav-text">逻辑删除查询不到数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%A2%E5%8D%95%E4%B8%8E%E5%95%86%E5%93%81%E5%BA%93%E5%AD%98"><span class="nav-number">13.3.</span> <span class="nav-text">订单与商品库存</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">miracle</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">182</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">38</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">130</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/my919" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;my919" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://gitee.com/my919" title="Gitee → https:&#x2F;&#x2F;gitee.com&#x2F;my919" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>Gitee</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:yeal166@163.com" title="E-Mail → mailto:yeal166@163.com" rel="noopener me external nofollow noreferrer" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/16/MySQL/MySQL%E6%95%B0%E6%8D%AE%E5%BA%93%E8%AE%BE%E8%AE%A1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="MySQL数据库设计 | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          MySQL数据库设计
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2026-05-16 14:30:00 / 修改时间：21:08:30" itemprop="dateCreated datePublished" datetime="2026-05-16T14:30:00+08:00">2026-05-16</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>2.1k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>7 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>本文档描述仓库 <code>sql/init.sql</code> 中的 <strong>MySQL 8+</strong> 库表设计，覆盖以下业务模块：</p>
+<table>
+<thead>
+<tr>
+<th>模块</th>
+<th>表</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>字典</td>
+<td><code>sys_dict_type</code>、<code>sys_dict_data</code></td>
+</tr>
+<tr>
+<td>RBAC</td>
+<td><code>sys_dept</code>、<code>sys_user</code>、<code>sys_role</code>、<code>sys_user_role</code>、<code>sys_menu</code>、<code>sys_role_menu</code></td>
+</tr>
+<tr>
+<td>通用分类 &#x2F; 地址</td>
+<td><code>common_category</code>、<code>user_address</code></td>
+</tr>
+<tr>
+<td>商品</td>
+<td><code>goods</code>、<code>goods_sku</code></td>
+</tr>
+<tr>
+<td>订单</td>
+<td><code>order_main</code>、<code>order_item</code></td>
+</tr>
+<tr>
+<td>日志</td>
+<td><code>sys_oper_log</code>、<code>sys_login_log</code></td>
+</tr>
+</tbody></table>
+<p>共 <strong>16</strong> 张表，引擎均为 <strong>InnoDB</strong>，字符集 <strong>utf8mb4</strong>。</p>
+<h1 id="设计约定"><a href="#设计约定" class="headerlink" title="设计约定"></a>设计约定</h1><table>
+<thead>
+<tr>
+<th>约定</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>无外键</td>
+<td>表间通过业务字段（如 <code>user_id</code>、<code>role_id</code>）关联，便于分库分表与数据迁移</td>
+</tr>
+<tr>
+<td>逻辑删除</td>
+<td>业务表含 <code>deleted</code>（0 否 &#x2F; 1 是），查询需带 <code>deleted = 0</code>；组合索引常含 <code>deleted</code></td>
+</tr>
+<tr>
+<td>审计字段</td>
+<td>多数业务表含 <code>create_time</code>、<code>update_time</code>（自动维护）</td>
+</tr>
+<tr>
+<td>树形结构</td>
+<td><code>sys_dept</code>、<code>sys_menu</code>、<code>common_category</code> 使用 <code>parent_id</code> + <code>ancestors</code>（祖级 ID 路径，如 <code>1,2,3</code>）</td>
+</tr>
+<tr>
+<td>关联表</td>
+<td><code>sys_user_role</code>、<code>sys_role_menu</code> 无 <code>deleted</code>，用唯一键防重复</td>
+</tr>
+</tbody></table>
+<h1 id="模块关系"><a href="#模块关系" class="headerlink" title="模块关系"></a>模块关系</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">erDiagram</span><br><span class="line">    sys_dict_type ||--o&#123; sys_dict_data : &quot;dict_type&quot;</span><br><span class="line">    sys_dept ||--o&#123; sys_user : &quot;dept_id&quot;</span><br><span class="line">    sys_user ||--o&#123; sys_user_role : &quot;user_id&quot;</span><br><span class="line">    sys_role ||--o&#123; sys_user_role : &quot;role_id&quot;</span><br><span class="line">    sys_role ||--o&#123; sys_role_menu : &quot;role_id&quot;</span><br><span class="line">    sys_menu ||--o&#123; sys_role_menu : &quot;menu_id&quot;</span><br><span class="line">    sys_user ||--o&#123; user_address : &quot;user_id&quot;</span><br><span class="line">    common_category ||--o&#123; goods : &quot;cat_id&quot;</span><br><span class="line">    goods ||--o&#123; goods_sku : &quot;goods_id&quot;</span><br><span class="line">    sys_user ||--o&#123; order_main : &quot;user_id&quot;</span><br><span class="line">    order_main ||--o&#123; order_item : &quot;order_no&quot;</span><br><span class="line">    goods ||--o&#123; order_item : &quot;goods_id&quot;</span><br><span class="line">    goods_sku ||--o&#123; order_item : &quot;sku_id&quot;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>图中为逻辑关系，<strong>数据库未建外键约束</strong>。</p>
+</blockquote>
+<h1 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h1><h2 id="前置条件"><a href="#前置条件" class="headerlink" title="前置条件"></a>前置条件</h2><ul>
+<li>MySQL <strong>8.0+</strong></li>
+<li>已创建空库（如 <code>springboot</code>），账号具备 DDL&#x2F;DML 权限</li>
+</ul>
+<h2 id="执行脚本"><a href="#执行脚本" class="headerlink" title="执行脚本"></a>执行脚本</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql -h 127.0.0.1 -P 3306 -u root -p springboot &lt; sql/init.sql</span><br></pre></td></tr></table></figure>
+
+<p>或在客户端中：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">USE springboot;</span><br><span class="line">SOURCE <span class="operator">/</span>path<span class="operator">/</span><span class="keyword">to</span><span class="operator">/</span><span class="keyword">sql</span><span class="operator">/</span>init.sql;</span><br></pre></td></tr></table></figure>
+
+<p>脚本开头会 <code>SET NAMES utf8mb4</code> 并临时关闭外键检查（本库无外键定义，仅为惯例写法）。</p>
+<h1 id="表清单"><a href="#表清单" class="headerlink" title="表清单"></a>表清单</h1><table>
+<thead>
+<tr>
+<th>表名</th>
+<th>说明</th>
+<th>逻辑删除</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>sys_dict_type</code></td>
+<td>字典类型</td>
+<td>是</td>
+</tr>
+<tr>
+<td><code>sys_dict_data</code></td>
+<td>字典数据</td>
+<td>是</td>
+</tr>
+<tr>
+<td><code>sys_dept</code></td>
+<td>部门</td>
+<td>是</td>
+</tr>
+<tr>
+<td><code>sys_user</code></td>
+<td>系统用户</td>
+<td>是</td>
+</tr>
+<tr>
+<td><code>sys_role</code></td>
+<td>角色</td>
+<td>是</td>
+</tr>
+<tr>
+<td><code>sys_user_role</code></td>
+<td>用户-角色</td>
+<td>否</td>
+</tr>
+<tr>
+<td><code>sys_menu</code></td>
+<td>菜单&#x2F;权限</td>
+<td>是</td>
+</tr>
+<tr>
+<td><code>sys_role_menu</code></td>
+<td>角色-菜单</td>
+<td>否</td>
+</tr>
+<tr>
+<td><code>common_category</code></td>
+<td>通用树形分类</td>
+<td>是</td>
+</tr>
+<tr>
+<td><code>user_address</code></td>
+<td>用户收货地址</td>
+<td>是</td>
+</tr>
+<tr>
+<td><code>goods</code></td>
+<td>商品主表（SPU 维度）</td>
+<td>是</td>
+</tr>
+<tr>
+<td><code>goods_sku</code></td>
+<td>商品 SKU</td>
+<td>是</td>
+</tr>
+<tr>
+<td><code>order_main</code></td>
+<td>订单主表</td>
+<td>是</td>
+</tr>
+<tr>
+<td><code>order_item</code></td>
+<td>订单明细</td>
+<td>是</td>
+</tr>
+<tr>
+<td><code>sys_oper_log</code></td>
+<td>操作审计日志</td>
+<td>否</td>
+</tr>
+<tr>
+<td><code>sys_login_log</code></td>
+<td>登录日志</td>
+<td>否</td>
+</tr>
+</tbody></table>
+<h1 id="一、字典"><a href="#一、字典" class="headerlink" title="一、字典"></a>一、字典</h1><h2 id="sys-dict-type（字典类型表）"><a href="#sys-dict-type（字典类型表）" class="headerlink" title="sys_dict_type（字典类型表）"></a>sys_dict_type（字典类型表）</h2><table>
+<thead>
+<tr>
+<th>字段</th>
+<th>类型</th>
+<th>默认</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>id</td>
+<td>bigint</td>
+<td>—</td>
+<td>主键，自增</td>
+</tr>
+<tr>
+<td>dict_type</td>
+<td>varchar(100)</td>
+<td>—</td>
+<td>字典类型编码，<strong>唯一</strong></td>
+</tr>
+<tr>
+<td>dict_name</td>
+<td>varchar(100)</td>
+<td>—</td>
+<td>字典类型名称</td>
+</tr>
+<tr>
+<td>status</td>
+<td>tinyint(1)</td>
+<td>1</td>
+<td>0 禁用，1 正常</td>
+</tr>
+<tr>
+<td>remark</td>
+<td>varchar(500)</td>
+<td>‘’</td>
+<td>备注</td>
+</tr>
+<tr>
+<td>create_time</td>
+<td>datetime</td>
+<td>CURRENT_TIMESTAMP</td>
+<td>创建时间</td>
+</tr>
+<tr>
+<td>update_time</td>
+<td>datetime</td>
+<td>ON UPDATE</td>
+<td>更新时间</td>
+</tr>
+<tr>
+<td>deleted</td>
+<td>tinyint(1)</td>
+<td>0</td>
+<td>逻辑删除</td>
+</tr>
+</tbody></table>
+<p><strong>索引：</strong> <code>uk_dict_type(dict_type)</code>，<code>idx_deleted(deleted)</code></p>
+<h2 id="sys-dict-data（字典数据表）"><a href="#sys-dict-data（字典数据表）" class="headerlink" title="sys_dict_data（字典数据表）"></a>sys_dict_data（字典数据表）</h2><table>
+<thead>
+<tr>
+<th>字段</th>
+<th>类型</th>
+<th>默认</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>id</td>
+<td>bigint</td>
+<td>—</td>
+<td>主键</td>
+</tr>
+<tr>
+<td>dict_type</td>
+<td>varchar(100)</td>
+<td>—</td>
+<td>关联 <code>sys_dict_type.dict_type</code></td>
+</tr>
+<tr>
+<td>dict_label</td>
+<td>varchar(100)</td>
+<td>—</td>
+<td>展示标签</td>
+</tr>
+<tr>
+<td>dict_value</td>
+<td>varchar(100)</td>
+<td>—</td>
+<td>存储值</td>
+</tr>
+<tr>
+<td>sort_num</td>
+<td>int</td>
+<td>0</td>
+<td>排序</td>
+</tr>
+<tr>
+<td>is_default</td>
+<td>tinyint(1)</td>
+<td>0</td>
+<td>是否默认项</td>
+</tr>
+<tr>
+<td>status</td>
+<td>tinyint(1)</td>
+<td>1</td>
+<td>状态</td>
+</tr>
+<tr>
+<td>create_time &#x2F; update_time &#x2F; deleted</td>
+<td>—</td>
+<td>—</td>
+<td>同类型表</td>
+</tr>
+</tbody></table>
+<p><strong>索引：</strong> <code>idx_dict_type_deleted(dict_type, deleted)</code>，<code>idx_dict_type_status(dict_type, status, deleted)</code></p>
+<h1 id="二、RBAC"><a href="#二、RBAC" class="headerlink" title="二、RBAC"></a>二、RBAC</h1><h2 id="sys-dept（部门表）"><a href="#sys-dept（部门表）" class="headerlink" title="sys_dept（部门表）"></a>sys_dept（部门表）</h2><table>
+<thead>
+<tr>
+<th>字段</th>
+<th>类型</th>
+<th>默认</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>id</td>
+<td>bigint</td>
+<td>—</td>
+<td>主键</td>
+</tr>
+<tr>
+<td>parent_id</td>
+<td>bigint</td>
+<td>0</td>
+<td>父部门 ID，根为 0</td>
+</tr>
+<tr>
+<td>ancestors</td>
+<td>varchar(500)</td>
+<td>‘’</td>
+<td>祖级路径</td>
+</tr>
+<tr>
+<td>dept_name</td>
+<td>varchar(100)</td>
+<td>—</td>
+<td>部门名称</td>
+</tr>
+<tr>
+<td>sort_num</td>
+<td>int</td>
+<td>0</td>
+<td>排序</td>
+</tr>
+<tr>
+<td>level</td>
+<td>tinyint</td>
+<td>1</td>
+<td>层级</td>
+</tr>
+<tr>
+<td>status</td>
+<td>tinyint(1)</td>
+<td>1</td>
+<td>状态</td>
+</tr>
+<tr>
+<td>create_time &#x2F; update_time &#x2F; deleted</td>
+<td>—</td>
+<td>—</td>
+<td>审计与逻辑删除</td>
+</tr>
+</tbody></table>
+<p><strong>索引：</strong> <code>idx_parent_deleted(parent_id, deleted)</code>，<code>idx_deleted(deleted)</code></p>
+<h2 id="sys-user（系统用户表）"><a href="#sys-user（系统用户表）" class="headerlink" title="sys_user（系统用户表）"></a>sys_user（系统用户表）</h2><table>
+<thead>
+<tr>
+<th>字段</th>
+<th>类型</th>
+<th>默认</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>id</td>
+<td>bigint</td>
+<td>—</td>
+<td>主键</td>
+</tr>
+<tr>
+<td>dept_id</td>
+<td>bigint</td>
+<td>0</td>
+<td>部门 ID</td>
+</tr>
+<tr>
+<td>username</td>
+<td>varchar(50)</td>
+<td>—</td>
+<td>登录账号，<strong>唯一</strong></td>
+</tr>
+<tr>
+<td>password</td>
+<td>varchar(100)</td>
+<td>—</td>
+<td>加密密码</td>
+</tr>
+<tr>
+<td>nick_name</td>
+<td>varchar(50)</td>
+<td>—</td>
+<td>昵称</td>
+</tr>
+<tr>
+<td>phone</td>
+<td>varchar(20)</td>
+<td>‘’</td>
+<td>手机号</td>
+</tr>
+<tr>
+<td>email</td>
+<td>varchar(100)</td>
+<td>‘’</td>
+<td>邮箱</td>
+</tr>
+<tr>
+<td>sex</td>
+<td>char(1)</td>
+<td>‘0’</td>
+<td>0 未知，1 男，2 女</td>
+</tr>
+<tr>
+<td>avatar</td>
+<td>varchar(255)</td>
+<td>‘’</td>
+<td>头像 URL</td>
+</tr>
+<tr>
+<td>status</td>
+<td>tinyint(1)</td>
+<td>1</td>
+<td>0 禁用，1 正常</td>
+</tr>
+<tr>
+<td>login_time</td>
+<td>datetime</td>
+<td>NULL</td>
+<td>最后登录时间</td>
+</tr>
+<tr>
+<td>create_time &#x2F; update_time &#x2F; deleted</td>
+<td>—</td>
+<td>—</td>
+<td>审计与逻辑删除</td>
+</tr>
+</tbody></table>
+<p><strong>索引：</strong> <code>uk_username(username)</code>，<code>idx_dept_deleted(dept_id, deleted)</code>，<code>idx_status_deleted(status, deleted)</code>，<code>idx_phone(phone)</code></p>
+<h2 id="sys-role（角色表）"><a href="#sys-role（角色表）" class="headerlink" title="sys_role（角色表）"></a>sys_role（角色表）</h2><table>
+<thead>
+<tr>
+<th>字段</th>
+<th>类型</th>
+<th>默认</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>id</td>
+<td>bigint</td>
+<td>—</td>
+<td>主键</td>
+</tr>
+<tr>
+<td>role_name</td>
+<td>varchar(100)</td>
+<td>—</td>
+<td>角色名称</td>
+</tr>
+<tr>
+<td>role_key</td>
+<td>varchar(100)</td>
+<td>—</td>
+<td>权限标识，<strong>唯一</strong></td>
+</tr>
+<tr>
+<td>sort_num</td>
+<td>int</td>
+<td>0</td>
+<td>排序</td>
+</tr>
+<tr>
+<td>remark</td>
+<td>varchar(500)</td>
+<td>‘’</td>
+<td>备注</td>
+</tr>
+<tr>
+<td>status</td>
+<td>tinyint(1)</td>
+<td>1</td>
+<td>状态</td>
+</tr>
+<tr>
+<td>create_time &#x2F; update_time &#x2F; deleted</td>
+<td>—</td>
+<td>—</td>
+<td>审计与逻辑删除</td>
+</tr>
+</tbody></table>
+<p><strong>索引：</strong> <code>uk_role_key(role_key)</code>，<code>idx_deleted(deleted)</code></p>
+<h2 id="sys-user-role（用户角色关联表）"><a href="#sys-user-role（用户角色关联表）" class="headerlink" title="sys_user_role（用户角色关联表）"></a>sys_user_role（用户角色关联表）</h2><table>
+<thead>
+<tr>
+<th>字段</th>
+<th>类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>id</td>
+<td>bigint</td>
+<td>主键</td>
+</tr>
+<tr>
+<td>user_id</td>
+<td>bigint</td>
+<td>用户 ID</td>
+</tr>
+<tr>
+<td>role_id</td>
+<td>bigint</td>
+<td>角色 ID</td>
+</tr>
+</tbody></table>
+<p><strong>索引：</strong> <code>uk_user_role(user_id, role_id)</code>，<code>idx_role_id(role_id)</code></p>
+<h2 id="sys-menu（菜单权限表）"><a href="#sys-menu（菜单权限表）" class="headerlink" title="sys_menu（菜单权限表）"></a>sys_menu（菜单权限表）</h2><table>
+<thead>
+<tr>
+<th>字段</th>
+<th>类型</th>
+<th>默认</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>id</td>
+<td>bigint</td>
+<td>—</td>
+<td>主键</td>
+</tr>
+<tr>
+<td>parent_id</td>
+<td>bigint</td>
+<td>0</td>
+<td>父菜单 ID</td>
+</tr>
+<tr>
+<td>ancestors</td>
+<td>varchar(500)</td>
+<td>‘’</td>
+<td>祖级路径</td>
+</tr>
+<tr>
+<td>menu_name</td>
+<td>varchar(100)</td>
+<td>—</td>
+<td>菜单名称</td>
+</tr>
+<tr>
+<td>sort_num</td>
+<td>int</td>
+<td>0</td>
+<td>排序</td>
+</tr>
+<tr>
+<td>path</td>
+<td>varchar(255)</td>
+<td>‘’</td>
+<td>路由地址</td>
+</tr>
+<tr>
+<td>component</td>
+<td>varchar(255)</td>
+<td>‘’</td>
+<td>前端组件路径</td>
+</tr>
+<tr>
+<td>perms</td>
+<td>varchar(100)</td>
+<td>‘’</td>
+<td>权限标识（如 <code>system:user:list</code>）</td>
+</tr>
+<tr>
+<td>menu_type</td>
+<td>tinyint</td>
+<td>1</td>
+<td>1 目录，2 菜单，3 按钮</td>
+</tr>
+<tr>
+<td>icon</td>
+<td>varchar(100)</td>
+<td>‘#’</td>
+<td>图标</td>
+</tr>
+<tr>
+<td>visible</td>
+<td>tinyint(1)</td>
+<td>1</td>
+<td>0 隐藏，1 显示</td>
+</tr>
+<tr>
+<td>create_time &#x2F; update_time &#x2F; deleted</td>
+<td>—</td>
+<td>—</td>
+<td>审计与逻辑删除</td>
+</tr>
+</tbody></table>
+<p><strong>索引：</strong> <code>idx_parent_deleted(parent_id, deleted)</code>，<code>idx_perms(perms)</code>，<code>idx_deleted(deleted)</code></p>
+<h2 id="sys-role-menu（角色菜单关联表）"><a href="#sys-role-menu（角色菜单关联表）" class="headerlink" title="sys_role_menu（角色菜单关联表）"></a>sys_role_menu（角色菜单关联表）</h2><table>
+<thead>
+<tr>
+<th>字段</th>
+<th>类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>id</td>
+<td>bigint</td>
+<td>主键</td>
+</tr>
+<tr>
+<td>role_id</td>
+<td>bigint</td>
+<td>角色 ID</td>
+</tr>
+<tr>
+<td>menu_id</td>
+<td>bigint</td>
+<td>菜单 ID</td>
+</tr>
+</tbody></table>
+<p><strong>索引：</strong> <code>uk_role_menu(role_id, menu_id)</code>，<code>idx_menu_id(menu_id)</code></p>
+<h1 id="三、通用分类与收货地址"><a href="#三、通用分类与收货地址" class="headerlink" title="三、通用分类与收货地址"></a>三、通用分类与收货地址</h1><h2 id="common-category（通用树形分类表）"><a href="#common-category（通用树形分类表）" class="headerlink" title="common_category（通用树形分类表）"></a>common_category（通用树形分类表）</h2><table>
+<thead>
+<tr>
+<th>字段</th>
+<th>类型</th>
+<th>默认</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>id</td>
+<td>bigint</td>
+<td>—</td>
+<td>主键</td>
+</tr>
+<tr>
+<td>parent_id</td>
+<td>bigint</td>
+<td>0</td>
+<td>父分类 ID</td>
+</tr>
+<tr>
+<td>ancestors</td>
+<td>varchar(500)</td>
+<td>‘’</td>
+<td>祖级路径</td>
+</tr>
+<tr>
+<td>cat_name</td>
+<td>varchar(100)</td>
+<td>—</td>
+<td>分类名称</td>
+</tr>
+<tr>
+<td>sort_num</td>
+<td>int</td>
+<td>0</td>
+<td>排序</td>
+</tr>
+<tr>
+<td>level</td>
+<td>tinyint</td>
+<td>1</td>
+<td>层级</td>
+</tr>
+<tr>
+<td>is_leaf</td>
+<td>tinyint(1)</td>
+<td>0</td>
+<td>是否叶子节点</td>
+</tr>
+<tr>
+<td>status</td>
+<td>tinyint(1)</td>
+<td>1</td>
+<td>状态</td>
+</tr>
+<tr>
+<td>create_time &#x2F; update_time &#x2F; deleted</td>
+<td>—</td>
+<td>—</td>
+<td>审计与逻辑删除</td>
+</tr>
+</tbody></table>
+<p><strong>索引：</strong> <code>idx_parent_deleted(parent_id, deleted)</code>，<code>idx_status_deleted(status, deleted)</code></p>
+<h2 id="user-address（用户收货地址表）"><a href="#user-address（用户收货地址表）" class="headerlink" title="user_address（用户收货地址表）"></a>user_address（用户收货地址表）</h2><table>
+<thead>
+<tr>
+<th>字段</th>
+<th>类型</th>
+<th>默认</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>id</td>
+<td>bigint</td>
+<td>—</td>
+<td>主键</td>
+</tr>
+<tr>
+<td>user_id</td>
+<td>bigint</td>
+<td>—</td>
+<td>用户 ID</td>
+</tr>
+<tr>
+<td>receiver</td>
+<td>varchar(50)</td>
+<td>—</td>
+<td>收件人</td>
+</tr>
+<tr>
+<td>phone</td>
+<td>varchar(20)</td>
+<td>—</td>
+<td>手机号</td>
+</tr>
+<tr>
+<td>province &#x2F; city &#x2F; district</td>
+<td>varchar(20)</td>
+<td>‘’</td>
+<td>省市区</td>
+</tr>
+<tr>
+<td>detail_addr</td>
+<td>varchar(255)</td>
+<td>—</td>
+<td>详细地址</td>
+</tr>
+<tr>
+<td>is_default</td>
+<td>tinyint(1)</td>
+<td>0</td>
+<td>是否默认地址</td>
+</tr>
+<tr>
+<td>sort_num</td>
+<td>int</td>
+<td>0</td>
+<td>排序</td>
+</tr>
+<tr>
+<td>create_time &#x2F; update_time &#x2F; deleted</td>
+<td>—</td>
+<td>—</td>
+<td>审计与逻辑删除</td>
+</tr>
+</tbody></table>
+<p><strong>索引：</strong> <code>idx_user_deleted(user_id, deleted)</code>，<code>idx_user_default(user_id, is_default, deleted)</code></p>
+<h1 id="四、商品（SPU-SKU）"><a href="#四、商品（SPU-SKU）" class="headerlink" title="四、商品（SPU &#x2F; SKU）"></a>四、商品（SPU &#x2F; SKU）</h1><h2 id="goods（商品主表）"><a href="#goods（商品主表）" class="headerlink" title="goods（商品主表）"></a>goods（商品主表）</h2><table>
+<thead>
+<tr>
+<th>字段</th>
+<th>类型</th>
+<th>默认</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>id</td>
+<td>bigint</td>
+<td>—</td>
+<td>主键</td>
+</tr>
+<tr>
+<td>cat_id</td>
+<td>bigint</td>
+<td>—</td>
+<td>分类 ID → <code>common_category.id</code></td>
+</tr>
+<tr>
+<td>goods_name</td>
+<td>varchar(200)</td>
+<td>—</td>
+<td>商品名称</td>
+</tr>
+<tr>
+<td>goods_img</td>
+<td>varchar(255)</td>
+<td>—</td>
+<td>封面图</td>
+</tr>
+<tr>
+<td>price</td>
+<td>decimal(10,2)</td>
+<td>0.00</td>
+<td>售价</td>
+</tr>
+<tr>
+<td>market_price</td>
+<td>decimal(10,2)</td>
+<td>0.00</td>
+<td>市场价</td>
+</tr>
+<tr>
+<td>stock</td>
+<td>int</td>
+<td>0</td>
+<td>库存（SPU 汇总维度）</td>
+</tr>
+<tr>
+<td>sales</td>
+<td>int</td>
+<td>0</td>
+<td>销量</td>
+</tr>
+<tr>
+<td>goods_detail</td>
+<td>text</td>
+<td>—</td>
+<td>详情 HTML&#x2F;富文本</td>
+</tr>
+<tr>
+<td>status</td>
+<td>tinyint(1)</td>
+<td>0</td>
+<td>0 下架，1 上架</td>
+</tr>
+<tr>
+<td>create_time &#x2F; update_time &#x2F; deleted</td>
+<td>—</td>
+<td>—</td>
+<td>审计与逻辑删除</td>
+</tr>
+</tbody></table>
+<p><strong>索引：</strong> <code>idx_cat_status_deleted(cat_id, status, deleted)</code>，<code>idx_status_deleted(status, deleted)</code>，<code>idx_create_time(create_time)</code></p>
+<h2 id="goods-sku（商品-SKU-表）"><a href="#goods-sku（商品-SKU-表）" class="headerlink" title="goods_sku（商品 SKU 表）"></a>goods_sku（商品 SKU 表）</h2><table>
+<thead>
+<tr>
+<th>字段</th>
+<th>类型</th>
+<th>默认</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>id</td>
+<td>bigint</td>
+<td>—</td>
+<td>主键</td>
+</tr>
+<tr>
+<td>goods_id</td>
+<td>bigint</td>
+<td>—</td>
+<td>商品 ID</td>
+</tr>
+<tr>
+<td>sku_name</td>
+<td>varchar(200)</td>
+<td>—</td>
+<td>规格组合名称</td>
+</tr>
+<tr>
+<td>sku_code</td>
+<td>varchar(100)</td>
+<td>‘’</td>
+<td>SKU 编码</td>
+</tr>
+<tr>
+<td>sku_price</td>
+<td>decimal(10,2)</td>
+<td>0.00</td>
+<td>SKU 价格</td>
+</tr>
+<tr>
+<td>sku_stock</td>
+<td>int</td>
+<td>0</td>
+<td>SKU 库存</td>
+</tr>
+<tr>
+<td>sku_img</td>
+<td>varchar(255)</td>
+<td>‘’</td>
+<td>规格图</td>
+</tr>
+<tr>
+<td>create_time &#x2F; update_time &#x2F; deleted</td>
+<td>—</td>
+<td>—</td>
+<td>审计与逻辑删除</td>
+</tr>
+</tbody></table>
+<p><strong>索引：</strong> <code>idx_goods_deleted(goods_id, deleted)</code>，<code>idx_sku_code(sku_code)</code></p>
+<h1 id="五、订单"><a href="#五、订单" class="headerlink" title="五、订单"></a>五、订单</h1><h2 id="order-main（订单主表）"><a href="#order-main（订单主表）" class="headerlink" title="order_main（订单主表）"></a>order_main（订单主表）</h2><table>
+<thead>
+<tr>
+<th>字段</th>
+<th>类型</th>
+<th>默认</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>id</td>
+<td>bigint</td>
+<td>—</td>
+<td>主键</td>
+</tr>
+<tr>
+<td>order_no</td>
+<td>varchar(64)</td>
+<td>—</td>
+<td>订单编号，<strong>唯一</strong></td>
+</tr>
+<tr>
+<td>user_id</td>
+<td>bigint</td>
+<td>—</td>
+<td>下单用户</td>
+</tr>
+<tr>
+<td>total_amount</td>
+<td>decimal(10,2)</td>
+<td>0.00</td>
+<td>订单总金额</td>
+</tr>
+<tr>
+<td>pay_amount</td>
+<td>decimal(10,2)</td>
+<td>0.00</td>
+<td>实付金额</td>
+</tr>
+<tr>
+<td>order_status</td>
+<td>tinyint</td>
+<td>1</td>
+<td>见下表「订单状态」</td>
+</tr>
+<tr>
+<td>pay_status</td>
+<td>tinyint</td>
+<td>0</td>
+<td>0 未支付，1 已支付</td>
+</tr>
+<tr>
+<td>receiver</td>
+<td>varchar(50)</td>
+<td>‘’</td>
+<td>收件人（快照）</td>
+</tr>
+<tr>
+<td>receiver_phone</td>
+<td>varchar(20)</td>
+<td>‘’</td>
+<td>收件手机</td>
+</tr>
+<tr>
+<td>receiver_addr</td>
+<td>varchar(500)</td>
+<td>‘’</td>
+<td>收货地址全文</td>
+</tr>
+<tr>
+<td>pay_time</td>
+<td>datetime</td>
+<td>NULL</td>
+<td>支付时间</td>
+</tr>
+<tr>
+<td>send_time</td>
+<td>datetime</td>
+<td>NULL</td>
+<td>发货时间</td>
+</tr>
+<tr>
+<td>finish_time</td>
+<td>datetime</td>
+<td>NULL</td>
+<td>完成时间</td>
+</tr>
+<tr>
+<td>create_time &#x2F; update_time &#x2F; deleted</td>
+<td>—</td>
+<td>—</td>
+<td>审计与逻辑删除</td>
+</tr>
+</tbody></table>
+<p><strong>索引：</strong> <code>uk_order_no(order_no)</code>，<code>idx_user_ctime(user_id, create_time)</code>，<code>idx_user_status_deleted(user_id, order_status, deleted)</code>，<code>idx_order_status_pay(order_status, pay_status)</code>，<code>idx_create_time(create_time)</code></p>
+<h3 id="订单状态（order-status）"><a href="#订单状态（order-status）" class="headerlink" title="订单状态（order_status）"></a>订单状态（order_status）</h3><table>
+<thead>
+<tr>
+<th>值</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>待付款</td>
+</tr>
+<tr>
+<td>2</td>
+<td>待发货</td>
+</tr>
+<tr>
+<td>3</td>
+<td>待收货</td>
+</tr>
+<tr>
+<td>4</td>
+<td>已完成</td>
+</tr>
+<tr>
+<td>5</td>
+<td>已取消</td>
+</tr>
+</tbody></table>
+<h2 id="order-item（订单明细表）"><a href="#order-item（订单明细表）" class="headerlink" title="order_item（订单明细表）"></a>order_item（订单明细表）</h2><table>
+<thead>
+<tr>
+<th>字段</th>
+<th>类型</th>
+<th>默认</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>id</td>
+<td>bigint</td>
+<td>—</td>
+<td>主键</td>
+</tr>
+<tr>
+<td>order_no</td>
+<td>varchar(64)</td>
+<td>—</td>
+<td>订单编号 → <code>order_main.order_no</code></td>
+</tr>
+<tr>
+<td>goods_id</td>
+<td>bigint</td>
+<td>—</td>
+<td>商品 ID</td>
+</tr>
+<tr>
+<td>sku_id</td>
+<td>bigint</td>
+<td>0</td>
+<td>SKU ID，无规格可为 0</td>
+</tr>
+<tr>
+<td>goods_name</td>
+<td>varchar(200)</td>
+<td>—</td>
+<td>商品名称快照</td>
+</tr>
+<tr>
+<td>sku_name</td>
+<td>varchar(200)</td>
+<td>‘’</td>
+<td>规格名称快照</td>
+</tr>
+<tr>
+<td>goods_img</td>
+<td>varchar(255)</td>
+<td>—</td>
+<td>商品图快照</td>
+</tr>
+<tr>
+<td>goods_price</td>
+<td>decimal(10,2)</td>
+<td>0.00</td>
+<td>下单单价</td>
+</tr>
+<tr>
+<td>goods_num</td>
+<td>int</td>
+<td>1</td>
+<td>购买数量</td>
+</tr>
+<tr>
+<td>subtotal_amount</td>
+<td>decimal(10,2)</td>
+<td>0.00</td>
+<td>小计 &#x3D; 单价 × 数量</td>
+</tr>
+<tr>
+<td>create_time &#x2F; update_time &#x2F; deleted</td>
+<td>—</td>
+<td>—</td>
+<td>审计与逻辑删除</td>
+</tr>
+</tbody></table>
+<p><strong>索引：</strong> <code>idx_order_no(order_no)</code>，<code>idx_goods_id(goods_id)</code>，<code>idx_sku_id(sku_id)</code>，<code>idx_deleted(deleted)</code></p>
+<h1 id="六、日志"><a href="#六、日志" class="headerlink" title="六、日志"></a>六、日志</h1><h2 id="sys-oper-log（系统操作日志）"><a href="#sys-oper-log（系统操作日志）" class="headerlink" title="sys_oper_log（系统操作日志）"></a>sys_oper_log（系统操作日志）</h2><table>
+<thead>
+<tr>
+<th>字段</th>
+<th>类型</th>
+<th>默认</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>id</td>
+<td>bigint</td>
+<td>—</td>
+<td>主键</td>
+</tr>
+<tr>
+<td>title</td>
+<td>varchar(50)</td>
+<td>‘’</td>
+<td>操作模块</td>
+</tr>
+<tr>
+<td>business_type</td>
+<td>tinyint</td>
+<td>0</td>
+<td>1 新增，2 修改，3 删除</td>
+</tr>
+<tr>
+<td>oper_name</td>
+<td>varchar(50)</td>
+<td>‘’</td>
+<td>操作人</td>
+</tr>
+<tr>
+<td>oper_url</td>
+<td>varchar(255)</td>
+<td>‘’</td>
+<td>请求地址</td>
+</tr>
+<tr>
+<td>request_method</td>
+<td>varchar(10)</td>
+<td>‘’</td>
+<td>GET&#x2F;POST 等</td>
+</tr>
+<tr>
+<td>oper_ip</td>
+<td>varchar(500)</td>
+<td>‘’</td>
+<td>操作 IP</td>
+</tr>
+<tr>
+<td>oper_param</td>
+<td>text</td>
+<td>—</td>
+<td>请求参数</td>
+</tr>
+<tr>
+<td>error_msg</td>
+<td>varchar(200)</td>
+<td>‘’</td>
+<td>错误信息</td>
+</tr>
+<tr>
+<td>cost_time</td>
+<td>bigint</td>
+<td>0</td>
+<td>耗时（毫秒）</td>
+</tr>
+<tr>
+<td>create_time</td>
+<td>datetime</td>
+<td>CURRENT_TIMESTAMP</td>
+<td>创建时间</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>无 <code>deleted</code> 字段，日志只增不改。与 <a href="./AOP%E6%97%A5%E5%BF%97%E4%B8%8E%E6%93%8D%E4%BD%9C%E5%AE%A1%E8%AE%A1.md">AOP日志与操作审计.md</a> 中的 <code>@OperLog</code> 写入对应。</p>
+</blockquote>
+<p><strong>索引：</strong> <code>idx_create_time(create_time)</code>，<code>idx_oper_name_ctime(oper_name, create_time)</code>，<code>idx_business_type(business_type)</code></p>
+<h2 id="sys-login-log（登录日志）"><a href="#sys-login-log（登录日志）" class="headerlink" title="sys_login_log（登录日志）"></a>sys_login_log（登录日志）</h2><table>
+<thead>
+<tr>
+<th>字段</th>
+<th>类型</th>
+<th>默认</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>id</td>
+<td>bigint</td>
+<td>—</td>
+<td>主键</td>
+</tr>
+<tr>
+<td>username</td>
+<td>varchar(50)</td>
+<td>‘’</td>
+<td>登录账号</td>
+</tr>
+<tr>
+<td>ipaddr</td>
+<td>varchar(500)</td>
+<td>‘’</td>
+<td>登录 IP</td>
+</tr>
+<tr>
+<td>login_location</td>
+<td>varchar(200)</td>
+<td>‘’</td>
+<td>登录地点</td>
+</tr>
+<tr>
+<td>browser</td>
+<td>varchar(200)</td>
+<td>‘’</td>
+<td>浏览器</td>
+</tr>
+<tr>
+<td>os</td>
+<td>varchar(200)</td>
+<td>‘’</td>
+<td>操作系统</td>
+</tr>
+<tr>
+<td>status</td>
+<td>tinyint(1)</td>
+<td>1</td>
+<td>0 失败，1 成功</td>
+</tr>
+<tr>
+<td>create_time</td>
+<td>datetime</td>
+<td>CURRENT_TIMESTAMP</td>
+<td>创建时间</td>
+</tr>
+</tbody></table>
+<p><strong>索引：</strong> <code>idx_create_time(create_time)</code>，<code>idx_username_ctime(username, create_time)</code>，<code>idx_status_ctime(status, create_time)</code></p>
+<h1 id="与应用层的对应"><a href="#与应用层的对应" class="headerlink" title="与应用层的对应"></a>与应用层的对应</h1><table>
+<thead>
+<tr>
+<th>能力</th>
+<th>相关表</th>
+<th>项目文档</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>字典 API</td>
+<td><code>sys_dict_*</code></td>
+<td><a href="./%E5%85%A8%E5%B1%80%E6%9E%9A%E4%B8%BE%E4%B8%8E%E5%AD%97%E5%85%B8API.md">全局枚举与字典API.md</a></td>
+</tr>
+<tr>
+<td>ORM &#x2F; 多数据源</td>
+<td>全部业务表</td>
+<td><a href="./%E9%9B%86%E6%88%90MyBatis-Flex%E4%B8%8E%E5%A4%9A%E6%95%B0%E6%8D%AE%E6%BA%90.md">集成MyBatis-Flex与多数据源.md</a></td>
+</tr>
+<tr>
+<td>操作审计</td>
+<td><code>sys_oper_log</code></td>
+<td><a href="./AOP%E6%97%A5%E5%BF%97%E4%B8%8E%E6%93%8D%E4%BD%9C%E5%AE%A1%E8%AE%A1.md">AOP日志与操作审计.md</a></td>
+</tr>
+</tbody></table>
+<p>实体类与 Mapper 由 MyBatis-Flex 代码生成或手写，表名与字段名与本文一致即可映射。</p>
+<h1 id="常见问题"><a href="#常见问题" class="headerlink" title="常见问题"></a>常见问题</h1><h2 id="脚本执行后表已存在"><a href="#脚本执行后表已存在" class="headerlink" title="脚本执行后表已存在"></a>脚本执行后表已存在</h2><p><code>init.sql</code> 对每张表先 <code>DROP TABLE IF EXISTS</code> 再 <code>CREATE</code>，<strong>会清空该表数据</strong>。生产环境请勿直接全量执行，应使用迁移工具（Flyway&#x2F;Liquibase）做增量变更。</p>
+<h2 id="逻辑删除查询不到数据"><a href="#逻辑删除查询不到数据" class="headerlink" title="逻辑删除查询不到数据"></a>逻辑删除查询不到数据</h2><p>MyBatis-Flex 或业务层需统一过滤 <code>deleted = 0</code>；关联表 <code>sys_user_role</code> 等无 <code>deleted</code>，删除关系应物理 <code>DELETE</code>。</p>
+<h2 id="订单与商品库存"><a href="#订单与商品库存" class="headerlink" title="订单与商品库存"></a>订单与商品库存</h2><p>当前 DDL 未包含库存扣减、支付流水表；<code>goods.stock</code> &#x2F; <code>goods_sku.sku_stock</code> 需在业务代码中维护一致性。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/MySQL/" rel="tag"># MySQL</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/05/16/SpringBoot/%E5%BC%82%E6%AD%A5%E7%BA%BF%E7%A8%8B%E6%B1%A0/" rel="prev" title="SpringBoot异步线程池">
+                  <i class="fa fa-angle-left"></i> SpringBoot异步线程池
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2026/05/17/SpringCloud/cloud/" rel="next" title="cloud">
+                  cloud <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">miracle</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">159k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">8:49</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+<script>
+(function () {
+  function normalizeClipboard(s) {
+    return (s || '').replace(/\u00a0/g, ' ');
+  }
+
+  /** When innerText is empty, treat <br> as newlines (matches Hexo fenced + line_number HTML). */
+  function plainTextFromElement(el) {
+    if (!el) return '';
+    var t = el.innerText;
+    if (t != null && t !== '') return normalizeClipboard(t);
+    var clone = el.cloneNode(true);
+    clone.querySelectorAll('br').forEach(function (br) {
+      br.parentNode.replaceChild(document.createTextNode('\n'), br);
+    });
+    return normalizeClipboard(clone.textContent || '');
+  }
+
+  function extractFromFigure(fig) {
+    if (!fig) return '';
+    var cell = fig.querySelector('td.code') || fig.querySelector('.code');
+    if (cell) return plainTextFromElement(cell);
+    var pre = fig.querySelector('pre');
+    if (pre) return plainTextFromElement(pre);
+    var code = fig.querySelector('code');
+    return code ? plainTextFromElement(code) : '';
+  }
+
+  function extractForCopyBtn(btn) {
+    var fig = btn.closest('figure.highlight');
+    if (fig) return extractFromFigure(fig);
+    var wrap = btn.closest('.code-container');
+    if (wrap) {
+      var innerFig = wrap.querySelector('figure.highlight');
+      if (innerFig) return extractFromFigure(innerFig);
+      var preOnly = wrap.querySelector('pre');
+      if (preOnly) return plainTextFromElement(preOnly);
+    }
+    return '';
+  }
+
+  function setCopyIcon(btn, ok) {
+    var i = btn.querySelector('i');
+    if (i) i.className = ok ? 'fa fa-check-circle fa-fw' : 'fa fa-times-circle fa-fw';
+  }
+
+  function writeClipboard(text, btn) {
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(text).then(
+        function () { setCopyIcon(btn, true); },
+        function () { fallbackCopy(text, btn); }
+      );
+    }
+    fallbackCopy(text, btn);
+    return Promise.resolve();
+  }
+
+  function fallbackCopy(text, btn) {
+    try {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed';
+      ta.style.left = '-9999px';
+      document.body.appendChild(ta);
+      ta.select();
+      var ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      setCopyIcon(btn, ok);
+    } catch (e) {
+      setCopyIcon(btn, false);
+    }
+  }
+
+  document.addEventListener(
+    'click',
+    function (e) {
+      var btn = e.target.closest && e.target.closest('.copy-btn');
+      if (!btn) return;
+      if (!btn.closest('figure.highlight') && !btn.closest('.code-container')) return;
+      e.stopPropagation();
+      e.preventDefault();
+      var text = extractForCopyBtn(btn);
+      writeClipboard(text, btn);
+    },
+    true
+  );
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="概述cloud-gateway 基于 Spring Cloud Gateway（WebFlux），端口 9000，作为对外统一入口。路由使用 lb:&#x2F;&#x2F;服务名 经 Spring Cloud LoadBalancer 从 Nacos 取实例；同时启用 discovery locator 可按服务名自动生成路由。 架构123456789flowchart LR  C[Client] --&gt; G[">
+<meta property="og:type" content="article">
+<meta property="og:title" content="集成SpringCloudGateway">
+<meta property="og:url" content="http://example.com/2026/05/17/SpringCloud/%E9%9B%86%E6%88%90SpringCloudGateway/index.html">
+<meta property="og:site_name" content="my">
+<meta property="og:description" content="概述cloud-gateway 基于 Spring Cloud Gateway（WebFlux），端口 9000，作为对外统一入口。路由使用 lb:&#x2F;&#x2F;服务名 经 Spring Cloud LoadBalancer 从 Nacos 取实例；同时启用 discovery locator 可按服务名自动生成路由。 架构123456789flowchart LR  C[Client] --&gt; G[">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-05-17T02:10:00.000Z">
+<meta property="article:modified_time" content="2026-05-16T16:14:24.958Z">
+<meta property="article:author" content="miracle">
+<meta property="article:tag" content="LoadBalancer">
+<meta property="article:tag" content="Spring Cloud Gateway">
+<meta property="article:tag" content="网关">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/2026/05/17/SpringCloud/%E9%9B%86%E6%88%90SpringCloudGateway/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2026/05/17/SpringCloud/%E9%9B%86%E6%88%90SpringCloudGateway/","path":"2026/05/17/SpringCloud/集成SpringCloudGateway/","title":"集成SpringCloudGateway"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>集成SpringCloudGateway | my</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js" defer></script>
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="my" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">my</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9E%B6%E6%9E%84"><span class="nav-number">2.</span> <span class="nav-text">架构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Maven-%E4%BE%9D%E8%B5%96"><span class="nav-number">3.</span> <span class="nav-text">Maven 依赖</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%B7%AF%E7%94%B1%E9%85%8D%E7%BD%AE"><span class="nav-number">4.</span> <span class="nav-text">路由配置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE-import"><span class="nav-number">5.</span> <span class="nav-text">配置 import</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%AA%8C%E8%AF%81"><span class="nav-number">6.</span> <span class="nav-text">验证</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98"><span class="nav-number">7.</span> <span class="nav-text">常见问题</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="nav-number">8.</span> <span class="nav-text">参考链接</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">miracle</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">182</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">38</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">130</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/my919" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;my919" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://gitee.com/my919" title="Gitee → https:&#x2F;&#x2F;gitee.com&#x2F;my919" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>Gitee</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:yeal166@163.com" title="E-Mail → mailto:yeal166@163.com" rel="noopener me external nofollow noreferrer" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/17/SpringCloud/%E9%9B%86%E6%88%90SpringCloudGateway/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="集成SpringCloudGateway | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          集成SpringCloudGateway
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2026-05-17 10:10:00 / 修改时间：00:14:24" itemprop="dateCreated datePublished" datetime="2026-05-17T10:10:00+08:00">2026-05-17</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>543</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>2 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p><strong>cloud-gateway</strong> 基于 <strong>Spring Cloud Gateway</strong>（WebFlux），端口 <strong>9000</strong>，作为对外统一入口。路由使用 <code>lb://服务名</code> 经 <strong>Spring Cloud LoadBalancer</strong> 从 Nacos 取实例；同时启用 <strong>discovery locator</strong> 可按服务名自动生成路由。</p>
+<h1 id="架构"><a href="#架构" class="headerlink" title="架构"></a>架构</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">flowchart LR</span><br><span class="line">  C[Client] --&gt; G[Gateway :9000]</span><br><span class="line">  G --&gt;|/user/**| U[cloud-user]</span><br><span class="line">  G --&gt;|/web/**| A[cloud-app]</span><br><span class="line">  G --&gt;|/order/**| O[cloud-order]</span><br><span class="line">  G --&gt;|/stock/**| S[cloud-stock]</span><br><span class="line">  G --&gt; N[(Nacos)]</span><br><span class="line">  U --&gt; N</span><br><span class="line">  O --&gt; N</span><br></pre></td></tr></table></figure>
+
+<h1 id="Maven-依赖"><a href="#Maven-依赖" class="headerlink" title="Maven 依赖"></a>Maven 依赖</h1><p><code>cloud-gateway/pom.xml</code> 核心：</p>
+<ul>
+<li><code>spring-cloud-starter-gateway-server-webflux</code>（或项目内等价 Gateway 起步依赖）</li>
+<li><code>spring-cloud-starter-loadbalancer</code></li>
+<li><code>spring-cloud-starter-alibaba-nacos-discovery</code></li>
+<li>Sentinel Gateway 适配（与 <code>application-shared.yml</code> 中 <code>spring.cloud.sentinel.enabled</code> 配合）</li>
+</ul>
+<h1 id="路由配置"><a href="#路由配置" class="headerlink" title="路由配置"></a>路由配置</h1><p><code>cloud-gateway/src/main/resources/application.yml</code>：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">cloud:</span></span><br><span class="line">    <span class="attr">gateway:</span></span><br><span class="line">      <span class="attr">discovery:</span></span><br><span class="line">        <span class="attr">locator:</span></span><br><span class="line">          <span class="attr">enabled:</span> <span class="literal">true</span></span><br><span class="line">          <span class="attr">lower-case-service-id:</span> <span class="literal">true</span></span><br><span class="line">      <span class="attr">server:</span></span><br><span class="line">        <span class="attr">webflux:</span></span><br><span class="line">          <span class="attr">routes:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">id:</span> <span class="string">cloud-app</span></span><br><span class="line">              <span class="attr">uri:</span> <span class="string">lb://cloud-app</span></span><br><span class="line">              <span class="attr">predicates:</span></span><br><span class="line">                <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Path</span></span><br><span class="line">                  <span class="attr">args:</span></span><br><span class="line">                    <span class="attr">pattern:</span> <span class="string">/web/**</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">id:</span> <span class="string">cloud-user</span></span><br><span class="line">              <span class="attr">uri:</span> <span class="string">lb://cloud-user</span></span><br><span class="line">              <span class="attr">predicates:</span></span><br><span class="line">                <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Path</span></span><br><span class="line">                  <span class="attr">args:</span></span><br><span class="line">                    <span class="attr">pattern:</span> <span class="string">/user/**</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">id:</span> <span class="string">cloud-order</span></span><br><span class="line">              <span class="attr">uri:</span> <span class="string">lb://cloud-order</span></span><br><span class="line">              <span class="attr">predicates:</span></span><br><span class="line">                <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Path</span></span><br><span class="line">                  <span class="attr">args:</span></span><br><span class="line">                    <span class="attr">pattern:</span> <span class="string">/order/**</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">id:</span> <span class="string">cloud-stock</span></span><br><span class="line">              <span class="attr">uri:</span> <span class="string">lb://cloud-stock</span></span><br><span class="line">              <span class="attr">predicates:</span></span><br><span class="line">                <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Path</span></span><br><span class="line">                  <span class="attr">args:</span></span><br><span class="line">                    <span class="attr">pattern:</span> <span class="string">/stock/**</span></span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th>路径前缀</th>
+<th>目标服务</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>/web/**</code></td>
+<td>cloud-app</td>
+<td><code>GET /web/...</code></td>
+</tr>
+<tr>
+<td><code>/user/**</code></td>
+<td>cloud-user</td>
+<td><code>GET /user/...</code></td>
+</tr>
+<tr>
+<td><code>/order/**</code></td>
+<td>cloud-order</td>
+<td><code>POST /order/place</code></td>
+</tr>
+<tr>
+<td><code>/stock/**</code></td>
+<td>cloud-stock</td>
+<td><code>GET /stock/goods/1</code></td>
+</tr>
+</tbody></table>
+<p><strong>注意</strong>：直连服务 Swagger 用 <code>http://host:8003/swagger-ui.html</code>；经网关访问文档需额外路由或直连端口（本仓库推荐联调 API 走 <strong>9000</strong>，文档开发时直连各服务端口）。</p>
+<h1 id="配置-import"><a href="#配置-import" class="headerlink" title="配置 import"></a>配置 import</h1><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">config:</span></span><br><span class="line">    <span class="attr">import:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">optional:classpath:application-shared.yml</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">optional:classpath:application-sentinel-client.yml</span></span><br></pre></td></tr></table></figure>
+
+<p>Profile 的 <code>application-dev.yml</code> 再引入 <code>optional:nacos:application.yml</code>。</p>
+<h1 id="验证"><a href="#验证" class="headerlink" title="验证"></a>验证</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 商品查询（经网关）</span></span><br><span class="line">curl -s <span class="string">&quot;http://127.0.0.1:9000/stock/goods/1&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 下单（JSON 文件避免 PowerShell 转义问题）</span></span><br><span class="line">curl.exe -s -X POST <span class="string">&quot;http://127.0.0.1:9000/order/place&quot;</span> ^</span><br><span class="line">  -H <span class="string">&quot;Content-Type: application/json&quot;</span> ^</span><br><span class="line">  -d <span class="string">&quot;@sql/place-order-body.json&quot;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$body</span> = <span class="built_in">Get-Content</span> <span class="string">&quot;sql\place-order-body.json&quot;</span> <span class="literal">-Raw</span></span><br><span class="line"><span class="built_in">Invoke-RestMethod</span> <span class="literal">-Method</span> Post <span class="literal">-Uri</span> <span class="string">&quot;http://127.0.0.1:9000/order/place&quot;</span> `</span><br><span class="line">  <span class="literal">-ContentType</span> <span class="string">&quot;application/json&quot;</span> <span class="literal">-Body</span> <span class="variable">$body</span></span><br></pre></td></tr></table></figure>
+
+<p>成功时 <code>code</code> 为 <code>0</code>；库存不足等业务失败常为 <code>code: 1</code>（见订单专题）。</p>
+<h1 id="常见问题"><a href="#常见问题" class="headerlink" title="常见问题"></a>常见问题</h1><p><strong>Q：504 &#x2F; 503 Service Unavailable？</strong><br>A：下游未注册到 Nacos，或网关先于下游启动。先起 stock&#x2F;order，再起 gateway；在 Nacos 服务列表确认实例健康。</p>
+<p><strong>Q：<code>GET /order/place</code> 报错？</strong><br>A：<code>place</code> 是 <strong>POST</strong> 接口；<code>GET /order/{id}</code> 仅匹配数字 id，避免把 <code>place</code> 当成 id。</p>
+<p><strong>Q：路径要不要 StripPrefix？</strong><br>A：本仓库各服务 Controller 带完整前缀（如 <code>/order</code>），网关 <strong>未</strong> 剥离前缀，转发路径与直连一致。</p>
+<h1 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h1><ul>
+<li><a target="_blank" rel="noopener external nofollow noreferrer" href="https://docs.spring.io/spring-cloud-gateway/reference/">Spring Cloud Gateway 参考文档</a></li>
+<li><a target="_blank" rel="noopener external nofollow noreferrer" href="https://docs.spring.io/spring-cloud-commons/reference/spring-cloud-commons/loadbalancer.html">Spring Cloud LoadBalancer</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Spring-Cloud-Gateway/" rel="tag"># Spring Cloud Gateway</a>
+              <a href="/tags/%E7%BD%91%E5%85%B3/" rel="tag"># 网关</a>
+              <a href="/tags/LoadBalancer/" rel="tag"># LoadBalancer</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/05/17/SpringCloud/%E9%9B%86%E6%88%90Nacos/" rel="prev" title="集成Nacos">
+                  <i class="fa fa-angle-left"></i> 集成Nacos
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2026/05/17/SpringCloud/%E9%9B%86%E6%88%90Swagger/" rel="next" title="集成Swagger">
+                  集成Swagger <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">miracle</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">159k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">8:49</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+<script>
+(function () {
+  function normalizeClipboard(s) {
+    return (s || '').replace(/\u00a0/g, ' ');
+  }
+
+  /** When innerText is empty, treat <br> as newlines (matches Hexo fenced + line_number HTML). */
+  function plainTextFromElement(el) {
+    if (!el) return '';
+    var t = el.innerText;
+    if (t != null && t !== '') return normalizeClipboard(t);
+    var clone = el.cloneNode(true);
+    clone.querySelectorAll('br').forEach(function (br) {
+      br.parentNode.replaceChild(document.createTextNode('\n'), br);
+    });
+    return normalizeClipboard(clone.textContent || '');
+  }
+
+  function extractFromFigure(fig) {
+    if (!fig) return '';
+    var cell = fig.querySelector('td.code') || fig.querySelector('.code');
+    if (cell) return plainTextFromElement(cell);
+    var pre = fig.querySelector('pre');
+    if (pre) return plainTextFromElement(pre);
+    var code = fig.querySelector('code');
+    return code ? plainTextFromElement(code) : '';
+  }
+
+  function extractForCopyBtn(btn) {
+    var fig = btn.closest('figure.highlight');
+    if (fig) return extractFromFigure(fig);
+    var wrap = btn.closest('.code-container');
+    if (wrap) {
+      var innerFig = wrap.querySelector('figure.highlight');
+      if (innerFig) return extractFromFigure(innerFig);
+      var preOnly = wrap.querySelector('pre');
+      if (preOnly) return plainTextFromElement(preOnly);
+    }
+    return '';
+  }
+
+  function setCopyIcon(btn, ok) {
+    var i = btn.querySelector('i');
+    if (i) i.className = ok ? 'fa fa-check-circle fa-fw' : 'fa fa-times-circle fa-fw';
+  }
+
+  function writeClipboard(text, btn) {
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(text).then(
+        function () { setCopyIcon(btn, true); },
+        function () { fallbackCopy(text, btn); }
+      );
+    }
+    fallbackCopy(text, btn);
+    return Promise.resolve();
+  }
+
+  function fallbackCopy(text, btn) {
+    try {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed';
+      ta.style.left = '-9999px';
+      document.body.appendChild(ta);
+      ta.select();
+      var ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      setCopyIcon(btn, ok);
+    } catch (e) {
+      setCopyIcon(btn, false);
+    }
+  }
+
+  document.addEventListener(
+    'click',
+    function (e) {
+      var btn = e.target.closest && e.target.closest('.copy-btn');
+      if (!btn) return;
+      if (!btn.closest('figure.highlight') && !btn.closest('.code-container')) return;
+      e.stopPropagation();
+      e.preventDefault();
+      var text = extractForCopyBtn(btn);
+      writeClipboard(text, btn);
+    },
+    true
+  );
+})();
+</script>
+
+</body>
+</html>
