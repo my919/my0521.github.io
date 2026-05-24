@@ -28,7 +28,7 @@
 <meta property="og:description" content="概述Spring Cloud Alibaba（SCA） 在 Spring Cloud 之上提供 Nacos、Sentinel、Seata、RocketMQ 等集成。本仓库 cloud 为 Maven 多模块 工程（非 Gradle 演示项目），已落地 Nacos、Sentinel、Seata、Gateway、OpenFeign；未引入 Dubbo、RocketMQ（见 Dubbo.md、Rocke">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-05-17T03:00:00.000Z">
-<meta property="article:modified_time" content="2026-05-16T16:21:59.061Z">
+<meta property="article:modified_time" content="2026-05-24T04:56:55.072Z">
 <meta property="article:author" content="miracle">
 <meta property="article:tag" content="SpringCloudAlibaba">
 <meta name="twitter:card" content="summary">
@@ -58,6 +58,8 @@
 <script src="/js/third-party/search/local-search.js" defer></script>
 
 
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.10.1/mermaid.min.js","integrity":"sha256-BmQmdWDS8X2OTbrwELWK366LV6escyWhHHe0XCTU/Hk="}}</script>
+  <script src="/js/third-party/tags/mermaid.js" defer></script>
 
 
 
@@ -255,9 +257,15 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
-      
 
-      <time title="创建时间：2026-05-17 11:00:00 / 修改时间：00:21:59" itemprop="dateCreated datePublished" datetime="2026-05-17T11:00:00+08:00">2026-05-17</time>
+      <time title="创建时间：2026-05-17 11:00:00" itemprop="dateCreated datePublished" datetime="2026-05-17T11:00:00+08:00">2026-05-17</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-05-24 12:56:55" itemprop="dateModified" datetime="2026-05-24T12:56:55+08:00">2026-05-24</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -276,7 +284,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>761</span>
+      <span>762</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -295,7 +303,27 @@
     
     <div class="post-body" itemprop="articleBody"><h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p><strong>Spring Cloud Alibaba（SCA）</strong> 在 Spring Cloud 之上提供 <strong>Nacos、Sentinel、Seata、RocketMQ</strong> 等集成。本仓库 <strong>cloud</strong> 为 <strong>Maven 多模块</strong> 工程（非 Gradle 演示项目），已落地 <strong>Nacos、Sentinel、Seata、Gateway、OpenFeign</strong>；<strong>未</strong>引入 <strong>Dubbo、RocketMQ</strong>（见 <a href="./Dubbo.md">Dubbo.md</a>、<a href="./RocketMQ.md">RocketMQ.md</a> 作扩展阅读）。</p>
 <p>仓库：<a target="_blank" rel="noopener" href="https://gitee.com/my919/cloud">https://gitee.com/my919/cloud</a></p>
-<h1 id="架构说明"><a href="#架构说明" class="headerlink" title="架构说明"></a>架构说明</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">flowchart TB</span><br><span class="line">  subgraph sca [SCA 2025.1.0.0 在本仓库]</span><br><span class="line">    Nacos[Nacos 注册/配置]</span><br><span class="line">    Sentinel[Sentinel 流控]</span><br><span class="line">    Seata[Seata AT]</span><br><span class="line">  end</span><br><span class="line">  GW[cloud-gateway]</span><br><span class="line">  Order[cloud-order]</span><br><span class="line">  Stock[cloud-stock]</span><br><span class="line">  GW --&gt; Nacos</span><br><span class="line">  Order --&gt; Nacos</span><br><span class="line">  Order --&gt; Seata</span><br><span class="line">  Stock --&gt; Seata</span><br><span class="line">  Order --&gt;|Feign| Stock</span><br><span class="line">  GW --&gt; Sentinel</span><br><span class="line">  Order --&gt; Sentinel</span><br></pre></td></tr></table></figure>
+<h1 id="架构说明"><a href="#架构说明" class="headerlink" title="架构说明"></a>架构说明</h1><pre>
+<code class="mermaid">
+
+flowchart TB
+  subgraph sca [SCA 2025.1.0.0 在本仓库]
+    Nacos[Nacos 注册&#x2F;配置]
+    Sentinel[Sentinel 流控]
+    Seata[Seata AT]
+  end
+  GW[cloud-gateway]
+  Order[cloud-order]
+  Stock[cloud-stock]
+  GW --&gt; Nacos
+  Order --&gt; Nacos
+  Order --&gt; Seata
+  Stock --&gt; Seata
+  Order --&gt;|Feign| Stock
+  GW --&gt; Sentinel
+  Order --&gt; Sentinel
+</code>
+</pre>
 
 <h1 id="前置条件"><a href="#前置条件" class="headerlink" title="前置条件"></a>前置条件</h1><table>
 <thead>

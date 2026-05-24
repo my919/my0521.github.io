@@ -53,6 +53,8 @@
 <script src="/js/third-party/search/local-search.js" defer></script>
 
 
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.10.1/mermaid.min.js","integrity":"sha256-BmQmdWDS8X2OTbrwELWK366LV6escyWhHHe0XCTU/Hk="}}</script>
+  <script src="/js/third-party/tags/mermaid.js" defer></script>
 
 
 
@@ -248,9 +250,15 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
-      
 
-      <time title="创建时间：2026-05-17 09:55:00 / 修改时间：00:21:58" itemprop="dateCreated datePublished" datetime="2026-05-17T09:55:00+08:00">2026-05-17</time>
+      <time title="创建时间：2026-05-17 09:55:00" itemprop="dateCreated datePublished" datetime="2026-05-17T09:55:00+08:00">2026-05-17</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-05-24 12:56:55" itemprop="dateModified" datetime="2026-05-24T12:56:55+08:00">2026-05-24</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -269,7 +277,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>721</span>
+      <span>722</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -290,7 +298,38 @@
           <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>本页为 <strong>cloud</strong> 微服务工程的 Hexo 文档索引与总览，各专题见下方链接。</p>
 <p>基于 <strong>Spring Boot 4.0.0</strong>、<strong>Spring Cloud 2025.1.0</strong>、<strong>Spring Cloud Alibaba 2025.1.0.0</strong> 的示例工程。下列单篇为 <strong>Hexo 博文</strong>（含 Front Matter），复制到 <code>_posts/</code> 即可发布。</p>
 <p>仓库：<a target="_blank" rel="noopener" href="https://gitee.com/my919/cloud">https://gitee.com/my919/cloud</a></p>
-<h2 id="架构总览"><a href="#架构总览" class="headerlink" title="架构总览"></a>架构总览</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">flowchart TB</span><br><span class="line">  Client[浏览器 / curl]</span><br><span class="line">  GW[cloud-gateway :9000]</span><br><span class="line">  Nacos[(Nacos :30010)]</span><br><span class="line">  TC[Seata TC :30014]</span><br><span class="line">  Dash[Sentinel :30012]</span><br><span class="line">  MySQL[(MySQL study :30000)]</span><br><span class="line"></span><br><span class="line">  Client --&gt; GW</span><br><span class="line">  GW --&gt; User[cloud-user :8001]</span><br><span class="line">  GW --&gt; App[cloud-app :8002]</span><br><span class="line">  GW --&gt; Order[cloud-order :8003]</span><br><span class="line">  GW --&gt; Stock[cloud-stock :8004]</span><br><span class="line">  Order --&gt;|OpenFeign| Stock</span><br><span class="line">  User --&gt; Nacos</span><br><span class="line">  App --&gt; Nacos</span><br><span class="line">  Order --&gt; Nacos</span><br><span class="line">  Stock --&gt; Nacos</span><br><span class="line">  GW --&gt; Nacos</span><br><span class="line">  Order --&gt; TC</span><br><span class="line">  Stock --&gt; TC</span><br><span class="line">  Order --&gt; MySQL</span><br><span class="line">  Stock --&gt; MySQL</span><br><span class="line">  User --&gt; MySQL</span><br><span class="line">  Order -.-&gt; Dash</span><br><span class="line">  Stock -.-&gt; Dash</span><br><span class="line">  GW -.-&gt; Dash</span><br></pre></td></tr></table></figure>
+<h2 id="架构总览"><a href="#架构总览" class="headerlink" title="架构总览"></a>架构总览</h2><pre>
+<code class="mermaid">
+
+flowchart TB
+  Client[浏览器 &#x2F; curl]
+  GW[cloud-gateway :9000]
+  Nacos[(Nacos :30010)]
+  TC[Seata TC :30014]
+  Dash[Sentinel :30012]
+  MySQL[(MySQL study :30000)]
+
+  Client --&gt; GW
+  GW --&gt; User[cloud-user :8001]
+  GW --&gt; App[cloud-app :8002]
+  GW --&gt; Order[cloud-order :8003]
+  GW --&gt; Stock[cloud-stock :8004]
+  Order --&gt;|OpenFeign| Stock
+  User --&gt; Nacos
+  App --&gt; Nacos
+  Order --&gt; Nacos
+  Stock --&gt; Nacos
+  GW --&gt; Nacos
+  Order --&gt; TC
+  Stock --&gt; TC
+  Order --&gt; MySQL
+  Stock --&gt; MySQL
+  User --&gt; MySQL
+  Order -.-&gt; Dash
+  Stock -.-&gt; Dash
+  GW -.-&gt; Dash
+</code>
+</pre>
 
 <p>业务上，<strong>下单扣库存</strong>走 <code>cloud-order</code> → Feign → <code>cloud-stock</code>，由 <strong>Seata AT</strong> 保证跨服务一致性；配置与注册走 <strong>Nacos</strong>；流控熔断走 <strong>Sentinel</strong>（可选 Dashboard）。</p>
 <h2 id="服务与端口"><a href="#服务与端口" class="headerlink" title="服务与端口"></a>服务与端口</h2><table>
@@ -571,9 +610,15 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
-      
 
-      <time title="创建时间：2026-05-16 14:30:00 / 修改时间：21:08:30" itemprop="dateCreated datePublished" datetime="2026-05-16T14:30:00+08:00">2026-05-16</time>
+      <time title="创建时间：2026-05-16 14:30:00" itemprop="dateCreated datePublished" datetime="2026-05-16T14:30:00+08:00">2026-05-16</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-05-24 12:56:55" itemprop="dateModified" datetime="2026-05-24T12:56:55+08:00">2026-05-24</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -672,7 +717,25 @@
 <td><code>sys_user_role</code>、<code>sys_role_menu</code> 无 <code>deleted</code>，用唯一键防重复</td>
 </tr>
 </tbody></table>
-<h1 id="模块关系"><a href="#模块关系" class="headerlink" title="模块关系"></a>模块关系</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">erDiagram</span><br><span class="line">    sys_dict_type ||--o&#123; sys_dict_data : &quot;dict_type&quot;</span><br><span class="line">    sys_dept ||--o&#123; sys_user : &quot;dept_id&quot;</span><br><span class="line">    sys_user ||--o&#123; sys_user_role : &quot;user_id&quot;</span><br><span class="line">    sys_role ||--o&#123; sys_user_role : &quot;role_id&quot;</span><br><span class="line">    sys_role ||--o&#123; sys_role_menu : &quot;role_id&quot;</span><br><span class="line">    sys_menu ||--o&#123; sys_role_menu : &quot;menu_id&quot;</span><br><span class="line">    sys_user ||--o&#123; user_address : &quot;user_id&quot;</span><br><span class="line">    common_category ||--o&#123; goods : &quot;cat_id&quot;</span><br><span class="line">    goods ||--o&#123; goods_sku : &quot;goods_id&quot;</span><br><span class="line">    sys_user ||--o&#123; order_main : &quot;user_id&quot;</span><br><span class="line">    order_main ||--o&#123; order_item : &quot;order_no&quot;</span><br><span class="line">    goods ||--o&#123; order_item : &quot;goods_id&quot;</span><br><span class="line">    goods_sku ||--o&#123; order_item : &quot;sku_id&quot;</span><br></pre></td></tr></table></figure>
+<h1 id="模块关系"><a href="#模块关系" class="headerlink" title="模块关系"></a>模块关系</h1><pre>
+<code class="mermaid">
+
+erDiagram
+    sys_dict_type ||--o{ sys_dict_data : &quot;dict_type&quot;
+    sys_dept ||--o{ sys_user : &quot;dept_id&quot;
+    sys_user ||--o{ sys_user_role : &quot;user_id&quot;
+    sys_role ||--o{ sys_user_role : &quot;role_id&quot;
+    sys_role ||--o{ sys_role_menu : &quot;role_id&quot;
+    sys_menu ||--o{ sys_role_menu : &quot;menu_id&quot;
+    sys_user ||--o{ user_address : &quot;user_id&quot;
+    common_category ||--o{ goods : &quot;cat_id&quot;
+    goods ||--o{ goods_sku : &quot;goods_id&quot;
+    sys_user ||--o{ order_main : &quot;user_id&quot;
+    order_main ||--o{ order_item : &quot;order_no&quot;
+    goods ||--o{ order_item : &quot;goods_id&quot;
+    goods_sku ||--o{ order_item : &quot;sku_id&quot;
+</code>
+</pre>
 
 <blockquote>
 <p>图中为逻辑关系，<strong>数据库未建外键约束</strong>。</p>
