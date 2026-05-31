@@ -111,7 +111,7 @@
 
 
 <nav class="site-nav">
-  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-service"><a href="/service/" rel="section"><i class="fa fa-server fa-fw"></i>服务</a></li><li class="menu-item menu-item-project"><a href="/project/" rel="section"><i class="fa fa-folder-open fa-fw"></i>项目</a></li>
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-service"><a href="/service/" rel="section"><i class="fa fa-server fa-fw"></i>服务</a></li><li class="menu-item menu-item-tool"><a href="/tool/" rel="section"><i class="fa fa-wrench fa-fw"></i>工具</a></li><li class="menu-item menu-item-project"><a href="/project/" rel="section"><i class="fa fa-folder-open fa-fw"></i>项目</a></li>
       <li class="menu-item menu-item-search">
         <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
         </a>
@@ -258,7 +258,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-03 16:37:58" itemprop="dateModified" datetime="2026-05-03T16:37:58+08:00">2026-05-03</time>
+      <time title="修改时间：2026-05-31 22:49:20" itemprop="dateModified" datetime="2026-05-31T22:49:20+08:00">2026-05-31</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -296,6 +296,17 @@
     
     <div class="post-body" itemprop="articleBody">
           <h1 id="PostgreSQL-DDL-语句"><a href="#PostgreSQL-DDL-语句" class="headerlink" title="PostgreSQL DDL 语句"></a>PostgreSQL DDL 语句</h1><p><strong>DDL</strong>：Data Definition Language 数据定义语言<br>作用：<strong>定义&#x2F;修改&#x2F;删除 数据库、模式（</strong><code>SCHEMA</code><strong>）、表、字段、索引等对象结构</strong>，不直接操作「行级业务数据」本身（数据由 <strong>DML</strong> 写入）。</p>
+<h1 id="客户端到引擎"><a href="#客户端到引擎" class="headerlink" title="客户端到引擎"></a>客户端到引擎</h1><pre>
+<code class="mermaid">
+
+flowchart LR
+  App[应用 JDBC&#x2F;psql] --&gt; PG[PostgreSQL Server]
+  PG --&gt; Buf[Shared Buffers]
+  PG --&gt; WAL[WAL 日志]
+  WAL --&gt; Disk[(数据文件)]
+</code>
+</pre>
+
 <h2 id="DDL-主要分-3-大类"><a href="#DDL-主要分-3-大类" class="headerlink" title="DDL 主要分 3 大类"></a>DDL 主要分 3 大类</h2><ol>
 <li><strong>库 &#x2F; 模式</strong>：<strong><code>CREATE</code> &#x2F; <code>ALTER</code> &#x2F; <code>DROP DATABASE</code></strong>；<strong><code>CREATE SCHEMA</code></strong> 等（<strong><code>SCHEMA</code></strong> 类似命名空间，用于组织表与权限）。  </li>
 <li><strong>表与列</strong>：<strong><code>CREATE</code> &#x2F; <code>ALTER</code> &#x2F; <code>DROP TABLE</code></strong>；约束、默认值、自增（<strong><code>IDENTITY</code></strong> &#x2F; <strong><code>SERIAL</code></strong>）。  </li>
@@ -335,7 +346,7 @@
 <p>常用约束：</p>
 <ul>
 <li><strong><code>PRIMARY KEY</code></strong>  </li>
-<li><strong><code>GENERATED { ALWAYS | BY DEFAULT } AS IDENTITY</code></strong>（推荐）或 <strong><code>SERIAL</code> &#x2F; <code>BIGSERIAL</code></strong>（底层仍是序列，语义略宽）  </li>
+<li><strong><code>GENERATED &#123; ALWAYS | BY DEFAULT &#125; AS IDENTITY</code></strong>（推荐）或 <strong><code>SERIAL</code> &#x2F; <code>BIGSERIAL</code></strong>（底层仍是序列，语义略宽）  </li>
 <li><strong><code>NOT NULL</code></strong>、<strong><code>DEFAULT</code></strong>  </li>
 <li><strong><code>UNIQUE</code></strong>、<strong><code>REFERENCES</code></strong>（外键）</li>
 </ul>
@@ -460,7 +471,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-03 13:10:38" itemprop="dateModified" datetime="2026-05-03T13:10:38+08:00">2026-05-03</time>
+      <time title="修改时间：2026-05-31 22:49:52" itemprop="dateModified" datetime="2026-05-31T22:49:52+08:00">2026-05-31</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -479,14 +490,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>1.3k</span>
+      <span>1.4k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>4 分钟</span>
+      <span>5 分钟</span>
     </span>
 </div>
 
@@ -498,6 +509,17 @@
     
     <div class="post-body" itemprop="articleBody">
           <h1 id="MySQL-DDL-语句"><a href="#MySQL-DDL-语句" class="headerlink" title="MySQL DDL 语句"></a>MySQL DDL 语句</h1><p><strong>DDL</strong>：Data Definition Language 数据定义语言<br>作用：<strong>定义&#x2F;修改&#x2F;删除 数据库、表、字段结构</strong>，不操作表里数据，只管「结构」</p>
+<h1 id="客户端到-InnoDB"><a href="#客户端到-InnoDB" class="headerlink" title="客户端到 InnoDB"></a>客户端到 InnoDB</h1><pre>
+<code class="mermaid">
+
+flowchart LR
+  App[应用 JDBC] --&gt; MySQL[MySQL Server]
+  MySQL --&gt; InnoDB[InnoDB 引擎]
+  InnoDB --&gt; BP[Buffer Pool]
+  InnoDB --&gt; Redo[Redo Log]
+</code>
+</pre>
+
 <h2 id="DDL-主要分-3-大类"><a href="#DDL-主要分-3-大类" class="headerlink" title="DDL 主要分 3 大类"></a>DDL 主要分 3 大类</h2><ol>
 <li><strong>库操作</strong>：CREATE &#x2F; ALTER &#x2F; DROP 数据库  </li>
 <li><strong>表操作</strong>：CREATE &#x2F; ALTER &#x2F; DROP 数据表  </li>
@@ -680,7 +702,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-04 12:03:47" itemprop="dateModified" datetime="2026-05-04T12:03:47+08:00">2026-05-04</time>
+      <time title="修改时间：2026-05-31 22:47:02" itemprop="dateModified" datetime="2026-05-31T22:47:02+08:00">2026-05-31</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -699,7 +721,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>964</span>
+      <span>1k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -725,6 +747,17 @@
 <li><strong>命令参考</strong>：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://redis.io/commands/">https://redis.io/commands/</a></li>
 </ul>
 <p><strong>Redis</strong> 以<strong>键值</strong>为核心，值支持多种<strong>数据类型</strong>（字符串、哈希、列表等）；默认监听 <strong><code>6379</code></strong>。与关系型数据库不同，数据主要在内存中，须结合<strong>淘汰策略</strong>、<strong>持久化</strong>与<strong>备份</strong>设计，避免单点丢数。</p>
+<h1 id="典型部署角色"><a href="#典型部署角色" class="headerlink" title="典型部署角色"></a>典型部署角色</h1><pre>
+<code class="mermaid">
+
+flowchart TB
+  App[应用 springboot&#x2F;cloud] --&gt;|缓存&#x2F;锁&#x2F;幂等| R[(Redis)]
+  R --&gt; RDB[RDB 快照]
+  R --&gt; AOF[AOF 日志]
+  R --&gt; Rep[主从 &#x2F; 哨兵 可选]
+</code>
+</pre>
+
 <hr>
 <h1 id="二、安装与验证"><a href="#二、安装与验证" class="headerlink" title="二、安装与验证"></a>二、安装与验证</h1><h2 id="1-Linux（包管理器，适合快速体验）"><a href="#1-Linux（包管理器，适合快速体验）" class="headerlink" title="1. Linux（包管理器，适合快速体验）"></a>1. Linux（包管理器，适合快速体验）</h2><p><strong>Debian &#x2F; Ubuntu</strong> 示例：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> apt update</span><br><span class="line"><span class="built_in">sudo</span> apt install -y redis-server</span><br><span class="line">redis-server --version</span><br></pre></td></tr></table></figure>
@@ -1761,9 +1794,15 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
-      
 
-      <time title="创建时间：2026-05-01 12:08:04 / 修改时间：22:50:48" itemprop="dateCreated datePublished" datetime="2026-05-01T12:08:04+08:00">2026-05-01</time>
+      <time title="创建时间：2026-05-01 12:08:04" itemprop="dateCreated datePublished" datetime="2026-05-01T12:08:04+08:00">2026-05-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-05-31 22:47:15" itemprop="dateModified" datetime="2026-05-31T22:47:15+08:00">2026-05-31</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -1782,7 +1821,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>371</span>
+      <span>415</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -1801,6 +1840,18 @@
     
     <div class="post-body" itemprop="articleBody">
           <p><strong>Flask</strong> 是轻量级 <strong>Python Web</strong> 框架，核心小而可扩展，适合 <strong>API</strong> 与中小型站点。本文假定本机已安装 <strong>uv</strong>，且已有可用的 <strong>Python</strong> 解释器（本站约定 <strong>3.14.3</strong>；<strong>uv</strong> 与解释器准备见同栏《Python的UV工具》《UV从0到1创建项目》）。下文只写在该前提下用 <strong>uv</strong> 建项、安装 <strong>Flask</strong>、编写最小应用并用开发服务器运行。</p>
+<p>IAM 完整工程见 <a target="_blank" rel="noopener" href="https://gitee.com/my919/flask_iam">flask_iam</a> 与 <a href="/project/">项目</a> 页。</p>
+<h1 id="请求处理模型"><a href="#请求处理模型" class="headerlink" title="请求处理模型"></a>请求处理模型</h1><pre>
+<code class="mermaid">
+
+flowchart LR
+  Req[Werkzeug 请求] --&gt; App[Flask app]
+  App --&gt; BP[Blueprint &#x2F;api&#x2F;v1]
+  BP --&gt; View[视图函数]
+  View --&gt; Resp[JSON 响应]
+</code>
+</pre>
+
 <hr>
 <h1 id="一、前提"><a href="#一、前提" class="headerlink" title="一、前提"></a>一、前提</h1><ul>
 <li><strong>uv</strong> 可用：<strong><code>uv --version</code></strong> 正常。  </li>
@@ -2080,13 +2131,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">181k</span>
+    <span title="站点总字数">184k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">10:03</span>
+    <span title="站点阅读时长">10:13</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

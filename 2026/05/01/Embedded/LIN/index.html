@@ -20,15 +20,15 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
 
-    <meta name="description" content="LIN（Local Interconnect Network）是低成本单主多从串行总线：基于 UART 异步字符，单线（+ GND），最高约 20 kbps，常见于汽车车身（门窗、座椅、传感器）。下面从「帧结构 → 调度表 → 与 CAN 的分工 → 硬件 → 开发注意」顺序写清楚。  一、角色 Master：通常由 Body ECU 担任，发送 Header（含 PID）。   Slave：响应">
+    <meta name="description" content="LIN（Local Interconnect Network）是低成本单主多从串行总线：基于 UART 异步字符，单线（+ GND），最高约 20 kbps，常见于汽车车身（门窗、座椅、传感器）。下面从「帧结构 → 调度表 → 与 CAN 的分工 → 硬件 → 开发注意」顺序写清楚。 单主多从   flowchart LR   Master[LIN Master ECU] --- Bus[LIN">
 <meta property="og:type" content="article">
 <meta property="og:title" content="LIN">
 <meta property="og:url" content="http://example.com/2026/05/01/Embedded/LIN/index.html">
 <meta property="og:site_name" content="my">
-<meta property="og:description" content="LIN（Local Interconnect Network）是低成本单主多从串行总线：基于 UART 异步字符，单线（+ GND），最高约 20 kbps，常见于汽车车身（门窗、座椅、传感器）。下面从「帧结构 → 调度表 → 与 CAN 的分工 → 硬件 → 开发注意」顺序写清楚。  一、角色 Master：通常由 Body ECU 担任，发送 Header（含 PID）。   Slave：响应">
+<meta property="og:description" content="LIN（Local Interconnect Network）是低成本单主多从串行总线：基于 UART 异步字符，单线（+ GND），最高约 20 kbps，常见于汽车车身（门窗、座椅、传感器）。下面从「帧结构 → 调度表 → 与 CAN 的分工 → 硬件 → 开发注意」顺序写清楚。 单主多从   flowchart LR   Master[LIN Master ECU] --- Bus[LIN">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-05-01T05:12:56.000Z">
-<meta property="article:modified_time" content="2026-05-31T04:18:22.054Z">
+<meta property="article:modified_time" content="2026-05-31T14:50:14.661Z">
 <meta property="article:author" content="miracle">
 <meta property="article:tag" content="Embedded">
 <meta name="twitter:card" content="summary">
@@ -116,7 +116,7 @@
 
 
 <nav class="site-nav">
-  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-service"><a href="/service/" rel="section"><i class="fa fa-server fa-fw"></i>服务</a></li><li class="menu-item menu-item-project"><a href="/project/" rel="section"><i class="fa fa-folder-open fa-fw"></i>项目</a></li>
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-service"><a href="/service/" rel="section"><i class="fa fa-server fa-fw"></i>服务</a></li><li class="menu-item menu-item-tool"><a href="/tool/" rel="section"><i class="fa fa-wrench fa-fw"></i>工具</a></li><li class="menu-item menu-item-project"><a href="/project/" rel="section"><i class="fa fa-folder-open fa-fw"></i>项目</a></li>
       <li class="menu-item menu-item-search">
         <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
         </a>
@@ -167,7 +167,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E8%A7%92%E8%89%B2"><span class="nav-number">1.</span> <span class="nav-text">一、角色</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E5%B8%A7%E7%BB%93%E6%9E%84%EF%BC%88%E7%AE%80%E5%8C%96%EF%BC%89"><span class="nav-number">2.</span> <span class="nav-text">二、帧结构（简化）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E8%B0%83%E5%BA%A6%E8%A1%A8%EF%BC%88Schedule-Table%EF%BC%89"><span class="nav-number">3.</span> <span class="nav-text">三、调度表（Schedule Table）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E4%B8%8E-CAN"><span class="nav-number">4.</span> <span class="nav-text">四、与 CAN</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E7%A1%AC%E4%BB%B6%E4%B8%8E%E8%B0%83%E8%AF%95"><span class="nav-number">5.</span> <span class="nav-text">五、硬件与调试</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8D%95%E4%B8%BB%E5%A4%9A%E4%BB%8E"><span class="nav-number">1.</span> <span class="nav-text">单主多从</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E8%A7%92%E8%89%B2"><span class="nav-number">2.</span> <span class="nav-text">一、角色</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E5%B8%A7%E7%BB%93%E6%9E%84%EF%BC%88%E7%AE%80%E5%8C%96%EF%BC%89"><span class="nav-number">3.</span> <span class="nav-text">二、帧结构（简化）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E8%B0%83%E5%BA%A6%E8%A1%A8%EF%BC%88Schedule-Table%EF%BC%89"><span class="nav-number">4.</span> <span class="nav-text">三、调度表（Schedule Table）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E4%B8%8E-CAN"><span class="nav-number">5.</span> <span class="nav-text">四、与 CAN</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E7%A1%AC%E4%BB%B6%E4%B8%8E%E8%B0%83%E8%AF%95"><span class="nav-number">6.</span> <span class="nav-text">五、硬件与调试</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -265,7 +265,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-31 12:18:22" itemprop="dateModified" datetime="2026-05-31T12:18:22+08:00">2026-05-31</time>
+      <time title="修改时间：2026-05-31 22:50:14" itemprop="dateModified" datetime="2026-05-31T22:50:14+08:00">2026-05-31</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -284,7 +284,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>309</span>
+      <span>339</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -302,6 +302,16 @@
     
     
     <div class="post-body" itemprop="articleBody"><p><strong>LIN</strong>（Local Interconnect Network）是<strong>低成本单主多从</strong>串行总线：基于 <a href="/2026/05/01/UART/">UART</a> 异步字符，<strong>单线</strong>（+ GND），最高约 <strong>20 kbps</strong>，常见于汽车车身（门窗、座椅、传感器）。下面从「<strong>帧结构</strong> → <strong>调度表</strong> → <strong>与 CAN 的分工</strong> → <strong>硬件</strong> → <strong>开发注意</strong>」顺序写清楚。</p>
+<h1 id="单主多从"><a href="#单主多从" class="headerlink" title="单主多从"></a>单主多从</h1><pre>
+<code class="mermaid">
+
+flowchart LR
+  Master[LIN Master ECU] --- Bus[LIN 总线]
+  S1[从节点 门窗] --- Bus
+  S2[从节点 座椅] --- Bus
+</code>
+</pre>
+
 <hr>
 <h1 id="一、角色"><a href="#一、角色" class="headerlink" title="一、角色"></a>一、角色</h1><ul>
 <li><strong>Master</strong>：通常由 Body ECU 担任，发送 <strong>Header</strong>（含 <strong>PID</strong>）。  </li>
@@ -408,13 +418,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">181k</span>
+    <span title="站点总字数">184k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">10:03</span>
+    <span title="站点阅读时长">10:13</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

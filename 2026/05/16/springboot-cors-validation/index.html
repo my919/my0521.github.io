@@ -20,15 +20,15 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
 
-    <meta name="description" content="全局跨域（CORS）实现 AppCorsProperties：app.cors.* WebMvcConfiguration：实现 WebMvcConfigurer#addCorsMappings  配置示例1234567891011121314app:  cors:    enabled: true    allowed-origin-patterns:      - &quot;http:&#x2F;&#x2F;l">
+    <meta name="description" content="CORS 预检流程   sequenceDiagram   participant B as 浏览器   participant S as Spring MVC    alt 简单请求     B-&gt;&gt;S: GET&#x2F;POST + Origin     S--&gt;&gt;B: Access-Control-Allow-Origin   else 预检 OPTIONS">
 <meta property="og:type" content="article">
 <meta property="og:title" content="SpringBoot全局跨域与参数校验">
 <meta property="og:url" content="http://example.com/2026/05/16/springboot-cors-validation/index.html">
 <meta property="og:site_name" content="my">
-<meta property="og:description" content="全局跨域（CORS）实现 AppCorsProperties：app.cors.* WebMvcConfiguration：实现 WebMvcConfigurer#addCorsMappings  配置示例1234567891011121314app:  cors:    enabled: true    allowed-origin-patterns:      - &quot;http:&#x2F;&#x2F;l">
+<meta property="og:description" content="CORS 预检流程   sequenceDiagram   participant B as 浏览器   participant S as Spring MVC    alt 简单请求     B-&gt;&gt;S: GET&#x2F;POST + Origin     S--&gt;&gt;B: Access-Control-Allow-Origin   else 预检 OPTIONS">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-05-16T02:40:00.000Z">
-<meta property="article:modified_time" content="2026-05-31T14:39:39.088Z">
+<meta property="article:modified_time" content="2026-05-31T14:46:34.572Z">
 <meta property="article:author" content="miracle">
 <meta property="article:tag" content="SpringBoot">
 <meta name="twitter:card" content="summary">
@@ -116,7 +116,7 @@
 
 
 <nav class="site-nav">
-  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-service"><a href="/service/" rel="section"><i class="fa fa-server fa-fw"></i>服务</a></li><li class="menu-item menu-item-project"><a href="/project/" rel="section"><i class="fa fa-folder-open fa-fw"></i>项目</a></li>
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-service"><a href="/service/" rel="section"><i class="fa fa-server fa-fw"></i>服务</a></li><li class="menu-item menu-item-tool"><a href="/tool/" rel="section"><i class="fa fa-wrench fa-fw"></i>工具</a></li><li class="menu-item menu-item-project"><a href="/project/" rel="section"><i class="fa fa-folder-open fa-fw"></i>项目</a></li>
       <li class="menu-item menu-item-search">
         <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
         </a>
@@ -167,7 +167,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%A8%E5%B1%80%E8%B7%A8%E5%9F%9F%EF%BC%88CORS%EF%BC%89"><span class="nav-number">1.</span> <span class="nav-text">全局跨域（CORS）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0"><span class="nav-number">1.1.</span> <span class="nav-text">实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E7%A4%BA%E4%BE%8B"><span class="nav-number">1.2.</span> <span class="nav-text">配置示例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%AA%8C%E8%AF%81"><span class="nav-number">1.3.</span> <span class="nav-text">验证</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E6%95%B0%E6%A0%A1%E9%AA%8C"><span class="nav-number">2.</span> <span class="nav-text">参数校验</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BE%9D%E8%B5%96"><span class="nav-number">2.1.</span> <span class="nav-text">依赖</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E7%A7%8D%E5%B8%B8%E8%A7%81%E7%94%A8%E6%B3%95"><span class="nav-number">2.2.</span> <span class="nav-text">三种常见用法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%B1%E8%B4%A5%E5%93%8D%E5%BA%94"><span class="nav-number">2.3.</span> <span class="nav-text">失败响应</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%AA%8C%E8%AF%81-1"><span class="nav-number">2.4.</span> <span class="nav-text">验证</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%9B%B8%E5%85%B3%E6%96%87%E4%BB%B6"><span class="nav-number">3.</span> <span class="nav-text">相关文件</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#CORS-%E9%A2%84%E6%A3%80%E6%B5%81%E7%A8%8B"><span class="nav-number">1.</span> <span class="nav-text">CORS 预检流程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%A8%E5%B1%80%E8%B7%A8%E5%9F%9F%EF%BC%88CORS%EF%BC%89"><span class="nav-number">2.</span> <span class="nav-text">全局跨域（CORS）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0"><span class="nav-number">2.1.</span> <span class="nav-text">实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E7%A4%BA%E4%BE%8B"><span class="nav-number">2.2.</span> <span class="nav-text">配置示例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%AA%8C%E8%AF%81"><span class="nav-number">2.3.</span> <span class="nav-text">验证</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E6%95%B0%E6%A0%A1%E9%AA%8C"><span class="nav-number">3.</span> <span class="nav-text">参数校验</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BE%9D%E8%B5%96"><span class="nav-number">3.1.</span> <span class="nav-text">依赖</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E7%A7%8D%E5%B8%B8%E8%A7%81%E7%94%A8%E6%B3%95"><span class="nav-number">3.2.</span> <span class="nav-text">三种常见用法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%B1%E8%B4%A5%E5%93%8D%E5%BA%94"><span class="nav-number">3.3.</span> <span class="nav-text">失败响应</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%AA%8C%E8%AF%81-1"><span class="nav-number">3.4.</span> <span class="nav-text">验证</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%9B%B8%E5%85%B3%E6%96%87%E4%BB%B6"><span class="nav-number">4.</span> <span class="nav-text">相关文件</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -265,7 +265,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-31 22:39:39" itemprop="dateModified" datetime="2026-05-31T22:39:39+08:00">2026-05-31</time>
+      <time title="修改时间：2026-05-31 22:46:34" itemprop="dateModified" datetime="2026-05-31T22:46:34+08:00">2026-05-31</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -284,7 +284,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>293</span>
+      <span>354</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -301,7 +301,26 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><h1 id="全局跨域（CORS）"><a href="#全局跨域（CORS）" class="headerlink" title="全局跨域（CORS）"></a>全局跨域（CORS）</h1><h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><ul>
+    <div class="post-body" itemprop="articleBody"><h1 id="CORS-预检流程"><a href="#CORS-预检流程" class="headerlink" title="CORS 预检流程"></a>CORS 预检流程</h1><pre>
+<code class="mermaid">
+
+sequenceDiagram
+  participant B as 浏览器
+  participant S as Spring MVC
+
+  alt 简单请求
+    B-&gt;&gt;S: GET&#x2F;POST + Origin
+    S--&gt;&gt;B: Access-Control-Allow-Origin
+  else 预检 OPTIONS
+    B-&gt;&gt;S: OPTIONS
+    S--&gt;&gt;B: Allow-Methods &#x2F; Allow-Headers
+    B-&gt;&gt;S: 实际请求
+    S--&gt;&gt;B: 业务响应
+  end
+</code>
+</pre>
+
+<h1 id="全局跨域（CORS）"><a href="#全局跨域（CORS）" class="headerlink" title="全局跨域（CORS）"></a>全局跨域（CORS）</h1><h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><ul>
 <li><code>AppCorsProperties</code>：<code>app.cors.*</code></li>
 <li><code>WebMvcConfiguration</code>：实现 <code>WebMvcConfigurer#addCorsMappings</code></li>
 </ul>
@@ -383,13 +402,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">181k</span>
+    <span title="站点总字数">184k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">10:03</span>
+    <span title="站点阅读时长">10:13</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

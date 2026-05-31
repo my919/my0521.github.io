@@ -20,15 +20,15 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
 
-    <meta name="description" content="Modbus RTU 是 Modbus 协议在二进制串行链路上的实现，最常见物理层为 RS485：主站轮询、从站地址、功能码、CRC16 结尾。下面从「ADU 帧 → 常用功能码 → 时序与 3.5 字符 → 与 ASCII&#x2F;TCP 对照 → 调试工具」顺序写清楚。  一、RTU 帧结构1[从站地址 1B][功能码 1B][数据 N][CRC16 2B 低字节在前]   地址 0：广播（">
+    <meta name="description" content="Modbus RTU 是 Modbus 协议在二进制串行链路上的实现，最常见物理层为 RS485：主站轮询、从站地址、功能码、CRC16 结尾。下面从「ADU 帧 → 常用功能码 → 时序与 3.5 字符 → 与 ASCII&#x2F;TCP 对照 → 调试工具」顺序写清楚。 主从轮询   sequenceDiagram   participant M as 主站 PLC   participan">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Modbus RTU">
 <meta property="og:url" content="http://example.com/2026/05/01/Embedded/ModbusRTU/index.html">
 <meta property="og:site_name" content="my">
-<meta property="og:description" content="Modbus RTU 是 Modbus 协议在二进制串行链路上的实现，最常见物理层为 RS485：主站轮询、从站地址、功能码、CRC16 结尾。下面从「ADU 帧 → 常用功能码 → 时序与 3.5 字符 → 与 ASCII&#x2F;TCP 对照 → 调试工具」顺序写清楚。  一、RTU 帧结构1[从站地址 1B][功能码 1B][数据 N][CRC16 2B 低字节在前]   地址 0：广播（">
+<meta property="og:description" content="Modbus RTU 是 Modbus 协议在二进制串行链路上的实现，最常见物理层为 RS485：主站轮询、从站地址、功能码、CRC16 结尾。下面从「ADU 帧 → 常用功能码 → 时序与 3.5 字符 → 与 ASCII&#x2F;TCP 对照 → 调试工具」顺序写清楚。 主从轮询   sequenceDiagram   participant M as 主站 PLC   participan">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-05-01T05:07:53.000Z">
-<meta property="article:modified_time" content="2026-05-31T04:18:27.000Z">
+<meta property="article:modified_time" content="2026-05-31T14:49:47.008Z">
 <meta property="article:author" content="miracle">
 <meta property="article:tag" content="Modbus">
 <meta name="twitter:card" content="summary">
@@ -116,7 +116,7 @@
 
 
 <nav class="site-nav">
-  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-service"><a href="/service/" rel="section"><i class="fa fa-server fa-fw"></i>服务</a></li><li class="menu-item menu-item-project"><a href="/project/" rel="section"><i class="fa fa-folder-open fa-fw"></i>项目</a></li>
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-service"><a href="/service/" rel="section"><i class="fa fa-server fa-fw"></i>服务</a></li><li class="menu-item menu-item-tool"><a href="/tool/" rel="section"><i class="fa fa-wrench fa-fw"></i>工具</a></li><li class="menu-item menu-item-project"><a href="/project/" rel="section"><i class="fa fa-folder-open fa-fw"></i>项目</a></li>
       <li class="menu-item menu-item-search">
         <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
         </a>
@@ -167,7 +167,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81RTU-%E5%B8%A7%E7%BB%93%E6%9E%84"><span class="nav-number">1.</span> <span class="nav-text">一、RTU 帧结构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E5%B8%B8%E7%94%A8%E5%8A%9F%E8%83%BD%E7%A0%81"><span class="nav-number">2.</span> <span class="nav-text">二、常用功能码</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E6%97%B6%E5%BA%8F%EF%BC%88RTU-%E7%89%B9%E6%9C%89%EF%BC%89"><span class="nav-number">3.</span> <span class="nav-text">三、时序（RTU 特有）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E4%B8%8E%E5%85%B6%E5%AE%83-Modbus"><span class="nav-number">4.</span> <span class="nav-text">四、与其它 Modbus</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E8%B0%83%E8%AF%95"><span class="nav-number">5.</span> <span class="nav-text">五、调试</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%BB%E4%BB%8E%E8%BD%AE%E8%AF%A2"><span class="nav-number">1.</span> <span class="nav-text">主从轮询</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81RTU-%E5%B8%A7%E7%BB%93%E6%9E%84"><span class="nav-number">2.</span> <span class="nav-text">一、RTU 帧结构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E5%B8%B8%E7%94%A8%E5%8A%9F%E8%83%BD%E7%A0%81"><span class="nav-number">3.</span> <span class="nav-text">二、常用功能码</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E6%97%B6%E5%BA%8F%EF%BC%88RTU-%E7%89%B9%E6%9C%89%EF%BC%89"><span class="nav-number">4.</span> <span class="nav-text">三、时序（RTU 特有）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E4%B8%8E%E5%85%B6%E5%AE%83-Modbus"><span class="nav-number">5.</span> <span class="nav-text">四、与其它 Modbus</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E8%B0%83%E8%AF%95"><span class="nav-number">6.</span> <span class="nav-text">五、调试</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -265,7 +265,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-31 12:18:27" itemprop="dateModified" datetime="2026-05-31T12:18:27+08:00">2026-05-31</time>
+      <time title="修改时间：2026-05-31 22:49:47" itemprop="dateModified" datetime="2026-05-31T22:49:47+08:00">2026-05-31</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -284,7 +284,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>391</span>
+      <span>438</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -302,6 +302,19 @@
     
     
     <div class="post-body" itemprop="articleBody"><p><strong>Modbus RTU</strong> 是 <strong>Modbus</strong> 协议在<strong>二进制串行链路</strong>上的实现，最常见物理层为 <a href="/2026/05/01/RS485/">RS485</a>：<strong>主站轮询</strong>、<strong>从站地址</strong>、<strong>功能码</strong>、<strong>CRC16</strong> 结尾。下面从「<strong>ADU 帧</strong> → <strong>常用功能码</strong> → <strong>时序与 3.5 字符</strong> → <strong>与 ASCII&#x2F;TCP 对照</strong> → <strong>调试工具</strong>」顺序写清楚。</p>
+<h1 id="主从轮询"><a href="#主从轮询" class="headerlink" title="主从轮询"></a>主从轮询</h1><pre>
+<code class="mermaid">
+
+sequenceDiagram
+  participant M as 主站 PLC
+  participant S as 从站 地址 1
+  M-&gt;&gt;S: 读保持寄存器 FC03
+  S--&gt;&gt;M: 数据 + CRC
+  M-&gt;&gt;S: 写单个寄存器 FC06
+  S--&gt;&gt;M: ACK
+</code>
+</pre>
+
 <hr>
 <h1 id="一、RTU-帧结构"><a href="#一、RTU-帧结构" class="headerlink" title="一、RTU 帧结构"></a>一、RTU 帧结构</h1><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[从站地址 1B][功能码 1B][数据 N][CRC16 2B 低字节在前]</span><br></pre></td></tr></table></figure>
 
@@ -439,13 +452,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">181k</span>
+    <span title="站点总字数">184k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">10:03</span>
+    <span title="站点阅读时长">10:13</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

@@ -28,7 +28,7 @@
 <meta property="og:description" content="WebSocket（RFC 6455）在单条 TCP 连接上提供全双工、低帧头的持久信道：先通过 HTTP Upgrade 完成握手，再切换到二进制帧协议。下面从「作用与模型 → 握手与 Sec-WebSocket-Accept 原理 → 帧类型 → 关闭与 Ping → Python websockets 示例 → 安全注意」顺序写清楚；加密传输使用 wss:&#x2F;&#x2F;（依赖 HTTPS 常见部署经验">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-05-01T04:50:03.000Z">
-<meta property="article:modified_time" content="2026-05-04T14:07:21.297Z">
+<meta property="article:modified_time" content="2026-05-31T14:49:09.949Z">
 <meta property="article:author" content="miracle">
 <meta property="article:tag" content="Protocol">
 <meta property="article:tag" content="WebSocket">
@@ -117,7 +117,7 @@
 
 
 <nav class="site-nav">
-  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-service"><a href="/service/" rel="section"><i class="fa fa-server fa-fw"></i>服务</a></li><li class="menu-item menu-item-project"><a href="/project/" rel="section"><i class="fa fa-folder-open fa-fw"></i>项目</a></li>
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-service"><a href="/service/" rel="section"><i class="fa fa-server fa-fw"></i>服务</a></li><li class="menu-item menu-item-tool"><a href="/tool/" rel="section"><i class="fa fa-wrench fa-fw"></i>工具</a></li><li class="menu-item menu-item-project"><a href="/project/" rel="section"><i class="fa fa-folder-open fa-fw"></i>项目</a></li>
       <li class="menu-item menu-item-search">
         <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
         </a>
@@ -168,7 +168,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E4%BD%9C%E7%94%A8%E4%B8%8E%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.</span> <span class="nav-text">一、作用与模型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E6%8F%A1%E6%89%8B%E5%8E%9F%E7%90%86%EF%BC%88%E4%B8%8E-HTTP-%E7%9A%84%E5%85%B3%E7%B3%BB%EF%BC%89"><span class="nav-number">2.</span> <span class="nav-text">二、握手原理（与 HTTP 的关系）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E8%AF%B7%E6%B1%82%E5%85%B3%E9%94%AE%E9%A6%96%E9%83%A8"><span class="nav-number">2.1.</span> <span class="nav-text">1. 请求关键首部</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E5%93%8D%E5%BA%94"><span class="nav-number">2.2.</span> <span class="nav-text">2. 响应</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E5%B8%A7%EF%BC%88%E5%8E%9F%E7%90%86%E8%A6%81%E7%82%B9%EF%BC%89"><span class="nav-number">3.</span> <span class="nav-text">三、帧（原理要点）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E3%80%81Python-%E7%A4%BA%E4%BE%8B%EF%BC%88%E9%9C%80-pip-install-websockets%EF%BC%89"><span class="nav-number">4.</span> <span class="nav-text">四、Python 示例（需 pip install websockets）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%8D%E5%8A%A1%E7%AB%AF-ws-server-py"><span class="nav-number">4.1.</span> <span class="nav-text">服务端 ws_server.py</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%A2%E6%88%B7%E7%AB%AF-ws-client-py"><span class="nav-number">4.2.</span> <span class="nav-text">客户端 ws_client.py</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E7%94%A8-curl-%E8%A7%82%E5%AF%9F%E6%8F%A1%E6%89%8B%EF%BC%88%E8%8B%A5%E6%9C%8D%E5%8A%A1%E7%AB%AF%E6%94%AF%E6%8C%81%EF%BC%89"><span class="nav-number">5.</span> <span class="nav-text">五、用 curl 观察握手（若服务端支持）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E5%AE%89%E5%85%A8%E6%B3%A8%E6%84%8F"><span class="nav-number">6.</span> <span class="nav-text">六、安全注意</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%83%E3%80%81%E5%B0%8F%E7%BB%93"><span class="nav-number">7.</span> <span class="nav-text">七、小结</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8F%A1%E6%89%8B%E4%B8%8E%E5%85%A8%E5%8F%8C%E5%B7%A5"><span class="nav-number">1.</span> <span class="nav-text">握手与全双工</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E4%BD%9C%E7%94%A8%E4%B8%8E%E6%A8%A1%E5%9E%8B"><span class="nav-number">2.</span> <span class="nav-text">一、作用与模型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E6%8F%A1%E6%89%8B%E5%8E%9F%E7%90%86%EF%BC%88%E4%B8%8E-HTTP-%E7%9A%84%E5%85%B3%E7%B3%BB%EF%BC%89"><span class="nav-number">3.</span> <span class="nav-text">二、握手原理（与 HTTP 的关系）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E8%AF%B7%E6%B1%82%E5%85%B3%E9%94%AE%E9%A6%96%E9%83%A8"><span class="nav-number">3.1.</span> <span class="nav-text">1. 请求关键首部</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E5%93%8D%E5%BA%94"><span class="nav-number">3.2.</span> <span class="nav-text">2. 响应</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E5%B8%A7%EF%BC%88%E5%8E%9F%E7%90%86%E8%A6%81%E7%82%B9%EF%BC%89"><span class="nav-number">4.</span> <span class="nav-text">三、帧（原理要点）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E3%80%81Python-%E7%A4%BA%E4%BE%8B%EF%BC%88%E9%9C%80-pip-install-websockets%EF%BC%89"><span class="nav-number">5.</span> <span class="nav-text">四、Python 示例（需 pip install websockets）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%8D%E5%8A%A1%E7%AB%AF-ws-server-py"><span class="nav-number">5.1.</span> <span class="nav-text">服务端 ws_server.py</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%A2%E6%88%B7%E7%AB%AF-ws-client-py"><span class="nav-number">5.2.</span> <span class="nav-text">客户端 ws_client.py</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E7%94%A8-curl-%E8%A7%82%E5%AF%9F%E6%8F%A1%E6%89%8B%EF%BC%88%E8%8B%A5%E6%9C%8D%E5%8A%A1%E7%AB%AF%E6%94%AF%E6%8C%81%EF%BC%89"><span class="nav-number">6.</span> <span class="nav-text">五、用 curl 观察握手（若服务端支持）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E5%AE%89%E5%85%A8%E6%B3%A8%E6%84%8F"><span class="nav-number">7.</span> <span class="nav-text">六、安全注意</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%83%E3%80%81%E5%B0%8F%E7%BB%93"><span class="nav-number">8.</span> <span class="nav-text">七、小结</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -266,7 +266,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-04 22:07:21" itemprop="dateModified" datetime="2026-05-04T22:07:21+08:00">2026-05-04</time>
+      <time title="修改时间：2026-05-31 22:49:09" itemprop="dateModified" datetime="2026-05-31T22:49:09+08:00">2026-05-31</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -285,7 +285,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>524</span>
+      <span>566</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -303,6 +303,19 @@
     
     
     <div class="post-body" itemprop="articleBody"><p><strong>WebSocket</strong>（<strong>RFC 6455</strong>）在单条 <a href="/2026/05/01/TCP/">TCP</a> 连接上提供<strong>全双工</strong>、低帧头的持久信道：先通过 <a href="/2026/05/01/HTTP/">HTTP</a> <strong>Upgrade</strong> 完成握手，再切换到<strong>二进制帧协议</strong>。下面从「<strong>作用与模型</strong> → <strong>握手与 Sec-WebSocket-Accept 原理</strong> → <strong>帧类型</strong> → <strong>关闭与 Ping</strong> → <strong>Python <code>websockets</code> 示例</strong> → <strong>安全注意</strong>」顺序写清楚；加密传输使用 <strong><code>wss://</code></strong>（依赖 <a href="/2026/05/01/HTTPS/">HTTPS</a> 常见部署经验）。</p>
+<h1 id="握手与全双工"><a href="#握手与全双工" class="headerlink" title="握手与全双工"></a>握手与全双工</h1><pre>
+<code class="mermaid">
+
+sequenceDiagram
+  participant C as Client
+  participant S as Server
+  C-&gt;&gt;S: HTTP Upgrade websocket
+  S--&gt;&gt;C: 101 Switching Protocols
+  C-&gt;&gt;S: WebSocket 帧 文本&#x2F;二进制
+  S--&gt;&gt;C: WebSocket 帧 推送
+</code>
+</pre>
+
 <hr>
 <h1 id="一、作用与模型"><a href="#一、作用与模型" class="headerlink" title="一、作用与模型"></a>一、作用与模型</h1><ul>
 <li><strong>服务器推送</strong>：行情、协作编辑、游戏状态无需客户端轮询。  </li>
@@ -436,13 +449,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">181k</span>
+    <span title="站点总字数">184k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">10:03</span>
+    <span title="站点阅读时长">10:13</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

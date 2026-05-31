@@ -111,7 +111,7 @@
 
 
 <nav class="site-nav">
-  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-service"><a href="/service/" rel="section"><i class="fa fa-server fa-fw"></i>服务</a></li><li class="menu-item menu-item-project"><a href="/project/" rel="section"><i class="fa fa-folder-open fa-fw"></i>项目</a></li>
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-service"><a href="/service/" rel="section"><i class="fa fa-server fa-fw"></i>服务</a></li><li class="menu-item menu-item-tool"><a href="/tool/" rel="section"><i class="fa fa-wrench fa-fw"></i>工具</a></li><li class="menu-item menu-item-project"><a href="/project/" rel="section"><i class="fa fa-folder-open fa-fw"></i>项目</a></li>
       <li class="menu-item menu-item-search">
         <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
         </a>
@@ -258,7 +258,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-31 21:52:28" itemprop="dateModified" datetime="2026-05-31T21:52:28+08:00">2026-05-31</time>
+      <time title="修改时间：2026-05-31 22:46:39" itemprop="dateModified" datetime="2026-05-31T22:46:39+08:00">2026-05-31</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -348,6 +348,19 @@
 </tr>
 </tbody></table>
 <p>原则：<strong>横切、重复、可配置</strong> → 注解 + AOP；<strong>核心领域规则</strong> → 仍写在 Service，AOP 只做入口守卫或记录。</p>
+<h1 id="AOP-调用链"><a href="#AOP-调用链" class="headerlink" title="AOP 调用链"></a>AOP 调用链</h1><pre>
+<code class="mermaid">
+
+flowchart TD
+  Client[HTTP 请求] --&gt; Proxy[Spring CGLIB 代理]
+  Proxy --&gt; A1[RequestLog &#x2F; BizCheck]
+  A1 --&gt; A2[RepeatSubmit &#x2F; Idempotent]
+  A2 --&gt; A3[OperLog]
+  A3 --&gt; Target[Controller 方法]
+  Target --&gt; Result[Result JSON]
+</code>
+</pre>
+
 <hr>
 <h1 id="二、依赖"><a href="#二、依赖" class="headerlink" title="二、依赖"></a>二、依赖</h1><figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">implementation <span class="string">&#x27;org.springframework.boot:spring-boot-starter-aspectj&#x27;</span></span><br></pre></td></tr></table></figure>
 
@@ -516,7 +529,7 @@
 
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># scenes.order-refund=false 时应返回 403</span></span><br><span class="line">curl -i http://localhost:8082/test/biz-check</span><br></pre></td></tr></table></figure>
 
-<p>期望 JSON：<code>{&quot;code&quot;:403,&quot;msg&quot;:&quot;退款场景已关闭&quot;,...}</code>。</p>
+<p>期望 JSON：<code>&#123;&quot;code&quot;:403,&quot;msg&quot;:&quot;退款场景已关闭&quot;,...&#125;</code>。</p>
 <hr>
 <h1 id="九、扩展清单（可按同一模板添加）"><a href="#九、扩展清单（可按同一模板添加）" class="headerlink" title="九、扩展清单（可按同一模板添加）"></a>九、扩展清单（可按同一模板添加）</h1><table>
 <thead>
@@ -1090,7 +1103,7 @@ flowchart LR
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-31 22:39:53" itemprop="dateModified" datetime="2026-05-31T22:39:53+08:00">2026-05-31</time>
+      <time title="修改时间：2026-05-31 22:46:43" itemprop="dateModified" datetime="2026-05-31T22:46:43+08:00">2026-05-31</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -1109,7 +1122,7 @@ flowchart LR
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>1.8k</span>
+      <span>1.9k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -1151,6 +1164,25 @@ flowchart LR
 </tr>
 </tbody></table>
 <p>应用线程 ≠ 数据库连接：Web 线程可在等待 IO 时释放连接回池，供其他请求使用。</p>
+<h1 id="借还连接流程"><a href="#借还连接流程" class="headerlink" title="借还连接流程"></a>借还连接流程</h1><pre>
+<code class="mermaid">
+
+sequenceDiagram
+  participant T as 业务线程
+  participant P as HikariCP 池
+  participant DB as MySQL&#x2F;PostgreSQL
+
+  T-&gt;&gt;P: getConnection
+  alt 池中有空闲连接
+    P--&gt;&gt;T: 返回 Connection
+  else 池满
+    P--&gt;&gt;T: 等待或 timeout
+  end
+  T-&gt;&gt;DB: SQL
+  T-&gt;&gt;P: close 归还
+</code>
+</pre>
+
 <hr>
 <h1 id="二、HikariCP-与-Druid-对比"><a href="#二、HikariCP-与-Druid-对比" class="headerlink" title="二、HikariCP 与 Druid 对比"></a>二、HikariCP 与 Druid 对比</h1><h2 id="1-定位"><a href="#1-定位" class="headerlink" title="1. 定位"></a>1. 定位</h2><table>
 <thead>
@@ -2783,7 +2815,7 @@ flowchart TB
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-31 22:39:52" itemprop="dateModified" datetime="2026-05-31T22:39:52+08:00">2026-05-31</time>
+      <time title="修改时间：2026-05-31 22:46:55" itemprop="dateModified" datetime="2026-05-31T22:46:55+08:00">2026-05-31</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -2802,7 +2834,7 @@ flowchart TB
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>770</span>
+      <span>811</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -2935,6 +2967,19 @@ flowchart LR
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 生产 timeout 示例（概念）</span></span><br><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">cloud:</span></span><br><span class="line">    <span class="attr">gateway:</span></span><br><span class="line">      <span class="attr">server:</span></span><br><span class="line">        <span class="attr">webflux:</span></span><br><span class="line">          <span class="attr">httpclient:</span></span><br><span class="line">            <span class="attr">connect-timeout:</span> <span class="number">3000</span></span><br><span class="line">            <span class="attr">response-timeout:</span> <span class="string">30s</span></span><br><span class="line">          <span class="attr">discovery:</span></span><br><span class="line">            <span class="attr">locator:</span></span><br><span class="line">              <span class="attr">enabled:</span> <span class="literal">false</span>   <span class="comment"># 生产建议显式 routes</span></span><br></pre></td></tr></table></figure>
 
 <p>环境变量与 Nacos import 见 <a href="/2026/05/17/springcloud-profiles/">Spring Cloud 多环境配置与 Nacos</a>。</p>
+<h1 id="生产请求路径"><a href="#生产请求路径" class="headerlink" title="生产请求路径"></a>生产请求路径</h1><pre>
+<code class="mermaid">
+
+flowchart LR
+  C[Client] --&gt; LB[Caddy&#x2F;HAProxy]
+  LB --&gt; GW[Gateway :9000]
+  GW --&gt; S[Sentinel 规则]
+  GW --&gt;|lb:&#x2F;&#x2F;| O[cloud-order]
+  GW --&gt;|lb:&#x2F;&#x2F;| T[cloud-stock]
+  O --&gt; N[(Nacos 解析实例)]
+</code>
+</pre>
+
 <h1 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h1><ul>
 <li><a target="_blank" rel="noopener external nofollow noreferrer" href="https://docs.spring.io/spring-cloud-gateway/reference/">Spring Cloud Gateway 参考文档</a></li>
 <li><a target="_blank" rel="noopener external nofollow noreferrer" href="https://docs.spring.io/spring-cloud-commons/reference/spring-cloud-commons/loadbalancer.html">Spring Cloud LoadBalancer</a></li>
@@ -2980,13 +3025,13 @@ flowchart LR
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">181k</span>
+    <span title="站点总字数">184k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">10:03</span>
+    <span title="站点阅读时长">10:13</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

@@ -20,15 +20,15 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
 
-    <meta name="description" content="MongoDB 是面向文档的 NoSQL 数据库：数据以 BSON 文档形式存储，模式灵活，适合半结构化数据、快速迭代与水平扩展。下面从「定位与概念 → 核心数据模型 → 常用 CRUD → 索引与聚合 → 复制集与分片概览 → 与容器部署的关系」顺序写清楚。  一、定位与概念1. 文档模型 Database → Collection → Document（类似关系库中的库 → 表 → 行，但文档">
+    <meta name="description" content="MongoDB 是面向文档的 NoSQL 数据库：数据以 BSON 文档形式存储，模式灵活，适合半结构化数据、快速迭代与水平扩展。下面从「定位与概念 → 核心数据模型 → 常用 CRUD → 索引与聚合 → 复制集与分片概览 → 与容器部署的关系」顺序写清楚。 复制集（Replica Set）   flowchart LR   App[应用] --&gt; P[(Primary)]   P --&amp;">
 <meta property="og:type" content="article">
 <meta property="og:title" content="MongoDB">
 <meta property="og:url" content="http://example.com/2026/05/01/MongoDB/MongoDB/index.html">
 <meta property="og:site_name" content="my">
-<meta property="og:description" content="MongoDB 是面向文档的 NoSQL 数据库：数据以 BSON 文档形式存储，模式灵活，适合半结构化数据、快速迭代与水平扩展。下面从「定位与概念 → 核心数据模型 → 常用 CRUD → 索引与聚合 → 复制集与分片概览 → 与容器部署的关系」顺序写清楚。  一、定位与概念1. 文档模型 Database → Collection → Document（类似关系库中的库 → 表 → 行，但文档">
+<meta property="og:description" content="MongoDB 是面向文档的 NoSQL 数据库：数据以 BSON 文档形式存储，模式灵活，适合半结构化数据、快速迭代与水平扩展。下面从「定位与概念 → 核心数据模型 → 常用 CRUD → 索引与聚合 → 复制集与分片概览 → 与容器部署的关系」顺序写清楚。 复制集（Replica Set）   flowchart LR   App[应用] --&gt; P[(Primary)]   P --&amp;">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-05-01T04:25:01.000Z">
-<meta property="article:modified_time" content="2026-05-31T04:16:09.877Z">
+<meta property="article:modified_time" content="2026-05-31T14:49:11.635Z">
 <meta property="article:author" content="miracle">
 <meta property="article:tag" content="MongoDB">
 <meta name="twitter:card" content="summary">
@@ -116,7 +116,7 @@
 
 
 <nav class="site-nav">
-  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-service"><a href="/service/" rel="section"><i class="fa fa-server fa-fw"></i>服务</a></li><li class="menu-item menu-item-project"><a href="/project/" rel="section"><i class="fa fa-folder-open fa-fw"></i>项目</a></li>
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-service"><a href="/service/" rel="section"><i class="fa fa-server fa-fw"></i>服务</a></li><li class="menu-item menu-item-tool"><a href="/tool/" rel="section"><i class="fa fa-wrench fa-fw"></i>工具</a></li><li class="menu-item menu-item-project"><a href="/project/" rel="section"><i class="fa fa-folder-open fa-fw"></i>项目</a></li>
       <li class="menu-item menu-item-search">
         <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
         </a>
@@ -167,7 +167,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E5%AE%9A%E4%BD%8D%E4%B8%8E%E6%A6%82%E5%BF%B5"><span class="nav-number">1.</span> <span class="nav-text">一、定位与概念</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E6%96%87%E6%A1%A3%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.1.</span> <span class="nav-text">1. 文档模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E9%80%82%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-number">1.2.</span> <span class="nav-text">2. 适用场景</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E5%AE%89%E8%A3%85%E4%B8%8E%E8%BF%9E%E6%8E%A5"><span class="nav-number">2.</span> <span class="nav-text">二、安装与连接</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E5%AE%98%E6%96%B9%E5%B7%A5%E5%85%B7"><span class="nav-number">2.1.</span> <span class="nav-text">1. 官方工具</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E5%BF%AB%E9%80%9F%E8%BF%9E%E6%8E%A5"><span class="nav-number">2.2.</span> <span class="nav-text">2. 快速连接</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E5%B8%B8%E7%94%A8-CRUD%EF%BC%88mongosh-%E7%A4%BA%E4%BE%8B%EF%BC%89"><span class="nav-number">3.</span> <span class="nav-text">三、常用 CRUD（mongosh 示例）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E7%B4%A2%E5%BC%95%E4%B8%8E%E8%81%9A%E5%90%88"><span class="nav-number">4.</span> <span class="nav-text">四、索引与聚合</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E7%B4%A2%E5%BC%95"><span class="nav-number">4.1.</span> <span class="nav-text">1. 索引</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E8%81%9A%E5%90%88%E7%AE%A1%E9%81%93%EF%BC%88%E7%AE%80%E5%8C%96%EF%BC%89"><span class="nav-number">4.2.</span> <span class="nav-text">2. 聚合管道（简化）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E9%AB%98%E5%8F%AF%E7%94%A8%E4%B8%8E%E6%89%A9%E5%B1%95%EF%BC%88%E6%A6%82%E5%BF%B5%EF%BC%89"><span class="nav-number">5.</span> <span class="nav-text">五、高可用与扩展（概念）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E7%94%9F%E4%BA%A7%E6%B3%A8%E6%84%8F"><span class="nav-number">6.</span> <span class="nav-text">六、生产注意</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%A4%8D%E5%88%B6%E9%9B%86%EF%BC%88Replica-Set%EF%BC%89"><span class="nav-number">1.</span> <span class="nav-text">复制集（Replica Set）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E5%AE%9A%E4%BD%8D%E4%B8%8E%E6%A6%82%E5%BF%B5"><span class="nav-number">2.</span> <span class="nav-text">一、定位与概念</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E6%96%87%E6%A1%A3%E6%A8%A1%E5%9E%8B"><span class="nav-number">2.1.</span> <span class="nav-text">1. 文档模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E9%80%82%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-number">2.2.</span> <span class="nav-text">2. 适用场景</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E5%AE%89%E8%A3%85%E4%B8%8E%E8%BF%9E%E6%8E%A5"><span class="nav-number">3.</span> <span class="nav-text">二、安装与连接</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E5%AE%98%E6%96%B9%E5%B7%A5%E5%85%B7"><span class="nav-number">3.1.</span> <span class="nav-text">1. 官方工具</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E5%BF%AB%E9%80%9F%E8%BF%9E%E6%8E%A5"><span class="nav-number">3.2.</span> <span class="nav-text">2. 快速连接</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E5%B8%B8%E7%94%A8-CRUD%EF%BC%88mongosh-%E7%A4%BA%E4%BE%8B%EF%BC%89"><span class="nav-number">4.</span> <span class="nav-text">三、常用 CRUD（mongosh 示例）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E7%B4%A2%E5%BC%95%E4%B8%8E%E8%81%9A%E5%90%88"><span class="nav-number">5.</span> <span class="nav-text">四、索引与聚合</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E7%B4%A2%E5%BC%95"><span class="nav-number">5.1.</span> <span class="nav-text">1. 索引</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E8%81%9A%E5%90%88%E7%AE%A1%E9%81%93%EF%BC%88%E7%AE%80%E5%8C%96%EF%BC%89"><span class="nav-number">5.2.</span> <span class="nav-text">2. 聚合管道（简化）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E9%AB%98%E5%8F%AF%E7%94%A8%E4%B8%8E%E6%89%A9%E5%B1%95%EF%BC%88%E6%A6%82%E5%BF%B5%EF%BC%89"><span class="nav-number">6.</span> <span class="nav-text">五、高可用与扩展（概念）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E7%94%9F%E4%BA%A7%E6%B3%A8%E6%84%8F"><span class="nav-number">7.</span> <span class="nav-text">六、生产注意</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -265,7 +265,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-31 12:16:09" itemprop="dateModified" datetime="2026-05-31T12:16:09+08:00">2026-05-31</time>
+      <time title="修改时间：2026-05-31 22:49:11" itemprop="dateModified" datetime="2026-05-31T22:49:11+08:00">2026-05-31</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -284,7 +284,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>658</span>
+      <span>686</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -302,6 +302,17 @@
     
     
     <div class="post-body" itemprop="articleBody"><p><strong>MongoDB</strong> 是面向文档的 <strong>NoSQL</strong> 数据库：数据以 <strong>BSON</strong> 文档形式存储，模式灵活，适合半结构化数据、快速迭代与水平扩展。下面从「<strong>定位与概念</strong> → <strong>核心数据模型</strong> → <strong>常用 CRUD</strong> → <strong>索引与聚合</strong> → <strong>复制集与分片概览</strong> → <strong>与容器部署的关系</strong>」顺序写清楚。</p>
+<h1 id="复制集（Replica-Set）"><a href="#复制集（Replica-Set）" class="headerlink" title="复制集（Replica Set）"></a>复制集（Replica Set）</h1><pre>
+<code class="mermaid">
+
+flowchart LR
+  App[应用] --&gt; P[(Primary)]
+  P --&gt;|oplog 复制| S1[(Secondary)]
+  P --&gt; S2[(Secondary)]
+  S1 &amp; S2 -.-&gt;|选举| P
+</code>
+</pre>
+
 <hr>
 <h1 id="一、定位与概念"><a href="#一、定位与概念" class="headerlink" title="一、定位与概念"></a>一、定位与概念</h1><h2 id="1-文档模型"><a href="#1-文档模型" class="headerlink" title="1. 文档模型"></a>1. 文档模型</h2><ul>
 <li><strong>Database</strong> → <strong>Collection</strong> → <strong>Document</strong>（类似关系库中的库 → 表 → 行，但文档是 <strong>JSON&#x2F;BSON</strong> 结构，字段可嵌套、可数组）。  </li>
@@ -354,7 +365,7 @@
 
 <ul>
 <li><strong>单字段 &#x2F; 复合索引</strong>：查询条件与排序字段应能<strong>命中索引</strong>。  </li>
-<li><strong>唯一索引</strong>：<strong><code>createIndex({ email: 1 }, { unique: true })</code></strong></li>
+<li><strong>唯一索引</strong>：<strong><code>createIndex(&#123; email: 1 &#125;, &#123; unique: true &#125;)</code></strong></li>
 </ul>
 <h2 id="2-聚合管道（简化）"><a href="#2-聚合管道（简化）" class="headerlink" title="2. 聚合管道（简化）"></a>2. 聚合管道（简化）</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">db.<span class="property">orders</span>.<span class="title function_">aggregate</span>([</span><br><span class="line">  &#123; <span class="attr">$match</span>: &#123; <span class="attr">status</span>: <span class="string">&quot;paid&quot;</span> &#125; &#125;,</span><br><span class="line">  &#123; <span class="attr">$group</span>: &#123; <span class="attr">_id</span>: <span class="string">&quot;$userId&quot;</span>, <span class="attr">total</span>: &#123; <span class="attr">$sum</span>: <span class="string">&quot;$amount&quot;</span> &#125; &#125; &#125;,</span><br><span class="line">  &#123; <span class="attr">$sort</span>: &#123; <span class="attr">total</span>: -<span class="number">1</span> &#125; &#125;</span><br><span class="line">])</span><br></pre></td></tr></table></figure>
 
@@ -425,13 +436,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">181k</span>
+    <span title="站点总字数">184k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">10:03</span>
+    <span title="站点阅读时长">10:13</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

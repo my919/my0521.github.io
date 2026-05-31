@@ -111,7 +111,7 @@
 
 
 <nav class="site-nav">
-  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-service"><a href="/service/" rel="section"><i class="fa fa-server fa-fw"></i>服务</a></li><li class="menu-item menu-item-project"><a href="/project/" rel="section"><i class="fa fa-folder-open fa-fw"></i>项目</a></li>
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-service"><a href="/service/" rel="section"><i class="fa fa-server fa-fw"></i>服务</a></li><li class="menu-item menu-item-tool"><a href="/tool/" rel="section"><i class="fa fa-wrench fa-fw"></i>工具</a></li><li class="menu-item menu-item-project"><a href="/project/" rel="section"><i class="fa fa-folder-open fa-fw"></i>项目</a></li>
       <li class="menu-item menu-item-search">
         <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
         </a>
@@ -412,7 +412,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-31 12:16:45" itemprop="dateModified" datetime="2026-05-31T12:16:45+08:00">2026-05-31</time>
+      <time title="修改时间：2026-05-31 22:47:15" itemprop="dateModified" datetime="2026-05-31T22:47:15+08:00">2026-05-31</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -431,7 +431,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>394</span>
+      <span>436</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -457,6 +457,24 @@
 <li><strong>协议栈</strong>：内置或社区 <strong>Codec</strong>（HTTP、Redis、MQTT 等），也可自定义帧解码。</li>
 </ul>
 <p>典型用户：<strong>Dubbo</strong>、<strong>gRPC-Java</strong>（部分）、<strong>Elasticsearch</strong>、游戏网关、物联网接入。</p>
+<h1 id="Reactor-线程模型"><a href="#Reactor-线程模型" class="headerlink" title="Reactor 线程模型"></a>Reactor 线程模型</h1><pre>
+<code class="mermaid">
+
+flowchart TB
+  subgraph boss [Boss EventLoop]
+    ACC[accept 新连接]
+  end
+  subgraph worker [Worker EventLoopGroup]
+    SEL[Selector 多路复用]
+    CH1[Channel 1]
+    CH2[Channel N]
+  end
+  ACC --&gt; SEL
+  SEL --&gt; CH1
+  SEL --&gt; CH2
+</code>
+</pre>
+
 <hr>
 <h1 id="二、核心组件"><a href="#二、核心组件" class="headerlink" title="二、核心组件"></a>二、核心组件</h1><table>
 <thead>
@@ -1318,7 +1336,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-05 20:10:16" itemprop="dateModified" datetime="2026-05-05T20:10:16+08:00">2026-05-05</time>
+      <time title="修改时间：2026-05-31 22:49:55" itemprop="dateModified" datetime="2026-05-31T22:49:55+08:00">2026-05-31</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -1356,6 +1374,15 @@
     
     <div class="post-body" itemprop="articleBody">
           <p><strong>Go</strong>（常称 <strong>Golang</strong>）把并发写进语言核心：<strong>goroutine</strong> 作为轻量执行单元，<strong>channel</strong> 作为类型安全的通信原语，再配合 <strong><code>sync</code></strong> 与 <strong><code>context</code></strong>，适合网络服务、流水线与可取消任务。下面按「模型 → 通信 → 多路选择 → 锁与协作 → 取消」组织。</p>
+<h1 id="CSP-模型"><a href="#CSP-模型" class="headerlink" title="CSP 模型"></a>CSP 模型</h1><pre>
+<code class="mermaid">
+
+flowchart LR
+  G1[goroutine A] --&gt;|send| Ch[channel]
+  Ch --&gt;|recv| G2[goroutine B]
+</code>
+</pre>
+
 <h2 id="一、goroutine-与调度模型"><a href="#一、goroutine-与调度模型" class="headerlink" title="一、goroutine 与调度模型"></a>一、goroutine 与调度模型</h2><ul>
 <li><strong>goroutine</strong>：用 <code>go f()</code> 启动；栈初始很小、可按需增长，<strong>创建成本远低于操作系统线程</strong>，因此可以大量存在。</li>
 <li><strong>调度器</strong>：运行时把许多 goroutine 映射到少量 <strong>OS 线程</strong>（<strong>M:N</strong> 模型），在阻塞或抢占点切换，避免「一线程一连接」把机器拖垮。</li>
@@ -1399,7 +1426,7 @@
 <h2 id="六、常见陷阱与实践建议"><a href="#六、常见陷阱与实践建议" class="headerlink" title="六、常见陷阱与实践建议"></a>六、常见陷阱与实践建议</h2><ul>
 <li><strong>main 退出即进程退出</strong>：未 <code>Wait</code> 或未收完结果的 goroutine 会被直接掐掉；要有明确的<strong>汇合点</strong>（<code>WaitGroup</code>、<code>channel</code> 关闭、<code>errgroup</code> 等）。</li>
 <li><strong>泄漏 goroutine</strong>：向无人接收的 channel 发送、或 goroutine 永远阻塞在 <code>select</code>，都会导致泄漏；长生命周期任务要设计<strong>退出信号</strong>。</li>
-<li><strong>闭包与循环变量</strong>：在循环里 <code>go func() { ... }</code> 若引用循环变量，应用<strong>参数传入</strong>当前值，避免经典「全部打印最后一个」问题（Go 1.22+ 对循环变量语义有调整，仍建议显式传参以增强可读性与兼容旧版本）。</li>
+<li><strong>闭包与循环变量</strong>：在循环里 <code>go func() &#123; ... &#125;</code> 若引用循环变量，应用<strong>参数传入</strong>当前值，避免经典「全部打印最后一个」问题（Go 1.22+ 对循环变量语义有调整，仍建议显式传参以增强可读性与兼容旧版本）。</li>
 <li><strong>CPU 密集</strong>：用 <strong><code>runtime.NumCPU()</code></strong> 或带缓冲的 worker channel <strong>限制并发 worker 数量</strong>，而不是无节制 <code>go</code>。</li>
 <li><strong>竞态检测</strong>：开发与 CI 中开启 <strong><code>go test -race</code></strong>，能发现大量数据竞态。</li>
 </ul>
@@ -1466,7 +1493,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-31 12:16:16" itemprop="dateModified" datetime="2026-05-31T12:16:16+08:00">2026-05-31</time>
+      <time title="修改时间：2026-05-31 22:49:14" itemprop="dateModified" datetime="2026-05-31T22:49:14+08:00">2026-05-31</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -1485,7 +1512,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>591</span>
+      <span>629</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -1504,6 +1531,17 @@
     
     <div class="post-body" itemprop="articleBody">
           <p><strong>ClickHouse</strong> 是面向<strong>在线分析（OLAP）<strong>的列式数据库：高压缩、向量化执行、分布式查询，适合日志分析、指标大盘、用户行为统计等</strong>海量数据聚合</strong>场景。下面从「<strong>列存与引擎</strong> → <strong>建库建表</strong> → <strong>常用查询</strong> → <strong>MergeTree 家族</strong> → <strong>与 MySQL&#x2F;Redis 的分工</strong> → <strong>容器部署</strong>」顺序写清楚。</p>
+<h1 id="列存查询路径"><a href="#列存查询路径" class="headerlink" title="列存查询路径"></a>列存查询路径</h1><pre>
+<code class="mermaid">
+
+flowchart LR
+  SQL[SELECT 聚合] --&gt; CH[ClickHouse]
+  CH --&gt; Part[按分区裁剪]
+  Part --&gt; Col[列块向量化扫描]
+  Col --&gt; Agg[GROUP BY 结果]
+</code>
+</pre>
+
 <hr>
 <h1 id="一、列存与定位"><a href="#一、列存与定位" class="headerlink" title="一、列存与定位"></a>一、列存与定位</h1><h2 id="1-为何列存适合分析"><a href="#1-为何列存适合分析" class="headerlink" title="1. 为何列存适合分析"></a>1. 为何列存适合分析</h2><ul>
 <li><strong>按列压缩与读取</strong>：<code>SELECT avg(price)</code> 只读 <strong><code>price</code></strong> 列，IO 远小于行存全表扫描。  </li>
@@ -1647,7 +1685,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-31 12:16:12" itemprop="dateModified" datetime="2026-05-31T12:16:12+08:00">2026-05-31</time>
+      <time title="修改时间：2026-05-31 22:49:21" itemprop="dateModified" datetime="2026-05-31T22:49:21+08:00">2026-05-31</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -1666,7 +1704,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>607</span>
+      <span>647</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -1685,6 +1723,17 @@
     
     <div class="post-body" itemprop="articleBody">
           <p><strong>Oracle Database</strong> 是商业级关系型数据库管理系统，以<strong>企业级事务、优化器、RAC 集群、分区与 PL&#x2F;SQL</strong> 著称，常见于金融、电信、大型 ERP 等场景。下面从「<strong>架构概念</strong> → <strong>实例与表空间</strong> → <strong>基本 SQL 与 PL&#x2F;SQL</strong> → <strong>与 MySQL&#x2F;PostgreSQL 的对照</strong> → <strong>运维要点</strong>」顺序写清楚。</p>
+<h1 id="RAC-集群（概念）"><a href="#RAC-集群（概念）" class="headerlink" title="RAC 集群（概念）"></a>RAC 集群（概念）</h1><pre>
+<code class="mermaid">
+
+flowchart TB
+  App[应用 JDBC] --&gt; SCAN[SCAN 虚拟 IP]
+  SCAN --&gt; N1[节点 1 实例]
+  SCAN --&gt; N2[节点 2 实例]
+  N1 &amp; N2 --&gt; ASM[共享存储 ASM]
+</code>
+</pre>
+
 <hr>
 <h1 id="一、架构概念"><a href="#一、架构概念" class="headerlink" title="一、架构概念"></a>一、架构概念</h1><h2 id="1-实例与数据库"><a href="#1-实例与数据库" class="headerlink" title="1. 实例与数据库"></a>1. 实例与数据库</h2><ul>
 <li><strong>Database</strong>：物理文件集合（数据文件、控制文件、重做日志）。  </li>
@@ -1835,7 +1884,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-31 12:16:09" itemprop="dateModified" datetime="2026-05-31T12:16:09+08:00">2026-05-31</time>
+      <time title="修改时间：2026-05-31 22:49:11" itemprop="dateModified" datetime="2026-05-31T22:49:11+08:00">2026-05-31</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -1854,7 +1903,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>658</span>
+      <span>686</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -1873,6 +1922,17 @@
     
     <div class="post-body" itemprop="articleBody">
           <p><strong>MongoDB</strong> 是面向文档的 <strong>NoSQL</strong> 数据库：数据以 <strong>BSON</strong> 文档形式存储，模式灵活，适合半结构化数据、快速迭代与水平扩展。下面从「<strong>定位与概念</strong> → <strong>核心数据模型</strong> → <strong>常用 CRUD</strong> → <strong>索引与聚合</strong> → <strong>复制集与分片概览</strong> → <strong>与容器部署的关系</strong>」顺序写清楚。</p>
+<h1 id="复制集（Replica-Set）"><a href="#复制集（Replica-Set）" class="headerlink" title="复制集（Replica Set）"></a>复制集（Replica Set）</h1><pre>
+<code class="mermaid">
+
+flowchart LR
+  App[应用] --&gt; P[(Primary)]
+  P --&gt;|oplog 复制| S1[(Secondary)]
+  P --&gt; S2[(Secondary)]
+  S1 &amp; S2 -.-&gt;|选举| P
+</code>
+</pre>
+
 <hr>
 <h1 id="一、定位与概念"><a href="#一、定位与概念" class="headerlink" title="一、定位与概念"></a>一、定位与概念</h1><h2 id="1-文档模型"><a href="#1-文档模型" class="headerlink" title="1. 文档模型"></a>1. 文档模型</h2><ul>
 <li><strong>Database</strong> → <strong>Collection</strong> → <strong>Document</strong>（类似关系库中的库 → 表 → 行，但文档是 <strong>JSON&#x2F;BSON</strong> 结构，字段可嵌套、可数组）。  </li>
@@ -1925,7 +1985,7 @@
 
 <ul>
 <li><strong>单字段 &#x2F; 复合索引</strong>：查询条件与排序字段应能<strong>命中索引</strong>。  </li>
-<li><strong>唯一索引</strong>：<strong><code>createIndex({ email: 1 }, { unique: true })</code></strong></li>
+<li><strong>唯一索引</strong>：<strong><code>createIndex(&#123; email: 1 &#125;, &#123; unique: true &#125;)</code></strong></li>
 </ul>
 <h2 id="2-聚合管道（简化）"><a href="#2-聚合管道（简化）" class="headerlink" title="2. 聚合管道（简化）"></a>2. 聚合管道（简化）</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">db.<span class="property">orders</span>.<span class="title function_">aggregate</span>([</span><br><span class="line">  &#123; <span class="attr">$match</span>: &#123; <span class="attr">status</span>: <span class="string">&quot;paid&quot;</span> &#125; &#125;,</span><br><span class="line">  &#123; <span class="attr">$group</span>: &#123; <span class="attr">_id</span>: <span class="string">&quot;$userId&quot;</span>, <span class="attr">total</span>: &#123; <span class="attr">$sum</span>: <span class="string">&quot;$amount&quot;</span> &#125; &#125; &#125;,</span><br><span class="line">  &#123; <span class="attr">$sort</span>: &#123; <span class="attr">total</span>: -<span class="number">1</span> &#125; &#125;</span><br><span class="line">])</span><br></pre></td></tr></table></figure>
 
@@ -1983,13 +2043,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">181k</span>
+    <span title="站点总字数">184k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">10:03</span>
+    <span title="站点阅读时长">10:13</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

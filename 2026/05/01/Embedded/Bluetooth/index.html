@@ -20,15 +20,15 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
 
-    <meta name="description" content="蓝牙（Bluetooth） 是短距离无线标准：2.4 GHz ISM，经典分为 BR&#x2F;EDR（经典蓝牙） 与 BLE（低功耗蓝牙，Bluetooth Low Energy）。下面从「BLE 架构 → GATT 服务 → 配对与安全 → 与 Zigbee&#x2F;NFC 对照 → 开发」顺序写清楚。  一、BLE 角色   角色 说明    Central 发起连接，如手机、网关   P">
+    <meta name="description" content="蓝牙（Bluetooth） 是短距离无线标准：2.4 GHz ISM，经典分为 BR&#x2F;EDR（经典蓝牙） 与 BLE（低功耗蓝牙，Bluetooth Low Energy）。下面从「BLE 架构 → GATT 服务 → 配对与安全 → 与 Zigbee&#x2F;NFC 对照 → 开发」顺序写清楚。 BLE GATT 模型   flowchart TB   Central[Central">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Bluetooth">
 <meta property="og:url" content="http://example.com/2026/05/01/Embedded/Bluetooth/index.html">
 <meta property="og:site_name" content="my">
-<meta property="og:description" content="蓝牙（Bluetooth） 是短距离无线标准：2.4 GHz ISM，经典分为 BR&#x2F;EDR（经典蓝牙） 与 BLE（低功耗蓝牙，Bluetooth Low Energy）。下面从「BLE 架构 → GATT 服务 → 配对与安全 → 与 Zigbee&#x2F;NFC 对照 → 开发」顺序写清楚。  一、BLE 角色   角色 说明    Central 发起连接，如手机、网关   P">
+<meta property="og:description" content="蓝牙（Bluetooth） 是短距离无线标准：2.4 GHz ISM，经典分为 BR&#x2F;EDR（经典蓝牙） 与 BLE（低功耗蓝牙，Bluetooth Low Energy）。下面从「BLE 架构 → GATT 服务 → 配对与安全 → 与 Zigbee&#x2F;NFC 对照 → 开发」顺序写清楚。 BLE GATT 模型   flowchart TB   Central[Central">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-05-01T05:15:19.000Z">
-<meta property="article:modified_time" content="2026-05-31T04:18:40.366Z">
+<meta property="article:modified_time" content="2026-05-31T14:50:16.356Z">
 <meta property="article:author" content="miracle">
 <meta property="article:tag" content="Embedded">
 <meta name="twitter:card" content="summary">
@@ -116,7 +116,7 @@
 
 
 <nav class="site-nav">
-  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-service"><a href="/service/" rel="section"><i class="fa fa-server fa-fw"></i>服务</a></li><li class="menu-item menu-item-project"><a href="/project/" rel="section"><i class="fa fa-folder-open fa-fw"></i>项目</a></li>
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-service"><a href="/service/" rel="section"><i class="fa fa-server fa-fw"></i>服务</a></li><li class="menu-item menu-item-tool"><a href="/tool/" rel="section"><i class="fa fa-wrench fa-fw"></i>工具</a></li><li class="menu-item menu-item-project"><a href="/project/" rel="section"><i class="fa fa-folder-open fa-fw"></i>项目</a></li>
       <li class="menu-item menu-item-search">
         <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
         </a>
@@ -167,7 +167,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81BLE-%E8%A7%92%E8%89%B2"><span class="nav-number">1.</span> <span class="nav-text">一、BLE 角色</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81GATT-%E6%A8%A1%E5%9E%8B"><span class="nav-number">2.</span> <span class="nav-text">二、GATT 模型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E9%85%8D%E5%AF%B9%E4%B8%8E%E5%AE%89%E5%85%A8"><span class="nav-number">3.</span> <span class="nav-text">三、配对与安全</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E7%BB%8F%E5%85%B8%E8%93%9D%E7%89%99-vs-BLE"><span class="nav-number">4.</span> <span class="nav-text">四、经典蓝牙 vs BLE</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7"><span class="nav-number">5.</span> <span class="nav-text">五、开发工具</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#BLE-GATT-%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.</span> <span class="nav-text">BLE GATT 模型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81BLE-%E8%A7%92%E8%89%B2"><span class="nav-number">2.</span> <span class="nav-text">一、BLE 角色</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81GATT-%E6%A8%A1%E5%9E%8B"><span class="nav-number">3.</span> <span class="nav-text">二、GATT 模型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E9%85%8D%E5%AF%B9%E4%B8%8E%E5%AE%89%E5%85%A8"><span class="nav-number">4.</span> <span class="nav-text">三、配对与安全</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E7%BB%8F%E5%85%B8%E8%93%9D%E7%89%99-vs-BLE"><span class="nav-number">5.</span> <span class="nav-text">四、经典蓝牙 vs BLE</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7"><span class="nav-number">6.</span> <span class="nav-text">五、开发工具</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -265,7 +265,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-31 12:18:40" itemprop="dateModified" datetime="2026-05-31T12:18:40+08:00">2026-05-31</time>
+      <time title="修改时间：2026-05-31 22:50:16" itemprop="dateModified" datetime="2026-05-31T22:50:16+08:00">2026-05-31</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -284,7 +284,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>287</span>
+      <span>315</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -302,6 +302,16 @@
     
     
     <div class="post-body" itemprop="articleBody"><p><strong>蓝牙（Bluetooth）</strong> 是短距离无线标准：<strong>2.4 GHz ISM</strong>，经典分为 <strong>BR&#x2F;EDR（经典蓝牙）</strong> 与 <strong>BLE（低功耗蓝牙，Bluetooth Low Energy）</strong>。下面从「<strong>BLE 架构</strong> → <strong>GATT 服务</strong> → <strong>配对与安全</strong> → <strong>与 Zigbee&#x2F;NFC 对照</strong> → <strong>开发</strong>」顺序写清楚。</p>
+<h1 id="BLE-GATT-模型"><a href="#BLE-GATT-模型" class="headerlink" title="BLE GATT 模型"></a>BLE GATT 模型</h1><pre>
+<code class="mermaid">
+
+flowchart TB
+  Central[Central 手机] --&gt;|连接| Peripheral[Peripheral 设备]
+  Peripheral --&gt; Svc[Service UUID]
+  Svc --&gt; Char[Characteristic 读写 Notify]
+</code>
+</pre>
+
 <hr>
 <h1 id="一、BLE-角色"><a href="#一、BLE-角色" class="headerlink" title="一、BLE 角色"></a>一、BLE 角色</h1><table>
 <thead>
@@ -424,13 +434,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">181k</span>
+    <span title="站点总字数">184k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">10:03</span>
+    <span title="站点阅读时长">10:13</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

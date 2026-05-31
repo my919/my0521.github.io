@@ -20,15 +20,15 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
 
-    <meta name="description" content="UART（Universal Asynchronous Receiver&#x2F;Transmitter，通用异步收发器）是最常见的串行异步通信硬件：两根线（TX&#x2F;RX）逐 bit 传输，无同步时钟线。下面从「帧格式 → 波特率 → 与 RS232&#x2F;RS485 的关系 → MCU 配置要点 → 调试」顺序写清楚。  一、异步帧结构1起始位(0) + 数据位(通常8) + 可选">
+    <meta name="description" content="UART（Universal Asynchronous Receiver&#x2F;Transmitter，通用异步收发器）是最常见的串行异步通信硬件：两根线（TX&#x2F;RX）逐 bit 传输，无同步时钟线。下面从「帧格式 → 波特率 → 与 RS232&#x2F;RS485 的关系 → MCU 配置要点 → 调试」顺序写清楚。 点对点连接   flowchart LR   MCU1[MCU">
 <meta property="og:type" content="article">
 <meta property="og:title" content="UART">
 <meta property="og:url" content="http://example.com/2026/05/01/Embedded/UART/index.html">
 <meta property="og:site_name" content="my">
-<meta property="og:description" content="UART（Universal Asynchronous Receiver&#x2F;Transmitter，通用异步收发器）是最常见的串行异步通信硬件：两根线（TX&#x2F;RX）逐 bit 传输，无同步时钟线。下面从「帧格式 → 波特率 → 与 RS232&#x2F;RS485 的关系 → MCU 配置要点 → 调试」顺序写清楚。  一、异步帧结构1起始位(0) + 数据位(通常8) + 可选">
+<meta property="og:description" content="UART（Universal Asynchronous Receiver&#x2F;Transmitter，通用异步收发器）是最常见的串行异步通信硬件：两根线（TX&#x2F;RX）逐 bit 传输，无同步时钟线。下面从「帧格式 → 波特率 → 与 RS232&#x2F;RS485 的关系 → MCU 配置要点 → 调试」顺序写清楚。 点对点连接   flowchart LR   MCU1[MCU">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-05-01T05:09:30.000Z">
-<meta property="article:modified_time" content="2026-05-31T04:18:05.917Z">
+<meta property="article:modified_time" content="2026-05-31T14:49:25.211Z">
 <meta property="article:author" content="miracle">
 <meta property="article:tag" content="Embedded">
 <meta name="twitter:card" content="summary">
@@ -116,7 +116,7 @@
 
 
 <nav class="site-nav">
-  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-service"><a href="/service/" rel="section"><i class="fa fa-server fa-fw"></i>服务</a></li><li class="menu-item menu-item-project"><a href="/project/" rel="section"><i class="fa fa-folder-open fa-fw"></i>项目</a></li>
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-service"><a href="/service/" rel="section"><i class="fa fa-server fa-fw"></i>服务</a></li><li class="menu-item menu-item-tool"><a href="/tool/" rel="section"><i class="fa fa-wrench fa-fw"></i>工具</a></li><li class="menu-item menu-item-project"><a href="/project/" rel="section"><i class="fa fa-folder-open fa-fw"></i>项目</a></li>
       <li class="menu-item menu-item-search">
         <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
         </a>
@@ -167,7 +167,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E5%BC%82%E6%AD%A5%E5%B8%A7%E7%BB%93%E6%9E%84"><span class="nav-number">1.</span> <span class="nav-text">一、异步帧结构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E6%B3%A2%E7%89%B9%E7%8E%87"><span class="nav-number">2.</span> <span class="nav-text">二、波特率</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E7%94%B5%E5%B9%B3%E4%B8%8E%E6%8E%A5%E5%8F%A3%E5%B1%82"><span class="nav-number">3.</span> <span class="nav-text">三、电平与接口层</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E5%BA%94%E7%94%A8%E4%B8%8E%E8%B0%83%E8%AF%95"><span class="nav-number">4.</span> <span class="nav-text">四、应用与调试</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%82%B9%E5%AF%B9%E7%82%B9%E8%BF%9E%E6%8E%A5"><span class="nav-number">1.</span> <span class="nav-text">点对点连接</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E5%BC%82%E6%AD%A5%E5%B8%A7%E7%BB%93%E6%9E%84"><span class="nav-number">2.</span> <span class="nav-text">一、异步帧结构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E6%B3%A2%E7%89%B9%E7%8E%87"><span class="nav-number">3.</span> <span class="nav-text">二、波特率</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E7%94%B5%E5%B9%B3%E4%B8%8E%E6%8E%A5%E5%8F%A3%E5%B1%82"><span class="nav-number">4.</span> <span class="nav-text">三、电平与接口层</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E5%BA%94%E7%94%A8%E4%B8%8E%E8%B0%83%E8%AF%95"><span class="nav-number">5.</span> <span class="nav-text">四、应用与调试</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -265,7 +265,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-31 12:18:05" itemprop="dateModified" datetime="2026-05-31T12:18:05+08:00">2026-05-31</time>
+      <time title="修改时间：2026-05-31 22:49:25" itemprop="dateModified" datetime="2026-05-31T22:49:25+08:00">2026-05-31</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -284,7 +284,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>344</span>
+      <span>365</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -302,6 +302,15 @@
     
     
     <div class="post-body" itemprop="articleBody"><p><strong>UART</strong>（Universal Asynchronous Receiver&#x2F;Transmitter，通用异步收发器）是最常见的<strong>串行异步通信</strong>硬件：两根线（<strong>TX&#x2F;RX</strong>）逐 bit 传输，无同步时钟线。下面从「<strong>帧格式</strong> → <strong>波特率</strong> → <strong>与 RS232&#x2F;RS485 的关系</strong> → <strong>MCU 配置要点</strong> → <strong>调试</strong>」顺序写清楚。</p>
+<h1 id="点对点连接"><a href="#点对点连接" class="headerlink" title="点对点连接"></a>点对点连接</h1><pre>
+<code class="mermaid">
+
+flowchart LR
+  MCU1[MCU A TX] --&gt;|RX| MCU2[MCU B RX]
+  MCU2 --&gt;|TX| MCU1
+</code>
+</pre>
+
 <hr>
 <h1 id="一、异步帧结构"><a href="#一、异步帧结构" class="headerlink" title="一、异步帧结构"></a>一、异步帧结构</h1><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">起始位(0) + 数据位(通常8) + 可选校验位 + 停止位(1)</span><br></pre></td></tr></table></figure>
 
@@ -399,13 +408,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">181k</span>
+    <span title="站点总字数">184k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">10:03</span>
+    <span title="站点阅读时长">10:13</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

@@ -111,7 +111,7 @@
 
 
 <nav class="site-nav">
-  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-service"><a href="/service/" rel="section"><i class="fa fa-server fa-fw"></i>服务</a></li><li class="menu-item menu-item-project"><a href="/project/" rel="section"><i class="fa fa-folder-open fa-fw"></i>项目</a></li>
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-service"><a href="/service/" rel="section"><i class="fa fa-server fa-fw"></i>服务</a></li><li class="menu-item menu-item-tool"><a href="/tool/" rel="section"><i class="fa fa-wrench fa-fw"></i>工具</a></li><li class="menu-item menu-item-project"><a href="/project/" rel="section"><i class="fa fa-folder-open fa-fw"></i>项目</a></li>
       <li class="menu-item menu-item-search">
         <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
         </a>
@@ -420,7 +420,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-31 22:38:13" itemprop="dateModified" datetime="2026-05-31T22:38:13+08:00">2026-05-31</time>
+      <time title="修改时间：2026-05-31 22:46:49" itemprop="dateModified" datetime="2026-05-31T22:46:49+08:00">2026-05-31</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -459,6 +459,17 @@
     <div class="post-body" itemprop="articleBody">
           <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>本文记录 <strong>MyBatis-Flex</strong> 依赖、配置、IDEA 代码生成与 <strong>QueryChain</strong> 用法（偏 API 与生成器）。</p>
 <p><strong>springboot 仓库完整集成</strong>（dynamic-datasource、双库、<code>BaseFlexCrudController</code>）见 <a href="/2026/05/16/springboot-mybatis-flex/">SpringBoot 集成 MyBatis-Flex 与多数据源</a>——生产配置以仓库为准。</p>
+<h1 id="分层结构"><a href="#分层结构" class="headerlink" title="分层结构"></a>分层结构</h1><pre>
+<code class="mermaid">
+
+flowchart TB
+  Ctrl[Controller] --&gt; Svc[Service &#x2F; IService]
+  Svc --&gt; Map[Mapper BaseMapper]
+  Map --&gt; DB[(Database)]
+  Svc --&gt; Q[QueryChain &#x2F; QueryWrapper]
+</code>
+</pre>
+
 <hr>
 <h1 id="添加依赖"><a href="#添加依赖" class="headerlink" title="添加依赖"></a>添加依赖</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">implementation &#x27;com.mybatis-flex:mybatis-flex-spring-boot4-starter:1.11.7&#x27;</span><br><span class="line">annotationProcessor &#x27;com.mybatis-flex:mybatis-flex-processor:1.11.7&#x27;</span><br></pre></td></tr></table></figure>
 
@@ -694,7 +705,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-31 22:39:25" itemprop="dateModified" datetime="2026-05-31T22:39:25+08:00">2026-05-31</time>
+      <time title="修改时间：2026-05-31 22:46:47" itemprop="dateModified" datetime="2026-05-31T22:46:47+08:00">2026-05-31</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -713,7 +724,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>900</span>
+      <span>946</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -733,6 +744,18 @@
     <div class="post-body" itemprop="articleBody">
           <h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>多数据源常见于：主从读写分离、按库分业务、迁移期新旧库并存等。<a target="_blank" rel="noopener external nofollow noreferrer" href="https://baomidou.com/">Baomidou</a> 的 <strong>dynamic-datasource</strong> 通过 <strong><code>@DS</code></strong> 切换当前线程数据源，对 <strong>MyBatis-Plus</strong>、<strong>MyBatis-Flex</strong>、<strong>JdbcTemplate</strong> 等均适用。</p>
 <p><strong>springboot 仓库落地</strong>见 <a href="/2026/05/16/springboot-mybatis-flex/">SpringBoot 集成 MyBatis-Flex 与多数据源</a>。下文以 <strong>Boot 4 + MyBatis-Plus 3.5.x + dynamic-datasource 4.x</strong> 为例。</p>
+<h1 id="DS-路由流程"><a href="#DS-路由流程" class="headerlink" title="@DS 路由流程"></a>@DS 路由流程</h1><pre>
+<code class="mermaid">
+
+flowchart TD
+  A[Service 方法调用] --&gt; B{Spring 代理?}
+  B --&gt;|否 自调用| C[可能不切换]
+  B --&gt;|是| D[读取 @DS 注解]
+  D --&gt; E[DynamicDataSourceContextHolder]
+  E --&gt; F[(目标 DataSource)]
+</code>
+</pre>
+
 <h1 id="添加依赖"><a href="#添加依赖" class="headerlink" title="添加依赖"></a>添加依赖</h1><figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">dependencies</span> &#123;</span><br><span class="line">    implementation <span class="string">&#x27;com.baomidou:dynamic-datasource-spring-boot4-starter:4.5.0&#x27;</span></span><br><span class="line">    implementation <span class="string">&#x27;com.baomidou:mybatis-plus-spring-boot4-starter:3.5.15&#x27;</span></span><br><span class="line">    implementation <span class="string">&#x27;org.springframework.boot:spring-boot-starter-jdbc&#x27;</span></span><br><span class="line">    implementation <span class="string">&#x27;org.springframework.boot:spring-boot-starter-aspectj&#x27;</span></span><br><span class="line">    runtimeOnly <span class="string">&#x27;com.mysql:mysql-connector-j&#x27;</span></span><br><span class="line">    runtimeOnly <span class="string">&#x27;org.postgresql:postgresql&#x27;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>说明：</p>
@@ -865,7 +888,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-31 22:38:14" itemprop="dateModified" datetime="2026-05-31T22:38:14+08:00">2026-05-31</time>
+      <time title="修改时间：2026-05-31 22:46:48" itemprop="dateModified" datetime="2026-05-31T22:46:48+08:00">2026-05-31</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -884,7 +907,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>544</span>
+      <span>565</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -904,6 +927,16 @@
     <div class="post-body" itemprop="articleBody">
           <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>统一 <strong><code>Result&lt;T&gt;</code></strong> JSON 与 <strong><code>@RestControllerAdvice</code></strong> 全局捕获，避免 Controller 里散落 try-catch。本文给出<strong>完整 Handler 源码</strong>（通用模板）。</p>
 <p><strong>springboot 仓库落地</strong>（HTTP 状态码映射、与校验&#x2F;枚举配合）见 <a href="/2026/05/16/springboot-result-exception/">SpringBoot 统一返回体与全局异常</a>——以仓库代码为准，本文作 Java 层参考。</p>
+<h1 id="处理流程"><a href="#处理流程" class="headerlink" title="处理流程"></a>处理流程</h1><pre>
+<code class="mermaid">
+
+flowchart TD
+  E[Controller 抛出] --&gt; H[GlobalExceptionHandler]
+  H --&gt; R[Result.fail]
+  R --&gt; RE[ResponseEntity JSON]
+</code>
+</pre>
+
 <hr>
 <h1 id="一、业务异常类"><a href="#一、业务异常类" class="headerlink" title="一、业务异常类"></a>一、业务异常类</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 业务异常，由业务代码主动抛出，由全局异常处理器统一转换为 Result。</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">BusinessException</span> <span class="keyword">extends</span> <span class="title class_">RuntimeException</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Integer code;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">BusinessException</span><span class="params">(String message)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>(<span class="number">400</span>, message);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">BusinessException</span><span class="params">(Integer code, String message)</span> &#123;</span><br><span class="line">        <span class="built_in">super</span>(message);</span><br><span class="line">        <span class="built_in">this</span>.code = code;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> Integer <span class="title function_">getCode</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> code;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
@@ -1932,13 +1965,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">181k</span>
+    <span title="站点总字数">184k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">10:03</span>
+    <span title="站点阅读时长">10:13</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动
