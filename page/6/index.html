@@ -111,7 +111,7 @@
 
 
 <nav class="site-nav">
-  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-service"><a href="/service/" rel="section"><i class="fa fa-server fa-fw"></i>服务</a></li><li class="menu-item menu-item-project"><a href="/project/" rel="section"><i class="fa fa-folder-open fa-fw"></i>项目</a></li>
       <li class="menu-item menu-item-search">
         <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
         </a>
@@ -174,7 +174,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">182</span>
+          <span class="site-state-item-count">184</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -185,7 +185,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">106</span>
+        <span class="site-state-item-count">107</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -213,6 +213,733 @@
     </div>
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/03/MySQL/MySQL%E9%94%81%E8%AF%A6%E8%A7%A3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/05/03/MySQL/MySQL%E9%94%81%E8%AF%A6%E8%A7%A3/" class="post-title-link" itemprop="url">MySQL锁详解</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2026-05-03 11:27:07 / 修改时间：11:37:46" itemprop="dateCreated datePublished" datetime="2026-05-03T11:27:07+08:00">2026-05-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>4.5k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>15 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p><strong>结构清晰、实战导向</strong>（基于 <strong>InnoDB</strong>，<strong>MySQL 5.7 &#x2F; 8.0</strong>）。</p>
+<hr>
+<h2 id="一、锁的核心目的"><a href="#一、锁的核心目的" class="headerlink" title="一、锁的核心目的"></a>一、锁的核心目的</h2><p>锁 &#x3D; <strong>并发控制</strong>，解决：</p>
+<ul>
+<li>脏读、不可重复读、幻读</li>
+<li>防止多个事务同时修改同一数据导致不一致</li>
+<li>平衡 <strong>数据一致性 vs 并发性能</strong></li>
+</ul>
+<hr>
+<h2 id="二、按粒度分类（最核心）"><a href="#二、按粒度分类（最核心）" class="headerlink" title="二、按粒度分类（最核心）"></a>二、按粒度分类（最核心）</h2><h3 id="1）全局锁（Global-Lock）"><a href="#1）全局锁（Global-Lock）" class="headerlink" title="1）全局锁（Global Lock）"></a>1）全局锁（Global Lock）</h3><ul>
+<li>粒度：<strong>整个数据库实例</strong></li>
+<li>命令：</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">FLUSH TABLES <span class="keyword">WITH</span> READ LOCK; <span class="comment">-- 全库只读</span></span><br><span class="line">UNLOCK TABLES;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>特点：<ul>
+<li>所有库所有表<strong>只能读、不能写</strong></li>
+<li>阻塞 DML、DDL</li>
+</ul>
+</li>
+<li>用途：<strong>全库逻辑备份</strong></li>
+<li>替代方案（InnoDB）：</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysqldump --single-transaction  <span class="comment"># 利用 MVCC 快照，不加锁</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="2）表级锁（Table-level-Lock）"><a href="#2）表级锁（Table-level-Lock）" class="headerlink" title="2）表级锁（Table-level Lock）"></a>2）表级锁（Table-level Lock）</h3><ul>
+<li>粒度：<strong>整张表</strong></li>
+<li>MyISAM 只支持表锁；InnoDB 也有表锁（如 MDL）</li>
+<li>常用：</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">LOCK <span class="keyword">TABLE</span> t1 READ;   <span class="comment">-- 读锁：别人可读不可写</span></span><br><span class="line">LOCK <span class="keyword">TABLE</span> t1 WRITE;  <span class="comment">-- 写锁：别人读写都阻塞</span></span><br><span class="line">UNLOCK TABLES;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>元数据锁（MDL）：<ul>
+<li>访问表时自动加，防止“查询中表被删&#x2F;改结构”</li>
+<li>长事务 + DDL 极易导致 MDL 锁等待</li>
+</ul>
+</li>
+</ul>
+<h3 id="3）行级锁（Row-level-Lock，InnoDB-核心）"><a href="#3）行级锁（Row-level-Lock，InnoDB-核心）" class="headerlink" title="3）行级锁（Row-level Lock，InnoDB 核心）"></a>3）行级锁（Row-level Lock，InnoDB 核心）</h3><ul>
+<li>粒度：<strong>单行或多行索引记录</strong></li>
+<li>优点：<strong>并发高、冲突小</strong></li>
+<li>缺点：开销大、依赖索引</li>
+<li>重点：<strong>行锁是锁索引，不是锁数据行</strong><br>无索引&#x2F;索引失效 → <strong>行锁退化为表锁</strong>（灾难）</li>
+</ul>
+<hr>
+<h2 id="三、按读写类型分类（S-X-锁）"><a href="#三、按读写类型分类（S-X-锁）" class="headerlink" title="三、按读写类型分类（S&#x2F;X 锁）"></a>三、按读写类型分类（S&#x2F;X 锁）</h2><h3 id="1）共享锁（S-锁-读锁）"><a href="#1）共享锁（S-锁-读锁）" class="headerlink" title="1）共享锁（S 锁 &#x2F; 读锁）"></a>1）共享锁（S 锁 &#x2F; 读锁）</h3><ul>
+<li>特点：<strong>读读兼容、读写互斥</strong></li>
+<li>加锁：</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> t <span class="keyword">WHERE</span> id<span class="operator">=</span><span class="number">1</span> LOCK <span class="keyword">IN</span> SHARE MODE;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>场景：要保证数据不被修改，同时允许别人读</li>
+</ul>
+<h3 id="2）排他锁（X-锁-写锁）"><a href="#2）排他锁（X-锁-写锁）" class="headerlink" title="2）排他锁（X 锁 &#x2F; 写锁）"></a>2）排他锁（X 锁 &#x2F; 写锁）</h3><ul>
+<li>特点：<strong>写写互斥、读写互斥</strong>（独占）</li>
+<li>自动加：<code>UPDATE / DELETE / INSERT</code></li>
+<li>手动加：</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> t <span class="keyword">WHERE</span> id<span class="operator">=</span><span class="number">1</span> <span class="keyword">FOR</span> <span class="keyword">UPDATE</span>;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>场景：修改数据，禁止别人读或写</li>
+</ul>
+<h3 id="兼容性矩阵（必背）"><a href="#兼容性矩阵（必背）" class="headerlink" title="兼容性矩阵（必背）"></a>兼容性矩阵（必背）</h3><table>
+<thead>
+<tr>
+<th>当前锁</th>
+<th>加 S 锁</th>
+<th>加 X 锁</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>无锁</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>S 锁</td>
+<td>✅</td>
+<td>❌</td>
+</tr>
+<tr>
+<td>X 锁</td>
+<td>❌</td>
+<td>❌</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="四、意向锁（IS-IX，表级）"><a href="#四、意向锁（IS-IX，表级）" class="headerlink" title="四、意向锁（IS &#x2F; IX，表级）"></a>四、意向锁（IS &#x2F; IX，表级）</h2><p>作用：<strong>快速判断表内有没有行锁，避免全表扫行锁</strong></p>
+<ul>
+<li>IS：意向共享锁（要加 S 行锁）</li>
+<li>IX：意向排他锁（要加 X 行锁）</li>
+</ul>
+<p>规则：</p>
+<ol>
+<li>事务加行锁前，必须先加对应意向锁</li>
+<li>意向锁之间<strong>完全兼容</strong></li>
+<li>意向锁只和<strong>表级 S&#x2F;X 锁</strong>互斥</li>
+</ol>
+<hr>
+<h2 id="五、InnoDB-行锁三大算法（RR-隔离级别默认）"><a href="#五、InnoDB-行锁三大算法（RR-隔离级别默认）" class="headerlink" title="五、InnoDB 行锁三大算法（RR 隔离级别默认）"></a>五、InnoDB 行锁三大算法（RR 隔离级别默认）</h2><h3 id="1）记录锁（Record-Lock）"><a href="#1）记录锁（Record-Lock）" class="headerlink" title="1）记录锁（Record Lock）"></a>1）记录锁（Record Lock）</h3><ul>
+<li>锁：<strong>单个索引记录</strong></li>
+<li>触发：<strong>唯一索引 + 精准等值查询（命中）</strong></li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> <span class="keyword">user</span> <span class="keyword">WHERE</span> id<span class="operator">=</span><span class="number">10</span> <span class="keyword">FOR</span> <span class="keyword">UPDATE</span>; <span class="comment">-- 只锁 id=10</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="2）间隙锁（Gap-Lock）"><a href="#2）间隙锁（Gap-Lock）" class="headerlink" title="2）间隙锁（Gap Lock）"></a>2）间隙锁（Gap Lock）</h3><ul>
+<li>锁：<strong>索引之间的间隙（不包含记录）</strong></li>
+<li>目的：<strong>防止幻读</strong>（禁止区间插入）</li>
+<li>示例：表有 id&#x3D;1,3,5</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> <span class="keyword">user</span> <span class="keyword">WHERE</span> id <span class="keyword">BETWEEN</span> <span class="number">1</span> <span class="keyword">AND</span> <span class="number">5</span> <span class="keyword">FOR</span> <span class="keyword">UPDATE</span>;</span><br><span class="line"><span class="comment">-- 锁间隙：(1,3)、(3,5)</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>特点：间隙锁之间<strong>兼容</strong>，只与<strong>插入意向锁</strong>互斥</li>
+</ul>
+<h3 id="3）临键锁（Next-Key-Lock）-记录锁-间隙锁"><a href="#3）临键锁（Next-Key-Lock）-记录锁-间隙锁" class="headerlink" title="3）临键锁（Next-Key Lock）&#x3D; 记录锁 + 间隙锁"></a>3）临键锁（Next-Key Lock）&#x3D; 记录锁 + 间隙锁</h3><ul>
+<li>锁：<strong>左开右闭区间 (min, max]</strong></li>
+<li>InnoDB <strong>RR 默认</strong>，解决幻读</li>
+<li>示例：id&#x3D;1,3,5<ul>
+<li>查 id&#x3D;3 → 锁 (1,3]</li>
+<li>查 id&#x3D;4 → 锁 (3,5]</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h2 id="六、死锁（Deadlock）"><a href="#六、死锁（Deadlock）" class="headerlink" title="六、死锁（Deadlock）"></a>六、死锁（Deadlock）</h2><h3 id="1）必要条件（四个同时满足）"><a href="#1）必要条件（四个同时满足）" class="headerlink" title="1）必要条件（四个同时满足）"></a>1）必要条件（四个同时满足）</h3><ul>
+<li>互斥：资源独占</li>
+<li>持有并等待：拿着锁等别人的锁</li>
+<li>不可剥夺：不能强行抢锁</li>
+<li>循环等待：A 等 B，B 等 A</li>
+</ul>
+<h3 id="2）典型死锁示例"><a href="#2）典型死锁示例" class="headerlink" title="2）典型死锁示例"></a>2）典型死锁示例</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">事务1：BEGIN; UPDATE t SET a=1 WHERE id=1;</span><br><span class="line">事务2：BEGIN; UPDATE t SET a=1 WHERE id=2;</span><br><span class="line">事务1：UPDATE t SET a=1 WHERE id=2; -- 等事务2</span><br><span class="line">事务2：UPDATE t SET a=1 WHERE id=1; -- 等事务1 → 死锁</span><br></pre></td></tr></table></figure>
+
+<h3 id="3）如何避免"><a href="#3）如何避免" class="headerlink" title="3）如何避免"></a>3）如何避免</h3><ul>
+<li>按<strong>固定顺序</strong>访问资源（先 id&#x3D;1 再 id&#x3D;2）</li>
+<li>控制<strong>事务大小</strong>，避免长事务</li>
+<li>合理设置<strong>超时</strong>：<code>innodb_lock_wait_timeout=50</code></li>
+<li>死锁检测：<code>SHOW ENGINE INNODB STATUS;</code></li>
+</ul>
+<hr>
+<h2 id="七、实战高频坑（必避）"><a href="#七、实战高频坑（必避）" class="headerlink" title="七、实战高频坑（必避）"></a>七、实战高频坑（必避）</h2><ol>
+<li><strong>无索引 → 行锁变表锁</strong>：<code>UPDATE t SET name=&#39;a&#39; WHERE age=20;</code>（age 无索引）</li>
+<li><strong>长事务 + 慢查询 → 锁等待堆积</strong></li>
+<li><strong>RR 间隙锁导致插入阻塞</strong>：范围查询容易触发</li>
+<li><strong>忘记提交&#x2F;回滚</strong>：锁一直不释放</li>
+</ol>
+<hr>
+<h2 id="八、总结（一句话记）"><a href="#八、总结（一句话记）" class="headerlink" title="八、总结（一句话记）"></a>八、总结（一句话记）</h2><ul>
+<li><strong>粒度</strong>：全局 &gt; 表 &gt; 行（粒度越小，并发越高、开销越大）</li>
+<li><strong>读写</strong>：S 锁共享，X 锁独占</li>
+<li><strong>行锁三形态</strong>：记录锁、间隙锁、临键锁（RR 防幻读）</li>
+<li><strong>死锁四条件</strong>：互斥、持有等待、不可剥夺、循环等待</li>
+</ul>
+<hr>
+<h2 id="九、分步-SQL-脚本（双会话复现）"><a href="#九、分步-SQL-脚本（双会话复现）" class="headerlink" title="九、分步 SQL 脚本（双会话复现）"></a>九、分步 SQL 脚本（双会话复现）</h2><p>环境要求：<strong>InnoDB</strong>、默认 <strong>RR（可重复读）</strong>。请开<strong>两个会话</strong>（两个终端或客户端连接），按小节顺序分别执行，可观察阻塞、间隙锁与死锁。</p>
+<h3 id="9-1-前置准备：建库建表与测试数据"><a href="#9-1-前置准备：建库建表与测试数据" class="headerlink" title="9.1 前置准备：建库建表与测试数据"></a>9.1 前置准备：建库建表与测试数据</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 1. 创建数据库</span></span><br><span class="line"><span class="keyword">CREATE</span> DATABASE IF <span class="keyword">NOT</span> <span class="keyword">EXISTS</span> lock_demo <span class="keyword">DEFAULT</span> <span class="keyword">CHARACTER SET</span> utf8mb4;</span><br><span class="line">USE lock_demo;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 2. 创建测试表（InnoDB + 主键索引）</span></span><br><span class="line"><span class="keyword">DROP</span> <span class="keyword">TABLE</span> IF <span class="keyword">EXISTS</span> <span class="keyword">user</span>;</span><br><span class="line"><span class="keyword">CREATE TABLE</span> <span class="keyword">user</span> (</span><br><span class="line">    id <span class="type">INT</span> <span class="keyword">PRIMARY KEY</span> AUTO_INCREMENT,</span><br><span class="line">    name <span class="type">VARCHAR</span>(<span class="number">20</span>) <span class="keyword">NOT NULL</span>,</span><br><span class="line">    age <span class="type">INT</span></span><br><span class="line">) ENGINE<span class="operator">=</span>InnoDB <span class="keyword">DEFAULT</span> CHARSET<span class="operator">=</span>utf8mb4;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 3. 插入测试数据</span></span><br><span class="line"><span class="keyword">INSERT INTO</span> <span class="keyword">user</span>(name,age) <span class="keyword">VALUES</span> </span><br><span class="line">(<span class="string">&#x27;张三&#x27;</span>,<span class="number">20</span>),</span><br><span class="line">(<span class="string">&#x27;李四&#x27;</span>,<span class="number">25</span>),</span><br><span class="line">(<span class="string">&#x27;王五&#x27;</span>,<span class="number">30</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 查看数据</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> <span class="keyword">user</span>;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="9-2-行排他锁-FOR-UPDATE-阻塞演示"><a href="#9-2-行排他锁-FOR-UPDATE-阻塞演示" class="headerlink" title="9.2 行排他锁 FOR UPDATE 阻塞演示"></a>9.2 行排他锁 FOR UPDATE 阻塞演示</h3><p><strong>会话 1（先执行，不提交）</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">BEGIN</span>;</span><br><span class="line"><span class="comment">-- 加行级排他锁</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> <span class="keyword">user</span> <span class="keyword">WHERE</span> id <span class="operator">=</span> <span class="number">1</span> <span class="keyword">FOR</span> <span class="keyword">UPDATE</span>;</span><br><span class="line"><span class="comment">-- 故意不 COMMIT，锁一直持有</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>会话 2（马上执行，会被阻塞）</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">BEGIN</span>;</span><br><span class="line"><span class="comment">-- 尝试修改同一条 id=1，被行锁阻塞</span></span><br><span class="line"><span class="keyword">UPDATE</span> <span class="keyword">user</span> <span class="keyword">SET</span> age<span class="operator">=</span><span class="number">21</span> <span class="keyword">WHERE</span> id <span class="operator">=</span> <span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+
+<p><strong>收尾：会话 1 提交释放锁</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">COMMIT</span>;</span><br></pre></td></tr></table></figure>
+<p>👉 现象：会话2立刻执行成功，<strong>行锁只锁 id&#x3D;1，不锁其他行</strong></p>
+<hr>
+<h3 id="9-3-无索引导致行锁退化为表锁"><a href="#9-3-无索引导致行锁退化为表锁" class="headerlink" title="9.3 无索引导致行锁退化为表锁"></a>9.3 无索引导致行锁退化为表锁</h3><p><strong>场景</strong>：<strong><code>age</code></strong> 无索引，按 <strong><code>age</code></strong> 更新。</p>
+<p><strong>会话 1</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">BEGIN</span>;</span><br><span class="line"><span class="keyword">UPDATE</span> <span class="keyword">user</span> <span class="keyword">SET</span> name<span class="operator">=</span><span class="string">&#x27;张小三&#x27;</span> <span class="keyword">WHERE</span> age <span class="operator">=</span> <span class="number">20</span>;</span><br><span class="line"><span class="comment">-- 不提交</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>会话 2</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">BEGIN</span>;</span><br><span class="line"><span class="comment">-- 更新 id=2 无关数据，居然也被阻塞（行锁变表锁）</span></span><br><span class="line"><span class="keyword">UPDATE</span> <span class="keyword">user</span> <span class="keyword">SET</span> name<span class="operator">=</span><span class="string">&#x27;李小四&#x27;</span> <span class="keyword">WHERE</span> id <span class="operator">=</span> <span class="number">2</span>;</span><br></pre></td></tr></table></figure>
+<p>👉 结论：<strong>查询条件无索引 → InnoDB 行锁退化成整张表锁，并发直接废掉</strong></p>
+<hr>
+<h3 id="9-4-共享锁与读写互斥演示"><a href="#9-4-共享锁与读写互斥演示" class="headerlink" title="9.4 共享锁与读写互斥演示"></a>9.4 共享锁与读写互斥演示</h3><p><strong>会话 1：加共享锁</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">BEGIN</span>;</span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> <span class="keyword">user</span> <span class="keyword">WHERE</span> id<span class="operator">=</span><span class="number">1</span> LOCK <span class="keyword">IN</span> SHARE MODE;</span><br></pre></td></tr></table></figure>
+
+<p><strong>会话 2：普通读</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> <span class="keyword">user</span> <span class="keyword">WHERE</span> id<span class="operator">=</span><span class="number">1</span>; <span class="comment">-- 正常查询</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>会话 2：尝试写（被阻塞）</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">BEGIN</span>;</span><br><span class="line"><span class="keyword">UPDATE</span> <span class="keyword">user</span> <span class="keyword">SET</span> age<span class="operator">=</span><span class="number">22</span> <span class="keyword">WHERE</span> id<span class="operator">=</span><span class="number">1</span>; <span class="comment">-- 阻塞</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>会话 1：提交释放</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">COMMIT</span>;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="9-5-间隙锁与临键锁阻塞插入（RR）"><a href="#9-5-间隙锁与临键锁阻塞插入（RR）" class="headerlink" title="9.5 间隙锁与临键锁阻塞插入（RR）"></a>9.5 间隙锁与临键锁阻塞插入（RR）</h3><p>表内现有数据：<strong><code>id</code></strong> 为 <strong>1、2、3</strong>（与 <strong>9.1</strong> 插入一致）。</p>
+<p><strong>会话 1：范围查询加锁</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">BEGIN</span>;</span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> <span class="keyword">user</span> <span class="keyword">WHERE</span> id <span class="keyword">BETWEEN</span> <span class="number">1</span> <span class="keyword">AND</span> <span class="number">3</span> <span class="keyword">FOR</span> <span class="keyword">UPDATE</span>;</span><br><span class="line"><span class="comment">-- 不提交</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>会话 2：插入新行（被阻塞）</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">BEGIN</span>;</span><br><span class="line"><span class="keyword">INSERT INTO</span> <span class="keyword">user</span>(id,name,age) <span class="keyword">VALUES</span>(<span class="number">4</span>,<span class="string">&#x27;赵六&#x27;</span>,<span class="number">28</span>); <span class="comment">-- 直接阻塞</span></span><br></pre></td></tr></table></figure>
+<p>👉 原理：RR 级别临键锁+间隙锁，<strong>防止幻读，锁住区间不让插入</strong></p>
+<hr>
+<h3 id="9-6-经典死锁完整复现"><a href="#9-6-经典死锁完整复现" class="headerlink" title="9.6 经典死锁完整复现"></a>9.6 经典死锁完整复现</h3><p><strong>会话 1：第一步</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 事务1</span></span><br><span class="line"><span class="keyword">BEGIN</span>;</span><br><span class="line"><span class="keyword">UPDATE</span> <span class="keyword">user</span> <span class="keyword">SET</span> age<span class="operator">=</span><span class="number">21</span> <span class="keyword">WHERE</span> id<span class="operator">=</span><span class="number">1</span>;</span><br><span class="line"><span class="comment">-- 先持有 id=1 行锁</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>会话 2：第一步</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 事务2</span></span><br><span class="line"><span class="keyword">BEGIN</span>;</span><br><span class="line"><span class="keyword">UPDATE</span> <span class="keyword">user</span> <span class="keyword">SET</span> age<span class="operator">=</span><span class="number">26</span> <span class="keyword">WHERE</span> id<span class="operator">=</span><span class="number">2</span>;</span><br><span class="line"><span class="comment">-- 先持有 id=2 行锁</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>会话 1：第二步</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 事务1 尝试拿 id=2 锁，等待事务2</span></span><br><span class="line"><span class="keyword">UPDATE</span> <span class="keyword">user</span> <span class="keyword">SET</span> age<span class="operator">=</span><span class="number">22</span> <span class="keyword">WHERE</span> id<span class="operator">=</span><span class="number">2</span>;</span><br></pre></td></tr></table></figure>
+
+<p><strong>会话 2：第二步</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 事务2 尝试拿 id=1 锁，循环等待 → 立刻触发死锁</span></span><br><span class="line"><span class="keyword">UPDATE</span> <span class="keyword">user</span> <span class="keyword">SET</span> age<span class="operator">=</span><span class="number">27</span> <span class="keyword">WHERE</span> id<span class="operator">=</span><span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+
+<p>👉 现象：MySQL 自动检测死锁，<strong>直接回滚其中一个事务</strong>，报死锁错误。</p>
+<hr>
+<h3 id="9-7-查看锁状态与死锁日志"><a href="#9-7-查看锁状态与死锁日志" class="headerlink" title="9.7 查看锁状态与死锁日志"></a>9.7 查看锁状态与死锁日志</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 查看 InnoDB 锁、死锁详情</span></span><br><span class="line"><span class="keyword">SHOW</span> ENGINE INNODB STATUS;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 查看当前事务、锁等待</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> information_schema.innodb_trx;</span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> information_schema.innodb_locks;</span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> information_schema.innodb_lock_waits;</span><br></pre></td></tr></table></figure>
+
+<p><strong>说明</strong>：<strong>MySQL 8.0</strong> 起 <strong><code>information_schema.innodb_locks</code></strong>、<strong><code>innodb_lock_waits</code></strong> 已移除；<strong>8.0</strong> 请优先看 <strong><code>SHOW ENGINE INNODB STATUS</code></strong>，并结合 <strong><code>performance_schema</code></strong> 中 <strong><code>data_locks</code></strong> &#x2F; <strong><code>data_lock_waits</code></strong> 等表（与版本文档为准）。</p>
+<hr>
+<h3 id="9-8-脚本实验小结（看完九必记）"><a href="#9-8-脚本实验小结（看完九必记）" class="headerlink" title="9.8 脚本实验小结（看完九必记）"></a>9.8 脚本实验小结（看完九必记）</h3><ol>
+<li>行锁<strong>依赖索引</strong>，无索引直接降级表锁  </li>
+<li><strong><code>FOR UPDATE</code></strong> 排他锁、<strong><code>LOCK IN SHARE MODE</code></strong> 共享锁  </li>
+<li><strong>RR</strong> 隔离级别有<strong>临键锁 + 间隙锁</strong>，防幻读但会阻塞插入  </li>
+<li>多事务<strong>交叉更新不同行</strong>极易死锁，统一更新顺序可避免  </li>
+<li>长事务不提交 &#x3D; 锁不释放 &#x3D; 业务阻塞雪崩</li>
+</ol>
+<hr>
+<h2 id="十、五大实验：现象、原理与面试标准答"><a href="#十、五大实验：现象、原理与面试标准答" class="headerlink" title="十、五大实验：现象、原理与面试标准答"></a>十、五大实验：现象、原理与面试标准答</h2><p>与<strong>第九节</strong>中五个脚本场景一一对应：<strong>现象 → 底层原理 → 面试可直接背诵的表述</strong>。</p>
+<p><strong>统一前提</strong>：</p>
+<ul>
+<li>引擎：<strong>InnoDB</strong></li>
+<li>隔离级别：<strong>RR 可重复读（默认）</strong></li>
+<li>锁粒度：行锁依赖<strong>索引</strong>，无索引降级为表锁</li>
+</ul>
+<hr>
+<h3 id="实验一：行排他锁-FOR-UPDATE-阻塞演示"><a href="#实验一：行排他锁-FOR-UPDATE-阻塞演示" class="headerlink" title="实验一：行排他锁 FOR UPDATE 阻塞演示"></a>实验一：行排他锁 FOR UPDATE 阻塞演示</h3><h4 id="执行流程"><a href="#执行流程" class="headerlink" title="执行流程"></a>执行流程</h4><p>会话1：开启事务 → <code>id=1</code> 加 <code>FOR UPDATE</code> 不提交<br>会话2：修改 <code>id=1</code> 被阻塞；修改 <code>id=2</code> 正常执行</p>
+<h4 id="现象"><a href="#现象" class="headerlink" title="现象"></a>现象</h4><ol>
+<li>同一条主键记录：<strong>写操作被阻塞</strong></li>
+<li>不同主键记录：<strong>完全不受影响</strong></li>
+<li>会话1 <code>commit</code> 后，会话2立刻执行成功</li>
+</ol>
+<h4 id="底层原理"><a href="#底层原理" class="headerlink" title="底层原理"></a>底层原理</h4><ol>
+<li><code>FOR UPDATE</code> 加 <strong>行级排他锁（X锁）</strong></li>
+<li>排他锁规则：<strong>写写互斥、读写互斥</strong></li>
+<li>InnoDB 行锁<strong>只锁索引命中的单行</strong>，不影响其他行</li>
+</ol>
+<h4 id="面试标准答案"><a href="#面试标准答案" class="headerlink" title="面试标准答案"></a>面试标准答案</h4><blockquote>
+<p>InnoDB 中通过主键&#x2F;唯一索引精准查询加 <code>FOR UPDATE</code>，会加<strong>行级排他锁</strong>；只锁定当前命中的单行记录，其他行不受影响，能保证高并发。排他锁与任何读写操作都互斥，事务提交后锁自动释放。</p>
+</blockquote>
+<hr>
+<h3 id="实验二：无索引导致行锁退化为表锁"><a href="#实验二：无索引导致行锁退化为表锁" class="headerlink" title="实验二：无索引导致行锁退化为表锁"></a>实验二：无索引导致行锁退化为表锁</h3><h4 id="执行流程-1"><a href="#执行流程-1" class="headerlink" title="执行流程"></a>执行流程</h4><p>按无索引字段 <code>age=20</code> 更新，会话1不提交，会话2更新<strong>完全无关的 id&#x3D;2</strong> 也被阻塞</p>
+<h4 id="现象-1"><a href="#现象-1" class="headerlink" title="现象"></a>现象</h4><p>明明更新不同行，却<strong>整张表都被锁住</strong>，所有写操作全部阻塞</p>
+<h4 id="底层原理-1"><a href="#底层原理-1" class="headerlink" title="底层原理"></a>底层原理</h4><ol>
+<li>InnoDB <strong>行锁是锁索引，不是锁数据行</strong></li>
+<li>条件字段<strong>无索引</strong>，MySQL 无法定位具体行</li>
+<li>只能逐行加行锁扫描全表，最终<strong>退化成表级锁</strong></li>
+</ol>
+<h4 id="面试标准答案-1"><a href="#面试标准答案-1" class="headerlink" title="面试标准答案"></a>面试标准答案</h4><blockquote>
+<p>InnoDB 行锁<strong>必须依赖索引</strong>。如果更新&#x2F;删除条件没有索引或索引失效，MySQL 无法精确定位行记录，会扫描全表并逐行加锁，最终<strong>行锁降级为表锁</strong>，严重降低并发性能，开发中必须保证更新条件走索引。</p>
+</blockquote>
+<hr>
+<h3 id="实验三：共享锁与读写互斥演示"><a href="#实验三：共享锁与读写互斥演示" class="headerlink" title="实验三：共享锁与读写互斥演示"></a>实验三：共享锁与读写互斥演示</h3><h4 id="执行流程-2"><a href="#执行流程-2" class="headerlink" title="执行流程"></a>执行流程</h4><p>会话1：<code>LOCK IN SHARE MODE</code> 加共享锁<br>会话2：普通<code>SELECT</code>能查，<code>UPDATE/DELETE</code>被阻塞</p>
+<h4 id="现象-2"><a href="#现象-2" class="headerlink" title="现象"></a>现象</h4><ol>
+<li><strong>多个事务可以同时加共享锁</strong>（读读兼容）</li>
+<li>加了共享锁后，其他事务<strong>不能加排他锁、不能修改数据</strong></li>
+<li>事务提交后，写操作立刻放行</li>
+</ol>
+<h4 id="底层原理-2"><a href="#底层原理-2" class="headerlink" title="底层原理"></a>底层原理</h4><ul>
+<li>共享锁（S锁）：<strong>读读兼容，读写互斥</strong></li>
+<li>意向锁辅助，S锁阻塞所有写操作，保证数据当前快照不被修改</li>
+</ul>
+<h4 id="面试标准答案-2"><a href="#面试标准答案-2" class="headerlink" title="面试标准答案"></a>面试标准答案</h4><blockquote>
+<p>共享锁（S锁）又叫读锁，使用 <code>LOCK IN SHARE MODE</code> 加锁。特性是<strong>读读可以并发，读写、写写互斥</strong>；适合需要强一致性、临时禁止别人修改数据的场景，事务提交自动释放锁。</p>
+</blockquote>
+<hr>
+<h3 id="实验四：间隙锁与临键锁阻塞插入（RR-与幻读）"><a href="#实验四：间隙锁与临键锁阻塞插入（RR-与幻读）" class="headerlink" title="实验四：间隙锁与临键锁阻塞插入（RR 与幻读）"></a>实验四：间隙锁与临键锁阻塞插入（RR 与幻读）</h3><h4 id="执行流程-3"><a href="#执行流程-3" class="headerlink" title="执行流程"></a>执行流程</h4><p>会话1：范围查询 <code>between 1 and 3 for update</code> 不提交<br>会话2：插入区间内新 ID，直接被阻塞</p>
+<h4 id="现象-3"><a href="#现象-3" class="headerlink" title="现象"></a>现象</h4><p>没有任何行被修改，<strong>只是范围加锁</strong>，却无法往区间里插入新数据</p>
+<h4 id="底层原理-3"><a href="#底层原理-3" class="headerlink" title="底层原理"></a>底层原理</h4><ol>
+<li>MySQL RR 隔离级别默认使用 <strong>Next-Key Lock 临键锁</strong></li>
+<li>临键锁 &#x3D; 记录锁 + 间隙锁</li>
+<li>范围查询会锁住<strong>索引区间间隙</strong>，禁止其他事务插入新记录，<strong>解决幻读</strong></li>
+<li>间隙锁只在 <strong>RR</strong> 存在，<strong>RC 隔离级别没有间隙锁</strong></li>
+</ol>
+<h4 id="面试标准答案-3"><a href="#面试标准答案-3" class="headerlink" title="面试标准答案"></a>面试标准答案</h4><blockquote>
+<p>InnoDB 在 RR 可重复读隔离级别下，采用<strong>临键锁（Next-Key Lock）</strong> 解决幻读。临键锁由记录锁+间隙锁组成，范围查询会锁定索引左右间隙，禁止其他事务在区间内插入数据；RC 读已提交级别会关闭间隙锁，因此无法彻底避免幻读，但并发更高。</p>
+</blockquote>
+<hr>
+<h3 id="实验五：经典死锁复现"><a href="#实验五：经典死锁复现" class="headerlink" title="实验五：经典死锁复现"></a>实验五：经典死锁复现</h3><h4 id="执行流程-4"><a href="#执行流程-4" class="headerlink" title="执行流程"></a>执行流程</h4><ul>
+<li>事务1：先锁 id&#x3D;1 → 再请求锁 id&#x3D;2</li>
+<li>事务2：先锁 id&#x3D;2 → 再请求锁 id&#x3D;1</li>
+<li>互相等待，立刻触发死锁，MySQL 自动回滚一个事务</li>
+</ul>
+<h4 id="现象-4"><a href="#现象-4" class="headerlink" title="现象"></a>现象</h4><ol>
+<li>互相持有对方需要的锁，循环等待</li>
+<li>InnoDB <strong>自动死锁检测</strong>，回滚代价小的事务，抛出死锁异常</li>
+<li>不会无限阻塞</li>
+</ol>
+<h4 id="底层原理-4"><a href="#底层原理-4" class="headerlink" title="底层原理"></a>底层原理</h4><p>死锁产生<strong>四个必要条件</strong>同时满足：</p>
+<ol>
+<li>互斥条件：锁资源独占</li>
+<li>持有并等待：自己拿着锁，还等别人的锁</li>
+<li>不可剥夺：锁不能被强行抢占</li>
+<li>循环等待：事务形成等待环路</li>
+</ol>
+<h4 id="面试标准答案（必背）"><a href="#面试标准答案（必背）" class="headerlink" title="面试标准答案（必背）"></a>面试标准答案（必背）</h4><blockquote>
+<p>死锁产生必须同时满足四个条件：<strong>互斥、持有并等待、不可剥夺、循环等待</strong>。<br>规避方案：</p>
+<ol>
+<li>统一多事务<strong>访问资源的顺序</strong>；</li>
+<li>拆分长事务，尽早提交；</li>
+<li>避免在事务中做无关耗时操作；</li>
+<li>合理设置锁等待超时时间。<br>InnoDB 自带<strong>死锁检测机制</strong>，发现循环等待会自动回滚一个事务，避免程序卡死。</li>
+</ol>
+</blockquote>
+<hr>
+<h2 id="十一、面试高频一句话速记"><a href="#十一、面试高频一句话速记" class="headerlink" title="十一、面试高频一句话速记"></a>十一、面试高频一句话速记</h2><ol>
+<li>行锁<strong>靠索引</strong>，无索引变表锁  </li>
+<li><strong>S</strong> 锁读读兼容，<strong>X</strong> 锁完全独占  </li>
+<li><strong>RR</strong> 有间隙锁防幻读，<strong>RC</strong> 没有  </li>
+<li>交叉改不同行、顺序乱写易出死锁</li>
+</ol>
+<hr>
+<h2 id="十二、二十道高频面试题与标准答"><a href="#十二、二十道高频面试题与标准答" class="headerlink" title="十二、二十道高频面试题与标准答"></a>十二、二十道高频面试题与标准答</h2><p>全部<strong>面试可直接背诵</strong>，基于 <strong>InnoDB</strong>、<strong>RR</strong> 隔离级别，精简不废话。</p>
+<h3 id="1-MySQL-有哪些锁分类？"><a href="#1-MySQL-有哪些锁分类？" class="headerlink" title="1. MySQL 有哪些锁分类？"></a>1. MySQL 有哪些锁分类？</h3><p><strong>答案</strong></p>
+<ol>
+<li>按粒度：<strong>全局锁、表级锁、行级锁</strong></li>
+<li>按读写：<strong>共享锁S、排他锁X</strong></li>
+<li>InnoDB 特有：<strong>意向锁、记录锁、间隙锁、临键锁</strong></li>
+</ol>
+<h3 id="2-全局锁作用是什么？怎么加？"><a href="#2-全局锁作用是什么？怎么加？" class="headerlink" title="2. 全局锁作用是什么？怎么加？"></a>2. 全局锁作用是什么？怎么加？</h3><p><strong>答案</strong><br>整库只读，所有库表只能读不能写、阻塞 DDL&#x2F;DML。<br>加锁：<code>FLUSH TABLES WITH READ LOCK;</code><br>解锁：<code>UNLOCK TABLES;</code><br>多用于全库逻辑备份；生产优先用 <code>mysqldump --single-transaction</code> 快照备份，不加锁。</p>
+<h3 id="3-什么是-MDL-元数据锁？"><a href="#3-什么是-MDL-元数据锁？" class="headerlink" title="3. 什么是 MDL 元数据锁？"></a>3. 什么是 MDL 元数据锁？</h3><p><strong>答案</strong><br>访问表时<strong>自动加</strong>，保护表结构不被中途修改&#x2F;删除。<br>长事务不提交 + 执行 DDL 改表结构，会造成 MDL 锁等待阻塞，线上高发故障点。</p>
+<h3 id="4-表锁和行锁区别？"><a href="#4-表锁和行锁区别？" class="headerlink" title="4. 表锁和行锁区别？"></a>4. 表锁和行锁区别？</h3><p><strong>答案</strong></p>
+<ul>
+<li>表锁：粒度大、开销小、并发低、MyISAM 默认</li>
+<li>行锁：粒度小、开销大、并发高、InnoDB 支持<br>InnoDB 优先用行锁提升并发。</li>
+</ul>
+<h3 id="5-共享锁S、排他锁X-特性？"><a href="#5-共享锁S、排他锁X-特性？" class="headerlink" title="5. 共享锁S、排他锁X 特性？"></a>5. 共享锁S、排他锁X 特性？</h3><p><strong>答案</strong></p>
+<ul>
+<li>共享锁S：<strong>读读兼容，读写&#x2F;写写互斥</strong></li>
+<li>排他锁X：<strong>读写、写写全部互斥，独占资源</strong><br>加锁：<br>S：<code>select ... lock in share mode</code><br>X：<code>select ... for update</code></li>
+</ul>
+<h3 id="6-意向锁-IS-IX-作用？"><a href="#6-意向锁-IS-IX-作用？" class="headerlink" title="6. 意向锁 IS&#x2F;IX 作用？"></a>6. 意向锁 IS&#x2F;IX 作用？</h3><p><strong>答案</strong><br>意向锁是<strong>表级锁</strong>，事务加行锁前必须先加意向锁。<br>作用：快速判断表内是否有行锁，不用遍历所有行锁，提升加锁效率。</p>
+<ul>
+<li>IS：要加 S 行锁</li>
+<li>IX：要加 X 行锁<br>意向锁之间互相兼容，只和表级 S&#x2F;X 锁互斥。</li>
+</ul>
+<h3 id="7-InnoDB-行锁本质是什么？"><a href="#7-InnoDB-行锁本质是什么？" class="headerlink" title="7. InnoDB 行锁本质是什么？"></a>7. InnoDB 行锁本质是什么？</h3><p><strong>答案</strong><br><strong>行锁锁的是索引，不是物理数据行</strong>。<br>查询条件<strong>无索引、索引失效</strong>，行锁会<strong>退化成表锁</strong>，并发骤降。</p>
+<h3 id="8-什么情况下行锁会降级为表锁？"><a href="#8-什么情况下行锁会降级为表锁？" class="headerlink" title="8. 什么情况下行锁会降级为表锁？"></a>8. 什么情况下行锁会降级为表锁？</h3><p><strong>答案</strong></p>
+<ol>
+<li>where 条件<strong>无索引字段</strong></li>
+<li>索引失效（函数、隐式类型转换、like 前缀模糊等）</li>
+<li>没有命中任何记录，全表扫描加锁</li>
+</ol>
+<h3 id="9-InnoDB-三种行锁算法？"><a href="#9-InnoDB-三种行锁算法？" class="headerlink" title="9. InnoDB 三种行锁算法？"></a>9. InnoDB 三种行锁算法？</h3><p><strong>答案</strong></p>
+<ol>
+<li><strong>记录锁</strong>：锁单行索引记录</li>
+<li><strong>间隙锁 Gap Lock</strong>：锁索引间隙，不锁记录，防止幻读插入</li>
+<li><strong>临键锁 Next-Key Lock</strong> &#x3D; 记录锁+间隙锁，左开右闭区间，RR 默认</li>
+</ol>
+<h3 id="10-间隙锁什么时候生效？什么时候关闭？"><a href="#10-间隙锁什么时候生效？什么时候关闭？" class="headerlink" title="10. 间隙锁什么时候生效？什么时候关闭？"></a>10. 间隙锁什么时候生效？什么时候关闭？</h3><p><strong>答案</strong></p>
+<ul>
+<li>生效：<strong>RR 可重复读</strong>隔离级别、范围查询&#x2F;不走唯一索引等值查询</li>
+<li>关闭：<strong>RC 读已提交</strong> 没有间隙锁，并发更高，但会有幻读</li>
+</ul>
+<h3 id="11-临键锁解决了什么问题？"><a href="#11-临键锁解决了什么问题？" class="headerlink" title="11. 临键锁解决了什么问题？"></a>11. 临键锁解决了什么问题？</h3><p><strong>答案</strong><br>在 RR 隔离级别下，通过<strong>临键锁+间隙锁</strong>彻底<strong>解决幻读</strong>，禁止其他事务在索引区间插入新数据。</p>
+<h3 id="12-什么是幻读？怎么解决？"><a href="#12-什么是幻读？怎么解决？" class="headerlink" title="12. 什么是幻读？怎么解决？"></a>12. 什么是幻读？怎么解决？</h3><p><strong>答案</strong><br>同一事务内，前后两次范围查询，查到别人新插入的数据。<br>解决：</p>
+<ul>
+<li>数据库层：InnoDB RR + 临键锁</li>
+<li>业务层：悲观锁、分布式锁限制插入</li>
+</ul>
+<h3 id="13-死锁产生的四个必要条件？"><a href="#13-死锁产生的四个必要条件？" class="headerlink" title="13. 死锁产生的四个必要条件？"></a>13. 死锁产生的四个必要条件？</h3><p><strong>答案</strong></p>
+<ol>
+<li>互斥：锁资源独占</li>
+<li>持有并等待：拿着自己的锁，等待别人的锁</li>
+<li>不可剥夺：锁不能被强行抢占</li>
+<li>循环等待：事务互相等待形成环路</li>
+</ol>
+<h3 id="14-MySQL-怎么处理死锁？"><a href="#14-MySQL-怎么处理死锁？" class="headerlink" title="14. MySQL 怎么处理死锁？"></a>14. MySQL 怎么处理死锁？</h3><p><strong>答案</strong><br>InnoDB 有<strong>自动死锁检测</strong>，检测到循环等待后，<strong>自动回滚代价更小的一个事务</strong>，抛出死锁异常，避免无限阻塞。</p>
+<h3 id="15-如何避免-MySQL-死锁？"><a href="#15-如何避免-MySQL-死锁？" class="headerlink" title="15. 如何避免 MySQL 死锁？"></a>15. 如何避免 MySQL 死锁？</h3><p><strong>答案</strong></p>
+<ol>
+<li>统一所有事务<strong>访问资源&#x2F;更新行的顺序</strong></li>
+<li>精简事务，<strong>避免长事务</strong>，尽早 commit</li>
+<li>事务内不做耗时网络&#x2F;IO 操作</li>
+<li>合理设置锁等待超时 <code>innodb_lock_wait_timeout</code></li>
+</ol>
+<h3 id="16-for-update-和-lock-in-share-mode-区别？"><a href="#16-for-update-和-lock-in-share-mode-区别？" class="headerlink" title="16. for update 和 lock in share mode 区别？"></a>16. for update 和 lock in share mode 区别？</h3><p><strong>答案</strong></p>
+<ul>
+<li><code>for update</code>：加<strong>排他锁X</strong>，别人不能读也不能改</li>
+<li><code>lock in share mode</code>：加<strong>共享锁S</strong>，别人可以读、不能改</li>
+</ul>
+<h3 id="17-RR-和-RC-在锁层面最大区别？"><a href="#17-RR-和-RC-在锁层面最大区别？" class="headerlink" title="17. RR 和 RC 在锁层面最大区别？"></a>17. RR 和 RC 在锁层面最大区别？</h3><p><strong>答案</strong></p>
+<ol>
+<li>RR 有<strong>间隙锁&#x2F;临键锁</strong>，防幻读；RC 没有</li>
+<li>RC 行锁范围更小、并发更高，但存在幻读</li>
+<li>RC 锁释放更早，阻塞更少</li>
+</ol>
+<h3 id="18-长事务有什么锁风险？"><a href="#18-长事务有什么锁风险？" class="headerlink" title="18. 长事务有什么锁风险？"></a>18. 长事务有什么锁风险？</h3><p><strong>答案</strong><br>长事务不提交：</p>
+<ol>
+<li>行锁、MDL 锁长期不释放</li>
+<li>造成大量锁等待、业务阻塞</li>
+<li>undo log 不能清理，占用磁盘</li>
+<li>容易触发死锁、数据库性能雪崩</li>
+</ol>
+<h3 id="19-如何查看-MySQL-当前锁和死锁？"><a href="#19-如何查看-MySQL-当前锁和死锁？" class="headerlink" title="19. 如何查看 MySQL 当前锁和死锁？"></a>19. 如何查看 MySQL 当前锁和死锁？</h3><p><strong>答案</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 查看最近死锁、锁详情</span></span><br><span class="line"><span class="keyword">SHOW</span> ENGINE INNODB STATUS;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 查看事务、锁、锁等待</span></span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> information_schema.innodb_trx;</span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> information_schema.innodb_locks;</span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> information_schema.innodb_lock_waits;</span><br></pre></td></tr></table></figure>
+
+<h3 id="20-线上开发写-UPDATE-防锁坑要注意什么？"><a href="#20-线上开发写-UPDATE-防锁坑要注意什么？" class="headerlink" title="20. 线上开发写 UPDATE 防锁坑要注意什么？"></a>20. 线上开发写 UPDATE 防锁坑要注意什么？</h3><p><strong>答案</strong></p>
+<ol>
+<li>更新条件<strong>必须走索引</strong>，防止行锁变表锁</li>
+<li>尽量用<strong>主键&#x2F;唯一索引</strong>精准等值，少用范围查询</li>
+<li>事务尽量短小，及时提交</li>
+<li>禁止大事务批量更新、避免范围锁区间过大</li>
+<li>统一更新顺序，避免交叉更新产生死锁</li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/02/Cloud/Docker-1Panel/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/05/02/Cloud/Docker-1Panel/" class="post-title-link" itemprop="url">Docker 部署 1Panel</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-05-02 01:59:40" itemprop="dateCreated datePublished" datetime="2026-05-02T01:59:40+08:00">2026-05-02</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-05-03 00:33:50" itemprop="dateModified" datetime="2026-05-03T00:33:50+08:00">2026-05-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Cloud/" itemprop="url" rel="index"><span itemprop="name">Cloud</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>1.5k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>5 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>在已安装 <strong>Docker</strong> 的环境中，可用 <strong><code>docker run</code></strong> 拉起 <strong>1Panel V2</strong>（社区镜像 <strong><code>moelin/1panel</code></strong>，非 <strong>FIT2CLOUD</strong> 官方安装包；升级路径与支持策略与官方宿主版可能不同）。镜像说明、标签与环境变量以 <strong><a target="_blank" rel="noopener external nofollow noreferrer" href="https://hub.docker.com/r/moelin/1panel">Docker Hub：moelin&#x2F;1panel</a></strong> 为准；生产请固定<strong>小版本标签</strong>（如 <strong><code>moelin/1panel:v2.0.6</code></strong>），勿盲目追 <strong><code>latest</code></strong>。官方在线安装见：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://1panel.cn/docs/v2/installation/online_installation/">在线安装</a>。</p>
+<p>部署按宿主机与引擎分<strong>两类</strong>，下文<strong>分开写</strong>，勿混用 <strong><code>--network host</code></strong> 与 <strong><code>-p</code></strong>：</p>
+<ol>
+<li><strong>Windows + Docker Desktop + WSL</strong>：在 <strong>WSL</strong>（如 <strong>Rocky Linux 10</strong> 等发行版）或 <strong>Windows CMD</strong> 里执行 <strong><code>docker run</code></strong>，引擎为 <strong>Docker Desktop</strong> 时须用<strong>端口映射</strong>。  </li>
+<li><strong>Linux Docker 主机</strong>：云服务器、物理机或虚拟机内<strong>原生 Docker Engine</strong>，可用 <strong><code>--network host</code></strong>。</li>
+</ol>
+<hr>
+<h2 id="共用前提"><a href="#共用前提" class="headerlink" title="共用前提"></a>共用前提</h2><ul>
+<li><strong><code>docker version</code></strong> 客户端与 <strong>Server</strong> 均正常，能拉取 <strong>Docker Hub</strong>（或已配置镜像加速）。  </li>
+<li>建议内存 <strong>≥ 1GB</strong>；多架构以 <strong>Hub</strong> 页为准。  </li>
+<li>将 <strong><code>PASSWORD</code></strong>、<strong><code>ENTRANCE</code></strong> 等换成自己的值；变量含义见文末 <strong>「常用环境变量」</strong>。</li>
+</ul>
+<hr>
+<h2 id="第一类：Windows-Docker-Desktop-WSL"><a href="#第一类：Windows-Docker-Desktop-WSL" class="headerlink" title="第一类：Windows + Docker Desktop + WSL"></a>第一类：Windows + Docker Desktop + WSL</h2><p><strong>场景</strong>：宿主机为 <strong>Windows</strong>，容器由 <strong>Docker Desktop</strong> 提供引擎；你在 <strong>WSL</strong> 里打开终端（发行版可为 <strong>Rocky Linux 10</strong>、<strong>Ubuntu</strong> 等），<strong><code>docker version</code></strong> 的 <strong>Server</strong> 往往显示 <strong>Docker Desktop</strong> 或上下文为 <strong>desktop-linux</strong>。此时容器里的 <strong><code>host</code></strong> 网络与你在 <strong>WSL</strong> 里访问的 <strong><code>localhost</code></strong> 不是同一概念，<strong>不要</strong>使用 <strong><code>--network host</code></strong>，应使用 <strong><code>-p &lt;PORT&gt;:&lt;PORT&gt;</code></strong>。</p>
+<p>若曾误用 <strong><code>host</code></strong> 建过同名容器，先 <strong><code>docker rm -f 1panel-v2</code></strong> 再按本节重建。</p>
+<h3 id="WSL-Git-Bash-macOS（行末-续行）"><a href="#WSL-Git-Bash-macOS（行末-续行）" class="headerlink" title="WSL &#x2F; Git Bash &#x2F; macOS（行末 \ 续行）"></a>WSL &#x2F; Git Bash &#x2F; macOS（行末 <code>\</code> 续行）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># wsl子系统rocky-10中执行不能正常访问，猜测子系统无ip</span></span><br><span class="line">docker run -d\</span><br><span class="line">  --name 1panel-v2\</span><br><span class="line">  --restart always\</span><br><span class="line">  -p 10086:10086\</span><br><span class="line">  -v /var/run/docker.sock:/var/run/docker.sock\</span><br><span class="line">  -v /opt:/opt\</span><br><span class="line">  -e TZ=Asia/Shanghai\</span><br><span class="line">  -e PORT=10086\</span><br><span class="line">  -e USERNAME=admin\</span><br><span class="line">  -e PASSWORD=<span class="string">&#x27;pi=3.1415&#x27;</span>\</span><br><span class="line">  -e ENTRANCE=<span class="string">&#x27;panel-v2&#x27;</span>\</span><br><span class="line">  -e BASE_DIR=/opt\</span><br><span class="line">  moelin/1panel:v2</span><br></pre></td></tr></table></figure>
+
+<h3 id="Windows-CMD（行末-续行）"><a href="#Windows-CMD（行末-续行）" class="headerlink" title="Windows CMD（行末 ^ 续行）"></a>Windows CMD（行末 <code>^</code> 续行）</h3><p><strong><code>^</code></strong> 须为行末最后一个字符（后无空格），末行不写 <strong><code>^</code></strong>。<strong><code>-e</code></strong> 的值在 <strong>CMD</strong> 里用双引号较稳妥。</p>
+<figure class="highlight bat"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">docker run -d^</span><br><span class="line">  --name <span class="number">1</span>panel-v2^</span><br><span class="line">  --restart always^</span><br><span class="line">  -p <span class="number">10086</span>:<span class="number">10086</span>^</span><br><span class="line">  -v /var/run/docker.sock:/var/run/docker.sock^</span><br><span class="line">  -v /opt:/opt^</span><br><span class="line">  -e TZ=Asia/Shanghai^</span><br><span class="line">  -e PORT=<span class="number">10086</span>^</span><br><span class="line">  -e USERNAME=admin^</span><br><span class="line">  -e PASSWORD=&quot;pi=<span class="number">3</span>.<span class="number">1415</span>&quot;^</span><br><span class="line">  -e ENTRANCE=&quot;panel-v2&quot;^</span><br><span class="line">  -e BASE_DIR=/opt^</span><br><span class="line">  moelin/<span class="number">1</span>panel:v2</span><br></pre></td></tr></table></figure>
+
+<p><strong>卷说明</strong>（与 <strong>Linux</strong> 类一致，路径在 <strong>Docker Desktop</strong> 下仍写 <strong><code>/var/run/docker.sock</code></strong>、<strong><code>/opt</code></strong>，由 <strong>Desktop</strong> 映射到引擎；异常时以当前 <strong>Desktop</strong> 文档为准。若 <strong><code>-v</code></strong> 与 <strong>WSL2 &#x2F; Linux 容器</strong> 后端要求不符，按 <strong>Docker Desktop</strong> 文档调整。）</p>
+<h3 id="浏览器访问（本机）"><a href="#浏览器访问（本机）" class="headerlink" title="浏览器访问（本机）"></a>浏览器访问（本机）</h3><p>多数情况：<strong><code>http://127.0.0.1:10086/&lt;ENTRANCE&gt;</code></strong>（与示例 <strong><code>ENTRANCE</code></strong> 一致时）。在 <strong>WSL</strong> 内若 <strong><code>localhost</code></strong> 仍不通，可试 <strong><code>http://$(grep -m1 &#39;^nameserver&#39; /etc/resolv.conf | awk &#39;{print $2}&#39;):10086/&lt;ENTRANCE&gt;</code></strong>（常为 <strong>WSL2</strong> 下可达的 <strong>Windows</strong> 主机 <strong>IP</strong>，以本机为准）。</p>
+<h3 id="可选：docker-compose（端口映射）"><a href="#可选：docker-compose（端口映射）" class="headerlink" title="可选：docker compose（端口映射）"></a>可选：<code>docker compose</code>（端口映射）</h3><p>将下文保存为同目录下的 <strong><code>compose.yaml</code></strong> 或 <strong><code>docker-compose.yml</code></strong>（二选一即可，<strong>Compose V2</strong> 默认会读取二者）。<strong>Docker Desktop &#x2F; WSL</strong> 使用 <strong><code>ports</code></strong>，<strong>不要</strong>写 <strong><code>network_mode: host</code></strong>。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># compose.yaml（或 docker-compose.yml）</span></span><br><span class="line"><span class="attr">services:</span></span><br><span class="line">  <span class="attr">1panel-v2:</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">1panel-v2</span></span><br><span class="line">    <span class="attr">restart:</span> <span class="string">always</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">moelin/1panel:v2</span></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;10086:10086&quot;</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">/var/run/docker.sock:/var/run/docker.sock</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">/opt:/opt</span></span><br><span class="line">    <span class="attr">environment:</span></span><br><span class="line">      <span class="attr">TZ:</span> <span class="string">Asia/Shanghai</span></span><br><span class="line">      <span class="attr">PORT:</span> <span class="string">&quot;10086&quot;</span></span><br><span class="line">      <span class="attr">USERNAME:</span> <span class="string">admin</span></span><br><span class="line">      <span class="attr">PASSWORD:</span> <span class="string">&quot;请改为强密码&quot;</span></span><br><span class="line">      <span class="attr">ENTRANCE:</span> <span class="string">&quot;请改为安全入口&quot;</span></span><br><span class="line">      <span class="attr">BASE_DIR:</span> <span class="string">/opt</span></span><br></pre></td></tr></table></figure>
+
+<p>在同目录执行 <strong><code>docker compose up -d</code></strong>。</p>
+<hr>
+<h2 id="第二类：Linux-Docker-主机"><a href="#第二类：Linux-Docker-主机" class="headerlink" title="第二类：Linux Docker 主机"></a>第二类：Linux Docker 主机</h2><p><strong>场景</strong>：<strong>Linux</strong> 云服务器、物理机或虚拟机内安装 <strong>Docker Engine</strong>（<strong>非 Docker Desktop</strong> 作为服务端）。可用 <strong><code>--network host</code></strong>，面板监听端口即宿主机端口，与安全组、防火墙规则一致。</p>
+<h3 id="多行-docker-run（-network-host）"><a href="#多行-docker-run（-network-host）" class="headerlink" title="多行 docker run（--network host）"></a>多行 <code>docker run</code>（<code>--network host</code>）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">docker run -d \</span><br><span class="line">  --name 1panel-v2 \</span><br><span class="line">  --restart always \</span><br><span class="line">  --network host \</span><br><span class="line">  -v /var/run/docker.sock:/var/run/docker.sock \</span><br><span class="line">  -v /opt:/opt \</span><br><span class="line">  -e TZ=Asia/Shanghai \</span><br><span class="line">  -e PORT=10086 \</span><br><span class="line">  -e USERNAME=admin \</span><br><span class="line">  -e PASSWORD=<span class="string">&#x27;pi=3.1415&#x27;</span> \</span><br><span class="line">  -e ENTRANCE=<span class="string">&#x27;panel-v2&#x27;</span> \</span><br><span class="line">  -e BASE_DIR=/opt \</span><br><span class="line">  moelin/1panel:v2</span><br></pre></td></tr></table></figure>
+
+<p><strong><code>-v /var/run/docker.sock</code></strong>：面板管理宿主机 <strong>Docker</strong>。<br><strong><code>-v /opt:/opt</code></strong> 与 <strong><code>BASE_DIR=/opt</code></strong>：数据目录可改，须与挂载路径同步。<br><strong><code>moelin/1panel:v2</code></strong>：跟踪 <strong>V2</strong> 最新构建；生产建议改为 <strong>Hub</strong> 具体版本号。</p>
+<h3 id="可选：docker-compose（host-网络）"><a href="#可选：docker-compose（host-网络）" class="headerlink" title="可选：docker compose（host 网络）"></a>可选：<code>docker compose</code>（<code>host</code> 网络）</h3><p>将下文保存为同目录下的 <strong><code>compose.yaml</code></strong> 或 <strong><code>docker-compose.yml</code></strong>。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># compose.yaml（或 docker-compose.yml）</span></span><br><span class="line"><span class="attr">services:</span></span><br><span class="line">  <span class="attr">1panel-v2:</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">1panel-v2</span></span><br><span class="line">    <span class="attr">restart:</span> <span class="string">always</span></span><br><span class="line">    <span class="attr">network_mode:</span> <span class="string">host</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">moelin/1panel:v2</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">/var/run/docker.sock:/var/run/docker.sock</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">/opt:/opt</span></span><br><span class="line">    <span class="attr">environment:</span></span><br><span class="line">      <span class="attr">TZ:</span> <span class="string">Asia/Shanghai</span></span><br><span class="line">      <span class="attr">PORT:</span> <span class="string">&quot;10086&quot;</span></span><br><span class="line">      <span class="attr">USERNAME:</span> <span class="string">admin</span></span><br><span class="line">      <span class="attr">PASSWORD:</span> <span class="string">&quot;请改为强密码&quot;</span></span><br><span class="line">      <span class="attr">ENTRANCE:</span> <span class="string">&quot;请改为安全入口&quot;</span></span><br><span class="line">      <span class="attr">BASE_DIR:</span> <span class="string">/opt</span></span><br></pre></td></tr></table></figure>
+
+<p>在同目录执行 <strong><code>docker compose up -d</code></strong>。</p>
+<hr>
+<h2 id="常用环境变量（V2）"><a href="#常用环境变量（V2）" class="headerlink" title="常用环境变量（V2）"></a>常用环境变量（V2）</h2><table>
+<thead>
+<tr>
+<th>变量</th>
+<th>默认值（未设置时）</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong><code>PORT</code></strong></td>
+<td><strong><code>10086</code></strong></td>
+<td>Web 端口</td>
+</tr>
+<tr>
+<td><strong><code>USERNAME</code></strong></td>
+<td><strong><code>1panel</code></strong></td>
+<td>管理员用户名</td>
+</tr>
+<tr>
+<td><strong><code>PASSWORD</code></strong></td>
+<td>随机或默认（见 <strong>Hub</strong>）</td>
+<td>登录控制台密码，务必改为强密码或从日志读取随机值</td>
+</tr>
+<tr>
+<td><strong><code>ENTRANCE</code></strong></td>
+<td><strong><code>entrance</code></strong></td>
+<td>安全入口的 <strong>URL 路径前缀</strong>（非第二端口），访问 <strong><code>http://IP:PORT/ENTRANCE</code></strong>，用于降低默认路径被扫的概率</td>
+</tr>
+<tr>
+<td><strong><code>BASE_DIR</code></strong></td>
+<td><strong><code>/opt</code></strong></td>
+<td>数据目录，需与 <strong><code>/opt</code></strong> 挂载一致</td>
+</tr>
+<tr>
+<td><strong><code>TZ</code></strong></td>
+<td>常见 <strong><code>Asia/Shanghai</code></strong></td>
+<td>时区</td>
+</tr>
+<tr>
+<td><strong><code>RESET</code></strong></td>
+<td><strong><code>false</code></strong></td>
+<td>置 <strong><code>true</code></strong> 可强制重置配置（慎用）</td>
+</tr>
+</tbody></table>
+<p>完整说明与 <strong>V1</strong>、<strong>Global</strong> 标签见 <strong>Hub</strong> 文档。</p>
+<hr>
+<h2 id="访问与日常命令（Linux-公网）"><a href="#访问与日常命令（Linux-公网）" class="headerlink" title="访问与日常命令（Linux 公网）"></a>访问与日常命令（Linux 公网）</h2><p>浏览器访问（云服务器需在安全组放行 <strong><code>PORT</code></strong>）：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://&lt;服务器 IP&gt;:&lt;PORT&gt;/&lt;ENTRANCE&gt;</span><br></pre></td></tr></table></figure>
+
+<p>首次未显式设置强密码时，镜像可能生成随机密码：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker logs 1panel-v2</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">docker logs -f 1panel-v2</span><br><span class="line">docker restart 1panel-v2</span><br><span class="line">docker <span class="built_in">exec</span> -it 1panel-v2 bash   <span class="comment"># 进入容器后可用 1pctl 等（以镜像内为准）</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>禁止</strong>在容器内随意点面板「更新」覆盖社区镜像行为；升级应 <strong><code>docker pull</code> 新镜像 → 备份数据卷 → 按 <strong>Hub</strong> 说明重建容器</strong>。</p>
+<p><strong>V1 → V2</strong> 不可直接原地升级，须按官方迁移说明：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://1panel.cn/docs/v2/installation/v1_migrate/">V1 迁移到 V2</a>。</p>
+<hr>
+<h2 id="官方脚本安装（对照）"><a href="#官方脚本安装（对照）" class="headerlink" title="官方脚本安装（对照）"></a>官方脚本安装（对照）</h2><p>若希望使用 <strong>FIT2CLOUD</strong> 官方脚本在<strong>宿主机</strong>安装（非本镜像）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bash -c <span class="string">&quot;<span class="subst">$(curl -sSL https://resource.fit2cloud.com/1panel/package/v2/quick_start.sh)</span>&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>与 <strong>Docker</strong> 一键方案二选一，避免同一主机装两套面板。</p>
+<hr>
+<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><table>
+<thead>
+<tr>
+<th>项</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>第一类（Windows + Docker Desktop + WSL）</strong></td>
+<td><strong><code>-p 10086:10086</code></strong>；<strong>WSL</strong> 内 <strong>Bash</strong> 或 <strong>Windows CMD</strong> 见上文；<strong>compose</strong> 用 <strong><code>ports</code></strong>，不用 <strong><code>network_mode: host</code></strong></td>
+</tr>
+<tr>
+<td><strong>第二类（Linux Docker 主机）</strong></td>
+<td><strong><code>--network host</code></strong> 或 <strong>compose</strong> 的 <strong><code>network_mode: host</code></strong>；一条命令见上文</td>
+</tr>
+<tr>
+<td>数据</td>
+<td><strong><code>/opt</code></strong> 与 <strong><code>BASE_DIR</code></strong> 一致；挂载 <strong><code>docker.sock</code></strong> 以便管 <strong>Docker</strong></td>
+</tr>
+<tr>
+<td>访问与安全</td>
+<td><strong><code>http://IP:PORT/ENTRANCE</code></strong>；随机密码 <strong><code>docker logs</code></strong></td>
+</tr>
+<tr>
+<td>参考</td>
+<td><strong><a target="_blank" rel="noopener external nofollow noreferrer" href="https://hub.docker.com/r/moelin/1panel">moelin&#x2F;1panel</a></strong>；官方宿主安装见 <strong>在线安装</strong></td>
+</tr>
+</tbody></table>
+<p>部署前阅读 <strong>Hub</strong> 注意事项与官方迁移文档；生产使用强密码、限制暴露面并做好备份。</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -1919,454 +2646,6 @@
 
 
 
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/MySQL/MySQL-Docker/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="miracle">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="my">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | my">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/05/01/MySQL/MySQL-Docker/" class="post-title-link" itemprop="url">Docker 部署 MySQL</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2026-05-01 20:35:17" itemprop="dateCreated datePublished" datetime="2026-05-01T20:35:17+08:00">2026-05-01</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-03 11:02:46" itemprop="dateModified" datetime="2026-05-03T11:02:46+08:00">2026-05-03</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>1.9k</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>6 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>在 <strong>Docker</strong> 中运行 <strong>MySQL</strong>，适合本地开发、与 <strong>Compose</strong> 编排其它服务、或在 <strong>Kubernetes</strong> 中单实例部署。下文给出<strong>镜像选型</strong>、<strong>一条命令起容器</strong>、<strong>Compose 一键起栈</strong>与<strong>一份多文档 K8s 清单</strong>；密码与数据卷请按环境自行替换，勿把生产密钥提交进仓库。多行命令：<strong>Linux &#x2F; macOS &#x2F; Git Bash</strong> 用行末 <strong><code>\</code>** 续行；**Windows CMD** 用行末 **<code>^</code>** 续行（**<code>^</code> 后不能有空格</strong>）。</p>
-<hr>
-<h1 id="一、前置条件"><a href="#一、前置条件" class="headerlink" title="一、前置条件"></a>一、前置条件</h1><p>本机已安装 <strong><code>docker</code></strong>，并能使用 <strong><code>docker compose</code></strong>（<strong>Compose V2</strong> 插件，命令为 <strong><code>docker compose</code></strong>；若仍使用旧版独立程序，则将下文中的 <strong><code>docker compose</code></strong> 换成 <strong><code>docker-compose</code></strong>）。</p>
-<p>验证：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker version</span><br><span class="line">docker compose version</span><br></pre></td></tr></table></figure>
-
-<p>满足即可，与宿主机操作系统无关。</p>
-<hr>
-<h1 id="二、MySQL-镜像选择"><a href="#二、MySQL-镜像选择" class="headerlink" title="二、MySQL 镜像选择"></a>二、MySQL 镜像选择</h1><h2 id="1-官方镜像（推荐）"><a href="#1-官方镜像（推荐）" class="headerlink" title="1. 官方镜像（推荐）"></a>1. 官方镜像（推荐）</h2><ul>
-<li><strong>仓库</strong>：<strong><code>mysql</code></strong>（Docker Hub 官方库，由 <strong>Oracle</strong> &#x2F; <strong>MySQL</strong> 团队维护）。  </li>
-<li><strong>常用标签</strong>：  <ul>
-<li><strong><code>mysql:8.0</code></strong>：<strong>8.0</strong> 长期维护线，生态兼容面广（<strong>WordPress</strong>、旧驱动等多以 <strong>8.0</strong> 为基准）。  </li>
-<li><strong><code>mysql:8.4</code></strong> 或 <strong><code>mysql:lts</code></strong>：较新的 <strong>LTS</strong> 线（以 <a target="_blank" rel="noopener external nofollow noreferrer" href="https://hub.docker.com/_/mysql/tags">Docker Hub mysql tags</a> 为准）。</li>
-</ul>
-</li>
-<li><strong>生产建议</strong>：固定小版本标签（如 <strong><code>mysql:8.0.40</code></strong>）或记录 <strong>digest</strong>，避免 <strong><code>latest</code></strong> 漂移导致行为变化。</li>
-</ul>
-<h2 id="2-变体说明"><a href="#2-变体说明" class="headerlink" title="2. 变体说明"></a>2. 变体说明</h2><table>
-<thead>
-<tr>
-<th>需求</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>默认认证插件</strong></td>
-<td><strong>8.0</strong> 起默认 <strong><code>caching_sha2_password</code></strong>；老客户端不支持时需调整 <strong><code>--default-authentication-plugin</code></strong> 或升级客户端（<strong>MySQL 8.4</strong> 已移除 <strong><code>mysql_native_password</code></strong>，迁移前查发行说明）。</td>
-</tr>
-<tr>
-<td><strong>ARM64</strong>（Apple Silicon 等）</td>
-<td>官方 <strong><code>mysql</code></strong> 多架构镜像一般可直接拉取；若某标签缺架构，换标签或查 Hub <strong>OS&#x2F;ARCH</strong>。</td>
-</tr>
-<tr>
-<td><strong>极简&#x2F;定制</strong></td>
-<td>社区有 <strong><code>bitnami/mysql</code></strong> 等，参数与路径与官方不同，切换镜像时需对照该镜像文档。</td>
-</tr>
-</tbody></table>
-<h2 id="3-字符集与排序规则"><a href="#3-字符集与排序规则" class="headerlink" title="3. 字符集与排序规则"></a>3. 字符集与排序规则</h2><p>容器内建议在 <strong><code>command</code></strong> 或 <strong><code>my.cnf</code></strong> 中显式指定 <strong><code>utf8mb4</code></strong>，与业务库一致，避免默认与连接串不一致。</p>
-<hr>
-<p><strong>1Panel（推荐）</strong>：在 <strong>Linux</strong> 宿主机上若希望少手写命令、仍以容器方式运行 <strong>MySQL</strong>，可先安装 <a target="_blank" rel="noopener external nofollow noreferrer" href="https://1panel.cn/"><strong>1Panel</strong></a>（开源 <strong>Linux</strong> 运维面板），在 <strong>「应用商店」</strong> 中选择 <strong>MySQL</strong> 一键部署：由面板负责镜像版本、数据持久化、端口映射与（可选）计划备份，启停与日志可在界面查看。与下文 <strong><code>docker run</code> &#x2F; Compose &#x2F; K8s</strong> 中的环境变量、卷与字符集语义对齐或排障时，自 <strong># 三</strong> 起各节仍可作对照。适合单台 <strong>VPS</strong>、家庭服务器等「一台机子上稳态跑库」的场景。</p>
-<hr>
-<h1 id="三、单容器一键部署（docker-run）"><a href="#三、单容器一键部署（docker-run）" class="headerlink" title="三、单容器一键部署（docker run）"></a>三、单容器一键部署（<code>docker run</code>）</h1><p><strong>一条命令</strong>启动（与下述参数一致；<strong>命名卷</strong> <strong><code>mysql-data</code></strong>、<strong><code>mysql-init</code></strong> 在首次运行时会由 <strong>Docker</strong> 自动创建，无需在宿主机 <strong><code>mkdir</code></strong>）：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -d   --name mysql-dev   -e MYSQL_ROOT_PASSWORD=<span class="string">&quot;pi=3.1415&quot;</span>   -e MYSQL_DATABASE=<span class="string">&quot;app&quot;</span>   -e MYSQL_USER=<span class="string">&quot;admin&quot;</span>   -e MYSQL_PASSWORD=<span class="string">&quot;pi=3.1415&quot;</span>   -p 3306:3306   -v mysql-data:/var/lib/mysql   -v mysql-init:/docker-entrypoint-initdb.d:ro   mysql:8.0   --character-set-server=utf8mb4   --collation-server=utf8mb4_unicode_ci</span><br></pre></td></tr></table></figure>
-
-<p>多行可读（与上条等价；按终端选一种）：</p>
-<h2 id="Linux-macOS-Git-Bash（-续行）"><a href="#Linux-macOS-Git-Bash（-续行）" class="headerlink" title="Linux &#x2F; macOS &#x2F; Git Bash（\ 续行）"></a>Linux &#x2F; macOS &#x2F; Git Bash（<code>\</code> 续行）</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">docker run -d\</span><br><span class="line">  --name mysql-dev\</span><br><span class="line">  -e MYSQL_ROOT_PASSWORD=<span class="string">&quot;pi=3.1415&quot;</span>\</span><br><span class="line">  -e MYSQL_DATABASE=<span class="string">&quot;app&quot;</span>\</span><br><span class="line">  -e MYSQL_USER=<span class="string">&quot;admin&quot;</span>\</span><br><span class="line">  -e MYSQL_PASSWORD=<span class="string">&quot;pi=3.1415&quot;</span>\</span><br><span class="line">  -p 3306:3306\</span><br><span class="line">  -v mysql-data:/var/lib/mysql\</span><br><span class="line">  -v mysql-init:/docker-entrypoint-initdb.d:ro\</span><br><span class="line">  mysql:8.0\</span><br><span class="line">  --character-set-server=utf8mb4\</span><br><span class="line">  --collation-server=utf8mb4_unicode_ci</span><br></pre></td></tr></table></figure>
-
-<h2 id="Windows-CMD（-续行）"><a href="#Windows-CMD（-续行）" class="headerlink" title="Windows CMD（^ 续行）"></a>Windows CMD（<code>^</code> 续行）</h2><figure class="highlight bat"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">docker run -d^</span><br><span class="line">  --name mysql-dev^</span><br><span class="line">  -e MYSQL_ROOT_PASSWORD=&quot;pi=<span class="number">3</span>.<span class="number">1415</span>&quot;^</span><br><span class="line">  -e MYSQL_DATABASE=&quot;app&quot;^</span><br><span class="line">  -e MYSQL_USER=&quot;admin&quot;^</span><br><span class="line">  -e MYSQL_PASSWORD=&quot;pi=<span class="number">3</span>.<span class="number">1415</span>&quot;^</span><br><span class="line">  -p <span class="number">3306</span>:<span class="number">3306</span>^</span><br><span class="line">  -v mysql-data:/var/lib/mysql^</span><br><span class="line">  -v mysql-init:/docker-entrypoint-initdb.d:ro^</span><br><span class="line"><span class="function">  mysql:8.0^</span></span><br><span class="line"><span class="function">  --<span class="title">character</span>-<span class="title">set</span>-<span class="title">server</span>=<span class="title">utf8mb4</span>^</span></span><br><span class="line"><span class="function">  --<span class="title">collation</span>-<span class="title">server</span>=<span class="title">utf8mb4_unicode_ci</span></span></span><br></pre></td></tr></table></figure>
-
-<p><strong>Windows 说明</strong>：<strong>Docker Desktop</strong> 下命名卷写法与 <strong>Linux</strong> 一致；若在 <strong>CMD</strong> 中路径或引号报错，可改用 <strong>PowerShell</strong>（行末续行符为 <strong><code>`</code></strong>）或仍用<strong>一条命令</strong>单行复制。</p>
-<table>
-<thead>
-<tr>
-<th>参数</th>
-<th>含义</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong><code>-e MYSQL_*</code></strong></td>
-<td><strong>root</strong> 与应用库 <strong><code>app</code></strong>、用户 <strong><code>admin</code></strong> 的密码（示例为 <strong><code>pi=3.1415</code></strong>，含 <strong><code>=</code></strong> 故用引号包住）</td>
-</tr>
-<tr>
-<td><strong><code>-v mysql-data:</code></strong></td>
-<td>数据目录持久化到 <strong>Docker 命名卷</strong> <strong><code>mysql-data</code></strong></td>
-</tr>
-<tr>
-<td><strong><code>-v mysql-init:</code></strong></td>
-<td>初始化脚本目录挂载为<strong>只读</strong>命名卷 <strong><code>mysql-init</code></strong>；<strong><code>.sql</code> &#x2F; <code>.sh</code></strong> 仅在<strong>首次空数据目录</strong>时执行</td>
-</tr>
-<tr>
-<td>末尾 <strong><code>--character-*</code></strong></td>
-<td>传给 <strong><code>mysqld</code></strong>：服务端 <strong>utf8mb4</strong> &#x2F; <strong><code>utf8mb4_unicode_ci</code></strong></td>
-</tr>
-</tbody></table>
-<p>若要把 <strong><code>.sql</code></strong> 放进命名卷 <strong><code>mysql-init</code></strong>，可任选其一：<strong>①</strong> 临时容器拷入 <strong><code>docker run --rm -v mysql-init:/init ...</code></strong>；<strong>②</strong> 改用绑定挂载 <strong><code>-v /宿主机路径/mysql-init:/docker-entrypoint-initdb.d:ro</code></strong>，便于本机直接放文件。</p>
-<p>常用运维一条命令：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker logs -f mysql-dev</span><br><span class="line">docker stop mysql-dev &amp;&amp; docker <span class="built_in">rm</span> mysql-dev</span><br></pre></td></tr></table></figure>
-
-<p>已有数据卷时<strong>不会</strong>再次执行 <strong><code>docker-entrypoint-initdb.d</code></strong> 内脚本；清空数据需删卷：<strong><code>docker volume rm mysql-data</code></strong>（<strong>会删库</strong>，且须先删容器）。</p>
-<hr>
-<h1 id="四、Docker-Compose-一键部署"><a href="#四、Docker-Compose-一键部署" class="headerlink" title="四、Docker Compose 一键部署"></a>四、Docker Compose 一键部署</h1><p>将下面内容保存为 <strong><code>docker-compose.mysql.yml</code></strong>（与 <strong><code># 一</code></strong> 要求一致：已能执行 <strong><code>docker compose</code></strong>）。敏感项建议放在同目录 <strong><code>.env</code></strong>（加入 <strong><code>.gitignore</code></strong>），勿长期写死在仓库。</p>
-<p><strong>一条命令</strong>启动全栈（在 <strong><code>docker-compose.mysql.yml</code></strong> 所在目录执行）：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker compose -f docker-compose.mysql.yml up -d</span><br></pre></td></tr></table></figure>
-
-<p>以下为 <strong><code>docker-compose.mysql.yml</code></strong> 全文：<strong><code>version</code></strong>、<strong><code>name</code></strong>、<strong>命名卷</strong>、<strong>健康检查</strong>、<strong>字符集参数</strong>。</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">version:</span> <span class="string">&quot;3.8&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="attr">name:</span> <span class="string">mysql-stack</span></span><br><span class="line"></span><br><span class="line"><span class="attr">services:</span></span><br><span class="line">  <span class="attr">mysql:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">mysql:8.0</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">mysql-dev</span></span><br><span class="line">    <span class="attr">restart:</span> <span class="string">unless-stopped</span></span><br><span class="line">    <span class="attr">environment:</span></span><br><span class="line">      <span class="attr">MYSQL_ROOT_PASSWORD:</span> <span class="string">$&#123;MYSQL_ROOT_PASSWORD:-pi=3.1415&#125;</span></span><br><span class="line">      <span class="attr">MYSQL_DATABASE:</span> <span class="string">$&#123;MYSQL_DATABASE:-app&#125;</span></span><br><span class="line">      <span class="attr">MYSQL_USER:</span> <span class="string">$&#123;MYSQL_USER:-admin&#125;</span></span><br><span class="line">      <span class="attr">MYSQL_PASSWORD:</span> <span class="string">$&#123;MYSQL_PASSWORD:-pi=3.1415&#125;</span></span><br><span class="line">      <span class="attr">TZ:</span> <span class="string">Asia/Shanghai</span></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;3306:3306&quot;</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">mysql-data:/var/lib/mysql</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">mysql-init:/docker-entrypoint-initdb.d:ro</span></span><br><span class="line">    <span class="attr">command:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;--character-set-server=utf8mb4&quot;</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;--collation-server=utf8mb4_unicode_ci&quot;</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;--default-authentication-plugin=caching_sha2_password&quot;</span></span><br><span class="line">    <span class="attr">healthcheck:</span></span><br><span class="line">      <span class="attr">test:</span> [<span class="string">&quot;CMD-SHELL&quot;</span>, <span class="string">&quot;mysqladmin ping -h 127.0.0.1 -uroot -p\&quot;$$MYSQL_ROOT_PASSWORD\&quot; || exit 1&quot;</span>]</span><br><span class="line">      <span class="attr">interval:</span> <span class="string">5s</span></span><br><span class="line">      <span class="attr">timeout:</span> <span class="string">5s</span></span><br><span class="line">      <span class="attr">retries:</span> <span class="number">30</span></span><br><span class="line">      <span class="attr">start_period:</span> <span class="string">40s</span></span><br><span class="line"></span><br><span class="line"><span class="attr">volumes:</span></span><br><span class="line">  <span class="attr">mysql-data:</span></span><br><span class="line">    <span class="attr">driver:</span> <span class="string">local</span></span><br><span class="line">  <span class="attr">mysql-init:</span></span><br><span class="line">    <span class="attr">driver:</span> <span class="string">local</span></span><br></pre></td></tr></table></figure>
-
-<p>同目录可选 <strong><code>.env</code></strong>（勿提交；与 <strong><code># 三</code></strong> 一条 <strong><code>docker run</code></strong> 对齐）：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">MYSQL_ROOT_PASSWORD=pi=3.1415</span><br><span class="line">MYSQL_DATABASE=app</span><br><span class="line">MYSQL_USER=admin</span><br><span class="line">MYSQL_PASSWORD=pi=3.1415</span><br></pre></td></tr></table></figure>
-
-<p>查看状态、日志、停止并删除容器（保留数据卷）：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">docker compose -f docker-compose.mysql.yml ps</span><br><span class="line">docker compose -f docker-compose.mysql.yml logs -f mysql</span><br><span class="line">docker compose -f docker-compose.mysql.yml down</span><br></pre></td></tr></table></figure>
-
-<p><strong><code>down</code></strong> 默认保留命名卷 <strong><code>mysql-data</code></strong>、<strong><code>mysql-init</code></strong>；若需清空数据加 <strong><code>docker compose ... down -v</code></strong>（<strong>会删库</strong>）。</p>
-<hr>
-<h1 id="五、Kubernetes-一键部署（单文件完整清单）"><a href="#五、Kubernetes-一键部署（单文件完整清单）" class="headerlink" title="五、Kubernetes 一键部署（单文件完整清单）"></a>五、Kubernetes 一键部署（单文件完整清单）</h1><p>将下面内容保存为 <strong><code>mysql-k8s.yaml</code></strong> 后，<strong>一条命令</strong>应用：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl apply -f mysql-k8s.yaml</span><br></pre></td></tr></table></figure>
-
-<p>清单含 <strong>Secret</strong>（<strong>root</strong> 与应用账号）、<strong>PVC</strong>、<strong>Deployment</strong>、<strong>ClusterIP Service</strong>。未写 <strong><code>storageClassName</code></strong> 时使用集群默认 <strong>StorageClass</strong>；无默认 <strong>SC</strong> 时请在 <strong>PVC</strong> 中补上 <strong><code>storageClassName</code></strong>。命名空间为 <strong><code>default</code></strong>，可按需修改 <strong><code>metadata.namespace</code></strong>。</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Secret</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">mysql-secret</span></span><br><span class="line">  <span class="attr">namespace:</span> <span class="string">default</span></span><br><span class="line"><span class="attr">type:</span> <span class="string">Opaque</span></span><br><span class="line"><span class="attr">stringData:</span></span><br><span class="line">  <span class="attr">MYSQL_ROOT_PASSWORD:</span> <span class="string">&quot;pi=3.1415&quot;</span></span><br><span class="line">  <span class="attr">MYSQL_DATABASE:</span> <span class="string">&quot;app&quot;</span></span><br><span class="line">  <span class="attr">MYSQL_USER:</span> <span class="string">&quot;admin&quot;</span></span><br><span class="line">  <span class="attr">MYSQL_PASSWORD:</span> <span class="string">&quot;pi=3.1415&quot;</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">PersistentVolumeClaim</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">mysql-data</span></span><br><span class="line">  <span class="attr">namespace:</span> <span class="string">default</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">accessModes:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">ReadWriteOnce</span></span><br><span class="line">  <span class="attr">resources:</span></span><br><span class="line">    <span class="attr">requests:</span></span><br><span class="line">      <span class="attr">storage:</span> <span class="string">20Gi</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">apps/v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Deployment</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">mysql</span></span><br><span class="line">  <span class="attr">namespace:</span> <span class="string">default</span></span><br><span class="line">  <span class="attr">labels:</span></span><br><span class="line">    <span class="attr">app:</span> <span class="string">mysql</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">replicas:</span> <span class="number">1</span></span><br><span class="line">  <span class="attr">selector:</span></span><br><span class="line">    <span class="attr">matchLabels:</span></span><br><span class="line">      <span class="attr">app:</span> <span class="string">mysql</span></span><br><span class="line">  <span class="attr">strategy:</span></span><br><span class="line">    <span class="attr">type:</span> <span class="string">Recreate</span></span><br><span class="line">  <span class="attr">template:</span></span><br><span class="line">    <span class="attr">metadata:</span></span><br><span class="line">      <span class="attr">labels:</span></span><br><span class="line">        <span class="attr">app:</span> <span class="string">mysql</span></span><br><span class="line">    <span class="attr">spec:</span></span><br><span class="line">      <span class="attr">containers:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">mysql</span></span><br><span class="line">          <span class="attr">image:</span> <span class="string">mysql:8.0</span></span><br><span class="line">          <span class="attr">ports:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">containerPort:</span> <span class="number">3306</span></span><br><span class="line">              <span class="attr">name:</span> <span class="string">mysql</span></span><br><span class="line">          <span class="attr">env:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">MYSQL_ROOT_PASSWORD</span></span><br><span class="line">              <span class="attr">valueFrom:</span></span><br><span class="line">                <span class="attr">secretKeyRef:</span></span><br><span class="line">                  <span class="attr">name:</span> <span class="string">mysql-secret</span></span><br><span class="line">                  <span class="attr">key:</span> <span class="string">MYSQL_ROOT_PASSWORD</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">MYSQL_DATABASE</span></span><br><span class="line">              <span class="attr">valueFrom:</span></span><br><span class="line">                <span class="attr">secretKeyRef:</span></span><br><span class="line">                  <span class="attr">name:</span> <span class="string">mysql-secret</span></span><br><span class="line">                  <span class="attr">key:</span> <span class="string">MYSQL_DATABASE</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">MYSQL_USER</span></span><br><span class="line">              <span class="attr">valueFrom:</span></span><br><span class="line">                <span class="attr">secretKeyRef:</span></span><br><span class="line">                  <span class="attr">name:</span> <span class="string">mysql-secret</span></span><br><span class="line">                  <span class="attr">key:</span> <span class="string">MYSQL_USER</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">MYSQL_PASSWORD</span></span><br><span class="line">              <span class="attr">valueFrom:</span></span><br><span class="line">                <span class="attr">secretKeyRef:</span></span><br><span class="line">                  <span class="attr">name:</span> <span class="string">mysql-secret</span></span><br><span class="line">                  <span class="attr">key:</span> <span class="string">MYSQL_PASSWORD</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">TZ</span></span><br><span class="line">              <span class="attr">value:</span> <span class="string">&quot;Asia/Shanghai&quot;</span></span><br><span class="line">          <span class="attr">args:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="string">&quot;--character-set-server=utf8mb4&quot;</span></span><br><span class="line">            <span class="bullet">-</span> <span class="string">&quot;--collation-server=utf8mb4_unicode_ci&quot;</span></span><br><span class="line">            <span class="bullet">-</span> <span class="string">&quot;--default-authentication-plugin=caching_sha2_password&quot;</span></span><br><span class="line">          <span class="attr">volumeMounts:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">data</span></span><br><span class="line">              <span class="attr">mountPath:</span> <span class="string">/var/lib/mysql</span></span><br><span class="line">          <span class="attr">readinessProbe:</span></span><br><span class="line">            <span class="attr">tcpSocket:</span></span><br><span class="line">              <span class="attr">port:</span> <span class="number">3306</span></span><br><span class="line">            <span class="attr">initialDelaySeconds:</span> <span class="number">15</span></span><br><span class="line">            <span class="attr">periodSeconds:</span> <span class="number">5</span></span><br><span class="line">            <span class="attr">timeoutSeconds:</span> <span class="number">3</span></span><br><span class="line">            <span class="attr">failureThreshold:</span> <span class="number">30</span></span><br><span class="line">          <span class="attr">livenessProbe:</span></span><br><span class="line">            <span class="attr">tcpSocket:</span></span><br><span class="line">              <span class="attr">port:</span> <span class="number">3306</span></span><br><span class="line">            <span class="attr">initialDelaySeconds:</span> <span class="number">60</span></span><br><span class="line">            <span class="attr">periodSeconds:</span> <span class="number">10</span></span><br><span class="line">            <span class="attr">timeoutSeconds:</span> <span class="number">5</span></span><br><span class="line">            <span class="attr">failureThreshold:</span> <span class="number">6</span></span><br><span class="line">          <span class="attr">resources:</span></span><br><span class="line">            <span class="attr">requests:</span></span><br><span class="line">              <span class="attr">memory:</span> <span class="string">&quot;512Mi&quot;</span></span><br><span class="line">              <span class="attr">cpu:</span> <span class="string">&quot;250m&quot;</span></span><br><span class="line">            <span class="attr">limits:</span></span><br><span class="line">              <span class="attr">memory:</span> <span class="string">&quot;1Gi&quot;</span></span><br><span class="line">              <span class="attr">cpu:</span> <span class="string">&quot;1000m&quot;</span></span><br><span class="line">      <span class="attr">volumes:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">data</span></span><br><span class="line">          <span class="attr">persistentVolumeClaim:</span></span><br><span class="line">            <span class="attr">claimName:</span> <span class="string">mysql-data</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Service</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">mysql</span></span><br><span class="line">  <span class="attr">namespace:</span> <span class="string">default</span></span><br><span class="line">  <span class="attr">labels:</span></span><br><span class="line">    <span class="attr">app:</span> <span class="string">mysql</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">type:</span> <span class="string">ClusterIP</span></span><br><span class="line">  <span class="attr">selector:</span></span><br><span class="line">    <span class="attr">app:</span> <span class="string">mysql</span></span><br><span class="line">  <span class="attr">ports:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">mysql</span></span><br><span class="line">      <span class="attr">port:</span> <span class="number">3306</span></span><br><span class="line">      <span class="attr">targetPort:</span> <span class="number">3306</span></span><br></pre></td></tr></table></figure>
-
-<p>查看资源与连接前检查：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl get pods,svc,pvc -l app=mysql</span><br></pre></td></tr></table></figure>
-
-<p>集群内连接串示例（按 <strong>namespace</strong> 调整）：<strong><code>admin:pi=3.1415@tcp(mysql.default.svc.cluster.local:3306)/app?parseTime=true&amp;charset=utf8mb4</code></strong>（密码含 <strong><code>=</code></strong> 时 <strong>URL</strong> 内需 <strong><code>encodeURIComponent</code></strong> 或改用 <strong>Secret</strong> 挂载 <strong><code>my.cnf</code></strong>，勿裸贴生产密钥）。</p>
-<p><strong>说明</strong>：<strong><code>strategy: Recreate</code></strong> 避免 <strong>RWO</strong> 卷被多副本 <strong>RollingUpdate</strong> 同时挂载；<strong>MySQL</strong> 主从、读写分离请用 <strong>Operator</strong> 或 <strong>StatefulSet</strong> 方案，勿直接水平扩展上述 <strong>Deployment</strong>。</p>
-<hr>
-<h1 id="六、小结"><a href="#六、小结" class="headerlink" title="六、小结"></a>六、小结</h1><table>
-<thead>
-<tr>
-<th>项</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>前置</strong></td>
-<td>已安装 <strong><code>docker</code></strong> 与 <strong><code>docker compose</code></strong>（或 <strong><code>docker-compose</code></strong>）</td>
-</tr>
-<tr>
-<td><strong>镜像</strong></td>
-<td>优先官方 <strong><code>mysql:8.0</code></strong> &#x2F; 固定补丁标签；注意认证插件与客户端版本</td>
-</tr>
-<tr>
-<td><strong>单容器</strong></td>
-<td><strong><code>docker run</code></strong>：<strong><code>mysql-dev</code></strong>、命名卷 <strong><code>mysql-data</code></strong> &#x2F; <strong><code>mysql-init</code></strong>、库 <strong><code>app</code></strong>、用户 <strong><code>admin</code></strong>、<strong><code>utf8mb4</code></strong>（见 <strong># 三</strong>）</td>
-</tr>
-<tr>
-<td><strong>Compose</strong></td>
-<td>保存 <strong><code>docker-compose.mysql.yml</code></strong> 后 <strong><code>docker compose -f ... up -d</code></strong></td>
-</tr>
-<tr>
-<td><strong>Kubernetes</strong></td>
-<td>保存 <strong><code>mysql-k8s.yaml</code></strong> 后 <strong><code>kubectl apply -f ...</code></strong></td>
-</tr>
-</tbody></table>
-<p>生产环境请配合备份、监控、网络策略与 <strong>TLS</strong>；<strong>Secret</strong> 建议对接 <strong>External Secrets</strong> &#x2F; <strong>Sealed Secrets</strong> 等管控流程。</p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/Redis/Redis-Docker/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="miracle">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="my">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | my">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/05/01/Redis/Redis-Docker/" class="post-title-link" itemprop="url">Docker 部署 Redis</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2026-05-01 20:35:17" itemprop="dateCreated datePublished" datetime="2026-05-01T20:35:17+08:00">2026-05-01</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-03 17:22:23" itemprop="dateModified" datetime="2026-05-03T17:22:23+08:00">2026-05-03</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Redis/" itemprop="url" rel="index"><span itemprop="name">Redis</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>1.4k</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>5 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>在 <strong>Docker</strong> 中运行 <strong>Redis</strong>，适合本地缓存、会话与消息流式处理、或在 <strong>Kubernetes</strong> 中单实例部署。下文给出<strong>镜像选型</strong>、<strong>一条命令起容器</strong>、<strong>Compose 一键起栈</strong>与<strong>一份多文档 K8s 清单</strong>；<strong><code>requirepass</code></strong> 与数据卷请按环境自行替换，勿把生产密钥提交进仓库。</p>
-<hr>
-<h1 id="一、前置条件"><a href="#一、前置条件" class="headerlink" title="一、前置条件"></a>一、前置条件</h1><p>本机已安装 <strong><code>docker</code></strong>，并能使用 <strong><code>docker compose</code></strong>（<strong>Compose V2</strong> 插件，命令为 <strong><code>docker compose</code></strong>；若仍使用旧版独立程序，则将下文中的 <strong><code>docker compose</code></strong> 换成 <strong><code>docker-compose</code></strong>）。</p>
-<p>验证：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker version</span><br><span class="line">docker compose version</span><br></pre></td></tr></table></figure>
-
-<p>满足即可，与宿主机操作系统无关。</p>
-<hr>
-<h1 id="二、Redis-镜像选择"><a href="#二、Redis-镜像选择" class="headerlink" title="二、Redis 镜像选择"></a>二、Redis 镜像选择</h1><h2 id="1-官方镜像（推荐）"><a href="#1-官方镜像（推荐）" class="headerlink" title="1. 官方镜像（推荐）"></a>1. 官方镜像（推荐）</h2><ul>
-<li><strong>仓库</strong>：<strong><code>redis</code></strong>（Docker Hub 官方库：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://hub.docker.com/_/redis/tags">https://hub.docker.com/_/redis/tags</a>）。  </li>
-<li><strong>常用标签</strong>：  <ul>
-<li><strong><code>redis:7.2</code></strong>：<strong>7.2.x</strong> 线，生态与客户端兼容面广。  </li>
-<li><strong><code>redis:7.4</code></strong> 或 <strong><code>redis:latest</code></strong>：较新线（以 Hub 标签为准）。</li>
-</ul>
-</li>
-<li><strong>生产建议</strong>：固定小版本标签（如 <strong><code>redis:7.2.5</code></strong>）或记录 <strong>digest</strong>，避免 <strong><code>latest</code></strong> 漂移导致行为变化。</li>
-</ul>
-<h2 id="2-变体说明"><a href="#2-变体说明" class="headerlink" title="2. 变体说明"></a>2. 变体说明</h2><table>
-<thead>
-<tr>
-<th>需求</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>持久化</strong></td>
-<td>开发常用 <strong><code>--appendonly yes</code></strong>（<strong>AOF</strong>）；也可配合 <strong><code>RDB</code></strong> 快照参数，按数据重要性选择。</td>
-</tr>
-<tr>
-<td><strong>访问控制</strong></td>
-<td>通过 <strong><code>redis-server --requirepass &lt;密码&gt;</code></strong> 或 <strong><code>ACL</code></strong> 配置；未设置密码时<strong>任何人可读写</strong>，仅用于隔离网络内的临时环境。</td>
-</tr>
-<tr>
-<td><strong>ARM64</strong>（Apple Silicon 等）</td>
-<td>官方 <strong><code>redis</code></strong> 多架构镜像一般可直接拉取；若某标签缺架构，换标签或查 Hub <strong>OS&#x2F;ARCH</strong>。</td>
-</tr>
-<tr>
-<td><strong>极简&#x2F;定制</strong></td>
-<td>社区有 <strong><code>bitnami/redis</code></strong> 等，环境变量名与默认配置与官方不同，切换镜像时需对照该镜像文档。</td>
-</tr>
-</tbody></table>
-<h2 id="3-数据目录"><a href="#3-数据目录" class="headerlink" title="3. 数据目录"></a>3. 数据目录</h2><p>默认数据目录 <strong><code>/data</code></strong>（<strong>AOF</strong> &#x2F; <strong>RDB</strong> 文件所在）；挂载卷后便于备份与 <strong><code>docker compose down -v</code></strong> 时区分是否保留数据。</p>
-<hr>
-<p><strong>1Panel（推荐）</strong>：在 <strong>Linux</strong> 宿主机上若希望少手写命令、仍以容器方式跑 <strong>Redis</strong>，可先安装 <a target="_blank" rel="noopener external nofollow noreferrer" href="https://1panel.cn/"><strong>1Panel</strong></a>（开源 <strong>Linux</strong> 运维面板），在 <strong>「应用商店」</strong> 中选择 <strong>Redis</strong> 一键部署：由面板管理镜像版本、数据卷、端口、<strong><code>requirepass</code></strong> 与（可选）持久化策略及备份。与下文 <strong><code>docker run</code> &#x2F; Compose &#x2F; K8s<code>** 的卷路径、密码与 **</code>redis-server&#96; 参数</strong>对齐或排障时，自 <strong># 三</strong> 起各节仍可作对照。适合单台 <strong>VPS</strong>、家庭服务器等「快速起缓存 &#x2F; 会话存储」的场景。</p>
-<hr>
-<h1 id="三、单容器一键部署（docker-run）"><a href="#三、单容器一键部署（docker-run）" class="headerlink" title="三、单容器一键部署（docker run）"></a>三、单容器一键部署（<code>docker run</code>）</h1><p>在<strong>当前目录</strong>建数据目录（仅首次，可选）：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">mkdir</span> -p ./redis-data</span><br></pre></td></tr></table></figure>
-
-<p><strong>一条命令</strong>启动（<strong>AOF</strong> + <strong>密码</strong>；示例仅供本地，请替换密码）：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -d --name redis-dev -p 6379:6379 -v <span class="string">&quot;<span class="subst">$(pwd)</span>/redis-data:/data&quot;</span> redis:7.2 redis-server --appendonly <span class="built_in">yes</span> --requirepass dev-change-me</span><br></pre></td></tr></table></figure>
-
-<p>常用运维一条命令：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker logs -f redis-dev</span><br><span class="line">docker stop redis-dev &amp;&amp; docker <span class="built_in">rm</span> redis-dev</span><br></pre></td></tr></table></figure>
-
-<p>本机探测：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">redis-cli -h 127.0.0.1 -p 6379 -a dev-change-me ping</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h1 id="四、Docker-Compose-一键部署"><a href="#四、Docker-Compose-一键部署" class="headerlink" title="四、Docker Compose 一键部署"></a>四、Docker Compose 一键部署</h1><p>将下面内容保存为 <strong><code>docker-compose.redis.yml</code></strong>（与 <strong><code># 一</code></strong> 要求一致：已能执行 <strong><code>docker compose</code></strong>）。敏感项建议放在同目录 <strong><code>.env</code></strong>（加入 <strong><code>.gitignore</code></strong>），勿长期写死在仓库。</p>
-<p><strong>一条命令</strong>启动：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker compose -f docker-compose.redis.yml up -d</span><br></pre></td></tr></table></figure>
-
-<p>以下为 <strong><code>docker-compose.redis.yml</code></strong> 全文：<strong><code>version</code></strong>、<strong><code>name</code></strong>、<strong>命名卷</strong>、<strong>健康检查</strong>。</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">version:</span> <span class="string">&quot;3.8&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="attr">name:</span> <span class="string">redis-stack</span></span><br><span class="line"></span><br><span class="line"><span class="attr">services:</span></span><br><span class="line">  <span class="attr">redis:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">redis:7.2</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">redis-7</span></span><br><span class="line">    <span class="attr">restart:</span> <span class="string">unless-stopped</span></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;6379:6379&quot;</span></span><br><span class="line">    <span class="attr">environment:</span></span><br><span class="line">      <span class="attr">REDIS_PASSWORD:</span> <span class="string">$&#123;REDIS_PASSWORD:-dev-change-me&#125;</span></span><br><span class="line">    <span class="attr">command:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">redis-server</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">--appendonly</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;yes&quot;</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">--requirepass</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;$&#123;REDIS_PASSWORD:-dev-change-me&#125;&quot;</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">redis_data:/data</span></span><br><span class="line">    <span class="attr">healthcheck:</span></span><br><span class="line">      <span class="attr">test:</span> [<span class="string">&quot;CMD-SHELL&quot;</span>, <span class="string">&quot;redis-cli -a \&quot;$$REDIS_PASSWORD\&quot; ping | grep PONG&quot;</span>]</span><br><span class="line">      <span class="attr">interval:</span> <span class="string">5s</span></span><br><span class="line">      <span class="attr">timeout:</span> <span class="string">3s</span></span><br><span class="line">      <span class="attr">retries:</span> <span class="number">12</span></span><br><span class="line">      <span class="attr">start_period:</span> <span class="string">10s</span></span><br><span class="line"></span><br><span class="line"><span class="attr">volumes:</span></span><br><span class="line">  <span class="attr">redis_data:</span></span><br><span class="line">    <span class="attr">driver:</span> <span class="string">local</span></span><br></pre></td></tr></table></figure>
-
-<p>同目录可选 <strong><code>.env</code></strong>（勿提交）：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">REDIS_PASSWORD=your-strong-password</span><br></pre></td></tr></table></figure>
-
-<p>查看状态、日志、停止并删除容器（保留数据卷）：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">docker compose -f docker-compose.redis.yml ps</span><br><span class="line">docker compose -f docker-compose.redis.yml logs -f redis</span><br><span class="line">docker compose -f docker-compose.redis.yml down</span><br></pre></td></tr></table></figure>
-
-<p><strong><code>down</code></strong> 默认保留 <strong><code>redis_data</code></strong>；若需清空数据加 <strong><code>docker compose -f docker-compose.redis.yml down -v</code></strong>（<strong>会删库</strong>）。</p>
-<hr>
-<h1 id="五、Kubernetes-一键部署（单文件完整清单）"><a href="#五、Kubernetes-一键部署（单文件完整清单）" class="headerlink" title="五、Kubernetes 一键部署（单文件完整清单）"></a>五、Kubernetes 一键部署（单文件完整清单）</h1><p>将下面内容保存为 <strong><code>redis-k8s.yaml</code></strong> 后，<strong>一条命令</strong>应用：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl apply -f redis-k8s.yaml</span><br></pre></td></tr></table></figure>
-
-<p>清单含 <strong>Secret</strong>（密码）、<strong>PVC</strong>、<strong>Deployment</strong>、<strong>ClusterIP Service（6379）</strong>。未写 <strong><code>storageClassName</code></strong> 时使用集群默认 <strong>StorageClass</strong>；无默认 <strong>SC</strong> 时请在 <strong>PVC</strong> 中补上 <strong><code>storageClassName</code></strong>。命名空间为 <strong><code>default</code></strong>，可按需修改 <strong><code>metadata.namespace</code></strong>。</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Secret</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">redis-secret</span></span><br><span class="line">  <span class="attr">namespace:</span> <span class="string">default</span></span><br><span class="line"><span class="attr">type:</span> <span class="string">Opaque</span></span><br><span class="line"><span class="attr">stringData:</span></span><br><span class="line">  <span class="attr">redis-password:</span> <span class="string">&quot;请替换为强密码&quot;</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">PersistentVolumeClaim</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">redis-data</span></span><br><span class="line">  <span class="attr">namespace:</span> <span class="string">default</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">accessModes:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">ReadWriteOnce</span></span><br><span class="line">  <span class="attr">resources:</span></span><br><span class="line">    <span class="attr">requests:</span></span><br><span class="line">      <span class="attr">storage:</span> <span class="string">10Gi</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">apps/v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Deployment</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">redis</span></span><br><span class="line">  <span class="attr">namespace:</span> <span class="string">default</span></span><br><span class="line">  <span class="attr">labels:</span></span><br><span class="line">    <span class="attr">app:</span> <span class="string">redis</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">replicas:</span> <span class="number">1</span></span><br><span class="line">  <span class="attr">selector:</span></span><br><span class="line">    <span class="attr">matchLabels:</span></span><br><span class="line">      <span class="attr">app:</span> <span class="string">redis</span></span><br><span class="line">  <span class="attr">strategy:</span></span><br><span class="line">    <span class="attr">type:</span> <span class="string">Recreate</span></span><br><span class="line">  <span class="attr">template:</span></span><br><span class="line">    <span class="attr">metadata:</span></span><br><span class="line">      <span class="attr">labels:</span></span><br><span class="line">        <span class="attr">app:</span> <span class="string">redis</span></span><br><span class="line">    <span class="attr">spec:</span></span><br><span class="line">      <span class="attr">containers:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">redis</span></span><br><span class="line">          <span class="attr">image:</span> <span class="string">redis:7.2</span></span><br><span class="line">          <span class="attr">ports:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">containerPort:</span> <span class="number">6379</span></span><br><span class="line">              <span class="attr">name:</span> <span class="string">redis</span></span><br><span class="line">          <span class="attr">env:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">REDIS_PASSWORD</span></span><br><span class="line">              <span class="attr">valueFrom:</span></span><br><span class="line">                <span class="attr">secretKeyRef:</span></span><br><span class="line">                  <span class="attr">name:</span> <span class="string">redis-secret</span></span><br><span class="line">                  <span class="attr">key:</span> <span class="string">redis-password</span></span><br><span class="line">          <span class="attr">command:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="string">/bin/sh</span></span><br><span class="line">            <span class="bullet">-</span> <span class="string">-c</span></span><br><span class="line">            <span class="bullet">-</span> <span class="string">exec</span> <span class="string">redis-server</span> <span class="string">--appendonly</span> <span class="literal">yes</span> <span class="string">--requirepass</span> <span class="string">&quot;$REDIS_PASSWORD&quot;</span></span><br><span class="line">          <span class="attr">volumeMounts:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">data</span></span><br><span class="line">              <span class="attr">mountPath:</span> <span class="string">/data</span></span><br><span class="line">          <span class="attr">readinessProbe:</span></span><br><span class="line">            <span class="attr">exec:</span></span><br><span class="line">              <span class="attr">command:</span></span><br><span class="line">                <span class="bullet">-</span> <span class="string">/bin/sh</span></span><br><span class="line">                <span class="bullet">-</span> <span class="string">-c</span></span><br><span class="line">                <span class="bullet">-</span> <span class="string">redis-cli</span> <span class="string">-a</span> <span class="string">&quot;$REDIS_PASSWORD&quot;</span> <span class="string">ping</span></span><br><span class="line">            <span class="attr">initialDelaySeconds:</span> <span class="number">5</span></span><br><span class="line">            <span class="attr">periodSeconds:</span> <span class="number">5</span></span><br><span class="line">            <span class="attr">timeoutSeconds:</span> <span class="number">3</span></span><br><span class="line">            <span class="attr">failureThreshold:</span> <span class="number">6</span></span><br><span class="line">          <span class="attr">livenessProbe:</span></span><br><span class="line">            <span class="attr">tcpSocket:</span></span><br><span class="line">              <span class="attr">port:</span> <span class="number">6379</span></span><br><span class="line">            <span class="attr">initialDelaySeconds:</span> <span class="number">15</span></span><br><span class="line">            <span class="attr">periodSeconds:</span> <span class="number">10</span></span><br><span class="line">            <span class="attr">timeoutSeconds:</span> <span class="number">3</span></span><br><span class="line">            <span class="attr">failureThreshold:</span> <span class="number">6</span></span><br><span class="line">          <span class="attr">resources:</span></span><br><span class="line">            <span class="attr">requests:</span></span><br><span class="line">              <span class="attr">memory:</span> <span class="string">&quot;128Mi&quot;</span></span><br><span class="line">              <span class="attr">cpu:</span> <span class="string">&quot;100m&quot;</span></span><br><span class="line">            <span class="attr">limits:</span></span><br><span class="line">              <span class="attr">memory:</span> <span class="string">&quot;512Mi&quot;</span></span><br><span class="line">              <span class="attr">cpu:</span> <span class="string">&quot;500m&quot;</span></span><br><span class="line">      <span class="attr">volumes:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">data</span></span><br><span class="line">          <span class="attr">persistentVolumeClaim:</span></span><br><span class="line">            <span class="attr">claimName:</span> <span class="string">redis-data</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Service</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">redis</span></span><br><span class="line">  <span class="attr">namespace:</span> <span class="string">default</span></span><br><span class="line">  <span class="attr">labels:</span></span><br><span class="line">    <span class="attr">app:</span> <span class="string">redis</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">type:</span> <span class="string">ClusterIP</span></span><br><span class="line">  <span class="attr">selector:</span></span><br><span class="line">    <span class="attr">app:</span> <span class="string">redis</span></span><br><span class="line">  <span class="attr">ports:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">redis</span></span><br><span class="line">      <span class="attr">port:</span> <span class="number">6379</span></span><br><span class="line">      <span class="attr">targetPort:</span> <span class="number">6379</span></span><br></pre></td></tr></table></figure>
-
-<p>查看资源：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl get deploy,svc,pvc -l app=redis</span><br></pre></td></tr></table></figure>
-
-<p>集群内连接示例（按 <strong>namespace</strong> 与 <strong>Secret</strong> 替换密码）：<strong><code>redis://:请替换@redis.default.svc.cluster.local:6379/0</code></strong>（客户端库参数名可能为 <strong><code>password</code></strong> &#x2F; <strong><code>username</code></strong>，以所用驱动为准）。</p>
-<p><strong>说明</strong>：<strong><code>strategy: Recreate</code></strong> 避免 <strong>RWO</strong> 卷被多副本 <strong>RollingUpdate</strong> 同时挂载；<strong>主从、哨兵、集群</strong> 请使用 <strong>Redis Operator</strong>、<strong>Helm Chart</strong> 或 <strong>StatefulSet</strong> 方案，勿直接水平扩展上述 <strong>Deployment</strong> 当作分片集群使用。</p>
-<hr>
-<h1 id="六、小结"><a href="#六、小结" class="headerlink" title="六、小结"></a>六、小结</h1><table>
-<thead>
-<tr>
-<th>项</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>前置</strong></td>
-<td>已安装 <strong><code>docker</code></strong> 与 <strong><code>docker compose</code></strong>（或 <strong><code>docker-compose</code></strong>）</td>
-</tr>
-<tr>
-<td><strong>镜像</strong></td>
-<td>优先官方 <strong><code>redis:7.2</code></strong> &#x2F; 固定补丁标签；<strong><code>--requirepass</code></strong> 与 <strong><code>ACL</code></strong> 按安全要求配置</td>
-</tr>
-<tr>
-<td><strong>单容器</strong></td>
-<td><strong><code>mkdir</code></strong>（可选）后一条 <strong><code>docker run ... redis-server ...</code></strong></td>
-</tr>
-<tr>
-<td><strong>Compose</strong></td>
-<td>保存 <strong><code>docker-compose.redis.yml</code></strong> 后 <strong><code>docker compose -f ... up -d</code></strong></td>
-</tr>
-<tr>
-<td><strong>Kubernetes</strong></td>
-<td>保存 <strong><code>redis-k8s.yaml</code></strong> 后 <strong><code>kubectl apply -f ...</code></strong></td>
-</tr>
-</tbody></table>
-<p>生产环境请启用 <strong>TLS</strong>、<strong>ACL</strong>、持久化策略与监控；<strong>Secret</strong> 建议对接 <strong>External Secrets</strong> &#x2F; <strong>Sealed Secrets</strong> 等管控流程。</p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
   <nav class="pagination">
     <a class="extend prev" rel="prev" title="上一页" aria-label="上一页" href="/page/5/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><span class="page-number current">6</span><a class="page-number" href="/page/7/">7</a><span class="space">&hellip;</span><a class="page-number" href="/page/19/">19</a><a class="extend next" rel="next" title="下一页" aria-label="下一页" href="/page/7/"><i class="fa fa-angle-right"></i></a>
   </nav>
@@ -2390,13 +2669,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">159k</span>
+    <span title="站点总字数">181k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">8:49</span>
+    <span title="站点阅读时长">10:03</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

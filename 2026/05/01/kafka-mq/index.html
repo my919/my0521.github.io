@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="Apache Kafka 是分布式事件流平台：高吞吐、持久化、可回放的分区日志，用于消息队列、日志管道、流式处理与数据集成。本文侧重 MQ &#x2F; 微服务 视角；大数据总线、CDC、Flink 集成见 Kafka 大数据数据总线。  一、核心概念   概念 说明    Topic 逻辑消息流名称   Partition Topic 的分片，有序日志；并行度与分区数相关   Offset 分区">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kafka 消息中间件入门">
+<meta property="og:url" content="http://example.com/2026/05/01/kafka-mq/index.html">
+<meta property="og:site_name" content="my">
+<meta property="og:description" content="Apache Kafka 是分布式事件流平台：高吞吐、持久化、可回放的分区日志，用于消息队列、日志管道、流式处理与数据集成。本文侧重 MQ &#x2F; 微服务 视角；大数据总线、CDC、Flink 集成见 Kafka 大数据数据总线。  一、核心概念   概念 说明    Topic 逻辑消息流名称   Partition Topic 的分片，有序日志；并行度与分区数相关   Offset 分区">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-05-01T05:35:18.000Z">
+<meta property="article:modified_time" content="2026-05-31T14:37:06.136Z">
+<meta property="article:author" content="miracle">
+<meta property="article:tag" content="Kafka">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/2026/05/01/kafka-mq/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2026/05/01/kafka-mq/","path":"/2026/05/01/kafka-mq/","title":"Kafka 消息中间件入门"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Kafka 消息中间件入门 | my</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.10.1/mermaid.min.js","integrity":"sha256-BmQmdWDS8X2OTbrwELWK366LV6escyWhHHe0XCTU/Hk="}}</script>
+  <script src="/js/third-party/tags/mermaid.js" defer></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js" defer></script>
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="my" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">my</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-service"><a href="/service/" rel="section"><i class="fa fa-server fa-fw"></i>服务</a></li><li class="menu-item menu-item-project"><a href="/project/" rel="section"><i class="fa fa-folder-open fa-fw"></i>项目</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5"><span class="nav-number">1.</span> <span class="nav-text">一、核心概念</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E7%94%9F%E4%BA%A7%E8%80%85%E4%B8%8E%E6%B6%88%E8%B4%B9%E8%80%85"><span class="nav-number">2.</span> <span class="nav-text">二、生产者与消费者</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E7%94%9F%E4%BA%A7%E8%80%85"><span class="nav-number">2.1.</span> <span class="nav-text">1. 生产者</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E6%B6%88%E8%B4%B9%E8%80%85"><span class="nav-number">2.2.</span> <span class="nav-text">2. 消费者</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E6%8A%95%E9%80%92%E8%AF%AD%E4%B9%89%EF%BC%88%E9%9C%80%E4%B8%9A%E5%8A%A1%E9%85%8D%E5%90%88%EF%BC%89"><span class="nav-number">2.3.</span> <span class="nav-text">3. 投递语义（需业务配合）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E5%88%86%E5%8C%BA%E3%80%81%E5%89%AF%E6%9C%AC%E4%B8%8E-ISR"><span class="nav-number">3.</span> <span class="nav-text">三、分区、副本与 ISR</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E3%80%81KRaft-%E4%B8%8E-ZooKeeper"><span class="nav-number">4.</span> <span class="nav-text">四、KRaft 与 ZooKeeper</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E4%B8%8E-RocketMQ-%E7%9A%84%E5%AF%B9%E7%85%A7"><span class="nav-number">5.</span> <span class="nav-text">五、与 RocketMQ 的对照</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E9%83%A8%E7%BD%B2%E4%B8%8E%E5%91%BD%E4%BB%A4%E8%A1%8C%E6%8E%A2%E6%B5%8B"><span class="nav-number">6.</span> <span class="nav-text">六、部署与命令行探测</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%83%E3%80%81%E7%94%9F%E4%BA%A7%E6%B3%A8%E6%84%8F"><span class="nav-number">7.</span> <span class="nav-text">七、生产注意</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">miracle</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">184</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">38</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">107</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/my919" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;my919" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://gitee.com/my919" title="Gitee → https:&#x2F;&#x2F;gitee.com&#x2F;my919" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>Gitee</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:yeal166@163.com" title="E-Mail → mailto:yeal166@163.com" rel="noopener me external nofollow noreferrer" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/kafka-mq/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Kafka 消息中间件入门 | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Kafka 消息中间件入门
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-05-01 13:35:18" itemprop="dateCreated datePublished" datetime="2026-05-01T13:35:18+08:00">2026-05-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-05-31 22:37:06" itemprop="dateModified" datetime="2026-05-31T22:37:06+08:00">2026-05-31</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/MQ/" itemprop="url" rel="index"><span itemprop="name">MQ</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>746</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>2 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p><strong>Apache Kafka</strong> 是分布式<strong>事件流平台</strong>：高吞吐、持久化、可回放的分区日志，用于消息队列、日志管道、流式处理与数据集成。本文侧重 <strong>MQ &#x2F; 微服务</strong> 视角；大数据总线、CDC、Flink 集成见 <a href="/2026/05/01/kafka-bigdata/">Kafka 大数据数据总线</a>。</p>
+<hr>
+<h1 id="一、核心概念"><a href="#一、核心概念" class="headerlink" title="一、核心概念"></a>一、核心概念</h1><table>
+<thead>
+<tr>
+<th>概念</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Topic</strong></td>
+<td>逻辑消息流名称</td>
+</tr>
+<tr>
+<td><strong>Partition</strong></td>
+<td>Topic 的分片，有序日志；并行度与分区数相关</td>
+</tr>
+<tr>
+<td><strong>Offset</strong></td>
+<td>分区内每条消息的唯一递增序号</td>
+</tr>
+<tr>
+<td><strong>Producer</strong></td>
+<td>写入消息，可指定 <strong>key</strong> 做分区路由</td>
+</tr>
+<tr>
+<td><strong>Consumer Group</strong></td>
+<td>组内消费者分摊分区，同组不重复消费同一分区</td>
+</tr>
+<tr>
+<td><strong>Broker</strong></td>
+<td>存储与 Serving 分区的服务器进程</td>
+</tr>
+</tbody></table>
+<p>消息<strong>持久化在磁盘</strong>（顺序写 + page cache），可配置保留时间与大小。</p>
+<hr>
+<h1 id="二、生产者与消费者"><a href="#二、生产者与消费者" class="headerlink" title="二、生产者与消费者"></a>二、生产者与消费者</h1><h2 id="1-生产者"><a href="#1-生产者" class="headerlink" title="1. 生产者"></a>1. 生产者</h2><ul>
+<li><strong><code>acks</code></strong>：<strong><code>0</code></strong> &#x2F; <strong><code>1</code></strong> &#x2F; <strong><code>all</code></strong> 权衡延迟与持久性。  </li>
+<li><strong>幂等生产者</strong>：避免重试导致重复（下游仍可能需要业务去重）。  </li>
+<li><strong>事务</strong>：跨分区 <strong>exactly-once</strong> 与 <strong>Kafka Streams</strong> 场景。</li>
+</ul>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 生产者常见配置（概念）</span></span><br><span class="line"><span class="attr">acks</span>=<span class="string">all</span></span><br><span class="line"><span class="attr">enable.idempotence</span>=<span class="string">true</span></span><br><span class="line"><span class="attr">retries</span>=<span class="string">3</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="2-消费者"><a href="#2-消费者" class="headerlink" title="2. 消费者"></a>2. 消费者</h2><ul>
+<li><strong><code>auto.offset.reset</code></strong>：<strong><code>earliest</code></strong> &#x2F; <strong><code>latest</code></strong>。  </li>
+<li><strong>手动提交 offset</strong>：处理成功后再 <strong><code>commitSync</code> &#x2F; <code>commitAsync</code></strong>。  </li>
+<li><strong>再均衡（Rebalance）</strong>：组成员变化时重新分配分区；消费逻辑应支持<strong>幂等</strong>。</li>
+</ul>
+<h2 id="3-投递语义（需业务配合）"><a href="#3-投递语义（需业务配合）" class="headerlink" title="3. 投递语义（需业务配合）"></a>3. 投递语义（需业务配合）</h2><table>
+<thead>
+<tr>
+<th>语义</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>At most once</strong></td>
+<td>先提交 offset 再处理，可能丢</td>
+</tr>
+<tr>
+<td><strong>At least once</strong></td>
+<td>先处理再提交，可能重复</td>
+</tr>
+<tr>
+<td><strong>Exactly once</strong></td>
+<td>事务 + 幂等存储，成本高</td>
+</tr>
+</tbody></table>
+<hr>
+<h1 id="三、分区、副本与-ISR"><a href="#三、分区、副本与-ISR" class="headerlink" title="三、分区、副本与 ISR"></a>三、分区、副本与 ISR</h1><ul>
+<li><strong>Leader &#x2F; Follower</strong>：每个分区一个 <strong>Leader</strong> 负责读写，Follower 同步。  </li>
+<li><strong>ISR（In-Sync Replicas）</strong>：与 Leader 差距在阈值内的副本；<strong><code>min.insync.replicas</code></strong> 与 <strong><code>acks=all</code></strong> 共同定义「写成功」。  </li>
+<li><strong>扩容</strong>：增加分区数<strong>不会</strong>重分布历史 key；规划分区数宜前置。</li>
+</ul>
+<hr>
+<h1 id="四、KRaft-与-ZooKeeper"><a href="#四、KRaft-与-ZooKeeper" class="headerlink" title="四、KRaft 与 ZooKeeper"></a>四、KRaft 与 ZooKeeper</h1><p><strong>Kafka 3.x+</strong> 可用 <strong>KRaft</strong>（内置 Raft 元数据）替代 <strong>ZooKeeper</strong>。新集群建议 <strong>KRaft</strong>；存量 <strong>ZK</strong> 集群按官方迁移指南操作。本站 <a href="/2026/05/01/Kafka-Docker/">Docker 部署 Kafka</a> 采用 <strong>KRaft</strong> 单节点示例。</p>
+<hr>
+<h1 id="五、与-RocketMQ-的对照"><a href="#五、与-RocketMQ-的对照" class="headerlink" title="五、与 RocketMQ 的对照"></a>五、与 RocketMQ 的对照</h1><table>
+<thead>
+<tr>
+<th>维度</th>
+<th><strong>Kafka</strong></th>
+<th><strong>RocketMQ</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>模型</strong></td>
+<td>分区日志、流式优先</td>
+<td>Topic + Queue、顺序&#x2F;延迟&#x2F;事务消息</td>
+</tr>
+<tr>
+<td><strong>生态</strong></td>
+<td>Connect、Streams、Flink&#x2F;Spark</td>
+<td>国内电商、SCA 集成</td>
+</tr>
+<tr>
+<td><strong>典型场景</strong></td>
+<td>日志、指标、CDC、流计算</td>
+<td>订单、定时、强业务 MQ</td>
+</tr>
+</tbody></table>
+<p>RocketMQ 入门见 <a href="/2026/05/01/rocketmq-mq/">RocketMQ 消息中间件入门</a>；Spring Cloud 集成见 <a href="/2026/05/17/springcloud-rocketmq/">Spring Cloud 集成 RocketMQ</a>。</p>
+<hr>
+<h1 id="六、部署与命令行探测"><a href="#六、部署与命令行探测" class="headerlink" title="六、部署与命令行探测"></a>六、部署与命令行探测</h1><p>容器部署：<a href="/2026/05/01/Kafka-Docker/">Docker 部署 Kafka</a>。局域网中间件见 <a href="/service/">服务</a>（<strong><code>:30006</code></strong> 等）。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建 topic</span></span><br><span class="line">kafka-topics.sh --bootstrap-server localhost:9092 \</span><br><span class="line">  --create --topic demo --partitions 3 --replication-factor 1</span><br><span class="line"></span><br><span class="line"><span class="comment"># 生产 / 消费</span></span><br><span class="line">kafka-console-producer.sh --bootstrap-server localhost:9092 --topic demo</span><br><span class="line">kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic demo --from-beginning</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看消费组 lag</span></span><br><span class="line">kafka-consumer-groups.sh --bootstrap-server localhost:9092 --describe --group my-group</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="七、生产注意"><a href="#七、生产注意" class="headerlink" title="七、生产注意"></a>七、生产注意</h1><table>
+<thead>
+<tr>
+<th>项</th>
+<th>建议</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>分区数</strong></td>
+<td>与消费者并行度、磁盘并行写相关；不宜过少</td>
+</tr>
+<tr>
+<td><strong>保留</strong></td>
+<td><code>retention.ms</code> 与磁盘容量；合规场景可能需归档到对象存储</td>
+</tr>
+<tr>
+<td><strong>监控</strong></td>
+<td>Under-replicated partitions、请求 P99、磁盘使用率</td>
+</tr>
+<tr>
+<td><strong>安全</strong></td>
+<td>SASL&#x2F;SSL、ACL；勿将 <strong><code>9092</code></strong> 裸奔公网</td>
+</tr>
+</tbody></table>
+<p>官方文档：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://kafka.apache.org/documentation/">https://kafka.apache.org/documentation/</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Kafka/" rel="tag"># Kafka</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/05/01/Nginx/Nginx/" rel="prev" title="Nginx">
+                  <i class="fa fa-angle-left"></i> Nginx
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2026/05/01/rocketmq-mq/" rel="next" title="RocketMQ 消息中间件入门">
+                  RocketMQ 消息中间件入门 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">miracle</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">181k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">10:03</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+<script>
+(function () {
+  function normalizeClipboard(s) {
+    return (s || '').replace(/\u00a0/g, ' ');
+  }
+
+  /** When innerText is empty, treat <br> as newlines (matches Hexo fenced + line_number HTML). */
+  function plainTextFromElement(el) {
+    if (!el) return '';
+    var t = el.innerText;
+    if (t != null && t !== '') return normalizeClipboard(t);
+    var clone = el.cloneNode(true);
+    clone.querySelectorAll('br').forEach(function (br) {
+      br.parentNode.replaceChild(document.createTextNode('\n'), br);
+    });
+    return normalizeClipboard(clone.textContent || '');
+  }
+
+  function extractFromFigure(fig) {
+    if (!fig) return '';
+    var cell = fig.querySelector('td.code') || fig.querySelector('.code');
+    if (cell) return plainTextFromElement(cell);
+    var pre = fig.querySelector('pre');
+    if (pre) return plainTextFromElement(pre);
+    var code = fig.querySelector('code');
+    return code ? plainTextFromElement(code) : '';
+  }
+
+  function extractForCopyBtn(btn) {
+    var fig = btn.closest('figure.highlight');
+    if (fig) return extractFromFigure(fig);
+    var wrap = btn.closest('.code-container');
+    if (wrap) {
+      var innerFig = wrap.querySelector('figure.highlight');
+      if (innerFig) return extractFromFigure(innerFig);
+      var preOnly = wrap.querySelector('pre');
+      if (preOnly) return plainTextFromElement(preOnly);
+    }
+    return '';
+  }
+
+  function setCopyIcon(btn, ok) {
+    var i = btn.querySelector('i');
+    if (i) i.className = ok ? 'fa fa-check-circle fa-fw' : 'fa fa-times-circle fa-fw';
+  }
+
+  function writeClipboard(text, btn) {
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(text).then(
+        function () { setCopyIcon(btn, true); },
+        function () { fallbackCopy(text, btn); }
+      );
+    }
+    fallbackCopy(text, btn);
+    return Promise.resolve();
+  }
+
+  function fallbackCopy(text, btn) {
+    try {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed';
+      ta.style.left = '-9999px';
+      document.body.appendChild(ta);
+      ta.select();
+      var ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      setCopyIcon(btn, ok);
+    } catch (e) {
+      setCopyIcon(btn, false);
+    }
+  }
+
+  document.addEventListener(
+    'click',
+    function (e) {
+      var btn = e.target.closest && e.target.closest('.copy-btn');
+      if (!btn) return;
+      if (!btn.closest('figure.highlight') && !btn.closest('.code-container')) return;
+      e.stopPropagation();
+      e.preventDefault();
+      var text = extractForCopyBtn(btn);
+      writeClipboard(text, btn);
+    },
+    true
+  );
+})();
+</script>
+
+</body>
+</html>

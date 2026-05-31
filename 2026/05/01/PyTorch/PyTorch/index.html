@@ -20,13 +20,15 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
 
-    <meta property="og:type" content="article">
+    <meta name="description" content="PyTorch 是 Meta 主导的深度学习框架：动态计算图、Python 优先 API、研究与生产广泛使用。下面从「Tensor 与自动求导 → nn.Module 与训练循环 → DataLoader → GPU 与部署 → 与 DL&#x2F;LLM 的关系」顺序写清楚。  一、Tensor 与 autograd123456import torchx &#x3D; torch.tensor([2.0]">
+<meta property="og:type" content="article">
 <meta property="og:title" content="PyTorch">
 <meta property="og:url" content="http://example.com/2026/05/01/PyTorch/PyTorch/index.html">
 <meta property="og:site_name" content="my">
+<meta property="og:description" content="PyTorch 是 Meta 主导的深度学习框架：动态计算图、Python 优先 API、研究与生产广泛使用。下面从「Tensor 与自动求导 → nn.Module 与训练循环 → DataLoader → GPU 与部署 → 与 DL&#x2F;LLM 的关系」顺序写清楚。  一、Tensor 与 autograd123456import torchx &#x3D; torch.tensor([2.0]">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-05-01T05:29:05.000Z">
-<meta property="article:modified_time" content="2026-05-01T05:29:05.537Z">
+<meta property="article:modified_time" content="2026-05-31T04:17:45.248Z">
 <meta property="article:author" content="miracle">
 <meta property="article:tag" content="PyTorch">
 <meta name="twitter:card" content="summary">
@@ -114,7 +116,7 @@
 
 
 <nav class="site-nav">
-  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-service"><a href="/service/" rel="section"><i class="fa fa-server fa-fw"></i>服务</a></li><li class="menu-item menu-item-project"><a href="/project/" rel="section"><i class="fa fa-folder-open fa-fw"></i>项目</a></li>
       <li class="menu-item menu-item-search">
         <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
         </a>
@@ -152,7 +154,7 @@
   
   <aside class="sidebar">
 
-    <div class="sidebar-inner sidebar-overview-active">
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
       <ul class="sidebar-nav">
         <li class="sidebar-nav-toc">
           文章目录
@@ -165,6 +167,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81Tensor-%E4%B8%8E-autograd"><span class="nav-number">1.</span> <span class="nav-text">一、Tensor 与 autograd</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E6%A8%A1%E5%9E%8B%E4%B8%8E%E8%AE%AD%E7%BB%83%E5%BE%AA%E7%8E%AF"><span class="nav-number">2.</span> <span class="nav-text">二、模型与训练循环</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81DataLoader"><span class="nav-number">3.</span> <span class="nav-text">三、DataLoader</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E3%80%81GPU-%E4%B8%8E%E6%B7%B7%E5%90%88%E7%B2%BE%E5%BA%A6"><span class="nav-number">4.</span> <span class="nav-text">四、GPU 与混合精度</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E7%94%9F%E6%80%81%E4%B8%8E%E5%BB%B6%E4%BC%B8"><span class="nav-number">5.</span> <span class="nav-text">五、生态与延伸</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -177,7 +180,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">182</span>
+          <span class="site-state-item-count">184</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -188,7 +191,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">106</span>
+        <span class="site-state-item-count">107</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -259,6 +262,13 @@
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-05-31 12:17:45" itemprop="dateModified" datetime="2026-05-31T12:17:45+08:00">2026-05-31</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
         <i class="far fa-folder"></i>
       </span>
       <span class="post-meta-item-text">分类于</span>
@@ -274,7 +284,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>0</span>
+      <span>350</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -291,7 +301,37 @@
     
     
     
-    <div class="post-body" itemprop="articleBody">
+    <div class="post-body" itemprop="articleBody"><p><strong>PyTorch</strong> 是 <strong>Meta</strong> 主导的深度学习框架：动态计算图、Python 优先 API、研究与生产广泛使用。下面从「<strong>Tensor 与自动求导</strong> → <strong>nn.Module 与训练循环</strong> → <strong>DataLoader</strong> → <strong>GPU 与部署</strong> → <strong>与 DL&#x2F;LLM 的关系</strong>」顺序写清楚。</p>
+<hr>
+<h1 id="一、Tensor-与-autograd"><a href="#一、Tensor-与-autograd" class="headerlink" title="一、Tensor 与 autograd"></a>一、Tensor 与 autograd</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"></span><br><span class="line">x = torch.tensor([<span class="number">2.0</span>], requires_grad=<span class="literal">True</span>)</span><br><span class="line">y = x ** <span class="number">2</span> + <span class="number">3</span> * x</span><br><span class="line">y.backward()</span><br><span class="line"><span class="built_in">print</span>(x.grad)  <span class="comment"># dy/dx at x=2 → 7.0</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong><code>torch.Tensor</code></strong>：CPU&#x2F;CUDA 上的多维数组。  </li>
+<li><strong><code>requires_grad</code></strong>：参与自动微分；<strong><code>backward()</code></strong> 累积梯度。  </li>
+<li><strong>推理</strong>：<strong><code>with torch.no_grad():</code></strong> 或 <strong><code>model.eval()</code></strong> 关闭 Dropout 等。</li>
+</ul>
+<hr>
+<h1 id="二、模型与训练循环"><a href="#二、模型与训练循环" class="headerlink" title="二、模型与训练循环"></a>二、模型与训练循环</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn</span><br><span class="line"><span class="keyword">import</span> torch.optim <span class="keyword">as</span> optim</span><br><span class="line"></span><br><span class="line">model = nn.Sequential(nn.Linear(<span class="number">20</span>, <span class="number">64</span>), nn.ReLU(), nn.Linear(<span class="number">64</span>, <span class="number">2</span>))</span><br><span class="line">criterion = nn.CrossEntropyLoss()</span><br><span class="line">optimizer = optim.Adam(model.parameters(), lr=<span class="number">1e-3</span>)</span><br><span class="line"></span><br><span class="line">model.train()</span><br><span class="line"><span class="keyword">for</span> epoch <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">10</span>):</span><br><span class="line">    <span class="keyword">for</span> xb, yb <span class="keyword">in</span> train_loader:</span><br><span class="line">        optimizer.zero_grad()</span><br><span class="line">        logits = model(xb)</span><br><span class="line">        loss = criterion(logits, yb)</span><br><span class="line">        loss.backward()</span><br><span class="line">        optimizer.step()</span><br></pre></td></tr></table></figure>
+
+<p><strong><code>nn.Module</code></strong>：子类化 <strong><code>forward</code></strong> 组织复杂网络（<strong>CNN</strong>、<strong>Transformer</strong> 等）。</p>
+<hr>
+<h1 id="三、DataLoader"><a href="#三、DataLoader" class="headerlink" title="三、DataLoader"></a>三、DataLoader</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> torch.utils.data <span class="keyword">import</span> Dataset, DataLoader</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">MyDataset</span>(<span class="title class_ inherited__">Dataset</span>):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__len__</span>(<span class="params">self</span>): <span class="keyword">return</span> <span class="built_in">len</span>(<span class="variable language_">self</span>.data)</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__getitem__</span>(<span class="params">self, i</span>): <span class="keyword">return</span> <span class="variable language_">self</span>.data[i], <span class="variable language_">self</span>.labels[i]</span><br><span class="line"></span><br><span class="line">train_loader = DataLoader(MyDataset(), batch_size=<span class="number">32</span>, shuffle=<span class="literal">True</span>, num_workers=<span class="number">4</span>)</span><br></pre></td></tr></table></figure>
+
+<p><strong><code>num_workers</code></strong> 多进程加载；<strong><code>pin_memory=True</code></strong> 加速 CPU→GPU 拷贝。</p>
+<hr>
+<h1 id="四、GPU-与混合精度"><a href="#四、GPU-与混合精度" class="headerlink" title="四、GPU 与混合精度"></a>四、GPU 与混合精度</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">device = torch.device(<span class="string">&quot;cuda&quot;</span> <span class="keyword">if</span> torch.cuda.is_available() <span class="keyword">else</span> <span class="string">&quot;cpu&quot;</span>)</span><br><span class="line">model.to(device)</span><br><span class="line"></span><br><span class="line">scaler = torch.cuda.amp.GradScaler()</span><br><span class="line"><span class="keyword">with</span> torch.cuda.amp.autocast():</span><br><span class="line">    loss = criterion(model(xb.to(device)), yb.to(device))</span><br><span class="line">scaler.scale(loss).backward()</span><br><span class="line">scaler.step(optimizer)</span><br><span class="line">scaler.update()</span><br></pre></td></tr></table></figure>
+
+<p><strong><code>torch.compile</code></strong>（2.x）可进一步融合内核优化推理&#x2F;训练。</p>
+<hr>
+<h1 id="五、生态与延伸"><a href="#五、生态与延伸" class="headerlink" title="五、生态与延伸"></a>五、生态与延伸</h1><ul>
+<li><strong>torchvision &#x2F; torchaudio &#x2F; torchtext</strong>：领域数据集与模型。  </li>
+<li><strong>Hugging Face</strong>：<strong>Transformers</strong> 加载 <a href="/2026/05/01/LLM/">LLM</a>。  </li>
+<li><strong>导出</strong>：<strong>TorchScript</strong>、<strong>ONNX</strong> 用于 C++&#x2F;移动端推理。  </li>
+<li><strong>分布式</strong>：<strong>DDP</strong>（<strong>DistributedDataParallel</strong>）多卡训练。</li>
+</ul>
+<p>理论背景见 <a href="/2026/05/01/DL/">DL</a>；Python 项目管理见 <a href="/2026/05/01/Python-UV/">Python-UV</a>。</p>
+<p>官方：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://pytorch.org/docs/">https://pytorch.org/docs/</a></p>
+
     </div>
 
     
@@ -345,13 +385,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">159k</span>
+    <span title="站点总字数">181k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">8:49</span>
+    <span title="站点阅读时长">10:03</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

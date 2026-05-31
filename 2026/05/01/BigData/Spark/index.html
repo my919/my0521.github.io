@@ -20,13 +20,15 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
 
-    <meta property="og:type" content="article">
+    <meta name="description" content="Apache Spark 是统一的大规模数据处理引擎：内存计算、RDD&#x2F;DataFrame&#x2F;Dataset API，支持 批处理、SQL、流（Structured Streaming）、MLlib、GraphX。下面从「架构 → RDD 与 DataFrame → Spark SQL → 与 Flink&#x2F;Kafka 的关系 → 部署模式」顺序写清楚。  一、架构组件">
+<meta property="og:type" content="article">
 <meta property="og:title" content="Spark">
 <meta property="og:url" content="http://example.com/2026/05/01/BigData/Spark/index.html">
 <meta property="og:site_name" content="my">
+<meta property="og:description" content="Apache Spark 是统一的大规模数据处理引擎：内存计算、RDD&#x2F;DataFrame&#x2F;Dataset API，支持 批处理、SQL、流（Structured Streaming）、MLlib、GraphX。下面从「架构 → RDD 与 DataFrame → Spark SQL → 与 Flink&#x2F;Kafka 的关系 → 部署模式」顺序写清楚。  一、架构组件">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-05-01T04:43:07.000Z">
-<meta property="article:modified_time" content="2026-05-01T04:43:07.119Z">
+<meta property="article:modified_time" content="2026-05-31T14:37:14.187Z">
 <meta property="article:author" content="miracle">
 <meta property="article:tag" content="Spark">
 <meta name="twitter:card" content="summary">
@@ -114,7 +116,7 @@
 
 
 <nav class="site-nav">
-  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-service"><a href="/service/" rel="section"><i class="fa fa-server fa-fw"></i>服务</a></li><li class="menu-item menu-item-project"><a href="/project/" rel="section"><i class="fa fa-folder-open fa-fw"></i>项目</a></li>
       <li class="menu-item menu-item-search">
         <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
         </a>
@@ -152,7 +154,7 @@
   
   <aside class="sidebar">
 
-    <div class="sidebar-inner sidebar-overview-active">
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
       <ul class="sidebar-nav">
         <li class="sidebar-nav-toc">
           文章目录
@@ -165,6 +167,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E6%9E%B6%E6%9E%84%E7%BB%84%E4%BB%B6"><span class="nav-number">1.</span> <span class="nav-text">一、架构组件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81RDD-%E4%B8%8E-DataFrame"><span class="nav-number">2.</span> <span class="nav-text">二、RDD 与 DataFrame</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-RDD%EF%BC%88%E5%BC%B9%E6%80%A7%E5%88%86%E5%B8%83%E5%BC%8F%E6%95%B0%E6%8D%AE%E9%9B%86%EF%BC%89"><span class="nav-number">2.1.</span> <span class="nav-text">1. RDD（弹性分布式数据集）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-DataFrame-Dataset"><span class="nav-number">2.2.</span> <span class="nav-text">2. DataFrame &#x2F; Dataset</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81Spark-SQL-%E4%B8%8E%E8%A1%A8"><span class="nav-number">3.</span> <span class="nav-text">三、Spark SQL 与表</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E6%B5%81%E5%A4%84%E7%90%86%E4%B8%8E%E5%91%A8%E8%BE%B9"><span class="nav-number">4.</span> <span class="nav-text">四、流处理与周边</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E9%83%A8%E7%BD%B2%E4%B8%8E%E8%B0%83%E4%BC%98%E8%A6%81%E7%82%B9"><span class="nav-number">5.</span> <span class="nav-text">五、部署与调优要点</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -177,7 +180,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">182</span>
+          <span class="site-state-item-count">184</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -188,7 +191,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">106</span>
+        <span class="site-state-item-count">107</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -259,6 +262,13 @@
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-05-31 22:37:14" itemprop="dateModified" datetime="2026-05-31T22:37:14+08:00">2026-05-31</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
         <i class="far fa-folder"></i>
       </span>
       <span class="post-meta-item-text">分类于</span>
@@ -274,7 +284,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>0</span>
+      <span>405</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -291,7 +301,63 @@
     
     
     
-    <div class="post-body" itemprop="articleBody">
+    <div class="post-body" itemprop="articleBody"><p><strong>Apache Spark</strong> 是统一的大规模数据处理引擎：内存计算、<strong>RDD&#x2F;DataFrame&#x2F;Dataset</strong> API，支持 <strong>批处理、SQL、流（Structured Streaming）、MLlib、GraphX</strong>。下面从「<strong>架构</strong> → <strong>RDD 与 DataFrame</strong> → <strong>Spark SQL</strong> → <strong>与 Flink&#x2F;Kafka 的关系</strong> → <strong>部署模式</strong>」顺序写清楚。</p>
+<hr>
+<h1 id="一、架构组件"><a href="#一、架构组件" class="headerlink" title="一、架构组件"></a>一、架构组件</h1><table>
+<thead>
+<tr>
+<th>组件</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Driver</strong></td>
+<td>运行 <strong><code>main</code></strong>，构建 DAG、调度 Stage</td>
+</tr>
+<tr>
+<td><strong>Executor</strong></td>
+<td>Worker 上执行 Task，缓存分区数据</td>
+</tr>
+<tr>
+<td><strong>Cluster Manager</strong></td>
+<td><strong>Standalone</strong>、<strong>YARN</strong>、<strong>Kubernetes</strong>、<strong>Mesos</strong></td>
+</tr>
+<tr>
+<td><strong>SparkContext &#x2F; SparkSession</strong></td>
+<td>程序入口；<strong>SparkSession</strong> 统一 SQL 与 DataFrame</td>
+</tr>
+</tbody></table>
+<p>计算图划分为 <strong>Stage</strong>（宽依赖处切开），Stage 内为并行 <strong>Task</strong>。</p>
+<hr>
+<h1 id="二、RDD-与-DataFrame"><a href="#二、RDD-与-DataFrame" class="headerlink" title="二、RDD 与 DataFrame"></a>二、RDD 与 DataFrame</h1><h2 id="1-RDD（弹性分布式数据集）"><a href="#1-RDD（弹性分布式数据集）" class="headerlink" title="1. RDD（弹性分布式数据集）"></a>1. RDD（弹性分布式数据集）</h2><figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> rdd = sc.textFile(<span class="string">&quot;hdfs://path/logs&quot;</span>)</span><br><span class="line">  .flatMap(_.split(<span class="string">&quot; &quot;</span>))</span><br><span class="line">  .map((_, <span class="number">1</span>))</span><br><span class="line">  .reduceByKey(_ + _)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>不可变、分区、 lineage</strong> 容错。  </li>
+<li><strong>Transformation</strong> 懒执行；<strong>Action</strong>（<strong><code>count</code></strong>、<strong><code>collect</code></strong>）触发计算。</li>
+</ul>
+<h2 id="2-DataFrame-Dataset"><a href="#2-DataFrame-Dataset" class="headerlink" title="2. DataFrame &#x2F; Dataset"></a>2. DataFrame &#x2F; Dataset</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pyspark.sql <span class="keyword">import</span> SparkSession</span><br><span class="line"></span><br><span class="line">spark = SparkSession.builder.appName(<span class="string">&quot;demo&quot;</span>).getOrCreate()</span><br><span class="line">df = spark.read.json(<span class="string">&quot;events/&quot;</span>)</span><br><span class="line">df.<span class="built_in">filter</span>(df.event_type == <span class="string">&quot;click&quot;</span>).groupBy(<span class="string">&quot;user_id&quot;</span>).count().show()</span><br></pre></td></tr></table></figure>
+
+<p><strong>Catalyst</strong> 优化器与 <strong>Tungsten</strong> 执行引擎提升 SQL 与结构化 API 性能；生产更推荐 <strong>DataFrame&#x2F;SQL</strong> 而非裸 RDD。</p>
+<hr>
+<h1 id="三、Spark-SQL-与表"><a href="#三、Spark-SQL-与表" class="headerlink" title="三、Spark SQL 与表"></a>三、Spark SQL 与表</h1><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">OR</span> REPLACE TEMP <span class="keyword">VIEW</span> clicks <span class="keyword">AS</span></span><br><span class="line"><span class="keyword">SELECT</span> user_id, event_time <span class="keyword">FROM</span> events <span class="keyword">WHERE</span> type <span class="operator">=</span> <span class="string">&#x27;click&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">SELECT</span> user_id, <span class="built_in">COUNT</span>(<span class="operator">*</span>) <span class="keyword">AS</span> cnt <span class="keyword">FROM</span> clicks <span class="keyword">GROUP</span> <span class="keyword">BY</span> user_id;</span><br></pre></td></tr></table></figure>
+
+<p>可读写 <strong>Parquet&#x2F;ORC&#x2F;Hive&#x2F;Iceberg</strong> 等；<strong>分区裁剪</strong>与<strong>列式存储</strong>是性能关键。</p>
+<hr>
+<h1 id="四、流处理与周边"><a href="#四、流处理与周边" class="headerlink" title="四、流处理与周边"></a>四、流处理与周边</h1><ul>
+<li><strong>Structured Streaming</strong>：将流视为<strong>无界表</strong>，微批或连续处理（版本依发行版）。  </li>
+<li><strong>数据源&#x2F;汇</strong>：<strong>Kafka</strong>（见 <a href="/2026/05/01/kafka-bigdata/">Kafka 大数据数据总线</a>）、文件、Socket。  </li>
+<li><strong>与 Flink</strong>：Spark 偏<strong>批为主、流为微批&#x2F;连续</strong>；<strong>Flink</strong> 偏<strong>低延迟流</strong>（见 <a href="/2026/05/01/Flink/">Flink</a>）。</li>
+</ul>
+<hr>
+<h1 id="五、部署与调优要点"><a href="#五、部署与调优要点" class="headerlink" title="五、部署与调优要点"></a>五、部署与调优要点</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">spark-submit \</span><br><span class="line">  --master yarn \</span><br><span class="line">  --deploy-mode cluster \</span><br><span class="line">  --num-executors 10 \</span><br><span class="line">  --executor-memory 4g \</span><br><span class="line">  myapp.jar</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>Shuffle</strong>：<strong><code>spark.sql.shuffle.partitions</code></strong>、<strong>AQE</strong>（Adaptive Query Execution）。  </li>
+<li><strong>内存</strong>：Executor <strong>heap + overhead</strong>；避免 <strong><code>collect</code></strong> 大结果到 Driver。  </li>
+<li><strong>本地学习</strong>：<strong>Docker</strong> 或 <strong>standalone</strong> 模式 + <strong>PySpark</strong>。</li>
+</ul>
+<p>官方文档：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://spark.apache.org/docs/latest/">https://spark.apache.org/docs/latest/</a></p>
+
     </div>
 
     
@@ -345,13 +411,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">159k</span>
+    <span title="站点总字数">181k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">8:49</span>
+    <span title="站点阅读时长">10:03</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

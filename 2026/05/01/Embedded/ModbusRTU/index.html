@@ -20,13 +20,15 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
 
-    <meta property="og:type" content="article">
+    <meta name="description" content="Modbus RTU 是 Modbus 协议在二进制串行链路上的实现，最常见物理层为 RS485：主站轮询、从站地址、功能码、CRC16 结尾。下面从「ADU 帧 → 常用功能码 → 时序与 3.5 字符 → 与 ASCII&#x2F;TCP 对照 → 调试工具」顺序写清楚。  一、RTU 帧结构1[从站地址 1B][功能码 1B][数据 N][CRC16 2B 低字节在前]   地址 0：广播（">
+<meta property="og:type" content="article">
 <meta property="og:title" content="Modbus RTU">
 <meta property="og:url" content="http://example.com/2026/05/01/Embedded/ModbusRTU/index.html">
 <meta property="og:site_name" content="my">
+<meta property="og:description" content="Modbus RTU 是 Modbus 协议在二进制串行链路上的实现，最常见物理层为 RS485：主站轮询、从站地址、功能码、CRC16 结尾。下面从「ADU 帧 → 常用功能码 → 时序与 3.5 字符 → 与 ASCII&#x2F;TCP 对照 → 调试工具」顺序写清楚。  一、RTU 帧结构1[从站地址 1B][功能码 1B][数据 N][CRC16 2B 低字节在前]   地址 0：广播（">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-05-01T05:07:53.000Z">
-<meta property="article:modified_time" content="2026-05-04T03:54:49.769Z">
+<meta property="article:modified_time" content="2026-05-31T04:18:27.000Z">
 <meta property="article:author" content="miracle">
 <meta property="article:tag" content="Modbus">
 <meta name="twitter:card" content="summary">
@@ -114,7 +116,7 @@
 
 
 <nav class="site-nav">
-  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-service"><a href="/service/" rel="section"><i class="fa fa-server fa-fw"></i>服务</a></li><li class="menu-item menu-item-project"><a href="/project/" rel="section"><i class="fa fa-folder-open fa-fw"></i>项目</a></li>
       <li class="menu-item menu-item-search">
         <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
         </a>
@@ -152,7 +154,7 @@
   
   <aside class="sidebar">
 
-    <div class="sidebar-inner sidebar-overview-active">
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
       <ul class="sidebar-nav">
         <li class="sidebar-nav-toc">
           文章目录
@@ -165,6 +167,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81RTU-%E5%B8%A7%E7%BB%93%E6%9E%84"><span class="nav-number">1.</span> <span class="nav-text">一、RTU 帧结构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E5%B8%B8%E7%94%A8%E5%8A%9F%E8%83%BD%E7%A0%81"><span class="nav-number">2.</span> <span class="nav-text">二、常用功能码</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E6%97%B6%E5%BA%8F%EF%BC%88RTU-%E7%89%B9%E6%9C%89%EF%BC%89"><span class="nav-number">3.</span> <span class="nav-text">三、时序（RTU 特有）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E4%B8%8E%E5%85%B6%E5%AE%83-Modbus"><span class="nav-number">4.</span> <span class="nav-text">四、与其它 Modbus</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E8%B0%83%E8%AF%95"><span class="nav-number">5.</span> <span class="nav-text">五、调试</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -177,7 +180,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">182</span>
+          <span class="site-state-item-count">184</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -188,7 +191,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">106</span>
+        <span class="site-state-item-count">107</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -262,7 +265,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-04 11:54:49" itemprop="dateModified" datetime="2026-05-04T11:54:49+08:00">2026-05-04</time>
+      <time title="修改时间：2026-05-31 12:18:27" itemprop="dateModified" datetime="2026-05-31T12:18:27+08:00">2026-05-31</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -281,7 +284,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>0</span>
+      <span>391</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -298,7 +301,91 @@
     
     
     
-    <div class="post-body" itemprop="articleBody">
+    <div class="post-body" itemprop="articleBody"><p><strong>Modbus RTU</strong> 是 <strong>Modbus</strong> 协议在<strong>二进制串行链路</strong>上的实现，最常见物理层为 <a href="/2026/05/01/RS485/">RS485</a>：<strong>主站轮询</strong>、<strong>从站地址</strong>、<strong>功能码</strong>、<strong>CRC16</strong> 结尾。下面从「<strong>ADU 帧</strong> → <strong>常用功能码</strong> → <strong>时序与 3.5 字符</strong> → <strong>与 ASCII&#x2F;TCP 对照</strong> → <strong>调试工具</strong>」顺序写清楚。</p>
+<hr>
+<h1 id="一、RTU-帧结构"><a href="#一、RTU-帧结构" class="headerlink" title="一、RTU 帧结构"></a>一、RTU 帧结构</h1><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[从站地址 1B][功能码 1B][数据 N][CRC16 2B 低字节在前]</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>地址 0</strong>：广播（从站不应应答）。  </li>
+<li><strong>CRC</strong>：对地址到数据末字节计算 <strong>Modbus CRC16</strong>。</li>
+</ul>
+<p>示例（读保持寄存器 <strong>0x03</strong>）：主站发 <strong><code>01 03 00 00 00 0A C5 CD</code></strong>（含义依上下文解析）。</p>
+<hr>
+<h1 id="二、常用功能码"><a href="#二、常用功能码" class="headerlink" title="二、常用功能码"></a>二、常用功能码</h1><table>
+<thead>
+<tr>
+<th>码</th>
+<th>名称</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>0x01</strong></td>
+<td>Read Coils</td>
+<td>读线圈（位）</td>
+</tr>
+<tr>
+<td><strong>0x03</strong></td>
+<td>Read Holding Registers</td>
+<td>读保持寄存器（16 位）</td>
+</tr>
+<tr>
+<td><strong>0x04</strong></td>
+<td>Read Input Registers</td>
+<td>读输入寄存器</td>
+</tr>
+<tr>
+<td><strong>0x06</strong></td>
+<td>Write Single Register</td>
+<td>写单寄存器</td>
+</tr>
+<tr>
+<td><strong>0x10</strong></td>
+<td>Write Multiple Registers</td>
+<td>写多寄存器</td>
+</tr>
+</tbody></table>
+<p>异常应答：功能码 <strong>+ 0x80</strong>，后跟异常码。</p>
+<hr>
+<h1 id="三、时序（RTU-特有）"><a href="#三、时序（RTU-特有）" class="headerlink" title="三、时序（RTU 特有）"></a>三、时序（RTU 特有）</h1><p>帧间静默 ≥ <strong>3.5 字符时间</strong>（与波特率相关），用于帧界定；波特率高时该间隔很短，实现需精确。</p>
+<ul>
+<li><strong>115200</strong> 下对 MCU 中断延迟更敏感。  </li>
+<li>半双工 <a href="/2026/05/01/RS485/">RS485</a> 需在发送前使能 <strong>DE</strong>。</li>
+</ul>
+<hr>
+<h1 id="四、与其它-Modbus"><a href="#四、与其它-Modbus" class="headerlink" title="四、与其它 Modbus"></a>四、与其它 Modbus</h1><table>
+<thead>
+<tr>
+<th>变体</th>
+<th>链路</th>
+<th>帧界定</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>RTU</strong></td>
+<td>RS485&#x2F;RS232</td>
+<td>静默 + CRC</td>
+</tr>
+<tr>
+<td><strong><a href="/2026/05/01/ModbusASCII/">ASCII</a></strong></td>
+<td>串口</td>
+<td><strong><code>:</code></strong> 起 <strong>CRLF</strong> 止，LRC</td>
+</tr>
+<tr>
+<td><strong><a href="/2026/05/01/ModbusTCP/">TCP</a></strong></td>
+<td>以太网</td>
+<td>MBAP 头 + 无 CRC</td>
+</tr>
+</tbody></table>
+<p>寄存器地址映射（<strong>40001</strong> 等）在文档与 <strong>PDU</strong> 偏移间需 <strong>减 1</strong> 转换，避免 off-by-one。</p>
+<hr>
+<h1 id="五、调试"><a href="#五、调试" class="headerlink" title="五、调试"></a>五、调试</h1><ul>
+<li><strong>Modbus Poll &#x2F; Slave</strong>（Windows）、<strong>pymodbus</strong>、<strong>QModMaster</strong>（Linux）。  </li>
+<li>抓包：串口监听或 RS485 分析仪。  </li>
+<li>与 <a href="/2026/05/01/UART/">UART</a> 关系：RTU 是<strong>应用层协议</strong>，底下是异步串口 + 485 收发器。</li>
+</ul>
+<p>Modbus 组织：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://modbus.org/">https://modbus.org/</a></p>
+
     </div>
 
     
@@ -352,13 +439,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">159k</span>
+    <span title="站点总字数">181k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">8:49</span>
+    <span title="站点阅读时长">10:03</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

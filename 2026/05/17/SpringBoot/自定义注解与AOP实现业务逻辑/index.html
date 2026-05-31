@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="概述在 Spring Boot 中，自定义注解 + AOP 是横切业务逻辑的常用方式：把「操作审计、防重、幂等、权限、租户隔离」等从 Controller&#x2F;Service 方法里抽离，做到声明式、可复用、可开关。 本仓库已落地：    注解 切面 文档    @OperLog OperLogAspect AOP日志与操作审计   @RepeatSubmit RepeatSubmitAsp">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SpringBoot自定义注解与AOP实现业务逻辑">
+<meta property="og:url" content="http://example.com/2026/05/17/SpringBoot/%E8%87%AA%E5%AE%9A%E4%B9%89%E6%B3%A8%E8%A7%A3%E4%B8%8EAOP%E5%AE%9E%E7%8E%B0%E4%B8%9A%E5%8A%A1%E9%80%BB%E8%BE%91/index.html">
+<meta property="og:site_name" content="my">
+<meta property="og:description" content="概述在 Spring Boot 中，自定义注解 + AOP 是横切业务逻辑的常用方式：把「操作审计、防重、幂等、权限、租户隔离」等从 Controller&#x2F;Service 方法里抽离，做到声明式、可复用、可开关。 本仓库已落地：    注解 切面 文档    @OperLog OperLogAspect AOP日志与操作审计   @RepeatSubmit RepeatSubmitAsp">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-05-17T03:30:00.000Z">
+<meta property="article:modified_time" content="2026-05-31T13:52:28.188Z">
+<meta property="article:author" content="miracle">
+<meta property="article:tag" content="SpringBoot">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/2026/05/17/SpringBoot/%E8%87%AA%E5%AE%9A%E4%B9%89%E6%B3%A8%E8%A7%A3%E4%B8%8EAOP%E5%AE%9E%E7%8E%B0%E4%B8%9A%E5%8A%A1%E9%80%BB%E8%BE%91/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2026/05/17/SpringBoot/%E8%87%AA%E5%AE%9A%E4%B9%89%E6%B3%A8%E8%A7%A3%E4%B8%8EAOP%E5%AE%9E%E7%8E%B0%E4%B8%9A%E5%8A%A1%E9%80%BB%E8%BE%91/","path":"2026/05/17/SpringBoot/自定义注解与AOP实现业务逻辑/","title":"SpringBoot自定义注解与AOP实现业务逻辑"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>SpringBoot自定义注解与AOP实现业务逻辑 | my</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.10.1/mermaid.min.js","integrity":"sha256-BmQmdWDS8X2OTbrwELWK366LV6escyWhHHe0XCTU/Hk="}}</script>
+  <script src="/js/third-party/tags/mermaid.js" defer></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js" defer></script>
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="my" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">my</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-service"><a href="/service/" rel="section"><i class="fa fa-server fa-fw"></i>服务</a></li><li class="menu-item menu-item-project"><a href="/project/" rel="section"><i class="fa fa-folder-open fa-fw"></i>项目</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E4%BD%95%E6%97%B6%E7%94%A8%E6%B3%A8%E8%A7%A3-AOP"><span class="nav-number">2.</span> <span class="nav-text">一、何时用注解 + AOP</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E4%BE%9D%E8%B5%96"><span class="nav-number">3.</span> <span class="nav-text">二、依赖</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E5%AE%9E%E7%8E%B0%E6%AD%A5%E9%AA%A4%EF%BC%88%E5%9B%9B%E6%AD%A5%EF%BC%89"><span class="nav-number">4.</span> <span class="nav-text">三、实现步骤（四步）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E5%AE%9A%E4%B9%89%E6%B3%A8%E8%A7%A3"><span class="nav-number">4.1.</span> <span class="nav-text">1. 定义注解</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E7%BC%96%E5%86%99%E5%88%87%E9%9D%A2"><span class="nav-number">4.2.</span> <span class="nav-text">2. 编写切面</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E9%85%8D%E7%BD%AE%E5%B1%9E%E6%80%A7%E4%B8%8E%E5%BC%80%E5%85%B3"><span class="nav-number">4.3.</span> <span class="nav-text">3. 配置属性与开关</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-%E5%9C%A8-Controller-Service-%E4%B8%8A%E4%BD%BF%E7%94%A8"><span class="nav-number">4.4.</span> <span class="nav-text">4. 在 Controller &#x2F; Service 上使用</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E9%80%9A%E7%9F%A5%E7%B1%BB%E5%9E%8B%E6%80%8E%E4%B9%88%E9%80%89"><span class="nav-number">5.</span> <span class="nav-text">四、通知类型怎么选</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E8%BF%9B%E9%98%B6%E8%A6%81%E7%82%B9"><span class="nav-number">6.</span> <span class="nav-text">五、进阶要点</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E4%BB%8E-JoinPoint-%E8%AF%BB%E5%8F%96%E6%B3%A8%E8%A7%A3"><span class="nav-number">6.1.</span> <span class="nav-text">1. 从 JoinPoint 读取注解</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E5%88%87%E7%82%B9%E8%A1%A8%E8%BE%BE%E5%BC%8F%E7%A4%BA%E4%BE%8B"><span class="nav-number">6.2.</span> <span class="nav-text">2. 切点表达式示例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E5%A4%9A%E5%88%87%E9%9D%A2%E5%8D%8F%E4%BD%9C%E4%B8%8E%E9%A1%BA%E5%BA%8F"><span class="nav-number">6.3.</span> <span class="nav-text">3. 多切面协作与顺序</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-SpEL-%E5%8A%A8%E6%80%81%E5%8F%82%E6%95%B0%EF%BC%88%E5%8F%AF%E9%80%89%EF%BC%89"><span class="nav-number">6.4.</span> <span class="nav-text">4. SpEL 动态参数（可选）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-%E5%BC%82%E6%AD%A5%E4%B8%8E%E4%BA%8B%E5%8A%A1"><span class="nav-number">6.5.</span> <span class="nav-text">5. 异步与事务</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E6%9C%AC%E4%BB%93%E5%BA%93%E5%8F%AF%E5%8F%82%E8%80%83%E7%9A%84%E5%AE%8C%E6%95%B4%E5%AE%9E%E7%8E%B0"><span class="nav-number">7.</span> <span class="nav-text">六、本仓库可参考的完整实现</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%83%E3%80%81%E5%B8%B8%E8%A7%81%E5%9D%91"><span class="nav-number">8.</span> <span class="nav-text">七、常见坑</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%AB%E3%80%81%E9%AA%8C%E8%AF%81%EF%BC%88%E7%A4%BA%E4%BE%8B%E6%8E%A5%E5%8F%A3%EF%BC%89"><span class="nav-number">9.</span> <span class="nav-text">八、验证（示例接口）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B9%9D%E3%80%81%E6%89%A9%E5%B1%95%E6%B8%85%E5%8D%95%EF%BC%88%E5%8F%AF%E6%8C%89%E5%90%8C%E4%B8%80%E6%A8%A1%E6%9D%BF%E6%B7%BB%E5%8A%A0%EF%BC%89"><span class="nav-number">10.</span> <span class="nav-text">九、扩展清单（可按同一模板添加）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8D%81%E3%80%81%E7%9B%B8%E5%85%B3%E6%96%87%E4%BB%B6"><span class="nav-number">11.</span> <span class="nav-text">十、相关文件</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">miracle</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">184</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">38</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">107</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/my919" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;my919" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://gitee.com/my919" title="Gitee → https:&#x2F;&#x2F;gitee.com&#x2F;my919" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>Gitee</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:yeal166@163.com" title="E-Mail → mailto:yeal166@163.com" rel="noopener me external nofollow noreferrer" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/17/SpringBoot/%E8%87%AA%E5%AE%9A%E4%B9%89%E6%B3%A8%E8%A7%A3%E4%B8%8EAOP%E5%AE%9E%E7%8E%B0%E4%B8%9A%E5%8A%A1%E9%80%BB%E8%BE%91/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="SpringBoot自定义注解与AOP实现业务逻辑 | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          SpringBoot自定义注解与AOP实现业务逻辑
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-05-17 11:30:00" itemprop="dateCreated datePublished" datetime="2026-05-17T11:30:00+08:00">2026-05-17</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-05-31 21:52:28" itemprop="dateModified" datetime="2026-05-31T21:52:28+08:00">2026-05-31</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/SpringBoot/" itemprop="url" rel="index"><span itemprop="name">SpringBoot</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>1.8k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>6 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>在 Spring Boot 中，<strong>自定义注解 + AOP</strong> 是横切业务逻辑的常用方式：把「操作审计、防重、幂等、权限、租户隔离」等从 Controller&#x2F;Service 方法里抽离，做到<strong>声明式、可复用、可开关</strong>。</p>
+<p>本仓库已落地：</p>
+<table>
+<thead>
+<tr>
+<th>注解</th>
+<th>切面</th>
+<th>文档</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>@OperLog</code></td>
+<td><code>OperLogAspect</code></td>
+<td><a href="./AOP%E6%97%A5%E5%BF%97%E4%B8%8E%E6%93%8D%E4%BD%9C%E5%AE%A1%E8%AE%A1.md">AOP日志与操作审计</a></td>
+</tr>
+<tr>
+<td><code>@RepeatSubmit</code></td>
+<td><code>RepeatSubmitAspect</code></td>
+<td><a href="./%E9%98%B2%E9%87%8D%E6%8F%90%E4%BA%A4%E4%B8%8E%E6%8E%A5%E5%8F%A3%E5%B9%82%E7%AD%89.md">防重提交与接口幂等</a></td>
+</tr>
+<tr>
+<td><code>@Idempotent</code></td>
+<td><code>IdempotentAspect</code></td>
+<td>同上</td>
+</tr>
+</tbody></table>
+<p>本文说明<strong>从零实现一套注解切面的通用步骤</strong>，并以示例 <strong><code>@BizCheck</code></strong>（按业务场景开关 + 前置校验）贯穿全文；读者可照此模式扩展自己的业务注解。</p>
+<hr>
+<h1 id="一、何时用注解-AOP"><a href="#一、何时用注解-AOP" class="headerlink" title="一、何时用注解 + AOP"></a>一、何时用注解 + AOP</h1><table>
+<thead>
+<tr>
+<th>方式</th>
+<th>适用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>自定义注解 + AOP</strong></td>
+<td>与具体方法绑定、可带参数、需环绕&#x2F;前后增强（日志、锁、审计）</td>
+</tr>
+<tr>
+<td><strong>Filter &#x2F; Interceptor</strong></td>
+<td>全站 HTTP 层（鉴权头、TraceId），与具体业务方法弱相关</td>
+</tr>
+<tr>
+<td><strong><code>@ControllerAdvice</code></strong></td>
+<td>统一异常、参数校验（见 <a href="./%E7%BB%9F%E4%B8%80%E8%BF%94%E5%9B%9E%E4%BD%93%E4%B8%8E%E5%85%A8%E5%B1%80%E5%BC%82%E5%B8%B8.md">统一返回体与全局异常</a>）</td>
+</tr>
+<tr>
+<td><strong>纯 Service 调用</strong></td>
+<td>强业务分支、需单元测试的核心规则</td>
+</tr>
+</tbody></table>
+<p>原则：<strong>横切、重复、可配置</strong> → 注解 + AOP；<strong>核心领域规则</strong> → 仍写在 Service，AOP 只做入口守卫或记录。</p>
+<hr>
+<h1 id="二、依赖"><a href="#二、依赖" class="headerlink" title="二、依赖"></a>二、依赖</h1><figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">implementation <span class="string">&#x27;org.springframework.boot:spring-boot-starter-aspectj&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>Spring Boot 4 会自动启用 AspectJ 自动代理，一般<strong>无需</strong>再写 <code>@EnableAspectJAutoProxy</code>。</p>
+<hr>
+<h1 id="三、实现步骤（四步）"><a href="#三、实现步骤（四步）" class="headerlink" title="三、实现步骤（四步）"></a>三、实现步骤（四步）</h1><h2 id="1-定义注解"><a href="#1-定义注解" class="headerlink" title="1. 定义注解"></a>1. 定义注解</h2><p>注解只描述「元数据」，不含业务实现：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> org.my919.springboot.annotation;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.lang.annotation.*;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Target(ElementType.METHOD)</span></span><br><span class="line"><span class="meta">@Retention(RetentionPolicy.RUNTIME)</span></span><br><span class="line"><span class="meta">@Documented</span></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> BizCheck &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/** 业务场景码，与配置 app.biz.scenes 对应 */</span></span><br><span class="line">    String <span class="title function_">scene</span><span class="params">()</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/** 校验失败时的提示 */</span></span><br><span class="line">    String <span class="title function_">message</span><span class="params">()</span> <span class="keyword">default</span> <span class="string">&quot;当前业务场景不可用&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/** 是否在日志中打印方法参数（注意脱敏） */</span></span><br><span class="line">    <span class="type">boolean</span> <span class="title function_">logArgs</span><span class="params">()</span> <span class="keyword">default</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>要点：</p>
+<ul>
+<li><strong><code>@Retention(RUNTIME)</code></strong>：运行时切面才能读到。  </li>
+<li><strong><code>@Target(METHOD)</code></strong>：标在接口方法上；若标在类上需改切点或额外解析。  </li>
+<li>属性用<strong>基本类型 &#x2F; String &#x2F; enum</strong>，避免复杂对象。</li>
+</ul>
+<h2 id="2-编写切面"><a href="#2-编写切面" class="headerlink" title="2. 编写切面"></a>2. 编写切面</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> org.my919.springboot.aspect;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.aspectj.lang.ProceedingJoinPoint;</span><br><span class="line"><span class="keyword">import</span> org.aspectj.lang.annotation.Around;</span><br><span class="line"><span class="keyword">import</span> org.aspectj.lang.annotation.Aspect;</span><br><span class="line"><span class="keyword">import</span> org.aspectj.lang.reflect.MethodSignature;</span><br><span class="line"><span class="keyword">import</span> org.my919.springboot.annotation.BizCheck;</span><br><span class="line"><span class="keyword">import</span> org.my919.springboot.config.properties.AppBizProperties;</span><br><span class="line"><span class="keyword">import</span> org.my919.springboot.exception.BusinessException;</span><br><span class="line"><span class="keyword">import</span> org.slf4j.Logger;</span><br><span class="line"><span class="keyword">import</span> org.slf4j.LoggerFactory;</span><br><span class="line"><span class="keyword">import</span> org.springframework.core.annotation.Order;</span><br><span class="line"><span class="keyword">import</span> org.springframework.stereotype.Component;</span><br><span class="line"><span class="keyword">import</span> org.springframework.util.StringUtils;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Method;</span><br><span class="line"><span class="keyword">import</span> java.util.Arrays;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Aspect</span></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="meta">@Order(50)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">BizCheckAspect</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">Logger</span> <span class="variable">log</span> <span class="operator">=</span> LoggerFactory.getLogger(BizCheckAspect.class);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> AppBizProperties properties;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">BizCheckAspect</span><span class="params">(AppBizProperties properties)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.properties = properties;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Around(&quot;@annotation(bizCheck)&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> Object <span class="title function_">around</span><span class="params">(ProceedingJoinPoint pjp, BizCheck bizCheck)</span> <span class="keyword">throws</span> Throwable &#123;</span><br><span class="line">        <span class="keyword">if</span> (!properties.isEnabled()) &#123;</span><br><span class="line">            <span class="keyword">return</span> pjp.proceed();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="type">String</span> <span class="variable">scene</span> <span class="operator">=</span> bizCheck.scene();</span><br><span class="line">        <span class="keyword">if</span> (!properties.isSceneEnabled(scene)) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">BusinessException</span>(<span class="number">403</span>, bizCheck.message());</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (bizCheck.logArgs()) &#123;</span><br><span class="line">            log.info(<span class="string">&quot;[BizCheck] scene=&#123;&#125; method=&#123;&#125; args=&#123;&#125;&quot;</span>,</span><br><span class="line">                    scene, pjp.getSignature().toShortString(), safeArgs(pjp.getArgs()));</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="type">long</span> <span class="variable">start</span> <span class="operator">=</span> System.currentTimeMillis();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> pjp.proceed();</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            log.debug(<span class="string">&quot;[BizCheck] scene=&#123;&#125; cost=&#123;&#125;ms&quot;</span>, scene, System.currentTimeMillis() - start);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String <span class="title function_">safeArgs</span><span class="params">(Object[] args)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> Arrays.toString(args);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>说明：</p>
+<ul>
+<li><strong><code>@Around(&quot;@annotation(bizCheck)&quot;)</code></strong>：绑定带 <code>@BizCheck</code> 的方法；参数名 <code>bizCheck</code> 与注解参数一致。  </li>
+<li>也可用 <strong><code>@annotation(org.my919.springboot.annotation.BizCheck)</code></strong> 全限定名。  </li>
+<li>校验失败抛 <strong><code>BusinessException</code></strong>，由全局异常处理器转为 <code>Result</code>（见 <a href="./%E7%BB%9F%E4%B8%80%E8%BF%94%E5%9B%9E%E4%BD%93%E4%B8%8E%E5%85%A8%E5%B1%80%E5%BC%82%E5%B8%B8.md">统一返回体与全局异常</a>）。  </li>
+<li><strong><code>@Order(50)</code></strong>：多个切面时控制顺序（如先 <code>@BizCheck</code> 再 <code>@OperLog</code>）。</li>
+</ul>
+<h2 id="3-配置属性与开关"><a href="#3-配置属性与开关" class="headerlink" title="3. 配置属性与开关"></a>3. 配置属性与开关</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> org.my919.springboot.config.properties;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.springframework.boot.context.properties.ConfigurationProperties;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.HashMap;</span><br><span class="line"><span class="keyword">import</span> java.util.Map;</span><br><span class="line"></span><br><span class="line"><span class="meta">@ConfigurationProperties(&quot;app.biz&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">AppBizProperties</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="type">boolean</span> <span class="variable">enabled</span> <span class="operator">=</span> <span class="literal">true</span>;</span><br><span class="line">    <span class="keyword">private</span> Map&lt;String, Boolean&gt; scenes = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">isEnabled</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> enabled;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setEnabled</span><span class="params">(<span class="type">boolean</span> enabled)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.enabled = enabled;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">isSceneEnabled</span><span class="params">(String scene)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> scenes.getOrDefault(scene, <span class="literal">true</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> Map&lt;String, Boolean&gt; <span class="title function_">getScenes</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> scenes;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setScenes</span><span class="params">(Map&lt;String, Boolean&gt; scenes)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.scenes = scenes;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在 <code>AppInfrastructureConfiguration</code>（或同类 <code>@Configuration</code>）中 <strong><code>@EnableConfigurationProperties(AppBizProperties.class)</code></strong>。</p>
+<p><code>application.yaml</code>：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">app:</span></span><br><span class="line">  <span class="attr">biz:</span></span><br><span class="line">    <span class="attr">enabled:</span> <span class="literal">true</span></span><br><span class="line">    <span class="attr">scenes:</span></span><br><span class="line">      <span class="attr">order-create:</span> <span class="literal">true</span></span><br><span class="line">      <span class="attr">order-refund:</span> <span class="literal">false</span></span><br></pre></td></tr></table></figure>
+
+<p>测试环境可关闭切面逻辑：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># application-test.yaml</span></span><br><span class="line"><span class="attr">app:</span></span><br><span class="line">  <span class="attr">biz:</span></span><br><span class="line">    <span class="attr">enabled:</span> <span class="literal">false</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="4-在-Controller-Service-上使用"><a href="#4-在-Controller-Service-上使用" class="headerlink" title="4. 在 Controller &#x2F; Service 上使用"></a>4. 在 Controller &#x2F; Service 上使用</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="meta">@RequestMapping(&quot;/api/orders&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">OrderController</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@BizCheck(scene = &quot;order-create&quot;, logArgs = true)</span></span><br><span class="line">    <span class="meta">@PostMapping</span></span><br><span class="line">    <span class="keyword">public</span> Result&lt;Long&gt; <span class="title function_">create</span><span class="params">(<span class="meta">@RequestBody</span> OrderCreateDto dto)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> Result.success(orderService.create(dto));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@BizCheck(scene = &quot;order-refund&quot;, message = &quot;退款功能已关闭&quot;)</span></span><br><span class="line">    <span class="meta">@PostMapping(&quot;/&#123;id&#125;/refund&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> Result&lt;Void&gt; <span class="title function_">refund</span><span class="params">(<span class="meta">@PathVariable</span> Long id)</span> &#123;</span><br><span class="line">        orderService.refund(id);</span><br><span class="line">        <span class="keyword">return</span> Result.success(<span class="literal">null</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>仅当方法经 <strong>Spring 代理</strong> 调用时切面才生效（见下文「常见坑」）。</p>
+<hr>
+<h1 id="四、通知类型怎么选"><a href="#四、通知类型怎么选" class="headerlink" title="四、通知类型怎么选"></a>四、通知类型怎么选</h1><table>
+<thead>
+<tr>
+<th>注解</th>
+<th>典型用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong><code>@Before</code></strong></td>
+<td>前置校验（无返回值控制）</td>
+</tr>
+<tr>
+<td><strong><code>@AfterReturning</code></strong></td>
+<td>成功后记录、发事件</td>
+</tr>
+<tr>
+<td><strong><code>@AfterThrowing</code></strong></td>
+<td>异常侧记录（<code>OperLog</code> 可结合）</td>
+</tr>
+<tr>
+<td><strong><code>@Around</code></strong></td>
+<td>需要计时、事务外包裹、<strong>可阻止 proceed</strong>（最灵活）</td>
+</tr>
+</tbody></table>
+<p>本示例用 <strong><code>@Around</code></strong>：可在 <code>proceed()</code> 前后写逻辑，并用 <code>try/finally</code> 统计耗时。</p>
+<hr>
+<h1 id="五、进阶要点"><a href="#五、进阶要点" class="headerlink" title="五、进阶要点"></a>五、进阶要点</h1><h2 id="1-从-JoinPoint-读取注解"><a href="#1-从-JoinPoint-读取注解" class="headerlink" title="1. 从 JoinPoint 读取注解"></a>1. 从 JoinPoint 读取注解</h2><p>方法上注解可直接由切面参数注入；若切点为 <code>execution(...)</code>，需反射：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">MethodSignature</span> <span class="variable">signature</span> <span class="operator">=</span> (MethodSignature) pjp.getSignature();</span><br><span class="line"><span class="type">Method</span> <span class="variable">method</span> <span class="operator">=</span> signature.getMethod();</span><br><span class="line"><span class="type">BizCheck</span> <span class="variable">ann</span> <span class="operator">=</span> method.getAnnotation(BizCheck.class);</span><br></pre></td></tr></table></figure>
+
+<p>类上 + 方法上组合时，可用 <code>AnnotationUtils.findAnnotation(...)</code>。</p>
+<h2 id="2-切点表达式示例"><a href="#2-切点表达式示例" class="headerlink" title="2. 切点表达式示例"></a>2. 切点表达式示例</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 仅本项目的 Controller</span></span><br><span class="line"><span class="meta">@Around(&quot;within(org.my919.springboot.controller..*) &amp;&amp; @annotation(bizCheck)&quot;)</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 某包下所有带注解的方法</span></span><br><span class="line"><span class="meta">@Pointcut(&quot;@annotation(org.my919.springboot.annotation.BizCheck)&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">bizCheckPointcut</span><span class="params">()</span> &#123;&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>RequestLogAspect</code> 使用 <strong><code>within(...controller..*)</code></strong> 做包级请求日志（见 <a href="./AOP%E6%97%A5%E5%BF%97%E4%B8%8E%E6%93%8D%E4%BD%9C%E5%AE%A1%E8%AE%A1.md">AOP日志与操作审计</a>）。</p>
+<h2 id="3-多切面协作与顺序"><a href="#3-多切面协作与顺序" class="headerlink" title="3. 多切面协作与顺序"></a>3. 多切面协作与顺序</h2><table>
+<thead>
+<tr>
+<th>切面</th>
+<th>建议 Order（越小越先进入 Around 外层）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>限流 &#x2F; 鉴权 &#x2F; <code>@BizCheck</code></td>
+<td>10 ~ 30</td>
+</tr>
+<tr>
+<td><code>@RepeatSubmit</code> &#x2F; <code>@Idempotent</code></td>
+<td>40 ~ 60</td>
+</tr>
+<tr>
+<td><code>@OperLog</code></td>
+<td>80 ~ 100</td>
+</tr>
+</tbody></table>
+<p>同一方法可同时标注：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RepeatSubmit(interval = 3000)</span></span><br><span class="line"><span class="meta">@OperLog(title = &quot;创建订单&quot;, businessType = BusinessType.INSERT)</span></span><br><span class="line"><span class="meta">@BizCheck(scene = &quot;order-create&quot;)</span></span><br><span class="line"><span class="meta">@PostMapping</span></span><br><span class="line"><span class="keyword">public</span> Result&lt;Long&gt; <span class="title function_">create</span><span class="params">(<span class="meta">@RequestBody</span> OrderCreateDto dto)</span> &#123; ... &#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="4-SpEL-动态参数（可选）"><a href="#4-SpEL-动态参数（可选）" class="headerlink" title="4. SpEL 动态参数（可选）"></a>4. SpEL 动态参数（可选）</h2><p>注解属性可写 SpEL，在切面里用 <code>MethodBasedEvaluationContext</code> 解析方法参数，例如 <code>@BizCheck(scene = &quot;#dto.type&quot;)</code>。适合场景码依赖入参；复杂度较高时更推荐在 Service 内显式校验。</p>
+<h2 id="5-异步与事务"><a href="#5-异步与事务" class="headerlink" title="5. 异步与事务"></a>5. 异步与事务</h2><ul>
+<li><strong><code>@Async</code></strong>：切面在调用线程执行，<code>proceed()</code> 之后才进入异步（除非切面内再开线程）。  </li>
+<li><strong><code>@Transactional</code></strong>：默认仅对 <code>public</code> 代理方法生效；<code>@Around</code> 若在外层，注意事务边界与 <code>proceed()</code> 的关系（事务切面通常 Order 较低）。</li>
+</ul>
+<hr>
+<h1 id="六、本仓库可参考的完整实现"><a href="#六、本仓库可参考的完整实现" class="headerlink" title="六、本仓库可参考的完整实现"></a>六、本仓库可参考的完整实现</h1><p>实现新注解时，可直接对照下列文件的结构（命名 → 注解 → 切面 → Properties → 测试接口）：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">annotation/OperLog.java          → 元数据</span><br><span class="line">aspect/OperLogAspect.java        → @Around + 写库/异步</span><br><span class="line">annotation/RepeatSubmit.java</span><br><span class="line">aspect/RepeatSubmitAspect.java   → Redis 指纹 + 429</span><br><span class="line">annotation/Idempotent.java</span><br><span class="line">aspect/IdempotentAspect.java     → 幂等键 + 缓存 Result</span><br><span class="line">config/properties/AppLogProperties.java</span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th>能力</th>
+<th>实现要点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>操作审计</td>
+<td>解析请求、参数 JSON、异常信息 → <code>sys_oper_log</code></td>
+</tr>
+<tr>
+<td>防重</td>
+<td>请求指纹 + Redis TTL</td>
+</tr>
+<tr>
+<td>幂等</td>
+<td>Header <code>Idempotency-Key</code> + 锁 + 结果缓存</td>
+</tr>
+</tbody></table>
+<p>异步写日志依赖 <a href="./%E5%BC%82%E6%AD%A5%E7%BA%BF%E7%A8%8B%E6%B1%A0.md">异步线程池</a> 中的 <strong><code>taskExecutor</code></strong>。</p>
+<hr>
+<h1 id="七、常见坑"><a href="#七、常见坑" class="headerlink" title="七、常见坑"></a>七、常见坑</h1><table>
+<thead>
+<tr>
+<th>现象</th>
+<th>原因</th>
+<th>处理</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>注解不生效</td>
+<td><strong>同类自调用</strong>（<code>this.create()</code>）</td>
+<td>注入自身代理或拆到另一个 Bean</td>
+</tr>
+<tr>
+<td>注解不生效</td>
+<td>方法 <code>private</code> &#x2F; <code>final</code></td>
+<td>Spring AOP 默认 CGLIB&#x2F;JDK 仅代理 public（Boot 常用 CGLIB）</td>
+</tr>
+<tr>
+<td>注解不生效</td>
+<td>切面类未被扫描</td>
+<td><code>@Component</code> + 在主应用包路径下</td>
+</tr>
+<tr>
+<td>顺序混乱</td>
+<td>多个 <code>@Around</code></td>
+<td>使用 <code>@Order</code></td>
+</tr>
+<tr>
+<td>测试失败</td>
+<td>无 Redis &#x2F; 未关切面</td>
+<td>测试 <code>application.yaml</code> 设 <code>app.*.enabled: false</code>（见防重文档）</td>
+</tr>
+<tr>
+<td>参数日志泄密</td>
+<td><code>logArgs=true</code></td>
+<td>脱敏密码、Token；生产默认关闭</td>
+</tr>
+</tbody></table>
+<hr>
+<h1 id="八、验证（示例接口）"><a href="#八、验证（示例接口）" class="headerlink" title="八、验证（示例接口）"></a>八、验证（示例接口）</h1><p>可在 <code>TestController</code> 增加探针（与 <code>@OperLog</code> 测试类似）：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@BizCheck(scene = &quot;order-refund&quot;, message = &quot;退款场景已关闭&quot;)</span></span><br><span class="line"><span class="meta">@GetMapping(&quot;/test/biz-check&quot;)</span></span><br><span class="line"><span class="keyword">public</span> Result&lt;String&gt; <span class="title function_">testBizCheck</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> Result.success(<span class="string">&quot;ok&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># scenes.order-refund=false 时应返回 403</span></span><br><span class="line">curl -i http://localhost:8082/test/biz-check</span><br></pre></td></tr></table></figure>
+
+<p>期望 JSON：<code>{&quot;code&quot;:403,&quot;msg&quot;:&quot;退款场景已关闭&quot;,...}</code>。</p>
+<hr>
+<h1 id="九、扩展清单（可按同一模板添加）"><a href="#九、扩展清单（可按同一模板添加）" class="headerlink" title="九、扩展清单（可按同一模板添加）"></a>九、扩展清单（可按同一模板添加）</h1><table>
+<thead>
+<tr>
+<th>注解 idea</th>
+<th>业务逻辑</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>@RequireRole(&quot;admin&quot;)</code></td>
+<td>解析 JWT &#x2F; Session 角色</td>
+</tr>
+<tr>
+<td><code>@TenantId</code></td>
+<td>从 Header 注入租户上下文（ThreadLocal）</td>
+</tr>
+<tr>
+<td><code>@RateLimit(qps=10)</code></td>
+<td>Redis 令牌桶</td>
+</tr>
+<tr>
+<td><code>@DataScope(dept=true)</code></td>
+<td>MyBatis 拦截器 + 注解标记数据范围</td>
+</tr>
+</tbody></table>
+<p>均遵循：<strong>注解声明 → Aspect 增强 → Properties 开关 → 单测&#x2F;探针验证</strong>。</p>
+<hr>
+<h1 id="十、相关文件"><a href="#十、相关文件" class="headerlink" title="十、相关文件"></a>十、相关文件</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">annotation/BizCheck.java              # 示例（可按上文新建）</span><br><span class="line">aspect/BizCheckAspect.java</span><br><span class="line">config/properties/AppBizProperties.java</span><br><span class="line">config/AppInfrastructureConfiguration.java</span><br><span class="line">exception/BusinessException.java</span><br><span class="line">handler/GlobalExceptionHandler.java</span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th>文档</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="./AOP%E6%97%A5%E5%BF%97%E4%B8%8E%E6%93%8D%E4%BD%9C%E5%AE%A1%E8%AE%A1.md">AOP日志与操作审计</a></td>
+<td><code>@OperLog</code> 生产级示例</td>
+</tr>
+<tr>
+<td><a href="./%E9%98%B2%E9%87%8D%E6%8F%90%E4%BA%A4%E4%B8%8E%E6%8E%A5%E5%8F%A3%E5%B9%82%E7%AD%89.md">防重提交与接口幂等</a></td>
+<td>Redis + <code>@Around</code></td>
+</tr>
+<tr>
+<td><a href="./%E5%BC%82%E6%AD%A5%E7%BA%BF%E7%A8%8B%E6%B1%A0.md">异步线程池</a></td>
+<td>切面内异步落库</td>
+</tr>
+<tr>
+<td><a href="./%E7%BB%9F%E4%B8%80%E8%BF%94%E5%9B%9E%E4%BD%93%E4%B8%8E%E5%85%A8%E5%B1%80%E5%BC%82%E5%B8%B8.md">统一返回体与全局异常</a></td>
+<td><code>BusinessException</code> 与 HTTP 映射</td>
+</tr>
+</tbody></table>
+<p>官方：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://docs.spring.io/spring-framework/reference/core/aop.html">Spring AOP</a> · <a target="_blank" rel="noopener external nofollow noreferrer" href="https://www.eclipse.org/aspectj/doc/released/progguide/quick.html">AspectJ 切点语法</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/SpringBoot/" rel="tag"># SpringBoot</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/05/17/springcloud-rocketmq/" rel="prev" title="Spring Cloud 集成 RocketMQ">
+                  <i class="fa fa-angle-left"></i> Spring Cloud 集成 RocketMQ
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">miracle</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">181k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">10:03</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+<script>
+(function () {
+  function normalizeClipboard(s) {
+    return (s || '').replace(/\u00a0/g, ' ');
+  }
+
+  /** When innerText is empty, treat <br> as newlines (matches Hexo fenced + line_number HTML). */
+  function plainTextFromElement(el) {
+    if (!el) return '';
+    var t = el.innerText;
+    if (t != null && t !== '') return normalizeClipboard(t);
+    var clone = el.cloneNode(true);
+    clone.querySelectorAll('br').forEach(function (br) {
+      br.parentNode.replaceChild(document.createTextNode('\n'), br);
+    });
+    return normalizeClipboard(clone.textContent || '');
+  }
+
+  function extractFromFigure(fig) {
+    if (!fig) return '';
+    var cell = fig.querySelector('td.code') || fig.querySelector('.code');
+    if (cell) return plainTextFromElement(cell);
+    var pre = fig.querySelector('pre');
+    if (pre) return plainTextFromElement(pre);
+    var code = fig.querySelector('code');
+    return code ? plainTextFromElement(code) : '';
+  }
+
+  function extractForCopyBtn(btn) {
+    var fig = btn.closest('figure.highlight');
+    if (fig) return extractFromFigure(fig);
+    var wrap = btn.closest('.code-container');
+    if (wrap) {
+      var innerFig = wrap.querySelector('figure.highlight');
+      if (innerFig) return extractFromFigure(innerFig);
+      var preOnly = wrap.querySelector('pre');
+      if (preOnly) return plainTextFromElement(preOnly);
+    }
+    return '';
+  }
+
+  function setCopyIcon(btn, ok) {
+    var i = btn.querySelector('i');
+    if (i) i.className = ok ? 'fa fa-check-circle fa-fw' : 'fa fa-times-circle fa-fw';
+  }
+
+  function writeClipboard(text, btn) {
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(text).then(
+        function () { setCopyIcon(btn, true); },
+        function () { fallbackCopy(text, btn); }
+      );
+    }
+    fallbackCopy(text, btn);
+    return Promise.resolve();
+  }
+
+  function fallbackCopy(text, btn) {
+    try {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed';
+      ta.style.left = '-9999px';
+      document.body.appendChild(ta);
+      ta.select();
+      var ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      setCopyIcon(btn, ok);
+    } catch (e) {
+      setCopyIcon(btn, false);
+    }
+  }
+
+  document.addEventListener(
+    'click',
+    function (e) {
+      var btn = e.target.closest && e.target.closest('.copy-btn');
+      if (!btn) return;
+      if (!btn.closest('figure.highlight') && !btn.closest('.code-container')) return;
+      e.stopPropagation();
+      e.preventDefault();
+      var text = extractForCopyBtn(btn);
+      writeClipboard(text, btn);
+    },
+    true
+  );
+})();
+</script>
+
+</body>
+</html>

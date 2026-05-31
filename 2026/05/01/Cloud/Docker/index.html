@@ -20,13 +20,15 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
 
-    <meta property="og:type" content="article">
+    <meta name="description" content="Docker 用容器封装应用及其依赖，在隔离的命名空间与 cgroup 中运行，共享宿主机内核，实现「一次构建、到处运行」。下面从「镜像与容器 → 常用命令 → Dockerfile 要点 → 网络与卷 → Compose 与生产 → 与本站其它文章的关系」顺序写清楚。  一、核心概念   概念 说明    镜像（Image） 只读分层文件系统 + 元数据，由 Dockerfile 或 docke">
+<meta property="og:type" content="article">
 <meta property="og:title" content="Docker">
 <meta property="og:url" content="http://example.com/2026/05/01/Cloud/Docker/index.html">
 <meta property="og:site_name" content="my">
+<meta property="og:description" content="Docker 用容器封装应用及其依赖，在隔离的命名空间与 cgroup 中运行，共享宿主机内核，实现「一次构建、到处运行」。下面从「镜像与容器 → 常用命令 → Dockerfile 要点 → 网络与卷 → Compose 与生产 → 与本站其它文章的关系」顺序写清楚。  一、核心概念   概念 说明    镜像（Image） 只读分层文件系统 + 元数据，由 Dockerfile 或 docke">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-05-01T05:19:05.000Z">
-<meta property="article:modified_time" content="2026-05-01T05:19:05.235Z">
+<meta property="article:modified_time" content="2026-05-31T04:16:19.244Z">
 <meta property="article:author" content="miracle">
 <meta property="article:tag" content="Docker">
 <meta name="twitter:card" content="summary">
@@ -114,7 +116,7 @@
 
 
 <nav class="site-nav">
-  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-service"><a href="/service/" rel="section"><i class="fa fa-server fa-fw"></i>服务</a></li><li class="menu-item menu-item-project"><a href="/project/" rel="section"><i class="fa fa-folder-open fa-fw"></i>项目</a></li>
       <li class="menu-item menu-item-search">
         <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
         </a>
@@ -152,7 +154,7 @@
   
   <aside class="sidebar">
 
-    <div class="sidebar-inner sidebar-overview-active">
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
       <ul class="sidebar-nav">
         <li class="sidebar-nav-toc">
           文章目录
@@ -165,6 +167,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5"><span class="nav-number">1.</span> <span class="nav-text">一、核心概念</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4"><span class="nav-number">2.</span> <span class="nav-text">二、常用命令</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81Dockerfile-%E8%A6%81%E7%82%B9"><span class="nav-number">3.</span> <span class="nav-text">三、Dockerfile 要点</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E7%BD%91%E7%BB%9C%E4%B8%8E%E6%95%B0%E6%8D%AE%E5%8D%B7"><span class="nav-number">4.</span> <span class="nav-text">四、网络与数据卷</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E7%BD%91%E7%BB%9C%E6%A8%A1%E5%BC%8F%EF%BC%88%E5%B8%B8%E8%A7%81%EF%BC%89"><span class="nav-number">4.1.</span> <span class="nav-text">1. 网络模式（常见）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E5%8D%B7"><span class="nav-number">4.2.</span> <span class="nav-text">2. 卷</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%94%E3%80%81Compose-%E4%B8%8E%E8%BF%90%E7%BB%B4"><span class="nav-number">5.</span> <span class="nav-text">五、Compose 与运维</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E5%BB%B6%E4%BC%B8%E9%98%85%E8%AF%BB"><span class="nav-number">6.</span> <span class="nav-text">六、延伸阅读</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -177,7 +180,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">182</span>
+          <span class="site-state-item-count">184</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -188,7 +191,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">106</span>
+        <span class="site-state-item-count">107</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -259,6 +262,13 @@
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-05-31 12:16:19" itemprop="dateModified" datetime="2026-05-31T12:16:19+08:00">2026-05-31</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
         <i class="far fa-folder"></i>
       </span>
       <span class="post-meta-item-text">分类于</span>
@@ -274,14 +284,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>0</span>
+      <span>556</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>1 分钟</span>
+      <span>2 分钟</span>
     </span>
 </div>
 
@@ -291,7 +301,66 @@
     
     
     
-    <div class="post-body" itemprop="articleBody">
+    <div class="post-body" itemprop="articleBody"><p><strong>Docker</strong> 用<strong>容器</strong>封装应用及其依赖，在隔离的命名空间与 cgroup 中运行，共享宿主机内核，实现「一次构建、到处运行」。下面从「<strong>镜像与容器</strong> → <strong>常用命令</strong> → <strong>Dockerfile 要点</strong> → <strong>网络与卷</strong> → <strong>Compose 与生产</strong> → <strong>与本站其它文章的关系</strong>」顺序写清楚。</p>
+<hr>
+<h1 id="一、核心概念"><a href="#一、核心概念" class="headerlink" title="一、核心概念"></a>一、核心概念</h1><table>
+<thead>
+<tr>
+<th>概念</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>镜像（Image）</strong></td>
+<td>只读分层文件系统 + 元数据，由 <strong>Dockerfile</strong> 或 <strong><code>docker commit</code></strong> 构建</td>
+</tr>
+<tr>
+<td><strong>容器（Container）</strong></td>
+<td>镜像的可运行实例，可写层在容器生命周期内存在</td>
+</tr>
+<tr>
+<td><strong>仓库（Registry）</strong></td>
+<td><strong>Docker Hub</strong>、私有 <strong>Harbor</strong> 等，用于推送&#x2F;拉取镜像</td>
+</tr>
+<tr>
+<td><strong>Docker Engine</strong></td>
+<td><strong><code>dockerd</code></strong> 守护进程 + **<code>docker</code> CLI</td>
+</tr>
+</tbody></table>
+<p>与虚拟机对比：容器<strong>不包含客户机 OS</strong>，启动快、密度高；隔离性弱于完整 VM，敏感多租户需额外加固。</p>
+<hr>
+<h1 id="二、常用命令"><a href="#二、常用命令" class="headerlink" title="二、常用命令"></a>二、常用命令</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 拉取与运行</span></span><br><span class="line">docker pull nginx:1.27-alpine</span><br><span class="line">docker run -d --name web -p 8080:80 nginx:1.27-alpine</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看与日志</span></span><br><span class="line">docker ps</span><br><span class="line">docker logs -f web</span><br><span class="line">docker <span class="built_in">exec</span> -it web sh</span><br><span class="line"></span><br><span class="line"><span class="comment"># 停止与删除</span></span><br><span class="line">docker stop web &amp;&amp; docker <span class="built_in">rm</span> web</span><br><span class="line"></span><br><span class="line"><span class="comment"># 镜像</span></span><br><span class="line">docker images</span><br><span class="line">docker build -t myapp:1.0 .</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="三、Dockerfile-要点"><a href="#三、Dockerfile-要点" class="headerlink" title="三、Dockerfile 要点"></a>三、Dockerfile 要点</h1><figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> eclipse-temurin:<span class="number">21</span>-jre-alpine</span><br><span class="line"><span class="keyword">WORKDIR</span><span class="language-bash"> /app</span></span><br><span class="line"><span class="keyword">COPY</span><span class="language-bash"> target/app.jar app.jar</span></span><br><span class="line"><span class="keyword">EXPOSE</span> <span class="number">8080</span></span><br><span class="line"><span class="keyword">USER</span> <span class="number">1000</span>:<span class="number">1000</span></span><br><span class="line"><span class="keyword">ENTRYPOINT</span><span class="language-bash"> [<span class="string">&quot;java&quot;</span>, <span class="string">&quot;-jar&quot;</span>, <span class="string">&quot;app.jar&quot;</span>]</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>多阶段构建</strong>：编译阶段用 <strong>JDK</strong> 镜像，运行阶段只保留 <strong>JRE</strong> 与产物，缩小体积。  </li>
+<li><strong>层缓存</strong>：变动少的指令放前面（<strong><code>COPY pom.xml</code></strong> 再 <strong><code>COPY src</code></strong>）。  </li>
+<li><strong>非 root</strong>：生产容器尽量 <strong><code>USER</code></strong> 非特权账号。</li>
+</ul>
+<hr>
+<h1 id="四、网络与数据卷"><a href="#四、网络与数据卷" class="headerlink" title="四、网络与数据卷"></a>四、网络与数据卷</h1><h2 id="1-网络模式（常见）"><a href="#1-网络模式（常见）" class="headerlink" title="1. 网络模式（常见）"></a>1. 网络模式（常见）</h2><ul>
+<li><strong><code>bridge</code></strong>（默认）：端口映射 <strong><code>-p host:container</code></strong>。  </li>
+<li><strong><code>host</code></strong>：与宿主机共享网络栈（<strong>Linux</strong> 原生引擎常见；<strong>Docker Desktop</strong> 行为不同）。  </li>
+<li><strong>自定义网络</strong>：Compose 中服务名即 DNS 名。</li>
+</ul>
+<h2 id="2-卷"><a href="#2-卷" class="headerlink" title="2. 卷"></a>2. 卷</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -d -v mydata:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=secret mysql:8.0</span><br></pre></td></tr></table></figure>
+
+<p><strong><code>-v</code></strong> 或 <strong><code>--mount</code></strong> 持久化数据；容器删除后命名卷仍保留。</p>
+<hr>
+<h1 id="五、Compose-与运维"><a href="#五、Compose-与运维" class="headerlink" title="五、Compose 与运维"></a>五、Compose 与运维</h1><p><strong>Compose V2</strong>（<strong><code>docker compose</code></strong>）用 YAML 描述多容器栈：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">services:</span></span><br><span class="line">  <span class="attr">api:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">myapp:1.0</span></span><br><span class="line">    <span class="attr">ports:</span> [<span class="string">&quot;8080:8080&quot;</span>]</span><br><span class="line">    <span class="attr">environment:</span></span><br><span class="line">      <span class="attr">SPRING_PROFILES_ACTIVE:</span> <span class="string">dev</span></span><br><span class="line">    <span class="attr">depends_on:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">db</span></span><br><span class="line">  <span class="attr">db:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">postgres:16-alpine</span></span><br><span class="line">    <span class="attr">volumes:</span> [<span class="string">&quot;pgdata:/var/lib/postgresql/data&quot;</span>]</span><br><span class="line"><span class="attr">volumes:</span></span><br><span class="line">  <span class="attr">pgdata:</span></span><br></pre></td></tr></table></figure>
+
+<p>生产还需：<strong>资源限制</strong>（<strong><code>cpus</code> &#x2F; <code>memory</code></strong>）、<strong>健康检查</strong>、<strong>日志驱动</strong>、<strong>镜像扫描</strong>与<strong>固定版本标签</strong>（避免 <strong><code>latest</code></strong> 漂移）。</p>
+<hr>
+<h1 id="六、延伸阅读"><a href="#六、延伸阅读" class="headerlink" title="六、延伸阅读"></a>六、延伸阅读</h1><ul>
+<li>面板化部署：<a href="/2026/05/02/Docker-1Panel/">Docker 部署 1Panel</a>  </li>
+<li>数据库容器：<a href="/2026/05/01/MySQL-Docker/">MySQL-Docker</a>、<a href="/2026/05/01/Redis-Docker/">Redis-Docker</a>、<a href="/2026/05/01/MongoDB-Docker/">MongoDB-Docker</a>  </li>
+<li>编排进阶：见 <a href="/2026/05/01/Kubernetes/">Kubernetes</a></li>
+</ul>
+<p>官方文档：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://docs.docker.com/">https://docs.docker.com/</a></p>
+
     </div>
 
     
@@ -345,13 +414,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">159k</span>
+    <span title="站点总字数">181k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">8:49</span>
+    <span title="站点阅读时长">10:03</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

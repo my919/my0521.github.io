@@ -20,13 +20,15 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
 
-    <meta property="og:type" content="article">
+    <meta name="description" content="Vite 是新一代前端构建工具：开发阶段利用浏览器原生 ESM 与 esbuild 预构建依赖，实现秒级冷启动；生产构建使用 Rollup 打包。下面从「开发与生产模式 → 创建项目 → 配置要点 → 插件与代理 → 与 Vue&#x2F;React 的关系」顺序写清楚。  一、为何快   阶段 机制    开发 按需编译单文件，不打包整图；依赖用 esbuild 预打包   HMR 模块热替换，">
+<meta property="og:type" content="article">
 <meta property="og:title" content="Vite">
 <meta property="og:url" content="http://example.com/2026/05/01/Frontend/Vite/index.html">
 <meta property="og:site_name" content="my">
+<meta property="og:description" content="Vite 是新一代前端构建工具：开发阶段利用浏览器原生 ESM 与 esbuild 预构建依赖，实现秒级冷启动；生产构建使用 Rollup 打包。下面从「开发与生产模式 → 创建项目 → 配置要点 → 插件与代理 → 与 Vue&#x2F;React 的关系」顺序写清楚。  一、为何快   阶段 机制    开发 按需编译单文件，不打包整图；依赖用 esbuild 预打包   HMR 模块热替换，">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-05-01T04:53:57.000Z">
-<meta property="article:modified_time" content="2026-05-01T04:53:57.908Z">
+<meta property="article:modified_time" content="2026-05-31T04:16:52.861Z">
 <meta property="article:author" content="miracle">
 <meta property="article:tag" content="Vite">
 <meta name="twitter:card" content="summary">
@@ -114,7 +116,7 @@
 
 
 <nav class="site-nav">
-  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-service"><a href="/service/" rel="section"><i class="fa fa-server fa-fw"></i>服务</a></li><li class="menu-item menu-item-project"><a href="/project/" rel="section"><i class="fa fa-folder-open fa-fw"></i>项目</a></li>
       <li class="menu-item menu-item-search">
         <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
         </a>
@@ -152,7 +154,7 @@
   
   <aside class="sidebar">
 
-    <div class="sidebar-inner sidebar-overview-active">
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
       <ul class="sidebar-nav">
         <li class="sidebar-nav-toc">
           文章目录
@@ -165,6 +167,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E4%B8%BA%E4%BD%95%E5%BF%AB"><span class="nav-number">1.</span> <span class="nav-text">一、为何快</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E5%88%9B%E5%BB%BA%E4%B8%8E%E8%84%9A%E6%9C%AC"><span class="nav-number">2.</span> <span class="nav-text">二、创建与脚本</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81vite-config-ts-%E8%A6%81%E7%82%B9"><span class="nav-number">3.</span> <span class="nav-text">三、vite.config.ts 要点</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E6%8F%92%E4%BB%B6%E7%94%9F%E6%80%81"><span class="nav-number">4.</span> <span class="nav-text">四、插件生态</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E4%B8%8E-Vue-3-%E5%8F%8A%E9%83%A8%E7%BD%B2"><span class="nav-number">5.</span> <span class="nav-text">五、与 Vue 3 及部署</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -177,7 +180,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">182</span>
+          <span class="site-state-item-count">184</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -188,7 +191,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">106</span>
+        <span class="site-state-item-count">107</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -259,6 +262,13 @@
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-05-31 12:16:52" itemprop="dateModified" datetime="2026-05-31T12:16:52+08:00">2026-05-31</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
         <i class="far fa-folder"></i>
       </span>
       <span class="post-meta-item-text">分类于</span>
@@ -274,7 +284,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>0</span>
+      <span>373</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -291,7 +301,54 @@
     
     
     
-    <div class="post-body" itemprop="articleBody">
+    <div class="post-body" itemprop="articleBody"><p><strong>Vite</strong> 是新一代前端构建工具：开发阶段利用浏览器原生 <strong>ESM</strong> 与 <strong>esbuild</strong> 预构建依赖，实现<strong>秒级冷启动</strong>；生产构建使用 <strong>Rollup</strong> 打包。下面从「<strong>开发与生产模式</strong> → <strong>创建项目</strong> → <strong>配置要点</strong> → <strong>插件与代理</strong> → <strong>与 Vue&#x2F;React 的关系</strong>」顺序写清楚。</p>
+<hr>
+<h1 id="一、为何快"><a href="#一、为何快" class="headerlink" title="一、为何快"></a>一、为何快</h1><table>
+<thead>
+<tr>
+<th>阶段</th>
+<th>机制</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>开发</strong></td>
+<td>按需编译单文件，不打包整图；依赖用 <strong>esbuild</strong> 预打包</td>
+</tr>
+<tr>
+<td><strong>HMR</strong></td>
+<td>模块热替换，保留应用状态（依模块类型）</td>
+</tr>
+<tr>
+<td><strong>生产</strong></td>
+<td><strong>Rollup</strong> Tree-shaking、代码分割、资源哈希</td>
+</tr>
+</tbody></table>
+<p>对比 <strong>Webpack</strong>  dev：大型项目冷启动与 HMR 通常明显更快。</p>
+<hr>
+<h1 id="二、创建与脚本"><a href="#二、创建与脚本" class="headerlink" title="二、创建与脚本"></a>二、创建与脚本</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">npm create vite@latest my-app -- --template vue-ts</span><br><span class="line"><span class="built_in">cd</span> my-app</span><br><span class="line">npm install</span><br><span class="line">npm run dev      <span class="comment"># 开发，默认 http://localhost:5173</span></span><br><span class="line">npm run build    <span class="comment"># 输出 dist/</span></span><br><span class="line">npm run preview  <span class="comment"># 本地预览生产包</span></span><br></pre></td></tr></table></figure>
+
+<p>常用模板：<strong><code>vanilla-ts</code></strong>、<strong><code>vue-ts</code></strong>、<strong><code>react-ts</code></strong>、<strong><code>vue</code></strong>。</p>
+<hr>
+<h1 id="三、vite-config-ts-要点"><a href="#三、vite-config-ts-要点" class="headerlink" title="三、vite.config.ts 要点"></a>三、vite.config.ts 要点</h1><figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; defineConfig &#125; <span class="keyword">from</span> <span class="string">&#x27;vite&#x27;</span></span><br><span class="line"><span class="keyword">import</span> vue <span class="keyword">from</span> <span class="string">&#x27;@vitejs/plugin-vue&#x27;</span></span><br><span class="line"><span class="keyword">import</span> path <span class="keyword">from</span> <span class="string">&#x27;node:path&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="title function_">defineConfig</span>(&#123;</span><br><span class="line">  <span class="attr">plugins</span>: [<span class="title function_">vue</span>()],</span><br><span class="line">  <span class="attr">resolve</span>: &#123;</span><br><span class="line">    <span class="attr">alias</span>: &#123; <span class="string">&#x27;@&#x27;</span>: path.<span class="title function_">resolve</span>(__dirname, <span class="string">&#x27;src&#x27;</span>) &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">server</span>: &#123;</span><br><span class="line">    <span class="attr">port</span>: <span class="number">5173</span>,</span><br><span class="line">    <span class="attr">proxy</span>: &#123;</span><br><span class="line">      <span class="string">&#x27;/api&#x27;</span>: &#123;</span><br><span class="line">        <span class="attr">target</span>: <span class="string">&#x27;http://127.0.0.1:8080&#x27;</span>,</span><br><span class="line">        <span class="attr">changeOrigin</span>: <span class="literal">true</span></span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">build</span>: &#123;</span><br><span class="line">    <span class="attr">outDir</span>: <span class="string">&#x27;dist&#x27;</span>,</span><br><span class="line">    <span class="attr">sourcemap</span>: <span class="literal">true</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong><code>base</code></strong>：部署子路径时设为 <strong><code>&#39;/blog/&#39;</code></strong> 等。  </li>
+<li><strong><code>env</code></strong>：<strong><code>.env.development</code></strong> 中 <strong><code>VITE_*</code></strong> 变量通过 <strong><code>import.meta.env</code></strong> 暴露。</li>
+</ul>
+<hr>
+<h1 id="四、插件生态"><a href="#四、插件生态" class="headerlink" title="四、插件生态"></a>四、插件生态</h1><ul>
+<li><strong><code>@vitejs/plugin-vue</code></strong> &#x2F; <strong><code>plugin-react</code></strong>  </li>
+<li><strong><code>vite-plugin-vue-devtools</code></strong>  </li>
+<li><strong>Legacy</strong>：<strong><code>@vitejs/plugin-legacy</code></strong> 为旧浏览器注入 polyfill</li>
+</ul>
+<p><strong>SSR</strong>：<strong><code>vite-plugin-ssr</code></strong> 或框架内置方案（Nuxt 3 等基于 Vite）。</p>
+<hr>
+<h1 id="五、与-Vue-3-及部署"><a href="#五、与-Vue-3-及部署" class="headerlink" title="五、与 Vue 3 及部署"></a>五、与 Vue 3 及部署</h1><ul>
+<li><a href="/2026/05/01/VUE3/">VUE3</a> 官方推荐 <strong>Vite</strong> 作为默认脚手架。  </li>
+<li>生产 <strong><code>dist</code></strong> 为静态文件，由 <a href="/2026/05/01/Nginx/">Nginx</a> 或 CDN 托管；<strong><code>try_files</code></strong> 支持 SPA  history 模式。</li>
+</ul>
+<p>官方文档：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://vite.dev/">https://vite.dev/</a></p>
+
     </div>
 
     
@@ -345,13 +402,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">159k</span>
+    <span title="站点总字数">181k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">8:49</span>
+    <span title="站点阅读时长">10:03</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

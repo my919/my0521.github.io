@@ -20,13 +20,15 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
 
-    <meta property="og:type" content="article">
+    <meta name="description" content="Zigbee 是基于 IEEE 802.15.4 的低功耗 mesh 物联网协议：2.4 GHz（亦有个别 sub-GHz），Coordinator + Router + End Device，应用配置文件如 Home Automation。下面从「网络层 → 设备类型 → ZCL 集群 → 与 Bluetooth&#x2F;LoRaWAN 对照 → 开发栈」顺序写清楚。  一、802.15.4">
+<meta property="og:type" content="article">
 <meta property="og:title" content="Zigbee">
 <meta property="og:url" content="http://example.com/2026/05/01/Embedded/Zigbee/index.html">
 <meta property="og:site_name" content="my">
+<meta property="og:description" content="Zigbee 是基于 IEEE 802.15.4 的低功耗 mesh 物联网协议：2.4 GHz（亦有个别 sub-GHz），Coordinator + Router + End Device，应用配置文件如 Home Automation。下面从「网络层 → 设备类型 → ZCL 集群 → 与 Bluetooth&#x2F;LoRaWAN 对照 → 开发栈」顺序写清楚。  一、802.15.4">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-05-01T05:17:04.000Z">
-<meta property="article:modified_time" content="2026-05-04T03:54:25.261Z">
+<meta property="article:modified_time" content="2026-05-31T04:18:47.824Z">
 <meta property="article:author" content="miracle">
 <meta property="article:tag" content="Embedded">
 <meta name="twitter:card" content="summary">
@@ -114,7 +116,7 @@
 
 
 <nav class="site-nav">
-  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-service"><a href="/service/" rel="section"><i class="fa fa-server fa-fw"></i>服务</a></li><li class="menu-item menu-item-project"><a href="/project/" rel="section"><i class="fa fa-folder-open fa-fw"></i>项目</a></li>
       <li class="menu-item menu-item-search">
         <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
         </a>
@@ -152,7 +154,7 @@
   
   <aside class="sidebar">
 
-    <div class="sidebar-inner sidebar-overview-active">
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
       <ul class="sidebar-nav">
         <li class="sidebar-nav-toc">
           文章目录
@@ -165,6 +167,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81802-15-4-%E5%9F%BA%E7%A1%80"><span class="nav-number">1.</span> <span class="nav-text">一、802.15.4 基础</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E8%AE%BE%E5%A4%87%E8%A7%92%E8%89%B2"><span class="nav-number">2.</span> <span class="nav-text">二、设备角色</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81ZCL%EF%BC%88Zigbee-Cluster-Library%EF%BC%89"><span class="nav-number">3.</span> <span class="nav-text">三、ZCL（Zigbee Cluster Library）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E4%B8%8E%E5%85%B6%E5%AE%83%E6%97%A0%E7%BA%BF"><span class="nav-number">4.</span> <span class="nav-text">四、与其它无线</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E5%BC%80%E5%8F%91%E4%B8%8E%E8%AE%A4%E8%AF%81"><span class="nav-number">5.</span> <span class="nav-text">五、开发与认证</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -177,7 +180,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">182</span>
+          <span class="site-state-item-count">184</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -188,7 +191,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">106</span>
+        <span class="site-state-item-count">107</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -262,7 +265,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-04 11:54:25" itemprop="dateModified" datetime="2026-05-04T11:54:25+08:00">2026-05-04</time>
+      <time title="修改时间：2026-05-31 12:18:47" itemprop="dateModified" datetime="2026-05-31T12:18:47+08:00">2026-05-31</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -281,7 +284,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>0</span>
+      <span>305</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -298,7 +301,72 @@
     
     
     
-    <div class="post-body" itemprop="articleBody">
+    <div class="post-body" itemprop="articleBody"><p><strong>Zigbee</strong> 是基于 <strong>IEEE 802.15.4</strong> 的<strong>低功耗 mesh</strong> 物联网协议：<strong>2.4 GHz</strong>（亦有个别 sub-GHz），<strong>Coordinator + Router + End Device</strong>，应用配置文件如 <strong>Home Automation</strong>。下面从「<strong>网络层</strong> → <strong>设备类型</strong> → <strong>ZCL 集群</strong> → <strong>与 Bluetooth&#x2F;LoRaWAN 对照</strong> → <strong>开发栈</strong>」顺序写清楚。</p>
+<hr>
+<h1 id="一、802-15-4-基础"><a href="#一、802-15-4-基础" class="headerlink" title="一、802.15.4 基础"></a>一、802.15.4 基础</h1><ul>
+<li><strong>PHY&#x2F;MAC</strong>：短帧、CSMA-CA、<strong>AES-128</strong> 链路加密。  </li>
+<li><strong>Zigbee</strong> 在之上定义 <strong>NWK</strong>、<strong>APS</strong>、<strong>ZDO</strong> 与应用层 <strong>ZCL</strong>。</li>
+</ul>
+<hr>
+<h1 id="二、设备角色"><a href="#二、设备角色" class="headerlink" title="二、设备角色"></a>二、设备角色</h1><table>
+<thead>
+<tr>
+<th>角色</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Coordinator</strong></td>
+<td>建网、分配 <strong>PAN ID</strong>、短地址，通常 1 个</td>
+</tr>
+<tr>
+<td><strong>Router</strong></td>
+<td>中继、常供电</td>
+</tr>
+<tr>
+<td><strong>End Device</strong></td>
+<td>叶子节点，可 <strong>Sleep</strong>，通过父节点通信</td>
+</tr>
+</tbody></table>
+<p><strong>Mesh</strong> 多跳扩展覆盖；路由表由 <strong>AODV</strong> 类机制维护（依栈实现）。</p>
+<hr>
+<h1 id="三、ZCL（Zigbee-Cluster-Library）"><a href="#三、ZCL（Zigbee-Cluster-Library）" class="headerlink" title="三、ZCL（Zigbee Cluster Library）"></a>三、ZCL（Zigbee Cluster Library）</h1><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Endpoint 1</span><br><span class="line">  └── On/Off Cluster (0x0006)  →  灯开关</span><br><span class="line">  └── Level Control (0x0008)   →  调光</span><br></pre></td></tr></table></figure>
+
+<p>与 <a href="/2026/05/01/Bluetooth/">Bluetooth</a> <strong>GATT</strong> 类似：标准化<strong>集群&#x2F;属性&#x2F;命令</strong>，保证互操作。</p>
+<hr>
+<h1 id="四、与其它无线"><a href="#四、与其它无线" class="headerlink" title="四、与其它无线"></a>四、与其它无线</h1><table>
+<thead>
+<tr>
+<th>协议</th>
+<th>特点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Zigbee</strong></td>
+<td>家居 mesh、中等数据率、低功耗</td>
+</tr>
+<tr>
+<td><strong>BLE Mesh</strong></td>
+<td>蓝牙生态、手机直连</td>
+</tr>
+<tr>
+<td><strong><a href="/2026/05/01/LoRaWAN/">LoRaWAN</a></strong></td>
+<td>公里级、星型、极低速率</td>
+</tr>
+<tr>
+<td><strong>Wi-Fi</strong></td>
+<td>高吞吐、功耗高</td>
+</tr>
+</tbody></table>
+<p>网关常把 Zigbee 转 <a href="/2026/05/01/MQTT/">MQTT</a> &#x2F; <a href="/2026/05/01/HTTP/">HTTP</a> 上云。</p>
+<hr>
+<h1 id="五、开发与认证"><a href="#五、开发与认证" class="headerlink" title="五、开发与认证"></a>五、开发与认证</h1><ul>
+<li>芯片：<strong>Silicon Labs</strong>、<strong>TI CC2652</strong>、<strong>NXP JN5169</strong> 等。  </li>
+<li>栈：<strong>Zigbee PRO</strong>、<strong>Z3Gateway</strong>；开源 <strong>Z-Stack</strong> 部分版本。  </li>
+<li><strong>Zigbee 认证</strong>：互操作 logo 需过联盟测试。</li>
+</ul>
+<p>联盟：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://csa-iot.org/all-solutions/zigbee/">https://csa-iot.org/all-solutions/zigbee/</a></p>
+
     </div>
 
     
@@ -352,13 +420,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">159k</span>
+    <span title="站点总字数">181k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">8:49</span>
+    <span title="站点阅读时长">10:03</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

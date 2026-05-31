@@ -20,13 +20,15 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
 
-    <meta property="og:type" content="article">
+    <meta name="description" content="SPI（Serial Peripheral Interface）是四线同步全双工总线：SCLK、MOSI、MISO、CS（片选），主设备提供时钟，从设备在 CS 有效期间交换数据。下面从「模式 0~3 → 多从机拓扑 → 速率与布线 → 典型外设 → 与 I2C 对照」顺序写清楚。  一、信号   线 方向（相对 Master） 说明    SCLK 输出 时钟   MOSI 输出 Master">
+<meta property="og:type" content="article">
 <meta property="og:title" content="SPI">
 <meta property="og:url" content="http://example.com/2026/05/01/Embedded/SPI/index.html">
 <meta property="og:site_name" content="my">
+<meta property="og:description" content="SPI（Serial Peripheral Interface）是四线同步全双工总线：SCLK、MOSI、MISO、CS（片选），主设备提供时钟，从设备在 CS 有效期间交换数据。下面从「模式 0~3 → 多从机拓扑 → 速率与布线 → 典型外设 → 与 I2C 对照」顺序写清楚。  一、信号   线 方向（相对 Master） 说明    SCLK 输出 时钟   MOSI 输出 Master">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-05-01T05:11:54.000Z">
-<meta property="article:modified_time" content="2026-05-04T03:54:09.355Z">
+<meta property="article:modified_time" content="2026-05-31T04:18:16.069Z">
 <meta property="article:author" content="miracle">
 <meta property="article:tag" content="Embedded">
 <meta name="twitter:card" content="summary">
@@ -114,7 +116,7 @@
 
 
 <nav class="site-nav">
-  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-service"><a href="/service/" rel="section"><i class="fa fa-server fa-fw"></i>服务</a></li><li class="menu-item menu-item-project"><a href="/project/" rel="section"><i class="fa fa-folder-open fa-fw"></i>项目</a></li>
       <li class="menu-item menu-item-search">
         <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
         </a>
@@ -152,7 +154,7 @@
   
   <aside class="sidebar">
 
-    <div class="sidebar-inner sidebar-overview-active">
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
       <ul class="sidebar-nav">
         <li class="sidebar-nav-toc">
           文章目录
@@ -165,6 +167,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E4%BF%A1%E5%8F%B7"><span class="nav-number">1.</span> <span class="nav-text">一、信号</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81CPOL-CPHA%EF%BC%88%E6%A8%A1%E5%BC%8F-0-3%EF%BC%89"><span class="nav-number">2.</span> <span class="nav-text">二、CPOL &#x2F; CPHA（模式 0~3）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E5%A4%9A%E4%BB%8E%E6%9C%BA"><span class="nav-number">3.</span> <span class="nav-text">三、多从机</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E5%85%B8%E5%9E%8B%E5%BA%94%E7%94%A8"><span class="nav-number">4.</span> <span class="nav-text">四、典型应用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E4%B8%8E-I2C"><span class="nav-number">5.</span> <span class="nav-text">五、与 I2C</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -177,7 +180,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">182</span>
+          <span class="site-state-item-count">184</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -188,7 +191,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">106</span>
+        <span class="site-state-item-count">107</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -262,7 +265,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-04 11:54:09" itemprop="dateModified" datetime="2026-05-04T11:54:09+08:00">2026-05-04</time>
+      <time title="修改时间：2026-05-31 12:18:16" itemprop="dateModified" datetime="2026-05-31T12:18:16+08:00">2026-05-31</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -281,7 +284,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>0</span>
+      <span>314</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -298,7 +301,87 @@
     
     
     
-    <div class="post-body" itemprop="articleBody">
+    <div class="post-body" itemprop="articleBody"><p><strong>SPI</strong>（Serial Peripheral Interface）是<strong>四线同步全双工</strong>总线：<strong>SCLK</strong>、<strong>MOSI</strong>、<strong>MISO</strong>、<strong>CS</strong>（片选），主设备提供时钟，从设备在 <strong>CS</strong> 有效期间交换数据。下面从「<strong>模式 0~3</strong> → <strong>多从机拓扑</strong> → <strong>速率与布线</strong> → <strong>典型外设</strong> → <strong>与 I2C 对照</strong>」顺序写清楚。</p>
+<hr>
+<h1 id="一、信号"><a href="#一、信号" class="headerlink" title="一、信号"></a>一、信号</h1><table>
+<thead>
+<tr>
+<th>线</th>
+<th>方向（相对 Master）</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>SCLK</strong></td>
+<td>输出</td>
+<td>时钟</td>
+</tr>
+<tr>
+<td><strong>MOSI</strong></td>
+<td>输出</td>
+<td>Master Out Slave In</td>
+</tr>
+<tr>
+<td><strong>MISO</strong></td>
+<td>输入</td>
+<td>Master In Slave Out</td>
+</tr>
+<tr>
+<td><strong>CS&#x2F;SS</strong></td>
+<td>输出</td>
+<td>低有效选中从机</td>
+</tr>
+</tbody></table>
+<hr>
+<h1 id="二、CPOL-CPHA（模式-0-3）"><a href="#二、CPOL-CPHA（模式-0-3）" class="headerlink" title="二、CPOL &#x2F; CPHA（模式 0~3）"></a>二、CPOL &#x2F; CPHA（模式 0~3）</h1><ul>
+<li><strong>CPOL</strong>：空闲时 SCLK 电平（0&#x3D;低，1&#x3D;高）。  </li>
+<li><strong>CPHA</strong>：第几个边沿采样（0&#x3D;第一边沿，1&#x3D;第二边沿）。</li>
+</ul>
+<p>主从 <strong>模式必须一致</strong>（数据手册会写 Mode 0 等）。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 概念：8 位、MSB 先发、Mode 0</span></span><br><span class="line">HAL_SPI_TransmitReceive(&amp;hspi1, tx, rx, len, <span class="number">100</span>);</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="三、多从机"><a href="#三、多从机" class="headerlink" title="三、多从机"></a>三、多从机</h1><ul>
+<li><strong>独立 CS</strong>：每个从机一根 <strong>CS</strong>，<strong>MOSI&#x2F;MISO&#x2F;SCLK</strong> 共享（<strong>MISO</strong> 需三态，未选中不高驱）。  </li>
+<li><strong>Daisy Chain</strong>：如部分 <strong>Shift Register</strong>、<strong>LED 驱动</strong>，数据串行穿过多芯片。</li>
+</ul>
+<hr>
+<h1 id="四、典型应用"><a href="#四、典型应用" class="headerlink" title="四、典型应用"></a>四、典型应用</h1><ul>
+<li><strong>Flash</strong>（W25Q）、<strong>SD 卡</strong>（SPI 模式）、<strong>ADC&#x2F;DAC</strong>、<strong>TFT</strong> 屏、<strong>RF 模块</strong>（NRF24L01）。  </li>
+<li>速率常 <strong>MHz~ tens of MHz</strong>，短 PCB 走线；长距离不如 <a href="/2026/05/01/RS485/">RS485</a>。</li>
+</ul>
+<hr>
+<h1 id="五、与-I2C"><a href="#五、与-I2C" class="headerlink" title="五、与 I2C"></a>五、与 I2C</h1><table>
+<thead>
+<tr>
+<th></th>
+<th><strong>SPI</strong></th>
+<th><strong><a href="/2026/05/01/I2C/">I2C</a></strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>线数</td>
+<td>4+（每从机 +CS）</td>
+<td>2</td>
+</tr>
+<tr>
+<td>速度</td>
+<td>通常更快</td>
+<td>400k&#x2F;1M 常见</td>
+</tr>
+<tr>
+<td>寻址</td>
+<td>硬件 CS</td>
+<td>7 位地址</td>
+</tr>
+<tr>
+<td>双工</td>
+<td>全双工</td>
+<td>半双工</td>
+</tr>
+</tbody></table>
+<p>异步调试打印仍用 <a href="/2026/05/01/UART/">UART</a>。</p>
+
     </div>
 
     
@@ -352,13 +435,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">159k</span>
+    <span title="站点总字数">181k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">8:49</span>
+    <span title="站点阅读时长">10:03</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动
