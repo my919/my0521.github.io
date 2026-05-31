@@ -28,7 +28,7 @@
 <meta property="og:description" content="概述Spring Cloud Alibaba（SCA） 在 Spring Cloud 之上提供 Nacos、Sentinel、Seata、RocketMQ 等集成。本仓库 cloud 为 Maven 多模块 工程（非 Gradle 演示项目），已落地 Nacos、Sentinel、Seata、Gateway、OpenFeign；未引入 Dubbo、RocketMQ（见 Dubbo.md、Rocke">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-05-17T03:00:00.000Z">
-<meta property="article:modified_time" content="2026-05-29T14:15:02.011Z">
+<meta property="article:modified_time" content="2026-05-31T15:47:37.208Z">
 <meta property="article:author" content="miracle">
 <meta property="article:tag" content="SpringCloudAlibaba">
 <meta name="twitter:card" content="summary">
@@ -265,7 +265,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-29 22:15:02" itemprop="dateModified" datetime="2026-05-29T22:15:02+08:00">2026-05-29</time>
+      <time title="修改时间：2026-05-31 23:47:37" itemprop="dateModified" datetime="2026-05-31T23:47:37+08:00">2026-05-31</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -284,7 +284,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>762</span>
+      <span>826</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -301,7 +301,7 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p><strong>Spring Cloud Alibaba（SCA）</strong> 在 Spring Cloud 之上提供 <strong>Nacos、Sentinel、Seata、RocketMQ</strong> 等集成。本仓库 <strong>cloud</strong> 为 <strong>Maven 多模块</strong> 工程（非 Gradle 演示项目），已落地 <strong>Nacos、Sentinel、Seata、Gateway、OpenFeign</strong>；<strong>未</strong>引入 <strong>Dubbo、RocketMQ</strong>（见 <a href="./Dubbo.md">Dubbo.md</a>、<a href="./RocketMQ.md">RocketMQ.md</a> 作扩展阅读）。</p>
+    <div class="post-body" itemprop="articleBody"><h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p><strong>Spring Cloud Alibaba（SCA）</strong> 在 Spring Cloud 之上提供 <strong>Nacos、Sentinel、Seata、RocketMQ</strong> 等集成。本仓库 <strong>cloud</strong> 为 <strong>Maven 多模块</strong> 工程（非 Gradle 演示项目），已落地 <strong>Nacos、Sentinel、Seata、Gateway、OpenFeign</strong>；<strong>未</strong>引入 <strong>Dubbo、RocketMQ</strong>（见 <a href="/2026/05/17/SpringCloud/Dubbo/" title="Dubbo">Dubbo.md</a>、<a href="/2026/05/17/springcloud-rocketmq/" title="Spring Cloud 集成 RocketMQ">RocketMQ.md</a> 作扩展阅读）。</p>
 <p>仓库：<a target="_blank" rel="noopener" href="https://gitee.com/my919/cloud">https://gitee.com/my919/cloud</a></p>
 <h1 id="架构说明"><a href="#架构说明" class="headerlink" title="架构说明"></a>架构说明</h1><pre>
 <code class="mermaid">
@@ -374,7 +374,7 @@ flowchart TB
 <td><strong>未使用</strong></td>
 </tr>
 </tbody></table>
-<p><strong>2025.1.x 重要变更</strong>：已移除 <strong>bootstrap</strong>；必须使用 <strong><code>spring.config.import</code></strong> 连接 Nacos，见 <a href="./%E9%9B%86%E6%88%90Nacos.md">集成Nacos.md</a>。</p>
+<p><strong>2025.1.x 重要变更</strong>：已移除 <strong>bootstrap</strong>；必须使用 <strong><code>spring.config.import</code></strong> 连接 Nacos，见 <a href="/2026/05/17/SpringCloud/%E9%9B%86%E6%88%90Nacos/" title="集成Nacos">集成Nacos.md</a>。</p>
 <h1 id="搭建步骤"><a href="#搭建步骤" class="headerlink" title="搭建步骤"></a>搭建步骤</h1><h2 id="1-父-POM-引入-BOM"><a href="#1-父-POM-引入-BOM" class="headerlink" title="1. 父 POM 引入 BOM"></a>1. 父 POM 引入 BOM</h2><p>根目录 <code>pom.xml</code>：</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">properties</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">spring.boot.version</span>&gt;</span>4.0.0<span class="tag">&lt;/<span class="name">spring.boot.version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">spring.cloud.version</span>&gt;</span>2025.1.0<span class="tag">&lt;/<span class="name">spring.cloud.version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">spring.cloud.alibaba.version</span>&gt;</span>2025.1.0.0<span class="tag">&lt;/<span class="name">spring.cloud.alibaba.version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">sentinel.version</span>&gt;</span>1.8.9<span class="tag">&lt;/<span class="name">sentinel.version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">properties</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">dependencyManagement</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-dependencies<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;spring.boot.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">type</span>&gt;</span>pom<span class="tag">&lt;/<span class="name">type</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">scope</span>&gt;</span>import<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.cloud<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-cloud-dependencies<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;spring.cloud.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">type</span>&gt;</span>pom<span class="tag">&lt;/<span class="name">type</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">scope</span>&gt;</span>import<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.alibaba.cloud<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-cloud-alibaba-dependencies<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;spring.cloud.alibaba.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">type</span>&gt;</span>pom<span class="tag">&lt;/<span class="name">type</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">scope</span>&gt;</span>import<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependencyManagement</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
@@ -413,10 +413,10 @@ flowchart TB
 <li>各服务 <code>application.yml</code>：<code>spring.config.import</code> 链  </li>
 <li>Profile：<code>application-dev.yml</code> 引入 <code>optional:nacos:...</code></li>
 </ul>
-<p>详见 <a href="./%E5%A4%9A%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE.md">多环境配置.md</a>。</p>
+<p>详见 <a href="/2026/05/17/springcloud-profiles/" title="Spring Cloud 多环境配置与 Nacos">多环境配置.md</a>。</p>
 <h2 id="4-构建与启动"><a href="#4-构建与启动" class="headerlink" title="4. 构建与启动"></a>4. 构建与启动</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mvn clean package -DskipTests</span><br><span class="line">mvn -pl cloud-stock,cloud-order,cloud-gateway -am spring-boot:run</span><br></pre></td></tr></table></figure>
 
-<p>推荐启动顺序见 <a href="./cloud.md">cloud.md</a>。</p>
+<p>推荐启动顺序见 <a href="/2026/05/17/SpringCloud/cloud/" title="cloud">cloud.md</a>。</p>
 <h1 id="本仓库已集成-vs-未集成"><a href="#本仓库已集成-vs-未集成" class="headerlink" title="本仓库已集成 vs 未集成"></a>本仓库已集成 vs 未集成</h1><table>
 <thead>
 <tr>
@@ -428,37 +428,37 @@ flowchart TB
 <tbody><tr>
 <td>Nacos</td>
 <td>已集成</td>
-<td><a href="./%E9%9B%86%E6%88%90Nacos.md">集成Nacos.md</a></td>
+<td><a href="/2026/05/17/SpringCloud/%E9%9B%86%E6%88%90Nacos/" title="集成Nacos">集成Nacos.md</a></td>
 </tr>
 <tr>
 <td>Sentinel</td>
 <td>已集成</td>
-<td><a href="./%E9%9B%86%E6%88%90Sentinel.md">集成Sentinel.md</a></td>
+<td><a href="/2026/05/17/SpringCloud/%E9%9B%86%E6%88%90Sentinel/" title="集成Sentinel">集成Sentinel.md</a></td>
 </tr>
 <tr>
 <td>Seata</td>
 <td>已集成（默认开）</td>
-<td><a href="./%E9%9B%86%E6%88%90Seata.md">集成Seata.md</a></td>
+<td><a href="/2026/05/17/SpringCloud/%E9%9B%86%E6%88%90Seata/" title="集成Seata">集成Seata.md</a></td>
 </tr>
 <tr>
 <td>Spring Cloud Gateway</td>
 <td>已集成</td>
-<td><a href="./%E9%9B%86%E6%88%90SpringCloudGateway.md">集成SpringCloudGateway.md</a></td>
+<td><a href="/2026/05/17/SpringCloud/%E9%9B%86%E6%88%90SpringCloudGateway/" title="集成SpringCloudGateway">集成SpringCloudGateway.md</a></td>
 </tr>
 <tr>
 <td>OpenFeign</td>
 <td>已集成（order→stock）</td>
-<td><a href="./%E8%AE%A2%E5%8D%95%E4%B8%8B%E5%8D%95%E4%B8%8E%E5%BA%93%E5%AD%98%E6%89%A3%E5%87%8F.md">订单下单与库存扣减.md</a></td>
+<td><a href="/2026/05/17/SpringCloud/%E8%AE%A2%E5%8D%95%E4%B8%8B%E5%8D%95%E4%B8%8E%E5%BA%93%E5%AD%98%E6%89%A3%E5%87%8F/" title="订单下单与库存扣减">订单下单与库存扣减.md</a></td>
 </tr>
 <tr>
 <td>Dubbo RPC</td>
 <td>未集成</td>
-<td><a href="./Dubbo.md">Dubbo.md</a></td>
+<td><a href="/2026/05/17/SpringCloud/Dubbo/" title="Dubbo">Dubbo.md</a></td>
 </tr>
 <tr>
 <td>RocketMQ</td>
 <td>未集成</td>
-<td><a href="./RocketMQ.md">RocketMQ.md</a></td>
+<td><a href="/2026/05/17/springcloud-rocketmq/" title="Spring Cloud 集成 RocketMQ">RocketMQ.md</a></td>
 </tr>
 </tbody></table>
 <h1 id="验证"><a href="#验证" class="headerlink" title="验证"></a>验证</h1><ol>
@@ -469,7 +469,7 @@ flowchart TB
 </ol>
 <h1 id="常见问题"><a href="#常见问题" class="headerlink" title="常见问题"></a>常见问题</h1><p><strong>Q：能否用 Boot 3.5 + SCA 2025.0.x？</strong><br>A：可以，但与本仓库 <strong>Boot 4 + SCA 2025.1.0.0</strong> 不同线；勿混 BOM。</p>
 <p><strong>Q：从 Gradle 教程迁移到本仓库？</strong><br>A：依赖写法改为 Maven；<code>build.gradle.kts</code> 中的 BOM 与上文 <code>pom.xml</code> 等价；配置仍用 <code>application.yml</code> + <code>spring.config.import</code>。</p>
-<p><strong>Q：RocketMQ &#x2F; Dubbo 如何加？</strong><br>A：参考 <a href="./RocketMQ.md">RocketMQ.md</a>、<a href="./Dubbo.md">Dubbo.md</a> 在子模块增加 starter，并单独建 DataId &#x2F; 注册配置，勿与现有 Feign 链路混淆。</p>
+<p><strong>Q：RocketMQ &#x2F; Dubbo 如何加？</strong><br>A：参考 <a href="/2026/05/17/springcloud-rocketmq/" title="Spring Cloud 集成 RocketMQ">RocketMQ.md</a>、<a href="/2026/05/17/SpringCloud/Dubbo/" title="Dubbo">Dubbo.md</a> 在子模块增加 starter，并单独建 DataId &#x2F; 注册配置，勿与现有 Feign 链路混淆。</p>
 <p><strong>Q：升级 SCA 小版本要注意什么？</strong><br>A：查 <a target="_blank" rel="noopener" href="https://github.com/alibaba/spring-cloud-alibaba/releases">GitHub Releases</a> 中 Nacos&#x2F;Seata&#x2F;Sentinel 子版本是否变化，并回归下单与 Nacos 配置拉取。</p>
 <h1 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h1><ul>
 <li><a target="_blank" rel="noopener external nofollow noreferrer" href="https://sca.aliyun.com/">SCA 中文官网</a></li>
@@ -559,13 +559,13 @@ flowchart TB
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">184k</span>
+    <span title="站点总字数">186k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">10:13</span>
+    <span title="站点阅读时长">10:18</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

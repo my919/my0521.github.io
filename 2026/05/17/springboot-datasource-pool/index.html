@@ -28,7 +28,7 @@
 <meta property="og:description" content="概述JDBC 连接池负责复用数据库连接，避免每次请求都新建 TCP 与认证开销。本仓库（Spring Boot 4.0.6 + dynamic-datasource + MyBatis-Flex）默认使用 HikariCP；本文对比 HikariCP 与 Druid，并给出在本项目中的配置方式、监控与选型建议。 前置阅读：多环境配置、集成MyBatis-Flex与多数据源。  一、为什么需要连接池">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-05-17T03:00:00.000Z">
-<meta property="article:modified_time" content="2026-05-31T14:46:43.878Z">
+<meta property="article:modified_time" content="2026-05-31T15:51:10.986Z">
 <meta property="article:author" content="miracle">
 <meta property="article:tag" content="SpringBoot">
 <meta name="twitter:card" content="summary">
@@ -265,7 +265,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-31 22:46:43" itemprop="dateModified" datetime="2026-05-31T22:46:43+08:00">2026-05-31</time>
+      <time title="修改时间：2026-05-31 23:51:10" itemprop="dateModified" datetime="2026-05-31T23:51:10+08:00">2026-05-31</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -302,7 +302,7 @@
     
     
     <div class="post-body" itemprop="articleBody"><h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>JDBC 连接池负责<strong>复用数据库连接</strong>，避免每次请求都新建 TCP 与认证开销。本仓库（<strong>Spring Boot 4.0.6 + dynamic-datasource + MyBatis-Flex</strong>）默认使用 <strong>HikariCP</strong>；本文对比 <strong>HikariCP</strong> 与 <strong>Druid</strong>，并给出在本项目中的<strong>配置方式、监控与选型建议</strong>。</p>
-<p>前置阅读：<a href="./%E5%A4%9A%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE.md">多环境配置</a>、<a href="./%E9%9B%86%E6%88%90MyBatis-Flex%E4%B8%8E%E5%A4%9A%E6%95%B0%E6%8D%AE%E6%BA%90.md">集成MyBatis-Flex与多数据源</a>。</p>
+<p>前置阅读：<a href="/2026/05/16/springboot-profiles/" title="SpringBoot 多环境配置">多环境配置</a>、<a href="/2026/05/16/springboot-mybatis-flex/" title="SpringBoot集成MyBatis-Flex与多数据源">集成MyBatis-Flex与多数据源</a>。</p>
 <hr>
 <h1 id="一、为什么需要连接池"><a href="#一、为什么需要连接池" class="headerlink" title="一、为什么需要连接池"></a>一、为什么需要连接池</h1><table>
 <thead>
@@ -427,14 +427,14 @@ sequenceDiagram
 <h1 id="三、本项目落地：HikariCP（当前方案）"><a href="#三、本项目落地：HikariCP（当前方案）" class="headerlink" title="三、本项目落地：HikariCP（当前方案）"></a>三、本项目落地：HikariCP（当前方案）</h1><p>本仓库通过 <strong><a target="_blank" rel="noopener" href="https://github.com/baomidou/dynamic-datasource">dynamic-datasource</a></strong> 管理 <strong>MySQL（primary）+ PostgreSQL</strong>，<strong>未引入 Druid 依赖</strong>时框架默认 <strong>HikariCP</strong>。</p>
 <h2 id="1-依赖（已有）"><a href="#1-依赖（已有）" class="headerlink" title="1. 依赖（已有）"></a>1. 依赖（已有）</h2><figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">implementation <span class="string">&#x27;com.baomidou:dynamic-datasource-spring-boot4-starter:4.5.0&#x27;</span></span><br><span class="line">implementation <span class="string">&#x27;org.springframework.boot:spring-boot-starter-jdbc&#x27;</span></span><br><span class="line">runtimeOnly <span class="string">&#x27;com.mysql:mysql-connector-j&#x27;</span></span><br><span class="line">runtimeOnly <span class="string">&#x27;org.postgresql:postgresql&#x27;</span></span><br></pre></td></tr></table></figure>
 
-<h2 id="2-配置示例"><a href="#2-配置示例" class="headerlink" title="2. 配置示例"></a>2. 配置示例</h2><p><code>application.yaml</code>（公共池参数 + 多数据源，与 <a href="./%E9%9B%86%E6%88%90MyBatis-Flex%E4%B8%8E%E5%A4%9A%E6%95%B0%E6%8D%AE%E6%BA%90.md">集成MyBatis-Flex与多数据源</a> 一致）：</p>
+<h2 id="2-配置示例"><a href="#2-配置示例" class="headerlink" title="2. 配置示例"></a>2. 配置示例</h2><p><code>application.yaml</code>（公共池参数 + 多数据源，与 <a href="/2026/05/16/springboot-mybatis-flex/" title="SpringBoot集成MyBatis-Flex与多数据源">集成MyBatis-Flex与多数据源</a> 一致）：</p>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">datasource:</span></span><br><span class="line">    <span class="attr">dynamic:</span></span><br><span class="line">      <span class="attr">enabled:</span> <span class="literal">true</span></span><br><span class="line">      <span class="attr">primary:</span> <span class="string">mysql</span></span><br><span class="line">      <span class="attr">strict:</span> <span class="literal">false</span></span><br><span class="line">      <span class="attr">hikari:</span></span><br><span class="line">        <span class="attr">pool-name:</span> <span class="string">app-dynamic-hikari</span></span><br><span class="line">        <span class="attr">maximum-pool-size:</span> <span class="number">20</span></span><br><span class="line">        <span class="attr">minimum-idle:</span> <span class="number">5</span></span><br><span class="line">        <span class="attr">connection-timeout:</span> <span class="number">30000</span></span><br><span class="line">        <span class="attr">idle-timeout:</span> <span class="number">600000</span></span><br><span class="line">        <span class="attr">max-lifetime:</span> <span class="number">1800000</span></span><br><span class="line">        <span class="attr">keepalive-time:</span> <span class="number">300000</span></span><br><span class="line">      <span class="attr">datasource:</span></span><br><span class="line">        <span class="attr">mysql:</span></span><br><span class="line">          <span class="attr">url:</span> <span class="string">jdbc:mysql://192.168.1.22:30000/study?useUnicode=true&amp;characterEncoding=utf8&amp;serverTimezone=Asia/Shanghai</span></span><br><span class="line">          <span class="attr">username:</span> <span class="string">root</span></span><br><span class="line">          <span class="attr">password:</span> <span class="string">$&#123;MYSQL_PASSWORD:Pi=3.1415&#125;</span></span><br><span class="line">          <span class="attr">driver-class-name:</span> <span class="string">com.mysql.cj.jdbc.Driver</span></span><br><span class="line">        <span class="attr">pgsql:</span></span><br><span class="line">          <span class="attr">url:</span> <span class="string">jdbc:postgresql://192.168.1.22:30001/postgres</span></span><br><span class="line">          <span class="attr">username:</span> <span class="string">postgres</span></span><br><span class="line">          <span class="attr">password:</span> <span class="string">$&#123;PG_PASSWORD:Pi=3.1415&#125;</span></span><br><span class="line">          <span class="attr">driver-class-name:</span> <span class="string">org.postgresql.Driver</span></span><br></pre></td></tr></table></figure>
 
 <p>说明：</p>
 <ul>
 <li><strong><code>spring.datasource.dynamic.hikari.*</code></strong>：对 dynamic-datasource 下<strong>每个</strong> Hikari 池生效的全局默认（除非单库覆盖）。  </li>
 <li><strong><code>primary: mysql</code></strong>：未标注 <code>@DS</code> 时使用 MySQL。  </li>
-<li>密码建议走环境变量或 <code>application-prod.yaml</code>，勿提交仓库（见 <a href="/2026/05/16/springboot-profiles/">SpringBoot 多环境配置</a>）。</li>
+<li>密码建议走环境变量或 <code>application-prod.yaml</code>，勿提交仓库（见 <a href="/2026/05/16/springboot-profiles/" title="SpringBoot 多环境配置">SpringBoot 多环境配置</a>）。</li>
 </ul>
 <h2 id="3-代码侧切换数据源"><a href="#3-代码侧切换数据源" class="headerlink" title="3. 代码侧切换数据源"></a>3. 代码侧切换数据源</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Service</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ReportService</span> &#123;</span><br><span class="line">    <span class="meta">@DS(&quot;mysql&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">long</span> <span class="title function_">countUsers</span><span class="params">()</span> &#123; ... &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@DS(&quot;pgsql&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> List&lt;AuditRow&gt; <span class="title function_">listAudit</span><span class="params">()</span> &#123; ... &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
@@ -485,7 +485,7 @@ sequenceDiagram
 <h2 id="6-监控（HikariCP）"><a href="#6-监控（HikariCP）" class="headerlink" title="6. 监控（HikariCP）"></a>6. 监控（HikariCP）</h2><p>开启 Actuator 后（本项目 Admin 已集成），可查看：</p>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">management:</span></span><br><span class="line">  <span class="attr">endpoints:</span></span><br><span class="line">    <span class="attr">web:</span></span><br><span class="line">      <span class="attr">exposure:</span></span><br><span class="line">        <span class="attr">include:</span> <span class="string">health,metrics</span></span><br></pre></td></tr></table></figure>
 
-<p>关注 Micrometer 指标：<code>hikaricp.connections.active</code>、<code>hikaricp.connections.pending</code>、<code>hikaricp.connections.timeout</code>。与 <a href="./%E9%9B%86%E6%88%90SpringBootAdmin.md">集成SpringBootAdmin</a>、站内 Prometheus&#x2F;Grafana（见 <a href="/service/">服务</a>）可进一步做大盘与告警。</p>
+<p>关注 Micrometer 指标：<code>hikaricp.connections.active</code>、<code>hikaricp.connections.pending</code>、<code>hikaricp.connections.timeout</code>。与 <a href="/2026/05/16/SpringBoot/%E9%9B%86%E6%88%90SpringBootAdmin/" title="SpringBoot集成SpringBootAdmin监控">集成SpringBootAdmin</a>、站内 Prometheus&#x2F;Grafana（见 <a href="/service/">服务</a>）可进一步做大盘与告警。</p>
 <hr>
 <h1 id="四、可选方案：切换为-Druid"><a href="#四、可选方案：切换为-Druid" class="headerlink" title="四、可选方案：切换为 Druid"></a>四、可选方案：切换为 Druid</h1><p>若团队需要 <strong>慢 SQL 统计、Web 监控页、Wall 防火墙</strong>，可在本项目中改为 Druid（或<strong>仅生产</strong>启用 Druid）。</p>
 <h2 id="1-添加依赖"><a href="#1-添加依赖" class="headerlink" title="1. 添加依赖"></a>1. 添加依赖</h2><figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">implementation <span class="string">&#x27;com.alibaba:druid-spring-boot-3-starter:1.2.25&#x27;</span></span><br><span class="line"><span class="comment">// 与 dynamic-datasource 并存；版本以 Maven Central 与 Boot 4 兼容性为准</span></span><br></pre></td></tr></table></figure>
@@ -585,15 +585,15 @@ sequenceDiagram
 </tr>
 </thead>
 <tbody><tr>
-<td><a href="./%E9%9B%86%E6%88%90MyBatis-Flex%E4%B8%8E%E5%A4%9A%E6%95%B0%E6%8D%AE%E6%BA%90.md">集成MyBatis-Flex与多数据源</a></td>
+<td><a href="/2026/05/16/springboot-mybatis-flex/" title="SpringBoot集成MyBatis-Flex与多数据源">集成MyBatis-Flex与多数据源</a></td>
 <td>数据源与 <code>@DS</code></td>
 </tr>
 <tr>
-<td><a href="./%E5%A4%9A%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE.md">多环境配置</a></td>
+<td><a href="/2026/05/16/springboot-profiles/" title="SpringBoot 多环境配置">多环境配置</a></td>
 <td>各环境 URL&#x2F;密码</td>
 </tr>
 <tr>
-<td><a href="./%E9%9B%86%E6%88%90SpringBootAdmin.md">集成SpringBootAdmin</a></td>
+<td><a href="/2026/05/16/SpringBoot/%E9%9B%86%E6%88%90SpringBootAdmin/" title="SpringBoot集成SpringBootAdmin监控">集成SpringBootAdmin</a></td>
 <td>健康与指标</td>
 </tr>
 <tr>
@@ -601,7 +601,7 @@ sequenceDiagram
 <td>局域网 MySQL <code>:30000</code>、PostgreSQL <code>:30001</code></td>
 </tr>
 </tbody></table>
-<p>官方参考：<a target="_blank" rel="noopener" href="https://github.com/brettwooldridge/HikariCP">HikariCP README</a> · <a target="_blank" rel="noopener" href="https://github.com/alibaba/druid/wiki">Druid Wiki</a> · <a target="_blank" rel="noopener external nofollow noreferrer" href="https://dynamic-datasource.com/">dynamic-datasource 配置</a></p>
+<p>官方参考：<a target="_blank" rel="noopener" href="https://github.com/brettwooldridge/HikariCP">HikariCP README</a> · <a target="_blank" rel="noopener" href="https://github.com/alibaba/druid/wiki">Druid Wiki</a> · <a target="_blank" rel="noopener external nofollow noreferrer" href="https://www.kancloud.cn/tracy5546/dynamic-datasource/2264611">dynamic-datasource 配置</a></p>
 
     </div>
 
@@ -656,13 +656,13 @@ sequenceDiagram
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">184k</span>
+    <span title="站点总字数">186k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">10:13</span>
+    <span title="站点阅读时长">10:18</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

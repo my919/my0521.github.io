@@ -258,7 +258,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-31 22:46:39" itemprop="dateModified" datetime="2026-05-31T22:46:39+08:00">2026-05-31</time>
+      <time title="修改时间：2026-05-31 23:47:37" itemprop="dateModified" datetime="2026-05-31T23:47:37+08:00">2026-05-31</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -277,7 +277,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>1.8k</span>
+      <span>1.9k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -308,12 +308,12 @@
 <tbody><tr>
 <td><code>@OperLog</code></td>
 <td><code>OperLogAspect</code></td>
-<td><a href="./AOP%E6%97%A5%E5%BF%97%E4%B8%8E%E6%93%8D%E4%BD%9C%E5%AE%A1%E8%AE%A1.md">AOP日志与操作审计</a></td>
+<td><a href="/2026/05/16/SpringBoot/AOP%E6%97%A5%E5%BF%97%E4%B8%8E%E6%93%8D%E4%BD%9C%E5%AE%A1%E8%AE%A1/" title="SpringBoot AOP日志与操作审计">AOP日志与操作审计</a></td>
 </tr>
 <tr>
 <td><code>@RepeatSubmit</code></td>
 <td><code>RepeatSubmitAspect</code></td>
-<td><a href="./%E9%98%B2%E9%87%8D%E6%8F%90%E4%BA%A4%E4%B8%8E%E6%8E%A5%E5%8F%A3%E5%B9%82%E7%AD%89.md">防重提交与接口幂等</a></td>
+<td><a href="/2026/05/16/springboot-idempotent/" title="SpringBoot防重提交与接口幂等">防重提交与接口幂等</a></td>
 </tr>
 <tr>
 <td><code>@Idempotent</code></td>
@@ -340,7 +340,7 @@
 </tr>
 <tr>
 <td><strong><code>@ControllerAdvice</code></strong></td>
-<td>统一异常、参数校验（见 <a href="./%E7%BB%9F%E4%B8%80%E8%BF%94%E5%9B%9E%E4%BD%93%E4%B8%8E%E5%85%A8%E5%B1%80%E5%BC%82%E5%B8%B8.md">统一返回体与全局异常</a>）</td>
+<td>统一异常、参数校验（见 <a href="/2026/05/16/springboot-result-exception/" title="SpringBoot 统一返回体与全局异常">统一返回体与全局异常</a>）</td>
 </tr>
 <tr>
 <td><strong>纯 Service 调用</strong></td>
@@ -381,7 +381,7 @@ flowchart TD
 <ul>
 <li><strong><code>@Around(&quot;@annotation(bizCheck)&quot;)</code></strong>：绑定带 <code>@BizCheck</code> 的方法；参数名 <code>bizCheck</code> 与注解参数一致。  </li>
 <li>也可用 <strong><code>@annotation(org.my919.springboot.annotation.BizCheck)</code></strong> 全限定名。  </li>
-<li>校验失败抛 <strong><code>BusinessException</code></strong>，由全局异常处理器转为 <code>Result</code>（见 <a href="./%E7%BB%9F%E4%B8%80%E8%BF%94%E5%9B%9E%E4%BD%93%E4%B8%8E%E5%85%A8%E5%B1%80%E5%BC%82%E5%B8%B8.md">统一返回体与全局异常</a>）。  </li>
+<li>校验失败抛 <strong><code>BusinessException</code></strong>，由全局异常处理器转为 <code>Result</code>（见 <a href="/2026/05/16/springboot-result-exception/" title="SpringBoot 统一返回体与全局异常">统一返回体与全局异常</a>）。  </li>
 <li><strong><code>@Order(50)</code></strong>：多个切面时控制顺序（如先 <code>@BizCheck</code> 再 <code>@OperLog</code>）。</li>
 </ul>
 <h2 id="3-配置属性与开关"><a href="#3-配置属性与开关" class="headerlink" title="3. 配置属性与开关"></a>3. 配置属性与开关</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> org.my919.springboot.config.properties;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.springframework.boot.context.properties.ConfigurationProperties;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.HashMap;</span><br><span class="line"><span class="keyword">import</span> java.util.Map;</span><br><span class="line"></span><br><span class="line"><span class="meta">@ConfigurationProperties(&quot;app.biz&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">AppBizProperties</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="type">boolean</span> <span class="variable">enabled</span> <span class="operator">=</span> <span class="literal">true</span>;</span><br><span class="line">    <span class="keyword">private</span> Map&lt;String, Boolean&gt; scenes = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">isEnabled</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> enabled;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setEnabled</span><span class="params">(<span class="type">boolean</span> enabled)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.enabled = enabled;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">isSceneEnabled</span><span class="params">(String scene)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> scenes.getOrDefault(scene, <span class="literal">true</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> Map&lt;String, Boolean&gt; <span class="title function_">getScenes</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> scenes;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setScenes</span><span class="params">(Map&lt;String, Boolean&gt; scenes)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.scenes = scenes;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -429,7 +429,7 @@ flowchart TD
 <p>类上 + 方法上组合时，可用 <code>AnnotationUtils.findAnnotation(...)</code>。</p>
 <h2 id="2-切点表达式示例"><a href="#2-切点表达式示例" class="headerlink" title="2. 切点表达式示例"></a>2. 切点表达式示例</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 仅本项目的 Controller</span></span><br><span class="line"><span class="meta">@Around(&quot;within(org.my919.springboot.controller..*) &amp;&amp; @annotation(bizCheck)&quot;)</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 某包下所有带注解的方法</span></span><br><span class="line"><span class="meta">@Pointcut(&quot;@annotation(org.my919.springboot.annotation.BizCheck)&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">bizCheckPointcut</span><span class="params">()</span> &#123;&#125;</span><br></pre></td></tr></table></figure>
 
-<p><code>RequestLogAspect</code> 使用 <strong><code>within(...controller..*)</code></strong> 做包级请求日志（见 <a href="./AOP%E6%97%A5%E5%BF%97%E4%B8%8E%E6%93%8D%E4%BD%9C%E5%AE%A1%E8%AE%A1.md">AOP日志与操作审计</a>）。</p>
+<p><code>RequestLogAspect</code> 使用 <strong><code>within(...controller..*)</code></strong> 做包级请求日志（见 <a href="/2026/05/16/SpringBoot/AOP%E6%97%A5%E5%BF%97%E4%B8%8E%E6%93%8D%E4%BD%9C%E5%AE%A1%E8%AE%A1/" title="SpringBoot AOP日志与操作审计">AOP日志与操作审计</a>）。</p>
 <h2 id="3-多切面协作与顺序"><a href="#3-多切面协作与顺序" class="headerlink" title="3. 多切面协作与顺序"></a>3. 多切面协作与顺序</h2><table>
 <thead>
 <tr>
@@ -482,7 +482,7 @@ flowchart TD
 <td>Header <code>Idempotency-Key</code> + 锁 + 结果缓存</td>
 </tr>
 </tbody></table>
-<p>异步写日志依赖 <a href="./%E5%BC%82%E6%AD%A5%E7%BA%BF%E7%A8%8B%E6%B1%A0.md">异步线程池</a> 中的 <strong><code>taskExecutor</code></strong>。</p>
+<p>异步写日志依赖 <a href="/2026/05/16/SpringBoot/%E5%BC%82%E6%AD%A5%E7%BA%BF%E7%A8%8B%E6%B1%A0/" title="SpringBoot异步线程池">异步线程池</a> 中的 <strong><code>taskExecutor</code></strong>。</p>
 <hr>
 <h1 id="七、常见坑"><a href="#七、常见坑" class="headerlink" title="七、常见坑"></a>七、常见坑</h1><table>
 <thead>
@@ -567,19 +567,19 @@ flowchart TD
 </tr>
 </thead>
 <tbody><tr>
-<td><a href="./AOP%E6%97%A5%E5%BF%97%E4%B8%8E%E6%93%8D%E4%BD%9C%E5%AE%A1%E8%AE%A1.md">AOP日志与操作审计</a></td>
+<td><a href="/2026/05/16/SpringBoot/AOP%E6%97%A5%E5%BF%97%E4%B8%8E%E6%93%8D%E4%BD%9C%E5%AE%A1%E8%AE%A1/" title="SpringBoot AOP日志与操作审计">AOP日志与操作审计</a></td>
 <td><code>@OperLog</code> 生产级示例</td>
 </tr>
 <tr>
-<td><a href="./%E9%98%B2%E9%87%8D%E6%8F%90%E4%BA%A4%E4%B8%8E%E6%8E%A5%E5%8F%A3%E5%B9%82%E7%AD%89.md">防重提交与接口幂等</a></td>
+<td><a href="/2026/05/16/springboot-idempotent/" title="SpringBoot防重提交与接口幂等">防重提交与接口幂等</a></td>
 <td>Redis + <code>@Around</code></td>
 </tr>
 <tr>
-<td><a href="./%E5%BC%82%E6%AD%A5%E7%BA%BF%E7%A8%8B%E6%B1%A0.md">异步线程池</a></td>
+<td><a href="/2026/05/16/SpringBoot/%E5%BC%82%E6%AD%A5%E7%BA%BF%E7%A8%8B%E6%B1%A0/" title="SpringBoot异步线程池">异步线程池</a></td>
 <td>切面内异步落库</td>
 </tr>
 <tr>
-<td><a href="./%E7%BB%9F%E4%B8%80%E8%BF%94%E5%9B%9E%E4%BD%93%E4%B8%8E%E5%85%A8%E5%B1%80%E5%BC%82%E5%B8%B8.md">统一返回体与全局异常</a></td>
+<td><a href="/2026/05/16/springboot-result-exception/" title="SpringBoot 统一返回体与全局异常">统一返回体与全局异常</a></td>
 <td><code>BusinessException</code> 与 HTTP 映射</td>
 </tr>
 </tbody></table>
@@ -646,7 +646,7 @@ flowchart TD
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-31 22:37:13" itemprop="dateModified" datetime="2026-05-31T22:37:13+08:00">2026-05-31</time>
+      <time title="修改时间：2026-05-31 23:47:37" itemprop="dateModified" datetime="2026-05-31T23:47:37+08:00">2026-05-31</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -665,7 +665,7 @@ flowchart TD
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>683</span>
+      <span>697</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -684,8 +684,8 @@ flowchart TD
     
     <div class="post-body" itemprop="articleBody">
           <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p><strong>RocketMQ</strong> 在 <strong>Spring Cloud Alibaba 2025.1.0.0</strong> 中通过 <strong><code>spring-cloud-starter-stream-rocketmq</code></strong> 对接 <strong>Spring Cloud Stream</strong>（函数式 <strong><code>StreamBridge</code> &#x2F; <code>Consumer</code></strong>），BOM 管理客户端 <strong>5.3.1</strong>。</p>
-<p><strong>本仓库（cloud）当前未集成 RocketMQ</strong>。订单与库存为 <strong>同步 Feign + Seata</strong> 链路，见 <a href="./%E8%AE%A2%E5%8D%95%E4%B8%8B%E5%8D%95%E4%B8%8E%E5%BA%93%E5%AD%98%E6%89%A3%E5%87%8F.md">订单下单与库存扣减.md</a>。本文供异步解耦、事件驱动扩展参考。</p>
-<p>RocketMQ 基础概念（NameServer、顺序&#x2F;事务消息）见 <a href="/2026/05/01/rocketmq-mq/">RocketMQ 消息中间件入门</a>。</p>
+<p><strong>本仓库（cloud）当前未集成 RocketMQ</strong>。订单与库存为 <strong>同步 Feign + Seata</strong> 链路，见 <a href="/2026/05/17/SpringCloud/%E8%AE%A2%E5%8D%95%E4%B8%8B%E5%8D%95%E4%B8%8E%E5%BA%93%E5%AD%98%E6%89%A3%E5%87%8F/" title="订单下单与库存扣减">订单下单与库存扣减.md</a>。本文供异步解耦、事件驱动扩展参考。</p>
+<p>RocketMQ 基础概念（NameServer、顺序&#x2F;事务消息）见 <a href="/2026/05/01/rocketmq-mq/" title="RocketMQ 消息中间件入门">RocketMQ 消息中间件入门</a>。</p>
 <h1 id="架构说明"><a href="#架构说明" class="headerlink" title="架构说明"></a>架构说明</h1><pre>
 <code class="mermaid">
 
@@ -847,7 +847,7 @@ flowchart LR
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-24 12:55:49" itemprop="dateModified" datetime="2026-05-24T12:55:49+08:00">2026-05-24</time>
+      <time title="修改时间：2026-05-31 23:47:37" itemprop="dateModified" datetime="2026-05-31T23:47:37+08:00">2026-05-31</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -866,7 +866,7 @@ flowchart LR
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>718</span>
+      <span>739</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -885,7 +885,7 @@ flowchart LR
     
     <div class="post-body" itemprop="articleBody">
           <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p><strong>Apache Dubbo</strong> 是 Java <strong>RPC</strong> 与服务治理框架，通过注册中心发现 <strong>Provider</strong>，支持 <strong>Triple（tri）</strong>、经典 <strong>dubbo</strong> 协议等。与 <strong>HTTP + OpenFeign</strong> 相比，更适合高频、低延迟的内部调用。</p>
-<p><strong>本仓库（cloud）当前未集成 Dubbo</strong>。服务间调用使用 <strong>OpenFeign</strong>（如 <code>cloud-order</code> → <code>cloud-stock</code>），注册发现使用 <strong>Nacos</strong>，见 <a href="./%E8%AE%A2%E5%8D%95%E4%B8%8B%E5%8D%95%E4%B8%8E%E5%BA%93%E5%AD%98%E6%89%A3%E5%87%8F.md">订单下单与库存扣减.md</a>、<a href="./%E9%9B%86%E6%88%90Nacos.md">集成Nacos.md</a>。本文供与 <strong>SCA 同栈</strong> 时扩展参考。</p>
+<p><strong>本仓库（cloud）当前未集成 Dubbo</strong>。服务间调用使用 <strong>OpenFeign</strong>（如 <code>cloud-order</code> → <code>cloud-stock</code>），注册发现使用 <strong>Nacos</strong>，见 <a href="/2026/05/17/SpringCloud/%E8%AE%A2%E5%8D%95%E4%B8%8B%E5%8D%95%E4%B8%8E%E5%BA%93%E5%AD%98%E6%89%A3%E5%87%8F/" title="订单下单与库存扣减">订单下单与库存扣减.md</a>、<a href="/2026/05/17/SpringCloud/%E9%9B%86%E6%88%90Nacos/" title="集成Nacos">集成Nacos.md</a>。本文供与 <strong>SCA 同栈</strong> 时扩展参考。</p>
 <h1 id="架构说明"><a href="#架构说明" class="headerlink" title="架构说明"></a>架构说明</h1><pre>
 <code class="mermaid">
 
@@ -915,7 +915,7 @@ flowchart LR
 <tr>
 <td>Nacos</td>
 <td>与 SCA <strong>2025.1.0.0</strong> 对齐的 <strong>3.1.x</strong> Server</td>
-<td>见 <a href="./%E9%9B%86%E6%88%90Nacos.md">集成Nacos.md</a></td>
+<td>见 <a href="/2026/05/17/SpringCloud/%E9%9B%86%E6%88%90Nacos/" title="集成Nacos">集成Nacos.md</a></td>
 </tr>
 <tr>
 <td>Dubbo BOM</td>
@@ -1103,7 +1103,7 @@ flowchart LR
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-31 22:46:43" itemprop="dateModified" datetime="2026-05-31T22:46:43+08:00">2026-05-31</time>
+      <time title="修改时间：2026-05-31 23:51:10" itemprop="dateModified" datetime="2026-05-31T23:51:10+08:00">2026-05-31</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -1141,7 +1141,7 @@ flowchart LR
     
     <div class="post-body" itemprop="articleBody">
           <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>JDBC 连接池负责<strong>复用数据库连接</strong>，避免每次请求都新建 TCP 与认证开销。本仓库（<strong>Spring Boot 4.0.6 + dynamic-datasource + MyBatis-Flex</strong>）默认使用 <strong>HikariCP</strong>；本文对比 <strong>HikariCP</strong> 与 <strong>Druid</strong>，并给出在本项目中的<strong>配置方式、监控与选型建议</strong>。</p>
-<p>前置阅读：<a href="./%E5%A4%9A%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE.md">多环境配置</a>、<a href="./%E9%9B%86%E6%88%90MyBatis-Flex%E4%B8%8E%E5%A4%9A%E6%95%B0%E6%8D%AE%E6%BA%90.md">集成MyBatis-Flex与多数据源</a>。</p>
+<p>前置阅读：<a href="/2026/05/16/springboot-profiles/" title="SpringBoot 多环境配置">多环境配置</a>、<a href="/2026/05/16/springboot-mybatis-flex/" title="SpringBoot集成MyBatis-Flex与多数据源">集成MyBatis-Flex与多数据源</a>。</p>
 <hr>
 <h1 id="一、为什么需要连接池"><a href="#一、为什么需要连接池" class="headerlink" title="一、为什么需要连接池"></a>一、为什么需要连接池</h1><table>
 <thead>
@@ -1266,14 +1266,14 @@ sequenceDiagram
 <h1 id="三、本项目落地：HikariCP（当前方案）"><a href="#三、本项目落地：HikariCP（当前方案）" class="headerlink" title="三、本项目落地：HikariCP（当前方案）"></a>三、本项目落地：HikariCP（当前方案）</h1><p>本仓库通过 <strong><a target="_blank" rel="noopener" href="https://github.com/baomidou/dynamic-datasource">dynamic-datasource</a></strong> 管理 <strong>MySQL（primary）+ PostgreSQL</strong>，<strong>未引入 Druid 依赖</strong>时框架默认 <strong>HikariCP</strong>。</p>
 <h2 id="1-依赖（已有）"><a href="#1-依赖（已有）" class="headerlink" title="1. 依赖（已有）"></a>1. 依赖（已有）</h2><figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">implementation <span class="string">&#x27;com.baomidou:dynamic-datasource-spring-boot4-starter:4.5.0&#x27;</span></span><br><span class="line">implementation <span class="string">&#x27;org.springframework.boot:spring-boot-starter-jdbc&#x27;</span></span><br><span class="line">runtimeOnly <span class="string">&#x27;com.mysql:mysql-connector-j&#x27;</span></span><br><span class="line">runtimeOnly <span class="string">&#x27;org.postgresql:postgresql&#x27;</span></span><br></pre></td></tr></table></figure>
 
-<h2 id="2-配置示例"><a href="#2-配置示例" class="headerlink" title="2. 配置示例"></a>2. 配置示例</h2><p><code>application.yaml</code>（公共池参数 + 多数据源，与 <a href="./%E9%9B%86%E6%88%90MyBatis-Flex%E4%B8%8E%E5%A4%9A%E6%95%B0%E6%8D%AE%E6%BA%90.md">集成MyBatis-Flex与多数据源</a> 一致）：</p>
+<h2 id="2-配置示例"><a href="#2-配置示例" class="headerlink" title="2. 配置示例"></a>2. 配置示例</h2><p><code>application.yaml</code>（公共池参数 + 多数据源，与 <a href="/2026/05/16/springboot-mybatis-flex/" title="SpringBoot集成MyBatis-Flex与多数据源">集成MyBatis-Flex与多数据源</a> 一致）：</p>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">datasource:</span></span><br><span class="line">    <span class="attr">dynamic:</span></span><br><span class="line">      <span class="attr">enabled:</span> <span class="literal">true</span></span><br><span class="line">      <span class="attr">primary:</span> <span class="string">mysql</span></span><br><span class="line">      <span class="attr">strict:</span> <span class="literal">false</span></span><br><span class="line">      <span class="attr">hikari:</span></span><br><span class="line">        <span class="attr">pool-name:</span> <span class="string">app-dynamic-hikari</span></span><br><span class="line">        <span class="attr">maximum-pool-size:</span> <span class="number">20</span></span><br><span class="line">        <span class="attr">minimum-idle:</span> <span class="number">5</span></span><br><span class="line">        <span class="attr">connection-timeout:</span> <span class="number">30000</span></span><br><span class="line">        <span class="attr">idle-timeout:</span> <span class="number">600000</span></span><br><span class="line">        <span class="attr">max-lifetime:</span> <span class="number">1800000</span></span><br><span class="line">        <span class="attr">keepalive-time:</span> <span class="number">300000</span></span><br><span class="line">      <span class="attr">datasource:</span></span><br><span class="line">        <span class="attr">mysql:</span></span><br><span class="line">          <span class="attr">url:</span> <span class="string">jdbc:mysql://192.168.1.22:30000/study?useUnicode=true&amp;characterEncoding=utf8&amp;serverTimezone=Asia/Shanghai</span></span><br><span class="line">          <span class="attr">username:</span> <span class="string">root</span></span><br><span class="line">          <span class="attr">password:</span> <span class="string">$&#123;MYSQL_PASSWORD:Pi=3.1415&#125;</span></span><br><span class="line">          <span class="attr">driver-class-name:</span> <span class="string">com.mysql.cj.jdbc.Driver</span></span><br><span class="line">        <span class="attr">pgsql:</span></span><br><span class="line">          <span class="attr">url:</span> <span class="string">jdbc:postgresql://192.168.1.22:30001/postgres</span></span><br><span class="line">          <span class="attr">username:</span> <span class="string">postgres</span></span><br><span class="line">          <span class="attr">password:</span> <span class="string">$&#123;PG_PASSWORD:Pi=3.1415&#125;</span></span><br><span class="line">          <span class="attr">driver-class-name:</span> <span class="string">org.postgresql.Driver</span></span><br></pre></td></tr></table></figure>
 
 <p>说明：</p>
 <ul>
 <li><strong><code>spring.datasource.dynamic.hikari.*</code></strong>：对 dynamic-datasource 下<strong>每个</strong> Hikari 池生效的全局默认（除非单库覆盖）。  </li>
 <li><strong><code>primary: mysql</code></strong>：未标注 <code>@DS</code> 时使用 MySQL。  </li>
-<li>密码建议走环境变量或 <code>application-prod.yaml</code>，勿提交仓库（见 <a href="/2026/05/16/springboot-profiles/">SpringBoot 多环境配置</a>）。</li>
+<li>密码建议走环境变量或 <code>application-prod.yaml</code>，勿提交仓库（见 <a href="/2026/05/16/springboot-profiles/" title="SpringBoot 多环境配置">SpringBoot 多环境配置</a>）。</li>
 </ul>
 <h2 id="3-代码侧切换数据源"><a href="#3-代码侧切换数据源" class="headerlink" title="3. 代码侧切换数据源"></a>3. 代码侧切换数据源</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Service</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ReportService</span> &#123;</span><br><span class="line">    <span class="meta">@DS(&quot;mysql&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">long</span> <span class="title function_">countUsers</span><span class="params">()</span> &#123; ... &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@DS(&quot;pgsql&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> List&lt;AuditRow&gt; <span class="title function_">listAudit</span><span class="params">()</span> &#123; ... &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
@@ -1324,7 +1324,7 @@ sequenceDiagram
 <h2 id="6-监控（HikariCP）"><a href="#6-监控（HikariCP）" class="headerlink" title="6. 监控（HikariCP）"></a>6. 监控（HikariCP）</h2><p>开启 Actuator 后（本项目 Admin 已集成），可查看：</p>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">management:</span></span><br><span class="line">  <span class="attr">endpoints:</span></span><br><span class="line">    <span class="attr">web:</span></span><br><span class="line">      <span class="attr">exposure:</span></span><br><span class="line">        <span class="attr">include:</span> <span class="string">health,metrics</span></span><br></pre></td></tr></table></figure>
 
-<p>关注 Micrometer 指标：<code>hikaricp.connections.active</code>、<code>hikaricp.connections.pending</code>、<code>hikaricp.connections.timeout</code>。与 <a href="./%E9%9B%86%E6%88%90SpringBootAdmin.md">集成SpringBootAdmin</a>、站内 Prometheus&#x2F;Grafana（见 <a href="/service/">服务</a>）可进一步做大盘与告警。</p>
+<p>关注 Micrometer 指标：<code>hikaricp.connections.active</code>、<code>hikaricp.connections.pending</code>、<code>hikaricp.connections.timeout</code>。与 <a href="/2026/05/16/SpringBoot/%E9%9B%86%E6%88%90SpringBootAdmin/" title="SpringBoot集成SpringBootAdmin监控">集成SpringBootAdmin</a>、站内 Prometheus&#x2F;Grafana（见 <a href="/service/">服务</a>）可进一步做大盘与告警。</p>
 <hr>
 <h1 id="四、可选方案：切换为-Druid"><a href="#四、可选方案：切换为-Druid" class="headerlink" title="四、可选方案：切换为 Druid"></a>四、可选方案：切换为 Druid</h1><p>若团队需要 <strong>慢 SQL 统计、Web 监控页、Wall 防火墙</strong>，可在本项目中改为 Druid（或<strong>仅生产</strong>启用 Druid）。</p>
 <h2 id="1-添加依赖"><a href="#1-添加依赖" class="headerlink" title="1. 添加依赖"></a>1. 添加依赖</h2><figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">implementation <span class="string">&#x27;com.alibaba:druid-spring-boot-3-starter:1.2.25&#x27;</span></span><br><span class="line"><span class="comment">// 与 dynamic-datasource 并存；版本以 Maven Central 与 Boot 4 兼容性为准</span></span><br></pre></td></tr></table></figure>
@@ -1424,15 +1424,15 @@ sequenceDiagram
 </tr>
 </thead>
 <tbody><tr>
-<td><a href="./%E9%9B%86%E6%88%90MyBatis-Flex%E4%B8%8E%E5%A4%9A%E6%95%B0%E6%8D%AE%E6%BA%90.md">集成MyBatis-Flex与多数据源</a></td>
+<td><a href="/2026/05/16/springboot-mybatis-flex/" title="SpringBoot集成MyBatis-Flex与多数据源">集成MyBatis-Flex与多数据源</a></td>
 <td>数据源与 <code>@DS</code></td>
 </tr>
 <tr>
-<td><a href="./%E5%A4%9A%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE.md">多环境配置</a></td>
+<td><a href="/2026/05/16/springboot-profiles/" title="SpringBoot 多环境配置">多环境配置</a></td>
 <td>各环境 URL&#x2F;密码</td>
 </tr>
 <tr>
-<td><a href="./%E9%9B%86%E6%88%90SpringBootAdmin.md">集成SpringBootAdmin</a></td>
+<td><a href="/2026/05/16/SpringBoot/%E9%9B%86%E6%88%90SpringBootAdmin/" title="SpringBoot集成SpringBootAdmin监控">集成SpringBootAdmin</a></td>
 <td>健康与指标</td>
 </tr>
 <tr>
@@ -1440,7 +1440,7 @@ sequenceDiagram
 <td>局域网 MySQL <code>:30000</code>、PostgreSQL <code>:30001</code></td>
 </tr>
 </tbody></table>
-<p>官方参考：<a target="_blank" rel="noopener" href="https://github.com/brettwooldridge/HikariCP">HikariCP README</a> · <a target="_blank" rel="noopener" href="https://github.com/alibaba/druid/wiki">Druid Wiki</a> · <a target="_blank" rel="noopener external nofollow noreferrer" href="https://dynamic-datasource.com/">dynamic-datasource 配置</a></p>
+<p>官方参考：<a target="_blank" rel="noopener" href="https://github.com/brettwooldridge/HikariCP">HikariCP README</a> · <a target="_blank" rel="noopener" href="https://github.com/alibaba/druid/wiki">Druid Wiki</a> · <a target="_blank" rel="noopener external nofollow noreferrer" href="https://www.kancloud.cn/tracy5546/dynamic-datasource/2264611">dynamic-datasource 配置</a></p>
 
       
     </div>
@@ -1503,7 +1503,7 @@ sequenceDiagram
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-29 22:15:02" itemprop="dateModified" datetime="2026-05-29T22:15:02+08:00">2026-05-29</time>
+      <time title="修改时间：2026-05-31 23:47:37" itemprop="dateModified" datetime="2026-05-31T23:47:37+08:00">2026-05-31</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -1522,7 +1522,7 @@ sequenceDiagram
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>762</span>
+      <span>826</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -1540,7 +1540,7 @@ sequenceDiagram
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p><strong>Spring Cloud Alibaba（SCA）</strong> 在 Spring Cloud 之上提供 <strong>Nacos、Sentinel、Seata、RocketMQ</strong> 等集成。本仓库 <strong>cloud</strong> 为 <strong>Maven 多模块</strong> 工程（非 Gradle 演示项目），已落地 <strong>Nacos、Sentinel、Seata、Gateway、OpenFeign</strong>；<strong>未</strong>引入 <strong>Dubbo、RocketMQ</strong>（见 <a href="./Dubbo.md">Dubbo.md</a>、<a href="./RocketMQ.md">RocketMQ.md</a> 作扩展阅读）。</p>
+          <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p><strong>Spring Cloud Alibaba（SCA）</strong> 在 Spring Cloud 之上提供 <strong>Nacos、Sentinel、Seata、RocketMQ</strong> 等集成。本仓库 <strong>cloud</strong> 为 <strong>Maven 多模块</strong> 工程（非 Gradle 演示项目），已落地 <strong>Nacos、Sentinel、Seata、Gateway、OpenFeign</strong>；<strong>未</strong>引入 <strong>Dubbo、RocketMQ</strong>（见 <a href="/2026/05/17/SpringCloud/Dubbo/" title="Dubbo">Dubbo.md</a>、<a href="/2026/05/17/springcloud-rocketmq/" title="Spring Cloud 集成 RocketMQ">RocketMQ.md</a> 作扩展阅读）。</p>
 <p>仓库：<a target="_blank" rel="noopener" href="https://gitee.com/my919/cloud">https://gitee.com/my919/cloud</a></p>
 <h1 id="架构说明"><a href="#架构说明" class="headerlink" title="架构说明"></a>架构说明</h1><pre>
 <code class="mermaid">
@@ -1613,7 +1613,7 @@ flowchart TB
 <td><strong>未使用</strong></td>
 </tr>
 </tbody></table>
-<p><strong>2025.1.x 重要变更</strong>：已移除 <strong>bootstrap</strong>；必须使用 <strong><code>spring.config.import</code></strong> 连接 Nacos，见 <a href="./%E9%9B%86%E6%88%90Nacos.md">集成Nacos.md</a>。</p>
+<p><strong>2025.1.x 重要变更</strong>：已移除 <strong>bootstrap</strong>；必须使用 <strong><code>spring.config.import</code></strong> 连接 Nacos，见 <a href="/2026/05/17/SpringCloud/%E9%9B%86%E6%88%90Nacos/" title="集成Nacos">集成Nacos.md</a>。</p>
 <h1 id="搭建步骤"><a href="#搭建步骤" class="headerlink" title="搭建步骤"></a>搭建步骤</h1><h2 id="1-父-POM-引入-BOM"><a href="#1-父-POM-引入-BOM" class="headerlink" title="1. 父 POM 引入 BOM"></a>1. 父 POM 引入 BOM</h2><p>根目录 <code>pom.xml</code>：</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">properties</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">spring.boot.version</span>&gt;</span>4.0.0<span class="tag">&lt;/<span class="name">spring.boot.version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">spring.cloud.version</span>&gt;</span>2025.1.0<span class="tag">&lt;/<span class="name">spring.cloud.version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">spring.cloud.alibaba.version</span>&gt;</span>2025.1.0.0<span class="tag">&lt;/<span class="name">spring.cloud.alibaba.version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">sentinel.version</span>&gt;</span>1.8.9<span class="tag">&lt;/<span class="name">sentinel.version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">properties</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">dependencyManagement</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-dependencies<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;spring.boot.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">type</span>&gt;</span>pom<span class="tag">&lt;/<span class="name">type</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">scope</span>&gt;</span>import<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.cloud<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-cloud-dependencies<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;spring.cloud.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">type</span>&gt;</span>pom<span class="tag">&lt;/<span class="name">type</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">scope</span>&gt;</span>import<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.alibaba.cloud<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-cloud-alibaba-dependencies<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;spring.cloud.alibaba.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">type</span>&gt;</span>pom<span class="tag">&lt;/<span class="name">type</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">scope</span>&gt;</span>import<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependencyManagement</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
@@ -1652,10 +1652,10 @@ flowchart TB
 <li>各服务 <code>application.yml</code>：<code>spring.config.import</code> 链  </li>
 <li>Profile：<code>application-dev.yml</code> 引入 <code>optional:nacos:...</code></li>
 </ul>
-<p>详见 <a href="./%E5%A4%9A%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE.md">多环境配置.md</a>。</p>
+<p>详见 <a href="/2026/05/17/springcloud-profiles/" title="Spring Cloud 多环境配置与 Nacos">多环境配置.md</a>。</p>
 <h2 id="4-构建与启动"><a href="#4-构建与启动" class="headerlink" title="4. 构建与启动"></a>4. 构建与启动</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mvn clean package -DskipTests</span><br><span class="line">mvn -pl cloud-stock,cloud-order,cloud-gateway -am spring-boot:run</span><br></pre></td></tr></table></figure>
 
-<p>推荐启动顺序见 <a href="./cloud.md">cloud.md</a>。</p>
+<p>推荐启动顺序见 <a href="/2026/05/17/SpringCloud/cloud/" title="cloud">cloud.md</a>。</p>
 <h1 id="本仓库已集成-vs-未集成"><a href="#本仓库已集成-vs-未集成" class="headerlink" title="本仓库已集成 vs 未集成"></a>本仓库已集成 vs 未集成</h1><table>
 <thead>
 <tr>
@@ -1667,37 +1667,37 @@ flowchart TB
 <tbody><tr>
 <td>Nacos</td>
 <td>已集成</td>
-<td><a href="./%E9%9B%86%E6%88%90Nacos.md">集成Nacos.md</a></td>
+<td><a href="/2026/05/17/SpringCloud/%E9%9B%86%E6%88%90Nacos/" title="集成Nacos">集成Nacos.md</a></td>
 </tr>
 <tr>
 <td>Sentinel</td>
 <td>已集成</td>
-<td><a href="./%E9%9B%86%E6%88%90Sentinel.md">集成Sentinel.md</a></td>
+<td><a href="/2026/05/17/SpringCloud/%E9%9B%86%E6%88%90Sentinel/" title="集成Sentinel">集成Sentinel.md</a></td>
 </tr>
 <tr>
 <td>Seata</td>
 <td>已集成（默认开）</td>
-<td><a href="./%E9%9B%86%E6%88%90Seata.md">集成Seata.md</a></td>
+<td><a href="/2026/05/17/SpringCloud/%E9%9B%86%E6%88%90Seata/" title="集成Seata">集成Seata.md</a></td>
 </tr>
 <tr>
 <td>Spring Cloud Gateway</td>
 <td>已集成</td>
-<td><a href="./%E9%9B%86%E6%88%90SpringCloudGateway.md">集成SpringCloudGateway.md</a></td>
+<td><a href="/2026/05/17/SpringCloud/%E9%9B%86%E6%88%90SpringCloudGateway/" title="集成SpringCloudGateway">集成SpringCloudGateway.md</a></td>
 </tr>
 <tr>
 <td>OpenFeign</td>
 <td>已集成（order→stock）</td>
-<td><a href="./%E8%AE%A2%E5%8D%95%E4%B8%8B%E5%8D%95%E4%B8%8E%E5%BA%93%E5%AD%98%E6%89%A3%E5%87%8F.md">订单下单与库存扣减.md</a></td>
+<td><a href="/2026/05/17/SpringCloud/%E8%AE%A2%E5%8D%95%E4%B8%8B%E5%8D%95%E4%B8%8E%E5%BA%93%E5%AD%98%E6%89%A3%E5%87%8F/" title="订单下单与库存扣减">订单下单与库存扣减.md</a></td>
 </tr>
 <tr>
 <td>Dubbo RPC</td>
 <td>未集成</td>
-<td><a href="./Dubbo.md">Dubbo.md</a></td>
+<td><a href="/2026/05/17/SpringCloud/Dubbo/" title="Dubbo">Dubbo.md</a></td>
 </tr>
 <tr>
 <td>RocketMQ</td>
 <td>未集成</td>
-<td><a href="./RocketMQ.md">RocketMQ.md</a></td>
+<td><a href="/2026/05/17/springcloud-rocketmq/" title="Spring Cloud 集成 RocketMQ">RocketMQ.md</a></td>
 </tr>
 </tbody></table>
 <h1 id="验证"><a href="#验证" class="headerlink" title="验证"></a>验证</h1><ol>
@@ -1708,7 +1708,7 @@ flowchart TB
 </ol>
 <h1 id="常见问题"><a href="#常见问题" class="headerlink" title="常见问题"></a>常见问题</h1><p><strong>Q：能否用 Boot 3.5 + SCA 2025.0.x？</strong><br>A：可以，但与本仓库 <strong>Boot 4 + SCA 2025.1.0.0</strong> 不同线；勿混 BOM。</p>
 <p><strong>Q：从 Gradle 教程迁移到本仓库？</strong><br>A：依赖写法改为 Maven；<code>build.gradle.kts</code> 中的 BOM 与上文 <code>pom.xml</code> 等价；配置仍用 <code>application.yml</code> + <code>spring.config.import</code>。</p>
-<p><strong>Q：RocketMQ &#x2F; Dubbo 如何加？</strong><br>A：参考 <a href="./RocketMQ.md">RocketMQ.md</a>、<a href="./Dubbo.md">Dubbo.md</a> 在子模块增加 starter，并单独建 DataId &#x2F; 注册配置，勿与现有 Feign 链路混淆。</p>
+<p><strong>Q：RocketMQ &#x2F; Dubbo 如何加？</strong><br>A：参考 <a href="/2026/05/17/springcloud-rocketmq/" title="Spring Cloud 集成 RocketMQ">RocketMQ.md</a>、<a href="/2026/05/17/SpringCloud/Dubbo/" title="Dubbo">Dubbo.md</a> 在子模块增加 starter，并单独建 DataId &#x2F; 注册配置，勿与现有 Feign 链路混淆。</p>
 <p><strong>Q：升级 SCA 小版本要注意什么？</strong><br>A：查 <a target="_blank" rel="noopener" href="https://github.com/alibaba/spring-cloud-alibaba/releases">GitHub Releases</a> 中 Nacos&#x2F;Seata&#x2F;Sentinel 子版本是否变化，并回归下单与 Nacos 配置拉取。</p>
 <h1 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h1><ul>
 <li><a target="_blank" rel="noopener external nofollow noreferrer" href="https://sca.aliyun.com/">SCA 中文官网</a></li>
@@ -1806,7 +1806,7 @@ flowchart TB
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-24 12:56:55" itemprop="dateModified" datetime="2026-05-24T12:56:55+08:00">2026-05-24</time>
+      <time title="修改时间：2026-05-31 23:47:37" itemprop="dateModified" datetime="2026-05-31T23:47:37+08:00">2026-05-31</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -1825,7 +1825,7 @@ flowchart TB
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>619</span>
+      <span>629</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -1982,8 +1982,8 @@ sequenceDiagram
 <p><strong>Q：回滚后 order 表仍有脏数据？</strong><br>A：查 Seata 是否启用、TC 是否连通、<code>undo_log</code> 是否已建；看 order 日志是否 commit 而非 rollback。</p>
 <p><strong>Q：Feign 超时导致不确定状态？</strong><br>A：调大 <code>spring.cloud.openfeign</code> 超时或重试策略；生产建议幂等与查询补偿。</p>
 <h1 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h1><ul>
-<li><a href="./%E9%9B%86%E6%88%90Seata.md">集成Seata.md</a></li>
-<li><a href="./%E9%9B%86%E6%88%90SpringCloudGateway.md">集成SpringCloudGateway.md</a></li>
+<li><a href="/2026/05/17/SpringCloud/%E9%9B%86%E6%88%90Seata/" title="集成Seata">集成Seata.md</a></li>
+<li><a href="/2026/05/17/SpringCloud/%E9%9B%86%E6%88%90SpringCloudGateway/" title="集成SpringCloudGateway">集成SpringCloudGateway.md</a></li>
 <li><a href="../sql/README.md">sql&#x2F;README.md</a></li>
 </ul>
 
@@ -2048,7 +2048,7 @@ sequenceDiagram
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-31 09:30:42" itemprop="dateModified" datetime="2026-05-31T09:30:42+08:00">2026-05-31</time>
+      <time title="修改时间：2026-05-31 23:47:37" itemprop="dateModified" datetime="2026-05-31T23:47:37+08:00">2026-05-31</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -2067,7 +2067,7 @@ sequenceDiagram
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>973</span>
+      <span>978</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -2188,7 +2188,7 @@ flowchart LR
 <td><code>false</code></td>
 </tr>
 </tbody></table>
-<h1 id="规则持久化（可选）"><a href="#规则持久化（可选）" class="headerlink" title="规则持久化（可选）"></a>规则持久化（可选）</h1><p>默认规则在内存；生产可通过 <code>spring.cloud.sentinel.datasource</code> 接 <strong>Nacos</strong> 等（<code>sentinel-datasource-nacos</code>）。本仓库<strong>未</strong>配置持久化，以控制台临时规则为主。与 <a href="./%E9%9B%86%E6%88%90Nacos.md">集成Nacos.md</a> 同栈时，可将流控规则 DataId 与业务配置分开管理。</p>
+<h1 id="规则持久化（可选）"><a href="#规则持久化（可选）" class="headerlink" title="规则持久化（可选）"></a>规则持久化（可选）</h1><p>默认规则在内存；生产可通过 <code>spring.cloud.sentinel.datasource</code> 接 <strong>Nacos</strong> 等（<code>sentinel-datasource-nacos</code>）。本仓库<strong>未</strong>配置持久化，以控制台临时规则为主。与 <a href="/2026/05/17/SpringCloud/%E9%9B%86%E6%88%90Nacos/" title="集成Nacos">集成Nacos.md</a> 同栈时，可将流控规则 DataId 与业务配置分开管理。</p>
 <h1 id="与其它组件的关系"><a href="#与其它组件的关系" class="headerlink" title="与其它组件的关系"></a>与其它组件的关系</h1><ul>
 <li><strong>Gateway</strong>：<code>cloud-gateway</code> 使用 Sentinel Gateway 适配，资源名多为路由 ID。  </li>
 <li><strong>Feign</strong>：<code>cloud-app</code> 等调用下游时产生独立资源名。  </li>
@@ -2815,7 +2815,7 @@ flowchart TB
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-31 22:46:55" itemprop="dateModified" datetime="2026-05-31T22:46:55+08:00">2026-05-31</time>
+      <time title="修改时间：2026-05-31 23:47:37" itemprop="dateModified" datetime="2026-05-31T23:47:37+08:00">2026-05-31</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -2834,7 +2834,7 @@ flowchart TB
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>811</span>
+      <span>826</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -2919,7 +2919,7 @@ flowchart LR
 <h1 id="常见问题"><a href="#常见问题" class="headerlink" title="常见问题"></a>常见问题</h1><p><strong>Q：504 &#x2F; 503 Service Unavailable？</strong><br>A：下游未注册到 Nacos，或网关先于下游启动。先起 stock&#x2F;order，再起 gateway；在 Nacos 服务列表确认实例健康。</p>
 <p><strong>Q：<code>GET /order/place</code> 报错？</strong><br>A：<code>place</code> 是 <strong>POST</strong> 接口；<code>GET /order/&#123;id&#125;</code> 仅匹配数字 id，避免把 <code>place</code> 当成 id。</p>
 <p><strong>Q：路径要不要 StripPrefix？</strong><br>A：本仓库各服务 Controller 带完整前缀（如 <code>/order</code>），网关 <strong>未</strong> 剥离前缀，转发路径与直连一致。</p>
-<h1 id="生产注意"><a href="#生产注意" class="headerlink" title="生产注意"></a>生产注意</h1><p>与 <a href="./cloud.md">cloud 架构总览</a> 上线清单配合使用。</p>
+<h1 id="生产注意"><a href="#生产注意" class="headerlink" title="生产注意"></a>生产注意</h1><p>与 <a href="/2026/05/17/SpringCloud/cloud/" title="cloud">cloud 架构总览</a> 上线清单配合使用。</p>
 <table>
 <thead>
 <tr>
@@ -2949,7 +2949,7 @@ flowchart LR
 </tr>
 <tr>
 <td><strong>Sentinel</strong></td>
-<td>为热点路由配 QPS&#x2F;慢调用，见 <a href="./%E9%9B%86%E6%88%90Sentinel.md">集成 Sentinel</a></td>
+<td>为热点路由配 QPS&#x2F;慢调用，见 <a href="/2026/05/17/SpringCloud/%E9%9B%86%E6%88%90Sentinel/" title="集成Sentinel">集成 Sentinel</a></td>
 </tr>
 <tr>
 <td><strong>多实例</strong></td>
@@ -2966,7 +2966,7 @@ flowchart LR
 </tbody></table>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 生产 timeout 示例（概念）</span></span><br><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">cloud:</span></span><br><span class="line">    <span class="attr">gateway:</span></span><br><span class="line">      <span class="attr">server:</span></span><br><span class="line">        <span class="attr">webflux:</span></span><br><span class="line">          <span class="attr">httpclient:</span></span><br><span class="line">            <span class="attr">connect-timeout:</span> <span class="number">3000</span></span><br><span class="line">            <span class="attr">response-timeout:</span> <span class="string">30s</span></span><br><span class="line">          <span class="attr">discovery:</span></span><br><span class="line">            <span class="attr">locator:</span></span><br><span class="line">              <span class="attr">enabled:</span> <span class="literal">false</span>   <span class="comment"># 生产建议显式 routes</span></span><br></pre></td></tr></table></figure>
 
-<p>环境变量与 Nacos import 见 <a href="/2026/05/17/springcloud-profiles/">Spring Cloud 多环境配置与 Nacos</a>。</p>
+<p>环境变量与 Nacos import 见 <a href="/2026/05/17/springcloud-profiles/" title="Spring Cloud 多环境配置与 Nacos">Spring Cloud 多环境配置与 Nacos</a>。</p>
 <h1 id="生产请求路径"><a href="#生产请求路径" class="headerlink" title="生产请求路径"></a>生产请求路径</h1><pre>
 <code class="mermaid">
 
@@ -3025,13 +3025,13 @@ flowchart LR
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">184k</span>
+    <span title="站点总字数">186k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">10:13</span>
+    <span title="站点阅读时长">10:18</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

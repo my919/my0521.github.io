@@ -28,7 +28,7 @@
 <meta property="og:description" content="MQTT 是轻量级发布&#x2F;订阅消息传输协议（OASIS MQTT v3.1.1 &#x2F; v5.0），面向低带宽与不稳定链路，常用于 IoT 与遥测。客户端连接 Broker，按 Topic 发布与订阅消息，彼此解耦。下面从「模型与作用 → 主题与通配符 → QoS 语义（原理） → 会话与遗嘱（v5 简述） → mosquitto 命令行示例 → Python paho-mqtt 示">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-05-01T04:50:19.000Z">
-<meta property="article:modified_time" content="2026-05-31T14:49:48.252Z">
+<meta property="article:modified_time" content="2026-05-31T15:47:21.956Z">
 <meta property="article:author" content="miracle">
 <meta property="article:tag" content="MQTT">
 <meta property="article:tag" content="Protocol">
@@ -168,7 +168,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%91%E5%B8%83%E8%AE%A2%E9%98%85%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.</span> <span class="nav-text">发布订阅模型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E6%A8%A1%E5%9E%8B%E4%B8%8E%E4%BD%9C%E7%94%A8%EF%BC%88%E5%8E%9F%E7%90%86%EF%BC%89"><span class="nav-number">2.</span> <span class="nav-text">一、模型与作用（原理）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E4%B8%BB%E9%A2%98%E4%B8%8E%E9%80%9A%E9%85%8D%E7%AC%A6%EF%BC%88%E4%BD%9C%E7%94%A8%EF%BC%89"><span class="nav-number">3.</span> <span class="nav-text">二、主题与通配符（作用）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81QoS%EF%BC%88%E5%8E%9F%E7%90%86%EF%BC%89"><span class="nav-number">4.</span> <span class="nav-text">三、QoS（原理）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E9%81%97%E5%98%B1%E6%B6%88%E6%81%AF%EF%BC%88Last-Will%EF%BC%8C%E6%A6%82%E5%BF%B5%EF%BC%89"><span class="nav-number">5.</span> <span class="nav-text">四、遗嘱消息（Last Will，概念）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E5%91%BD%E4%BB%A4%E8%A1%8C%E7%A4%BA%E4%BE%8B%EF%BC%88Eclipse-Mosquitto-%E5%AE%A2%E6%88%B7%E7%AB%AF%EF%BC%89"><span class="nav-number">6.</span> <span class="nav-text">五、命令行示例（Eclipse Mosquitto 客户端）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%AD%E3%80%81Python-%E7%A4%BA%E4%BE%8B%EF%BC%88paho-mqtt%EF%BC%89"><span class="nav-number">7.</span> <span class="nav-text">六、Python 示例（paho-mqtt）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%83%E3%80%81%E4%B8%8E-HTTP-%E5%AF%B9%E6%AF%94%EF%BC%88%E5%B0%8F%E7%BB%93%E8%A1%A8%EF%BC%89"><span class="nav-number">8.</span> <span class="nav-text">七、与 HTTP 对比（小结表）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%AB%E3%80%81%E5%B0%8F%E7%BB%93"><span class="nav-number">9.</span> <span class="nav-text">八、小结</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%91%E5%B8%83%E8%AE%A2%E9%98%85%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.</span> <span class="nav-text">发布订阅模型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E6%A8%A1%E5%9E%8B%E4%B8%8E%E4%BD%9C%E7%94%A8%EF%BC%88%E5%8E%9F%E7%90%86%EF%BC%89"><span class="nav-number">2.</span> <span class="nav-text">一、模型与作用（原理）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E4%B8%BB%E9%A2%98%E4%B8%8E%E9%80%9A%E9%85%8D%E7%AC%A6%EF%BC%88%E4%BD%9C%E7%94%A8%EF%BC%89"><span class="nav-number">3.</span> <span class="nav-text">二、主题与通配符（作用）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81QoS%EF%BC%88%E5%8E%9F%E7%90%86%EF%BC%89"><span class="nav-number">4.</span> <span class="nav-text">三、QoS（原理）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E9%81%97%E5%98%B1%E6%B6%88%E6%81%AF%EF%BC%88Last-Will%EF%BC%8C%E6%A6%82%E5%BF%B5%EF%BC%89"><span class="nav-number">5.</span> <span class="nav-text">四、遗嘱消息（Last Will，概念）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E5%91%BD%E4%BB%A4%E8%A1%8C%E7%A4%BA%E4%BE%8B%EF%BC%88Eclipse-Mosquitto-%E5%AE%A2%E6%88%B7%E7%AB%AF%EF%BC%89"><span class="nav-number">6.</span> <span class="nav-text">五、命令行示例（Eclipse Mosquitto 客户端）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%AD%E3%80%81Python-%E7%A4%BA%E4%BE%8B%EF%BC%88paho-mqtt%EF%BC%89"><span class="nav-number">7.</span> <span class="nav-text">六、Python 示例（paho-mqtt）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%83%E3%80%81%E4%B8%8E-%E5%AF%B9%E6%AF%94%EF%BC%88%E5%B0%8F%E7%BB%93%E8%A1%A8%EF%BC%89"><span class="nav-number">8.</span> <span class="nav-text">七、与 HTTP 对比（小结表）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%AB%E3%80%81%E5%B0%8F%E7%BB%93"><span class="nav-number">9.</span> <span class="nav-text">八、小结</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -266,7 +266,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-31 22:49:48" itemprop="dateModified" datetime="2026-05-31T22:49:48+08:00">2026-05-31</time>
+      <time title="修改时间：2026-05-31 23:47:21" itemprop="dateModified" datetime="2026-05-31T23:47:21+08:00">2026-05-31</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -285,7 +285,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>651</span>
+      <span>660</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -302,7 +302,7 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><p><strong>MQTT</strong> 是轻量级<strong>发布&#x2F;订阅</strong>消息传输协议（<strong>OASIS MQTT v3.1.1 &#x2F; v5.0</strong>），面向低带宽与不稳定链路，常用于 <strong>IoT</strong> 与遥测。客户端连接 <strong>Broker</strong>，按 <strong>Topic</strong> 发布与订阅消息，彼此<strong>解耦</strong>。下面从「<strong>模型与作用</strong> → <strong>主题与通配符</strong> → <strong>QoS 语义（原理）</strong> → <strong>会话与遗嘱（v5 简述）</strong> → <strong><code>mosquitto</code> 命令行示例</strong> → <strong>Python <code>paho-mqtt</code> 示例</strong>」顺序写清楚；传输层通常为 <a href="/2026/05/01/TCP/">TCP</a> <strong>1883</strong> 或 <strong>TLS 8883</strong>，与 <a href="/2026/05/01/HTTP/">HTTP</a> 请求&#x2F;响应模型不同。</p>
+    <div class="post-body" itemprop="articleBody"><p><strong>MQTT</strong> 是轻量级<strong>发布&#x2F;订阅</strong>消息传输协议（<strong>OASIS MQTT v3.1.1 &#x2F; v5.0</strong>），面向低带宽与不稳定链路，常用于 <strong>IoT</strong> 与遥测。客户端连接 <strong>Broker</strong>，按 <strong>Topic</strong> 发布与订阅消息，彼此<strong>解耦</strong>。下面从「<strong>模型与作用</strong> → <strong>主题与通配符</strong> → <strong>QoS 语义（原理）</strong> → <strong>会话与遗嘱（v5 简述）</strong> → <strong><code>mosquitto</code> 命令行示例</strong> → <strong>Python <code>paho-mqtt</code> 示例</strong>」顺序写清楚；传输层通常为 <a href="/2026/05/01/Protocol/TCP/" title="TCP 协议详解：连接、可靠传输与编程示例">TCP</a> <strong>1883</strong> 或 <strong>TLS 8883</strong>，与 <a href="/2026/05/01/Protocol/HTTP/" title="HTTP 详解：报文、方法、版本与 curl&#x2F;nc 示例">HTTP</a> 请求&#x2F;响应模型不同。</p>
 <h1 id="发布订阅模型"><a href="#发布订阅模型" class="headerlink" title="发布订阅模型"></a>发布订阅模型</h1><pre>
 <code class="mermaid">
 
@@ -375,7 +375,7 @@ flowchart TB
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">python sub.py &amp;</span><br><span class="line">python pub.py</span><br></pre></td></tr></table></figure>
 
 <hr>
-<h1 id="七、与-HTTP-对比（小结表）"><a href="#七、与-HTTP-对比（小结表）" class="headerlink" title="七、与 HTTP 对比（小结表）"></a>七、与 <a href="/2026/05/01/HTTP/">HTTP</a> 对比（小结表）</h1><table>
+<h1 id="七、与-对比（小结表）"><a href="#七、与-对比（小结表）" class="headerlink" title="七、与  对比（小结表）"></a>七、与 <a href="/2026/05/01/Protocol/HTTP/" title="HTTP 详解：报文、方法、版本与 curl&#x2F;nc 示例">HTTP</a> 对比（小结表）</h1><table>
 <thead>
 <tr>
 <th></th>
@@ -480,13 +480,13 @@ flowchart TB
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">184k</span>
+    <span title="站点总字数">186k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">10:13</span>
+    <span title="站点阅读时长">10:18</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

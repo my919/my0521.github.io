@@ -28,7 +28,7 @@
 <meta property="og:description" content="MongoDB 是面向文档的 NoSQL 数据库：数据以 BSON 文档形式存储，模式灵活，适合半结构化数据、快速迭代与水平扩展。下面从「定位与概念 → 核心数据模型 → 常用 CRUD → 索引与聚合 → 复制集与分片概览 → 与容器部署的关系」顺序写清楚。 复制集（Replica Set）   flowchart LR   App[应用] --&gt; P[(Primary)]   P --&amp;">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-05-01T04:25:01.000Z">
-<meta property="article:modified_time" content="2026-05-31T14:49:11.635Z">
+<meta property="article:modified_time" content="2026-05-31T15:47:21.951Z">
 <meta property="article:author" content="miracle">
 <meta property="article:tag" content="MongoDB">
 <meta name="twitter:card" content="summary">
@@ -265,7 +265,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-31 22:49:11" itemprop="dateModified" datetime="2026-05-31T22:49:11+08:00">2026-05-31</time>
+      <time title="修改时间：2026-05-31 23:47:21" itemprop="dateModified" datetime="2026-05-31T23:47:21+08:00">2026-05-31</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -284,7 +284,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>686</span>
+      <span>693</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -343,7 +343,7 @@ flowchart LR
 <td>部分场景可替代「大 JSON 存 Redis」，但内存与持久化策略不同</td>
 </tr>
 </tbody></table>
-<p>与 <a href="/2026/05/01/MySQL/">MySQL</a> 等关系库对照：需要<strong>强事务跨多表复杂 JOIN</strong> 时关系库更成熟；需要<strong>灵活文档 + 水平扩展</strong>时 <strong>MongoDB</strong> 更常见。</p>
+<p>与 <a href="/2026/05/01/MySQL/MySQL/" title="MySQL DDL 语句">MySQL</a> 等关系库对照：需要<strong>强事务跨多表复杂 JOIN</strong> 时关系库更成熟；需要<strong>灵活文档 + 水平扩展</strong>时 <strong>MongoDB</strong> 更常见。</p>
 <hr>
 <h1 id="二、安装与连接"><a href="#二、安装与连接" class="headerlink" title="二、安装与连接"></a>二、安装与连接</h1><h2 id="1-官方工具"><a href="#1-官方工具" class="headerlink" title="1. 官方工具"></a>1. 官方工具</h2><ul>
 <li><strong>文档</strong>：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://www.mongodb.com/docs/">https://www.mongodb.com/docs/</a>  </li>
@@ -355,7 +355,7 @@ flowchart LR
 <p>带认证（root 在 <strong><code>admin</code></strong> 库）：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mongosh <span class="string">&quot;mongodb://user:pass@127.0.0.1:27017/mydb?authSource=admin&quot;</span></span><br></pre></td></tr></table></figure>
 
-<p>容器一键部署见 <a href="/2026/05/01/MongoDB-Docker/">Docker 部署 MongoDB</a>。</p>
+<p>容器一键部署见 <a href="/2026/05/01/MongoDB/MongoDB-Docker/" title="Docker 部署 MongoDB">Docker 部署 MongoDB</a>。</p>
 <hr>
 <h1 id="三、常用-CRUD（mongosh-示例）"><a href="#三、常用-CRUD（mongosh-示例）" class="headerlink" title="三、常用 CRUD（mongosh 示例）"></a>三、常用 CRUD（<code>mongosh</code> 示例）</h1><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">use shop</span><br><span class="line"></span><br><span class="line"><span class="comment">// 插入</span></span><br><span class="line">db.<span class="property">products</span>.<span class="title function_">insertOne</span>(&#123; <span class="attr">name</span>: <span class="string">&quot;键盘&quot;</span>, <span class="attr">price</span>: <span class="number">299</span>, <span class="attr">tags</span>: [<span class="string">&quot;外设&quot;</span>] &#125;)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 查询</span></span><br><span class="line">db.<span class="property">products</span>.<span class="title function_">find</span>(&#123; <span class="attr">price</span>: &#123; <span class="attr">$gte</span>: <span class="number">200</span> &#125; &#125;)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 更新</span></span><br><span class="line">db.<span class="property">products</span>.<span class="title function_">updateOne</span>(</span><br><span class="line">  &#123; <span class="attr">name</span>: <span class="string">&quot;键盘&quot;</span> &#125;,</span><br><span class="line">  &#123; <span class="attr">$set</span>: &#123; <span class="attr">price</span>: <span class="number">279</span> &#125;, <span class="attr">$push</span>: &#123; <span class="attr">tags</span>: <span class="string">&quot;促销&quot;</span> &#125; &#125;</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 删除</span></span><br><span class="line">db.<span class="property">products</span>.<span class="title function_">deleteOne</span>(&#123; <span class="attr">name</span>: <span class="string">&quot;键盘&quot;</span> &#125;)</span><br></pre></td></tr></table></figure>
 
@@ -436,13 +436,13 @@ flowchart LR
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">184k</span>
+    <span title="站点总字数">186k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">10:13</span>
+    <span title="站点阅读时长">10:18</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

@@ -28,7 +28,7 @@
 <meta property="og:description" content="HTTP（Hypertext Transfer Protocol）是 Web 的应用层协议：基于请求 &#x2F; 响应模型，在语义层使用方法、URI、首部与可选正文表达操作。下面从「无状态与资源模型 → 报文结构原理 → 方法与幂等 → 状态码 → HTTP&#x2F;1.1 与 HTTP&#x2F;2 → curl 与原始报文示例」顺序写清楚；传输层默认依赖 TCP，安全传输见 HTTPS，全">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-05-01T04:46:50.000Z">
-<meta property="article:modified_time" content="2026-05-31T14:47:02.076Z">
+<meta property="article:modified_time" content="2026-05-31T15:47:21.955Z">
 <meta property="article:author" content="miracle">
 <meta property="article:tag" content="HTTP">
 <meta property="article:tag" content="Protocol">
@@ -266,7 +266,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-31 22:47:02" itemprop="dateModified" datetime="2026-05-31T22:47:02+08:00">2026-05-31</time>
+      <time title="修改时间：2026-05-31 23:47:21" itemprop="dateModified" datetime="2026-05-31T23:47:21+08:00">2026-05-31</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -285,7 +285,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>699</span>
+      <span>729</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -302,7 +302,7 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><p><strong>HTTP</strong>（<strong>Hypertext Transfer Protocol</strong>）是 <strong>Web</strong> 的应用层协议：基于<strong>请求 &#x2F; 响应</strong>模型，在语义层使用<strong>方法、URI、首部与可选正文</strong>表达操作。下面从「<strong>无状态与资源模型</strong> → <strong>报文结构原理</strong> → <strong>方法与幂等</strong> → <strong>状态码</strong> → <strong>HTTP&#x2F;1.1 与 HTTP&#x2F;2</strong> → <strong>curl 与原始报文示例</strong>」顺序写清楚；传输层默认依赖 <a href="/2026/05/01/TCP/">TCP</a>，安全传输见 <a href="/2026/05/01/HTTPS/">HTTPS</a>，全双工见 <a href="/2026/05/01/WebSocket/">WebSocket</a>，<strong>HTTP&#x2F;3</strong> 见 <a href="/2026/05/01/QUIC/">QUIC</a>。</p>
+    <div class="post-body" itemprop="articleBody"><p><strong>HTTP</strong>（<strong>Hypertext Transfer Protocol</strong>）是 <strong>Web</strong> 的应用层协议：基于<strong>请求 &#x2F; 响应</strong>模型，在语义层使用<strong>方法、URI、首部与可选正文</strong>表达操作。下面从「<strong>无状态与资源模型</strong> → <strong>报文结构原理</strong> → <strong>方法与幂等</strong> → <strong>状态码</strong> → <strong>HTTP&#x2F;1.1 与 HTTP&#x2F;2</strong> → <strong>curl 与原始报文示例</strong>」顺序写清楚；传输层默认依赖 <a href="/2026/05/01/Protocol/TCP/" title="TCP 协议详解：连接、可靠传输与编程示例">TCP</a>，安全传输见 <a href="/2026/05/01/Protocol/HTTPS/" title="HTTPS 详解：TLS 握手、证书与 openssl&#x2F;curl 示例">HTTPS</a>，全双工见 <a href="/2026/05/01/Protocol/WebSocket/" title="WebSocket 详解：握手、帧与 Python 示例">WebSocket</a>，<strong>HTTP&#x2F;3</strong> 见 <a href="/2026/05/01/Protocol/QUIC/" title="QUIC 详解：基于 UDP 的可靠传输、TLS 集成与 HTTP&#x2F;3">QUIC</a>。</p>
 <h1 id="请求响应模型"><a href="#请求响应模型" class="headerlink" title="请求响应模型"></a>请求响应模型</h1><pre>
 <code class="mermaid">
 
@@ -317,7 +317,7 @@ sequenceDiagram
 </pre>
 
 <hr>
-<h1 id="一、无状态与资源模型（原理）"><a href="#一、无状态与资源模型（原理）" class="headerlink" title="一、无状态与资源模型（原理）"></a>一、无状态与资源模型（原理）</h1><p><strong>HTTP</strong> 本身<strong>无状态</strong>：服务器默认不记住「上一次请求」；会话常靠 <strong>Cookie</strong>、<strong>Token</strong>、服务端会话存储实现。<strong>REST</strong> 风格强调用 <strong>URI</strong> 表示<strong>资源</strong>，用 <strong>HTTP 方法</strong>表达操作（与 <a href="/2026/05/01/RPC/">RPC</a> 风格对照）。</p>
+<h1 id="一、无状态与资源模型（原理）"><a href="#一、无状态与资源模型（原理）" class="headerlink" title="一、无状态与资源模型（原理）"></a>一、无状态与资源模型（原理）</h1><p><strong>HTTP</strong> 本身<strong>无状态</strong>：服务器默认不记住「上一次请求」；会话常靠 <strong>Cookie</strong>、<strong>Token</strong>、服务端会话存储实现。<strong>REST</strong> 风格强调用 <strong>URI</strong> 表示<strong>资源</strong>，用 <strong>HTTP 方法</strong>表达操作（与 <a href="/2026/05/01/Protocol/RPC/" title="RPC 概念详解：原理、形态与 JSON-RPC &#x2F; curl 示例">RPC</a> 风格对照）。</p>
 <hr>
 <h1 id="二、报文结构（作用）"><a href="#二、报文结构（作用）" class="headerlink" title="二、报文结构（作用）"></a>二、报文结构（作用）</h1><h2 id="1-请求"><a href="#1-请求" class="headerlink" title="1. 请求"></a>1. 请求</h2><figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">GET</span> <span class="string">/path</span> <span class="meta">HTTP/1.1</span></span><br><span class="line"><span class="attribute">Host</span><span class="punctuation">: </span>example.com</span><br><span class="line"><span class="attribute">User-Agent</span><span class="punctuation">: </span>demo</span><br><span class="line"><span class="attribute">Accept</span><span class="punctuation">: </span>*/*</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
@@ -407,7 +407,7 @@ sequenceDiagram
 <h1 id="五、HTTP-1-1-与-HTTP-2（演进）"><a href="#五、HTTP-1-1-与-HTTP-2（演进）" class="headerlink" title="五、HTTP&#x2F;1.1 与 HTTP&#x2F;2（演进）"></a>五、HTTP&#x2F;1.1 与 HTTP&#x2F;2（演进）</h1><ul>
 <li><strong>HTTP&#x2F;1.1</strong>（<strong>RFC 9112</strong>）：文本形态；<strong>Keep-Alive</strong> 复用连接；<strong>队头阻塞</strong>限制并发效率。  </li>
 <li><strong>HTTP&#x2F;2</strong>（<strong>RFC 9113</strong>）：二进制<strong>帧</strong>；<strong>单连接多路复用</strong>；<strong>HPACK</strong> 压缩首部；浏览器场景几乎总与 <strong>TLS</strong> 同用。  </li>
-<li><strong>HTTP&#x2F;3</strong>（<strong>RFC 9114</strong>）：基于 <a href="/2026/05/01/QUIC/">QUIC</a>（<a href="/2026/05/01/UDP/">UDP</a>）。</li>
+<li><strong>HTTP&#x2F;3</strong>（<strong>RFC 9114</strong>）：基于 <a href="/2026/05/01/Protocol/QUIC/" title="QUIC 详解：基于 UDP 的可靠传输、TLS 集成与 HTTP&#x2F;3">QUIC</a>（<a href="/2026/05/01/Protocol/UDP/" title="UDP 协议详解：数据报语义、MTU 与示例代码">UDP</a>）。</li>
 </ul>
 <hr>
 <h1 id="六、示例：curl-观察报文"><a href="#六、示例：curl-观察报文" class="headerlink" title="六、示例：curl 观察报文"></a>六、示例：<code>curl</code> 观察报文</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -v --http1.1 https://example.com/ -o /dev/null</span><br></pre></td></tr></table></figure>
@@ -447,7 +447,7 @@ sequenceDiagram
 </tr>
 <tr>
 <td>延伸</td>
-<td><a href="/2026/05/01/HTTPS/">HTTPS</a> · <a href="/2026/05/01/WebSocket/">WebSocket</a> · <a href="/2026/05/01/QUIC/">QUIC</a></td>
+<td><a href="/2026/05/01/Protocol/HTTPS/" title="HTTPS 详解：TLS 握手、证书与 openssl&#x2F;curl 示例">HTTPS</a> · <a href="/2026/05/01/Protocol/WebSocket/" title="WebSocket 详解：握手、帧与 Python 示例">WebSocket</a> · <a href="/2026/05/01/Protocol/QUIC/" title="QUIC 详解：基于 UDP 的可靠传输、TLS 集成与 HTTP&#x2F;3">QUIC</a></td>
 </tr>
 </tbody></table>
 <p>缓存与条件请求（<strong><code>ETag</code></strong>、<strong><code>If-None-Match</code></strong>）见 <strong>RFC 9110</strong> 缓存章节。</p>
@@ -506,13 +506,13 @@ sequenceDiagram
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">184k</span>
+    <span title="站点总字数">186k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">10:13</span>
+    <span title="站点阅读时长">10:18</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动
