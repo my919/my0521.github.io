@@ -174,18 +174,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">184</span>
+          <span class="site-state-item-count">192</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">38</span>
+        <span class="site-state-item-count">39</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">107</span>
+        <span class="site-state-item-count">108</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -213,6 +213,237 @@
     </div>
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/17/SpringCloud/%E9%9B%86%E6%88%90SpringCloudGateway/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/05/17/SpringCloud/%E9%9B%86%E6%88%90SpringCloudGateway/" class="post-title-link" itemprop="url">集成SpringCloudGateway</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-05-17 10:10:00" itemprop="dateCreated datePublished" datetime="2026-05-17T10:10:00+08:00">2026-05-17</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-05-31 23:47:37" itemprop="dateModified" datetime="2026-05-31T23:47:37+08:00">2026-05-31</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/SpringCloud/" itemprop="url" rel="index"><span itemprop="name">SpringCloud</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>826</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>3 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p><strong>cloud-gateway</strong> 基于 <strong>Spring Cloud Gateway</strong>（WebFlux），端口 <strong>9000</strong>，作为对外统一入口。路由使用 <code>lb://服务名</code> 经 <strong>Spring Cloud LoadBalancer</strong> 从 Nacos 取实例；同时启用 <strong>discovery locator</strong> 可按服务名自动生成路由。</p>
+<h1 id="架构"><a href="#架构" class="headerlink" title="架构"></a>架构</h1><pre>
+<code class="mermaid">
+
+flowchart LR
+  C[Client] --&gt; G[Gateway :9000]
+  G --&gt;|&#x2F;user&#x2F;**| U[cloud-user]
+  G --&gt;|&#x2F;web&#x2F;**| A[cloud-app]
+  G --&gt;|&#x2F;order&#x2F;**| O[cloud-order]
+  G --&gt;|&#x2F;stock&#x2F;**| S[cloud-stock]
+  G --&gt; N[(Nacos)]
+  U --&gt; N
+  O --&gt; N
+</code>
+</pre>
+
+<h1 id="Maven-依赖"><a href="#Maven-依赖" class="headerlink" title="Maven 依赖"></a>Maven 依赖</h1><p><code>cloud-gateway/pom.xml</code> 核心：</p>
+<ul>
+<li><code>spring-cloud-starter-gateway-server-webflux</code>（或项目内等价 Gateway 起步依赖）</li>
+<li><code>spring-cloud-starter-loadbalancer</code></li>
+<li><code>spring-cloud-starter-alibaba-nacos-discovery</code></li>
+<li>Sentinel Gateway 适配（与 <code>application-shared.yml</code> 中 <code>spring.cloud.sentinel.enabled</code> 配合）</li>
+</ul>
+<h1 id="路由配置"><a href="#路由配置" class="headerlink" title="路由配置"></a>路由配置</h1><p><code>cloud-gateway/src/main/resources/application.yml</code>：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">cloud:</span></span><br><span class="line">    <span class="attr">gateway:</span></span><br><span class="line">      <span class="attr">discovery:</span></span><br><span class="line">        <span class="attr">locator:</span></span><br><span class="line">          <span class="attr">enabled:</span> <span class="literal">true</span></span><br><span class="line">          <span class="attr">lower-case-service-id:</span> <span class="literal">true</span></span><br><span class="line">      <span class="attr">server:</span></span><br><span class="line">        <span class="attr">webflux:</span></span><br><span class="line">          <span class="attr">routes:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">id:</span> <span class="string">cloud-app</span></span><br><span class="line">              <span class="attr">uri:</span> <span class="string">lb://cloud-app</span></span><br><span class="line">              <span class="attr">predicates:</span></span><br><span class="line">                <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Path</span></span><br><span class="line">                  <span class="attr">args:</span></span><br><span class="line">                    <span class="attr">pattern:</span> <span class="string">/web/**</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">id:</span> <span class="string">cloud-user</span></span><br><span class="line">              <span class="attr">uri:</span> <span class="string">lb://cloud-user</span></span><br><span class="line">              <span class="attr">predicates:</span></span><br><span class="line">                <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Path</span></span><br><span class="line">                  <span class="attr">args:</span></span><br><span class="line">                    <span class="attr">pattern:</span> <span class="string">/user/**</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">id:</span> <span class="string">cloud-order</span></span><br><span class="line">              <span class="attr">uri:</span> <span class="string">lb://cloud-order</span></span><br><span class="line">              <span class="attr">predicates:</span></span><br><span class="line">                <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Path</span></span><br><span class="line">                  <span class="attr">args:</span></span><br><span class="line">                    <span class="attr">pattern:</span> <span class="string">/order/**</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">id:</span> <span class="string">cloud-stock</span></span><br><span class="line">              <span class="attr">uri:</span> <span class="string">lb://cloud-stock</span></span><br><span class="line">              <span class="attr">predicates:</span></span><br><span class="line">                <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Path</span></span><br><span class="line">                  <span class="attr">args:</span></span><br><span class="line">                    <span class="attr">pattern:</span> <span class="string">/stock/**</span></span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th>路径前缀</th>
+<th>目标服务</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>/web/**</code></td>
+<td>cloud-app</td>
+<td><code>GET /web/...</code></td>
+</tr>
+<tr>
+<td><code>/user/**</code></td>
+<td>cloud-user</td>
+<td><code>GET /user/...</code></td>
+</tr>
+<tr>
+<td><code>/order/**</code></td>
+<td>cloud-order</td>
+<td><code>POST /order/place</code></td>
+</tr>
+<tr>
+<td><code>/stock/**</code></td>
+<td>cloud-stock</td>
+<td><code>GET /stock/goods/1</code></td>
+</tr>
+</tbody></table>
+<p><strong>注意</strong>：直连服务 Swagger 用 <code>http://host:8003/swagger-ui.html</code>；经网关访问文档需额外路由或直连端口（本仓库推荐联调 API 走 <strong>9000</strong>，文档开发时直连各服务端口）。</p>
+<h1 id="配置-import"><a href="#配置-import" class="headerlink" title="配置 import"></a>配置 import</h1><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">config:</span></span><br><span class="line">    <span class="attr">import:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">optional:classpath:application-shared.yml</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">optional:classpath:application-sentinel-client.yml</span></span><br></pre></td></tr></table></figure>
+
+<p>Profile 的 <code>application-dev.yml</code> 再引入 <code>optional:nacos:application.yml</code>。</p>
+<h1 id="验证"><a href="#验证" class="headerlink" title="验证"></a>验证</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 商品查询（经网关）</span></span><br><span class="line">curl -s <span class="string">&quot;http://127.0.0.1:9000/stock/goods/1&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 下单（JSON 文件避免 PowerShell 转义问题）</span></span><br><span class="line">curl.exe -s -X POST <span class="string">&quot;http://127.0.0.1:9000/order/place&quot;</span> ^</span><br><span class="line">  -H <span class="string">&quot;Content-Type: application/json&quot;</span> ^</span><br><span class="line">  -d <span class="string">&quot;@sql/place-order-body.json&quot;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$body</span> = <span class="built_in">Get-Content</span> <span class="string">&quot;sql\place-order-body.json&quot;</span> <span class="literal">-Raw</span></span><br><span class="line"><span class="built_in">Invoke-RestMethod</span> <span class="literal">-Method</span> Post <span class="literal">-Uri</span> <span class="string">&quot;http://127.0.0.1:9000/order/place&quot;</span> `</span><br><span class="line">  <span class="literal">-ContentType</span> <span class="string">&quot;application/json&quot;</span> <span class="literal">-Body</span> <span class="variable">$body</span></span><br></pre></td></tr></table></figure>
+
+<p>成功时 <code>code</code> 为 <code>0</code>；库存不足等业务失败常为 <code>code: 1</code>（见订单专题）。</p>
+<h1 id="常见问题"><a href="#常见问题" class="headerlink" title="常见问题"></a>常见问题</h1><p><strong>Q：504 &#x2F; 503 Service Unavailable？</strong><br>A：下游未注册到 Nacos，或网关先于下游启动。先起 stock&#x2F;order，再起 gateway；在 Nacos 服务列表确认实例健康。</p>
+<p><strong>Q：<code>GET /order/place</code> 报错？</strong><br>A：<code>place</code> 是 <strong>POST</strong> 接口；<code>GET /order/&#123;id&#125;</code> 仅匹配数字 id，避免把 <code>place</code> 当成 id。</p>
+<p><strong>Q：路径要不要 StripPrefix？</strong><br>A：本仓库各服务 Controller 带完整前缀（如 <code>/order</code>），网关 <strong>未</strong> 剥离前缀，转发路径与直连一致。</p>
+<h1 id="生产注意"><a href="#生产注意" class="headerlink" title="生产注意"></a>生产注意</h1><p>与 <a href="/2026/05/17/SpringCloud/cloud/" title="cloud">cloud 架构总览</a> 上线清单配合使用。</p>
+<table>
+<thead>
+<tr>
+<th>项</th>
+<th>建议</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>唯一公网入口</strong></td>
+<td>仅暴露 <strong>9000</strong>（或前置 Caddy&#x2F;HAProxy）；业务 <strong>8001–8004</strong> 不对公网</td>
+</tr>
+<tr>
+<td><strong><code>discovery.locator</code></strong></td>
+<td>生产宜<strong>关闭</strong>或严格限制，避免 Nacos 新服务被自动暴露</td>
+</tr>
+<tr>
+<td><strong>HTTPS &#x2F; 鉴权</strong></td>
+<td>TLS 在边缘终结；JWT 等用 <strong>GlobalFilter</strong> 统一验签</td>
+</tr>
+<tr>
+<td><strong>超时</strong></td>
+<td>配置 <code>httpclient.response-timeout</code>，与 Feign、客户端超时<strong>逐层对齐</strong></td>
+</tr>
+<tr>
+<td><strong>重试</strong></td>
+<td><strong><code>POST /order/place</code> 等非幂等接口</strong>禁止盲目 Retry</td>
+</tr>
+<tr>
+<td><strong>Sentinel</strong></td>
+<td>为热点路由配 QPS&#x2F;慢调用，见 <a href="/2026/05/17/SpringCloud/%E9%9B%86%E6%88%90Sentinel/" title="集成Sentinel">集成 Sentinel</a></td>
+</tr>
+<tr>
+<td><strong>多实例</strong></td>
+<td>Gateway 无状态，≥2 副本 + readiness；<strong>最后启动</strong>（下游已在 Nacos）</td>
+</tr>
+<tr>
+<td><strong>可观测</strong></td>
+<td>SkyWalking Agent、Prometheus <code>gateway.requests</code>、访问日志 GlobalFilter</td>
+</tr>
+<tr>
+<td><strong>Swagger&#x2F;Actuator</strong></td>
+<td>生产勿经网关暴露；或 IP 白名单</td>
+</tr>
+</tbody></table>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 生产 timeout 示例（概念）</span></span><br><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">cloud:</span></span><br><span class="line">    <span class="attr">gateway:</span></span><br><span class="line">      <span class="attr">server:</span></span><br><span class="line">        <span class="attr">webflux:</span></span><br><span class="line">          <span class="attr">httpclient:</span></span><br><span class="line">            <span class="attr">connect-timeout:</span> <span class="number">3000</span></span><br><span class="line">            <span class="attr">response-timeout:</span> <span class="string">30s</span></span><br><span class="line">          <span class="attr">discovery:</span></span><br><span class="line">            <span class="attr">locator:</span></span><br><span class="line">              <span class="attr">enabled:</span> <span class="literal">false</span>   <span class="comment"># 生产建议显式 routes</span></span><br></pre></td></tr></table></figure>
+
+<p>环境变量与 Nacos import 见 <a href="/2026/05/17/springcloud-profiles/" title="Spring Cloud 多环境配置与 Nacos">Spring Cloud 多环境配置与 Nacos</a>。</p>
+<h1 id="生产请求路径"><a href="#生产请求路径" class="headerlink" title="生产请求路径"></a>生产请求路径</h1><pre>
+<code class="mermaid">
+
+flowchart LR
+  C[Client] --&gt; LB[Caddy&#x2F;HAProxy]
+  LB --&gt; GW[Gateway :9000]
+  GW --&gt; S[Sentinel 规则]
+  GW --&gt;|lb:&#x2F;&#x2F;| O[cloud-order]
+  GW --&gt;|lb:&#x2F;&#x2F;| T[cloud-stock]
+  O --&gt; N[(Nacos 解析实例)]
+</code>
+</pre>
+
+<h1 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h1><ul>
+<li><a target="_blank" rel="noopener external nofollow noreferrer" href="https://docs.spring.io/spring-cloud-gateway/reference/">Spring Cloud Gateway 参考文档</a></li>
+<li><a target="_blank" rel="noopener external nofollow noreferrer" href="https://docs.spring.io/spring-cloud-commons/reference/spring-cloud-commons/loadbalancer.html">Spring Cloud LoadBalancer</a></li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -3738,161 +3969,8 @@ flowchart TD
 
 
 
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/16/SpringBoot/%E5%85%A8%E5%B1%80%E6%9E%9A%E4%B8%BE%E4%B8%8E%E5%AD%97%E5%85%B8API/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="miracle">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="my">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | my">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/05/16/SpringBoot/%E5%85%A8%E5%B1%80%E6%9E%9A%E4%B8%BE%E4%B8%8E%E5%AD%97%E5%85%B8API/" class="post-title-link" itemprop="url">SpringBoot全局枚举与字典API</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2026-05-16 10:30:00" itemprop="dateCreated datePublished" datetime="2026-05-16T10:30:00+08:00">2026-05-16</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-31 22:46:35" itemprop="dateModified" datetime="2026-05-31T22:46:35+08:00">2026-05-31</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/SpringBoot/" itemprop="url" rel="index"><span itemprop="name">SpringBoot</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>311</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>1 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><ul>
-<li>数据库存 <strong>数字 code</strong></li>
-<li>JSON 出入参为 <strong><code>&#123; &quot;code&quot;, &quot;desc&quot; &#125;</code></strong></li>
-<li>前端下拉字典统一走 <strong><code>/api/enums</code></strong></li>
-</ul>
-<h1 id="枚举序列化流程"><a href="#枚举序列化流程" class="headerlink" title="枚举序列化流程"></a>枚举序列化流程</h1><pre>
-<code class="mermaid">
-
-flowchart LR
-  DB[(DB 存 code INT)] --&gt; MF[MyBatis-Flex @EnumValue]
-  MF --&gt; Svc[Service 实体]
-  Svc --&gt; J[Jackson BaseEnum 模块]
-  J --&gt; JSON[&quot;JSON code+desc&quot;]
-  JSON --&gt; FE[前端 &#x2F;api&#x2F;enums 字典]
-</code>
-</pre>
-
-<h1 id="搭建步骤"><a href="#搭建步骤" class="headerlink" title="搭建步骤"></a>搭建步骤</h1><h2 id="1-定义-BaseEnum"><a href="#1-定义-BaseEnum" class="headerlink" title="1. 定义 BaseEnum"></a>1. 定义 <code>BaseEnum</code></h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">BaseEnum</span> &#123;</span><br><span class="line">    Integer <span class="title function_">getCode</span><span class="params">()</span>;</span><br><span class="line">    String <span class="title function_">getDesc</span><span class="params">()</span>;</span><br><span class="line">    <span class="comment">// getByCode / getByDesc 静态工具</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="2-实现业务枚举"><a href="#2-实现业务枚举" class="headerlink" title="2. 实现业务枚举"></a>2. 实现业务枚举</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">enum</span> <span class="title class_">UserStatusEnum</span> <span class="keyword">implements</span> <span class="title class_">BaseEnum</span> &#123;</span><br><span class="line">    NORMAL(<span class="number">1</span>, <span class="string">&quot;正常&quot;</span>),</span><br><span class="line">    DISABLED(<span class="number">0</span>, <span class="string">&quot;停用&quot;</span>);</span><br><span class="line">    <span class="meta">@EnumValue</span>  <span class="comment">// MyBatis-Flex：入库字段</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> Integer <span class="title function_">getCode</span><span class="params">()</span> &#123; <span class="keyword">return</span> code; &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><code>mybatis-flex.type-enums-package: org.my919.springboot.enums</code></p>
-<h2 id="3-注册表（唯一入口）"><a href="#3-注册表（唯一入口）" class="headerlink" title="3. 注册表（唯一入口）"></a>3. 注册表（唯一入口）</h2><p><code>BaseEnumRegistry.DESCRIPTORS</code>：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">new</span> <span class="title class_">EnumDescriptor</span>(<span class="string">&quot;userStatus&quot;</span>, UserStatusEnum.class, <span class="string">&quot;用户账号状态&quot;</span>),</span><br><span class="line"><span class="keyword">new</span> <span class="title class_">EnumDescriptor</span>(<span class="string">&quot;commonStatus&quot;</span>, CommonStatusEnum.class, <span class="string">&quot;通用启用/停用&quot;</span>)</span><br></pre></td></tr></table></figure>
-
-<p>新增枚举 <strong>只改此处</strong>，Jackson 与字典 API 自动同步。</p>
-<h2 id="4-Jackson-配置"><a href="#4-Jackson-配置" class="headerlink" title="4. Jackson 配置"></a>4. Jackson 配置</h2><ul>
-<li><code>BaseEnumJsonSerializer</code>：序列化为 <code>&#123;code, desc&#125;</code></li>
-<li><code>BaseEnumCodeDeserializer</code>：反序列化支持数字、字符串、常量名、<code>&#123;code,desc&#125;</code></li>
-<li><code>EnumJacksonConfiguration</code>：<code>JsonMapperBuilderCustomizer</code> 按注册表注册</li>
-</ul>
-<h2 id="5-字典-API"><a href="#5-字典-API" class="headerlink" title="5. 字典 API"></a>5. 字典 API</h2><table>
-<thead>
-<tr>
-<th>类</th>
-<th>路径</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><code>EnumCatalogService</code></td>
-<td>组装选项列表</td>
-</tr>
-<tr>
-<td><code>EnumController</code></td>
-<td><code>/api/enums</code>、<code>/api/enums/catalog</code>、<code>/api/enums/&#123;key&#125;</code></td>
-</tr>
-</tbody></table>
-<p>选项结构：<code>EnumItemVo</code> → <code>code</code>、<code>desc</code>、<code>name</code>（枚举常量名）。</p>
-<h2 id="6-实体字段"><a href="#6-实体字段" class="headerlink" title="6. 实体字段"></a>6. 实体字段</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// SysUser.java</span></span><br><span class="line"><span class="keyword">private</span> UserStatusEnum status;</span><br></pre></td></tr></table></figure>
-
-<h1 id="验证"><a href="#验证" class="headerlink" title="验证"></a>验证</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">curl http://localhost:8082/api/enums</span><br><span class="line">curl http://localhost:8082/api/enums/userStatus</span><br></pre></td></tr></table></figure>
-
-<p>非法枚举值在 JSON 反序列化时由 <code>GlobalExceptionHandler</code> 返回 400。</p>
-<h1 id="相关文件"><a href="#相关文件" class="headerlink" title="相关文件"></a>相关文件</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">enums/BaseEnum.java</span><br><span class="line">enums/BaseEnumRegistry.java</span><br><span class="line">enums/jackson/*</span><br><span class="line">config/EnumJacksonConfiguration.java</span><br><span class="line">controller/EnumController.java</span><br><span class="line">service/EnumCatalogService.java</span><br></pre></td></tr></table></figure>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
   <nav class="pagination">
-    <a class="extend prev" rel="prev" title="上一页" aria-label="上一页" href="/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/19/">19</a><a class="extend next" rel="next" title="下一页" aria-label="下一页" href="/page/3/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" title="上一页" aria-label="上一页" href="/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/20/">20</a><a class="extend next" rel="next" title="下一页" aria-label="下一页" href="/page/3/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 </div>
@@ -3914,13 +3992,13 @@ flowchart LR
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">186k</span>
+    <span title="站点总字数">195k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">10:18</span>
+    <span title="站点阅读时长">10:49</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

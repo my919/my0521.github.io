@@ -174,18 +174,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">184</span>
+          <span class="site-state-item-count">192</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">38</span>
+        <span class="site-state-item-count">39</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">107</span>
+        <span class="site-state-item-count">108</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -213,6 +213,215 @@
     </div>
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/MongoDB/MongoDB-Docker/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/05/01/MongoDB/MongoDB-Docker/" class="post-title-link" itemprop="url">Docker 部署 MongoDB</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-05-01 20:35:17" itemprop="dateCreated datePublished" datetime="2026-05-01T20:35:17+08:00">2026-05-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-05-04 11:40:01" itemprop="dateModified" datetime="2026-05-04T11:40:01+08:00">2026-05-04</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/MongoDB/" itemprop="url" rel="index"><span itemprop="name">MongoDB</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>1.4k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>5 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>在 <strong>Docker</strong> 中运行 <strong>MongoDB</strong>，适合本地开发、与 <strong>Compose</strong> 编排其它服务、或在 <strong>Kubernetes</strong> 中单实例部署。下文给出<strong>镜像选型</strong>、<strong>一条命令起容器</strong>、<strong>Compose 一键起栈</strong>与<strong>一份多文档 K8s 清单</strong>；密码与数据卷请按环境自行替换，勿把生产密钥提交进仓库。</p>
+<hr>
+<h1 id="一、前置条件"><a href="#一、前置条件" class="headerlink" title="一、前置条件"></a>一、前置条件</h1><p>本机已安装 <strong><code>docker</code></strong>，并能使用 <strong><code>docker compose</code></strong>（<strong>Compose V2</strong> 插件，命令为 <strong><code>docker compose</code></strong>；若仍使用旧版独立程序，则将下文中的 <strong><code>docker compose</code></strong> 换成 <strong><code>docker-compose</code></strong>）。</p>
+<p>验证：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker version</span><br><span class="line">docker compose version</span><br></pre></td></tr></table></figure>
+
+<p>满足即可，与宿主机操作系统无关。</p>
+<hr>
+<h1 id="二、MongoDB-镜像选择"><a href="#二、MongoDB-镜像选择" class="headerlink" title="二、MongoDB 镜像选择"></a>二、MongoDB 镜像选择</h1><h2 id="1-官方镜像（推荐）"><a href="#1-官方镜像（推荐）" class="headerlink" title="1. 官方镜像（推荐）"></a>1. 官方镜像（推荐）</h2><ul>
+<li><strong>仓库</strong>：<strong><code>mongo</code></strong>（Docker Hub 官方库，由 <strong>MongoDB Inc.</strong> 维护）。  </li>
+<li><strong>常用标签</strong>：  <ul>
+<li><strong><code>mongo:7.0</code></strong>：<strong>7.x</strong> 稳定线，驱动与工具链成熟。  </li>
+<li><strong><code>mongo:8.0</code></strong> 或 <strong><code>mongo:latest</code></strong>：较新大版本（以 <a target="_blank" rel="noopener external nofollow noreferrer" href="https://hub.docker.com/_/mongo/tags">Docker Hub mongo tags</a> 为准）。</li>
+</ul>
+</li>
+<li><strong>生产建议</strong>：固定小版本标签（如 <strong><code>mongo:7.0.15</code></strong>）或记录 <strong>digest</strong>，避免 <strong><code>latest</code></strong> 漂移导致行为变化。</li>
+</ul>
+<h2 id="2-变体说明"><a href="#2-变体说明" class="headerlink" title="2. 变体说明"></a>2. 变体说明</h2><table>
+<thead>
+<tr>
+<th>需求</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>认证与 root</strong></td>
+<td>同时设置 <strong><code>MONGO_INITDB_ROOT_USERNAME</code></strong>、<strong><code>MONGO_INITDB_ROOT_PASSWORD</code></strong> 时启用<strong>超级用户</strong>；连接串中 <strong><code>authSource=admin</code></strong> 常指向管理库。</td>
+</tr>
+<tr>
+<td><strong>ARM64</strong>（Apple Silicon 等）</td>
+<td>官方 <strong><code>mongo</code></strong> 多架构镜像一般可直接拉取；若某标签缺架构，换标签或查 Hub <strong>OS&#x2F;ARCH</strong>。</td>
+</tr>
+<tr>
+<td><strong>极简&#x2F;定制</strong></td>
+<td>社区有 <strong><code>bitnami/mongodb</code></strong> 等，环境变量与数据路径与官方不同，切换镜像时需对照该镜像文档。</td>
+</tr>
+</tbody></table>
+<h2 id="3-初始化脚本"><a href="#3-初始化脚本" class="headerlink" title="3. 初始化脚本"></a>3. 初始化脚本</h2><p><strong><code>/docker-entrypoint-initdb.d/</code></strong> 下 <strong><code>*.js</code></strong>、<strong><code>*.sh</code></strong> 仅在<strong>首次初始化空数据目录</strong>时执行；已有数据卷时不会重复执行。</p>
+<hr>
+<p><strong>1Panel（推荐）</strong>：在 <strong>Linux</strong> 宿主机上若希望少手写命令、仍以容器方式跑 <strong>MongoDB</strong>，可先安装 <a target="_blank" rel="noopener external nofollow noreferrer" href="https://1panel.cn/"><strong>1Panel</strong></a>（开源 <strong>Linux</strong> 运维面板），在 <strong>「应用商店」</strong> 中选择 <strong>MongoDB</strong> 一键部署：由面板管理镜像版本、数据持久化、<strong><code>27017</code></strong> 端口、<strong><code>MONGO_INITDB_ROOT_*</code></strong> 与（可选）备份，启停与日志可在界面查看。与下文 <strong><code>docker run</code> &#x2F; Compose &#x2F; K8s<code>** 的环境变量、**</code>&#x2F;data&#x2F;db<code>** 与 **</code>&#x2F;docker-entrypoint-initdb.d&#96;</strong> 语义对齐或排障时，自 <strong># 三</strong> 起各节仍可作对照。适合单台 <strong>VPS</strong>、家庭服务器等「一台机子上稳态跑库」的场景。</p>
+<hr>
+<h1 id="三、单容器一键部署（docker-run）"><a href="#三、单容器一键部署（docker-run）" class="headerlink" title="三、单容器一键部署（docker run）"></a>三、单容器一键部署（<code>docker run</code>）</h1><p>在<strong>当前目录</strong>先建数据与初始化目录（仅首次）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">mkdir</span> -p ./mongo-data ./mongo-init</span><br></pre></td></tr></table></figure>
+
+<p><strong>一条命令</strong>启动（请按需改账号、密码、端口、卷路径；示例仅供本地）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -d --name mongodb-dev -e MONGO_INITDB_ROOT_USERNAME=root -e MONGO_INITDB_ROOT_PASSWORD=dev-root-change-me -e MONGO_INITDB_DATABASE=appdb -p 27017:27017 -v <span class="string">&quot;<span class="subst">$(pwd)</span>/mongo-data:/data/db&quot;</span> -v <span class="string">&quot;<span class="subst">$(pwd)</span>/mongo-init:/docker-entrypoint-initdb.d:ro&quot;</span> mongo:7.0</span><br></pre></td></tr></table></figure>
+
+<p>常用运维一条命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker logs -f mongodb-dev</span><br><span class="line">docker stop mongodb-dev &amp;&amp; docker <span class="built_in">rm</span> mongodb-dev</span><br></pre></td></tr></table></figure>
+
+<p>本机连接示例（<strong><code>mongosh</code></strong> 与镜像主版本一致即可）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mongosh <span class="string">&quot;mongodb://root:dev-root-change-me@127.0.0.1:27017/appdb?authSource=admin&quot;</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="四、Docker-Compose-一键部署"><a href="#四、Docker-Compose-一键部署" class="headerlink" title="四、Docker Compose 一键部署"></a>四、Docker Compose 一键部署</h1><p>将下面内容保存为 <strong><code>docker-compose.mongo.yml</code></strong>（与 <strong><code># 一</code></strong> 要求一致：已能执行 <strong><code>docker compose</code></strong>）。敏感项建议放在同目录 <strong><code>.env</code></strong>（加入 <strong><code>.gitignore</code></strong>），勿长期写死在仓库。</p>
+<p><strong>一条命令</strong>启动全栈（在 <strong><code>docker-compose.mongo.yml</code></strong> 所在目录执行）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker compose -f docker-compose.mongo.yml up -d</span><br></pre></td></tr></table></figure>
+
+<p>以下为 <strong><code>docker-compose.mongo.yml</code></strong> 全文：<strong><code>version</code></strong>、<strong><code>name</code></strong>、<strong>命名卷</strong>、<strong>健康检查</strong>。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">version:</span> <span class="string">&quot;3.8&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="attr">name:</span> <span class="string">mongo-stack</span></span><br><span class="line"></span><br><span class="line"><span class="attr">services:</span></span><br><span class="line">  <span class="attr">mongodb:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">mongo:7.0</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">mongo-7</span></span><br><span class="line">    <span class="attr">restart:</span> <span class="string">unless-stopped</span></span><br><span class="line">    <span class="attr">environment:</span></span><br><span class="line">      <span class="attr">MONGO_INITDB_ROOT_USERNAME:</span> <span class="string">$&#123;MONGO_INITDB_ROOT_USERNAME:-root&#125;</span></span><br><span class="line">      <span class="attr">MONGO_INITDB_ROOT_PASSWORD:</span> <span class="string">$&#123;MONGO_INITDB_ROOT_PASSWORD:-dev-root-change-me&#125;</span></span><br><span class="line">      <span class="attr">MONGO_INITDB_DATABASE:</span> <span class="string">$&#123;MONGO_INITDB_DATABASE:-appdb&#125;</span></span><br><span class="line">      <span class="attr">TZ:</span> <span class="string">Asia/Shanghai</span></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;27017:27017&quot;</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">mongo_data:/data/db</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">./mongo-init:/docker-entrypoint-initdb.d:ro</span></span><br><span class="line">    <span class="attr">healthcheck:</span></span><br><span class="line">      <span class="attr">test:</span> [<span class="string">&quot;CMD-SHELL&quot;</span>, <span class="string">&quot;mongosh -u \&quot;$$MONGO_INITDB_ROOT_USERNAME\&quot; -p \&quot;$$MONGO_INITDB_ROOT_PASSWORD\&quot; --authenticationDatabase admin --quiet --eval &#x27;db.adminCommand(&#123;ping:1&#125;)&#x27; || exit 1&quot;</span>]</span><br><span class="line">      <span class="attr">interval:</span> <span class="string">10s</span></span><br><span class="line">      <span class="attr">timeout:</span> <span class="string">5s</span></span><br><span class="line">      <span class="attr">retries:</span> <span class="number">12</span></span><br><span class="line">      <span class="attr">start_period:</span> <span class="string">40s</span></span><br><span class="line"></span><br><span class="line"><span class="attr">volumes:</span></span><br><span class="line">  <span class="attr">mongo_data:</span></span><br><span class="line">    <span class="attr">driver:</span> <span class="string">local</span></span><br></pre></td></tr></table></figure>
+
+<p>同目录可选 <strong><code>.env</code></strong>（勿提交）：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">MONGO_INITDB_ROOT_USERNAME=root</span><br><span class="line">MONGO_INITDB_ROOT_PASSWORD=your-strong-root-password</span><br><span class="line">MONGO_INITDB_DATABASE=appdb</span><br></pre></td></tr></table></figure>
+
+<p>查看状态、日志、停止并删除容器（保留数据卷）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">docker compose -f docker-compose.mongo.yml ps</span><br><span class="line">docker compose -f docker-compose.mongo.yml logs -f mongodb</span><br><span class="line">docker compose -f docker-compose.mongo.yml down</span><br></pre></td></tr></table></figure>
+
+<p><strong><code>down</code></strong> 默认保留命名卷 <strong><code>mongo_data</code></strong>；若需清空数据加 <strong><code>docker compose ... down -v</code></strong>（<strong>会删库</strong>）。</p>
+<hr>
+<h1 id="五、Kubernetes-一键部署（单文件完整清单）"><a href="#五、Kubernetes-一键部署（单文件完整清单）" class="headerlink" title="五、Kubernetes 一键部署（单文件完整清单）"></a>五、Kubernetes 一键部署（单文件完整清单）</h1><p>将下面内容保存为 <strong><code>mongo-k8s.yaml</code></strong> 后，<strong>一条命令</strong>应用：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl apply -f mongo-k8s.yaml</span><br></pre></td></tr></table></figure>
+
+<p>清单含 <strong>Secret</strong>（<strong>root</strong> 账号与初始库名）、<strong>PVC</strong>、<strong>Deployment</strong>、<strong>ClusterIP Service</strong>。未写 <strong><code>storageClassName</code></strong> 时使用集群默认 <strong>StorageClass</strong>；无默认 <strong>SC</strong> 时请在 <strong>PVC</strong> 中补上 <strong><code>storageClassName</code></strong>。命名空间为 <strong><code>default</code></strong>，可按需修改 <strong><code>metadata.namespace</code></strong>。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Secret</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">mongo-secret</span></span><br><span class="line">  <span class="attr">namespace:</span> <span class="string">default</span></span><br><span class="line"><span class="attr">type:</span> <span class="string">Opaque</span></span><br><span class="line"><span class="attr">stringData:</span></span><br><span class="line">  <span class="attr">MONGO_INITDB_ROOT_USERNAME:</span> <span class="string">&quot;root&quot;</span></span><br><span class="line">  <span class="attr">MONGO_INITDB_ROOT_PASSWORD:</span> <span class="string">&quot;请替换为强密码&quot;</span></span><br><span class="line">  <span class="attr">MONGO_INITDB_DATABASE:</span> <span class="string">&quot;appdb&quot;</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">PersistentVolumeClaim</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">mongo-data</span></span><br><span class="line">  <span class="attr">namespace:</span> <span class="string">default</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">accessModes:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">ReadWriteOnce</span></span><br><span class="line">  <span class="attr">resources:</span></span><br><span class="line">    <span class="attr">requests:</span></span><br><span class="line">      <span class="attr">storage:</span> <span class="string">20Gi</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">apps/v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Deployment</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">mongodb</span></span><br><span class="line">  <span class="attr">namespace:</span> <span class="string">default</span></span><br><span class="line">  <span class="attr">labels:</span></span><br><span class="line">    <span class="attr">app:</span> <span class="string">mongodb</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">replicas:</span> <span class="number">1</span></span><br><span class="line">  <span class="attr">selector:</span></span><br><span class="line">    <span class="attr">matchLabels:</span></span><br><span class="line">      <span class="attr">app:</span> <span class="string">mongodb</span></span><br><span class="line">  <span class="attr">strategy:</span></span><br><span class="line">    <span class="attr">type:</span> <span class="string">Recreate</span></span><br><span class="line">  <span class="attr">template:</span></span><br><span class="line">    <span class="attr">metadata:</span></span><br><span class="line">      <span class="attr">labels:</span></span><br><span class="line">        <span class="attr">app:</span> <span class="string">mongodb</span></span><br><span class="line">    <span class="attr">spec:</span></span><br><span class="line">      <span class="attr">containers:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">mongodb</span></span><br><span class="line">          <span class="attr">image:</span> <span class="string">mongo:7.0</span></span><br><span class="line">          <span class="attr">ports:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">containerPort:</span> <span class="number">27017</span></span><br><span class="line">              <span class="attr">name:</span> <span class="string">mongodb</span></span><br><span class="line">          <span class="attr">env:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">MONGO_INITDB_ROOT_USERNAME</span></span><br><span class="line">              <span class="attr">valueFrom:</span></span><br><span class="line">                <span class="attr">secretKeyRef:</span></span><br><span class="line">                  <span class="attr">name:</span> <span class="string">mongo-secret</span></span><br><span class="line">                  <span class="attr">key:</span> <span class="string">MONGO_INITDB_ROOT_USERNAME</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">MONGO_INITDB_ROOT_PASSWORD</span></span><br><span class="line">              <span class="attr">valueFrom:</span></span><br><span class="line">                <span class="attr">secretKeyRef:</span></span><br><span class="line">                  <span class="attr">name:</span> <span class="string">mongo-secret</span></span><br><span class="line">                  <span class="attr">key:</span> <span class="string">MONGO_INITDB_ROOT_PASSWORD</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">MONGO_INITDB_DATABASE</span></span><br><span class="line">              <span class="attr">valueFrom:</span></span><br><span class="line">                <span class="attr">secretKeyRef:</span></span><br><span class="line">                  <span class="attr">name:</span> <span class="string">mongo-secret</span></span><br><span class="line">                  <span class="attr">key:</span> <span class="string">MONGO_INITDB_DATABASE</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">TZ</span></span><br><span class="line">              <span class="attr">value:</span> <span class="string">&quot;Asia/Shanghai&quot;</span></span><br><span class="line">          <span class="attr">volumeMounts:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">data</span></span><br><span class="line">              <span class="attr">mountPath:</span> <span class="string">/data/db</span></span><br><span class="line">          <span class="attr">readinessProbe:</span></span><br><span class="line">            <span class="attr">exec:</span></span><br><span class="line">              <span class="attr">command:</span></span><br><span class="line">                <span class="bullet">-</span> <span class="string">/bin/sh</span></span><br><span class="line">                <span class="bullet">-</span> <span class="string">-c</span></span><br><span class="line">                <span class="bullet">-</span> <span class="string">&#x27;mongosh --quiet -u &quot;$MONGO_INITDB_ROOT_USERNAME&quot; -p &quot;$MONGO_INITDB_ROOT_PASSWORD&quot; --authenticationDatabase admin --eval &quot;db.adminCommand(&#123; ping: 1 &#125;)&quot;&#x27;</span></span><br><span class="line">            <span class="attr">initialDelaySeconds:</span> <span class="number">15</span></span><br><span class="line">            <span class="attr">periodSeconds:</span> <span class="number">10</span></span><br><span class="line">            <span class="attr">timeoutSeconds:</span> <span class="number">5</span></span><br><span class="line">            <span class="attr">failureThreshold:</span> <span class="number">12</span></span><br><span class="line">          <span class="attr">livenessProbe:</span></span><br><span class="line">            <span class="attr">tcpSocket:</span></span><br><span class="line">              <span class="attr">port:</span> <span class="number">27017</span></span><br><span class="line">            <span class="attr">initialDelaySeconds:</span> <span class="number">60</span></span><br><span class="line">            <span class="attr">periodSeconds:</span> <span class="number">15</span></span><br><span class="line">            <span class="attr">timeoutSeconds:</span> <span class="number">5</span></span><br><span class="line">            <span class="attr">failureThreshold:</span> <span class="number">6</span></span><br><span class="line">          <span class="attr">resources:</span></span><br><span class="line">            <span class="attr">requests:</span></span><br><span class="line">              <span class="attr">memory:</span> <span class="string">&quot;512Mi&quot;</span></span><br><span class="line">              <span class="attr">cpu:</span> <span class="string">&quot;250m&quot;</span></span><br><span class="line">            <span class="attr">limits:</span></span><br><span class="line">              <span class="attr">memory:</span> <span class="string">&quot;1Gi&quot;</span></span><br><span class="line">              <span class="attr">cpu:</span> <span class="string">&quot;1000m&quot;</span></span><br><span class="line">      <span class="attr">volumes:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">data</span></span><br><span class="line">          <span class="attr">persistentVolumeClaim:</span></span><br><span class="line">            <span class="attr">claimName:</span> <span class="string">mongo-data</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Service</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">mongodb</span></span><br><span class="line">  <span class="attr">namespace:</span> <span class="string">default</span></span><br><span class="line">  <span class="attr">labels:</span></span><br><span class="line">    <span class="attr">app:</span> <span class="string">mongodb</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">type:</span> <span class="string">ClusterIP</span></span><br><span class="line">  <span class="attr">selector:</span></span><br><span class="line">    <span class="attr">app:</span> <span class="string">mongodb</span></span><br><span class="line">  <span class="attr">ports:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">mongodb</span></span><br><span class="line">      <span class="attr">port:</span> <span class="number">27017</span></span><br><span class="line">      <span class="attr">targetPort:</span> <span class="number">27017</span></span><br></pre></td></tr></table></figure>
+
+<p>查看资源与连接前检查：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl get pods,svc,pvc -l app=mongodb</span><br></pre></td></tr></table></figure>
+
+<p>集群内连接串示例（按 <strong>namespace</strong> 与 <strong>Secret</strong> 中密码替换）：<strong><code>mongodb://root:请替换@mongodb.default.svc.cluster.local:27017/appdb?authSource=admin</code></strong>。</p>
+<p><strong>说明</strong>：<strong><code>strategy: Recreate</code></strong> 避免 <strong>RWO</strong> 卷被多副本 <strong>RollingUpdate</strong> 同时挂载；副本集、分片、运维自动化请使用 <strong>MongoDB Kubernetes Operator</strong> 等方案，勿直接水平扩展上述 <strong>Deployment</strong>。</p>
+<hr>
+<h1 id="六、小结"><a href="#六、小结" class="headerlink" title="六、小结"></a>六、小结</h1><table>
+<thead>
+<tr>
+<th>项</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>前置</strong></td>
+<td>已安装 <strong><code>docker</code></strong> 与 <strong><code>docker compose</code></strong>（或 <strong><code>docker-compose</code></strong>）</td>
+</tr>
+<tr>
+<td><strong>镜像</strong></td>
+<td>优先官方 <strong><code>mongo:7.0</code></strong> &#x2F; 固定补丁标签；<strong><code>mongosh</code></strong> 与镜像主版本对齐</td>
+</tr>
+<tr>
+<td><strong>单容器</strong></td>
+<td><strong><code>mkdir</code></strong> 后一条 <strong><code>docker run ...</code></strong></td>
+</tr>
+<tr>
+<td><strong>Compose</strong></td>
+<td>保存 <strong><code>docker-compose.mongo.yml</code></strong> 后 <strong><code>docker compose -f ... up -d</code></strong></td>
+</tr>
+<tr>
+<td><strong>Kubernetes</strong></td>
+<td>保存 <strong><code>mongo-k8s.yaml</code></strong> 后 <strong><code>kubectl apply -f ...</code></strong></td>
+</tr>
+</tbody></table>
+<p>生产环境请配合备份、监控、网络策略与 <strong>TLS</strong>；<strong>Secret</strong> 建议对接 <strong>External Secrets</strong> &#x2F; <strong>Sealed Secrets</strong> 等管控流程。</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -670,6 +879,1240 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/openssl-kdf-rand/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/05/01/openssl-kdf-rand/" class="post-title-link" itemprop="url">OpenSSL 密钥派生与随机数：PBKDF2、rand 与推荐用法</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-05-01 14:20:00" itemprop="dateCreated datePublished" datetime="2026-05-01T14:20:00+08:00">2026-05-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-06-03 20:57:22" itemprop="dateModified" datetime="2026-06-03T20:57:22+08:00">2026-06-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/OpenSSL/" itemprop="url" rel="index"><span itemprop="name">OpenSSL</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>554</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>2 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>从<strong>弱熵源</strong>（用户口令）安全得到<strong>加密密钥</strong>，或生成<strong>不可预测随机数</strong>，是对称加密与 TLS 的基础。OpenSSL 提供 <strong><code>openssl rand</code></strong>、<strong><code>enc -pbkdf2</code></strong>、<strong><code>kdf</code></strong> 等。对称加密见 <a href="/2026/05/01/openssl-symmetric/" title="OpenSSL 对称加密：AES-GCM、ChaCha20 与推荐用法">对称加密</a>。</p>
+<h1 id="推荐实践"><a href="#推荐实践" class="headerlink" title="推荐实践"></a>推荐实践</h1><table>
+<thead>
+<tr>
+<th>需求</th>
+<th>推荐</th>
+<th>避免</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>生成 AES 密钥 &#x2F; IV &#x2F; salt</td>
+<td><strong><code>openssl rand -hex 32</code></strong></td>
+<td><code>/dev/urandom</code> 手写拼接错误</td>
+</tr>
+<tr>
+<td>口令 → 密钥（文件加密）</td>
+<td><strong>PBKDF2-HMAC-SHA256</strong>，iter ≥ <strong>600000</strong>（OWASP 2023 量级）</td>
+<td>单次 MD5(password)</td>
+</tr>
+<tr>
+<td>口令存储（应用）</td>
+<td><strong>Argon2id</strong>（应用库）</td>
+<td>裸 SHA-256</td>
+</tr>
+<tr>
+<td>TLS &#x2F; 协议密钥</td>
+<td><strong>HKDF</strong>（库内，随 TLS 1.3）</td>
+<td>自行重复哈希</td>
+</tr>
+</tbody></table>
+<pre>
+<code class="mermaid">
+
+flowchart LR
+  Pass[用户口令] --&gt; PBKDF2[PBKDF2 + salt + 高迭代]
+  PBKDF2 --&gt; Key[AES-256 密钥]
+  Rand[openssl rand] --&gt; Salt[salt &#x2F; IV]
+  Rand --&gt; Key2[独立随机密钥]
+</code>
+</pre>
+
+<hr>
+<h1 id="一、安全随机数-openssl-rand"><a href="#一、安全随机数-openssl-rand" class="headerlink" title="一、安全随机数 openssl rand"></a>一、安全随机数 <code>openssl rand</code></h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 32 字节 = AES-256 密钥</span></span><br><span class="line">openssl rand -hex 32</span><br><span class="line"></span><br><span class="line"><span class="comment"># Base64 形式</span></span><br><span class="line">openssl rand -<span class="built_in">base64</span> 32</span><br><span class="line"></span><br><span class="line"><span class="comment"># 写入文件</span></span><br><span class="line">openssl rand 32 &gt; aes.key</span><br></pre></td></tr></table></figure>
+
+<p><strong>用途</strong>：AES 密钥、IV&#x2F;nonce（GCM 须唯一）、session token、HMAC secret。</p>
+<hr>
+<h1 id="二、PBKDF2（口令派生）"><a href="#二、PBKDF2（口令派生）" class="headerlink" title="二、PBKDF2（口令派生）"></a>二、PBKDF2（口令派生）</h1><h2 id="特点"><a href="#特点" class="headerlink" title="特点"></a>特点</h2><ul>
+<li><strong>salt</strong> 防彩虹表；<strong>迭代次数</strong> 拉高暴力破解成本。  </li>
+<li>OpenSSL <strong><code>enc -pbkdf2</code></strong> 已集成；迭代建议 <strong>≥ 600000</strong>（随硬件调整）。</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">openssl enc -aes-256-cbc -pbkdf2 -iter 600000 -salt \</span><br><span class="line">  -<span class="keyword">in</span> doc.pdf -out doc.enc -pass pass:<span class="string">&#x27;用户口令&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>显式 KDF（OpenSSL 3.x）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">openssl kdf -keylen 32 -kdfopt digest:SHA256 -kdfopt salt:$(openssl rand -hex 16) \</span><br><span class="line">  -kdfopt iter:600000 PBKDF2</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="三、HKDF（协议层了解）"><a href="#三、HKDF（协议层了解）" class="headerlink" title="三、HKDF（协议层了解）"></a>三、HKDF（协议层了解）</h1><p>TLS 1.3 用 <strong>HKDF-SHA256</strong> 从握手秘密派生<strong>流量密钥</strong>；一般<strong>不需</strong>命令行手工调用， <strong><code>s_client</code> &#x2F; 应用库</strong> 内部完成。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 仅演示 API 存在（实际参数依 RFC 5869）</span></span><br><span class="line">openssl kdf -keylen 32 HKDF -kdfopt digest:SHA256 -kdfopt key:0123... -kdfopt salt: -kdfopt info:tls13</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="四、scrypt（若编译支持）"><a href="#四、scrypt（若编译支持）" class="headerlink" title="四、scrypt（若编译支持）"></a>四、scrypt（若编译支持）</h1><p>部分 OpenSSL 3.x 构建含 <strong>scrypt</strong>，内存硬函数，适合口令 KDF：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl kdf -keylen 32 scrypt -kdfopt pass:password -kdfopt salt:... -kdfopt N:16384 -kdfopt r:8 -kdfopt p:1</span><br></pre></td></tr></table></figure>
+
+<p>新应用口令存储仍优先 <strong>Argon2</strong>（libsodium &#x2F; 专用库）。</p>
+<hr>
+<h1 id="五、检查本机能力"><a href="#五、检查本机能力" class="headerlink" title="五、检查本机能力"></a>五、检查本机能力</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">openssl list -kdf-algorithms</span><br><span class="line">openssl list -random-generators</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="六、与-enc-TLS-的关系"><a href="#六、与-enc-TLS-的关系" class="headerlink" title="六、与 enc &#x2F; TLS 的关系"></a>六、与 enc &#x2F; TLS 的关系</h1><table>
+<thead>
+<tr>
+<th>组件</th>
+<th>随机数 &#x2F; KDF 作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong><code>enc -pbkdf2</code></strong></td>
+<td>口令 → AES 密钥</td>
+</tr>
+<tr>
+<td><strong>TLS 1.3</strong></td>
+<td>握手 → HKDF → 会话密钥</td>
+</tr>
+<tr>
+<td><strong>证书私钥</strong></td>
+<td>生成时用 <strong><code>genpkey</code></strong> 内部 CSPRNG</td>
+</tr>
+</tbody></table>
+<hr>
+<h1 id="延伸阅读"><a href="#延伸阅读" class="headerlink" title="延伸阅读"></a>延伸阅读</h1><table>
+<thead>
+<tr>
+<th>文档</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="/2026/05/01/openssl-symmetric/" title="OpenSSL 对称加密：AES-GCM、ChaCha20 与推荐用法">对称加密</a></td>
+<td>使用派生出的密钥</td>
+</tr>
+<tr>
+<td><a href="/2026/05/01/openssl-hash/" title="OpenSSL 哈希算法：SHA-256、SHA-3 与推荐用法">哈希</a></td>
+<td>PBKDF2 基于 HMAC-SHA</td>
+</tr>
+<tr>
+<td><a href="/2026/05/01/OpenSSL/OpenSSL/" title="OpenSSL">OpenSSL 常用操作</a></td>
+<td>完整命令示例</td>
+</tr>
+</tbody></table>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/openssl-sign-hmac/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/05/01/openssl-sign-hmac/" class="post-title-link" itemprop="url">OpenSSL 数字签名与 HMAC：完整性、身份与推荐用法</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-05-01 14:15:00" itemprop="dateCreated datePublished" datetime="2026-05-01T14:15:00+08:00">2026-05-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-06-03 20:57:16" itemprop="dateModified" datetime="2026-06-03T20:57:16+08:00">2026-06-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/OpenSSL/" itemprop="url" rel="index"><span itemprop="name">OpenSSL</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>626</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>2 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p><strong>数字签名</strong>证明「谁签署 + 内容未被改」；<strong>HMAC</strong> 在<strong>共享密钥</strong>下提供<strong>消息认证码</strong>（完整性 + 双方互信）。OpenSSL 分别通过 <strong><code>dgst -sign</code></strong> 与 <strong><code>dgst -hmac</code></strong> 实现。哈希选型见 <a href="/2026/05/01/openssl-hash/" title="OpenSSL 哈希算法：SHA-256、SHA-3 与推荐用法">哈希算法</a>，密钥对见 <a href="/2026/05/01/openssl-asymmetric/" title="OpenSSL 非对称加密与密钥交换：RSA、Ed25519、X25519">非对称加密</a>。</p>
+<h1 id="场景选型"><a href="#场景选型" class="headerlink" title="场景选型"></a>场景选型</h1><table>
+<thead>
+<tr>
+<th>场景</th>
+<th>推荐</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>软件发布、固件、JWT（RS256&#x2F;ES256）</td>
+<td><strong>RSA-PSS &#x2F; ECDSA &#x2F; Ed25519</strong> + <strong>SHA-256</strong></td>
+<td>公钥可公开分发</td>
+</tr>
+<tr>
+<td>TLS 证书链</td>
+<td><strong>CA 私钥签名</strong> + <strong>SHA-256</strong></td>
+<td>见 <a href="/2026/05/01/OpenSSL/OpenSSL/" title="OpenSSL">OpenSSL 常用操作</a></td>
+</tr>
+<tr>
+<td>API 请求鉴权（双方已有密钥）</td>
+<td><strong>HMAC-SHA256</strong></td>
+<td>Webhook、AWS Signature V4 同类思路</td>
+</tr>
+<tr>
+<td>口令验证存储</td>
+<td><strong>不适用裸 HMAC</strong></td>
+<td>用 <strong>PBKDF2 &#x2F; Argon2</strong> 见 <a href="/2026/05/01/openssl-kdf-rand/" title="OpenSSL 密钥派生与随机数：PBKDF2、rand 与推荐用法">密钥派生</a></td>
+</tr>
+</tbody></table>
+<pre>
+<code class="mermaid">
+
+sequenceDiagram
+  participant A as 发布方
+  participant B as 验证方
+  A-&gt;&gt;A: hash &#x3D; SHA256(file)
+  A-&gt;&gt;A: sig &#x3D; Sign_private(hash)
+  A-&gt;&gt;B: file + sig + cert
+  B-&gt;&gt;B: Verify_public(hash, sig)
+</code>
+</pre>
+
+<hr>
+<h1 id="一、数字签名（非对称）"><a href="#一、数字签名（非对称）" class="headerlink" title="一、数字签名（非对称）"></a>一、数字签名（非对称）</h1><h2 id="1-推荐算法"><a href="#1-推荐算法" class="headerlink" title="1. 推荐算法"></a>1. 推荐算法</h2><table>
+<thead>
+<tr>
+<th>签名算法</th>
+<th>摘要</th>
+<th>推荐度</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Ed25519</strong></td>
+<td>内置</td>
+<td><strong>首选</strong>（新系统）</td>
+</tr>
+<tr>
+<td><strong>ECDSA P-256</strong> + SHA-256</td>
+<td>分离</td>
+<td>TLS 证书常见</td>
+</tr>
+<tr>
+<td><strong>RSA-PSS</strong> + SHA-256</td>
+<td>分离</td>
+<td>互操作广</td>
+</tr>
+<tr>
+<td>RSA PKCS#1 v1.5 + SHA-256</td>
+<td>分离</td>
+<td>老系统</td>
+</tr>
+<tr>
+<td><strong>DSA</strong></td>
+<td>—</td>
+<td><strong>勿用</strong></td>
+</tr>
+</tbody></table>
+<h2 id="2-OpenSSL-命令（RSA-EC-私钥）"><a href="#2-OpenSSL-命令（RSA-EC-私钥）" class="headerlink" title="2. OpenSSL 命令（RSA &#x2F; EC 私钥）"></a>2. OpenSSL 命令（RSA &#x2F; EC 私钥）</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 签名</span></span><br><span class="line">openssl dgst -sha256 -sign private.key -out file.sig file.bin</span><br><span class="line"></span><br><span class="line"><span class="comment"># 验签</span></span><br><span class="line">openssl dgst -sha256 -verify public.key -signature file.sig file.bin</span><br><span class="line"><span class="comment"># 成功输出: Verified OK</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="3-Ed25519"><a href="#3-Ed25519" class="headerlink" title="3. Ed25519"></a>3. Ed25519</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">openssl genpkey -algorithm ED25519 -out ed.key</span><br><span class="line">openssl pkey -<span class="keyword">in</span> ed.key -pubout -out ed.pub</span><br><span class="line"></span><br><span class="line">openssl dgst -sha256 -sign ed.key -out data.sig data.txt</span><br><span class="line">openssl dgst -sha256 -verify ed.pub -signature data.sig data.txt</span><br></pre></td></tr></table></figure>
+
+<h2 id="4-从证书验签（HTTPS-发布包场景）"><a href="#4-从证书验签（HTTPS-发布包场景）" class="headerlink" title="4. 从证书验签（HTTPS 发布包场景）"></a>4. 从证书验签（HTTPS 发布包场景）</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">openssl x509 -<span class="keyword">in</span> publisher.crt -pubkey -noout &gt; publisher.pub</span><br><span class="line">openssl dgst -sha256 -verify publisher.pub -signature release.sig release.tar.gz</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="二、HMAC（对称认证）"><a href="#二、HMAC（对称认证）" class="headerlink" title="二、HMAC（对称认证）"></a>二、HMAC（对称认证）</h1><h2 id="特点"><a href="#特点" class="headerlink" title="特点"></a>特点</h2><ul>
+<li>双方共享 <strong>secret key</strong>；无公钥 Infrastructure。  </li>
+<li>算法：<strong>HMAC-SHA256</strong>（<strong>推荐</strong>）、HMAC-SHA512；避免 HMAC-MD5。</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">KEY=<span class="string">&quot;<span class="subst">$(openssl rand -hex 32)</span>&quot;</span></span><br><span class="line"><span class="built_in">echo</span> -n <span class="string">&#x27;request-body&#x27;</span> | openssl dgst -sha256 -hmac <span class="string">&quot;<span class="variable">$KEY</span>&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="与数字签名对比"><a href="#与数字签名对比" class="headerlink" title="与数字签名对比"></a>与数字签名对比</h2><table>
+<thead>
+<tr>
+<th></th>
+<th>HMAC</th>
+<th>数字签名</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>密钥</td>
+<td>共享秘密</td>
+<td>公钥 &#x2F; 私钥对</td>
+</tr>
+<tr>
+<td>适用</td>
+<td>服务间 API、会话 token</td>
+<td>公开分发软件、证书</td>
+</tr>
+<tr>
+<td>抵赖</td>
+<td>双方都能算</td>
+<td>仅私钥持有者能签</td>
+</tr>
+</tbody></table>
+<hr>
+<h1 id="三、CMS-PKCS-7（可选）"><a href="#三、CMS-PKCS-7（可选）" class="headerlink" title="三、CMS &#x2F; PKCS#7（可选）"></a>三、CMS &#x2F; PKCS#7（可选）</h1><p>打包「数据 + 签名 + 证书链」：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">openssl cms -sign -<span class="keyword">in</span> doc.txt -out doc.p7s -signer cert.crt -inkey private.key -nodetach</span><br><span class="line">openssl cms -verify -<span class="keyword">in</span> doc.p7s -CAfile ca.crt</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="四、常见错误"><a href="#四、常见错误" class="headerlink" title="四、常见错误"></a>四、常见错误</h1><table>
+<thead>
+<tr>
+<th>错误</th>
+<th>正确做法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>对明文直接 RSA 签名大数据</td>
+<td>先 <strong>SHA-256</strong> 再签；或签 <strong>digest</strong></td>
+</tr>
+<tr>
+<td>HMAC 密钥硬编码在代码</td>
+<td>环境变量 &#x2F; KMS</td>
+</tr>
+<tr>
+<td>验签不检查证书链</td>
+<td>信任 <strong>CA</strong> + <strong>hostname</strong> + <strong>有效期</strong></td>
+</tr>
+</tbody></table>
+<hr>
+<h1 id="延伸阅读"><a href="#延伸阅读" class="headerlink" title="延伸阅读"></a>延伸阅读</h1><table>
+<thead>
+<tr>
+<th>文档</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="/2026/05/01/openssl-hash/" title="OpenSSL 哈希算法：SHA-256、SHA-3 与推荐用法">哈希</a></td>
+<td>签名前先哈希</td>
+</tr>
+<tr>
+<td><a href="/2026/05/01/Protocol/HTTPS/" title="HTTPS 详解：TLS 握手、证书与 openssl&#x2F;curl 示例">HTTPS</a></td>
+<td>TLS 握手签名与证书</td>
+</tr>
+<tr>
+<td><a href="/2026/05/01/openssl-features/" title="OpenSSL功能">OpenSSL 功能</a></td>
+<td>自建 CA 签发</td>
+</tr>
+</tbody></table>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/openssl-asymmetric/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/05/01/openssl-asymmetric/" class="post-title-link" itemprop="url">OpenSSL 非对称加密与密钥交换：RSA、Ed25519、X25519</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-05-01 14:10:00" itemprop="dateCreated datePublished" datetime="2026-05-01T14:10:00+08:00">2026-05-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-06-03 20:57:12" itemprop="dateModified" datetime="2026-06-03T20:57:12+08:00">2026-06-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/OpenSSL/" itemprop="url" rel="index"><span itemprop="name">OpenSSL</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>710</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>2 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p><strong>非对称密码</strong>使用<strong>密钥对</strong>：公钥加密&#x2F;验签，私钥解密&#x2F;签名。OpenSSL 3.x 推荐 <strong><code>openssl genpkey</code></strong> &#x2F; <strong><code>openssl pkey</code></strong> 统一接口；老教程中的 <strong><code>genrsa</code></strong> 仍可用。证书操作见 <a href="/2026/05/01/OpenSSL/OpenSSL/" title="OpenSSL">OpenSSL 常用操作</a>。</p>
+<h1 id="推荐选型（2020s）"><a href="#推荐选型（2020s）" class="headerlink" title="推荐选型（2020s）"></a>推荐选型（2020s）</h1><table>
+<thead>
+<tr>
+<th>用途</th>
+<th>推荐</th>
+<th>避免 &#x2F; legacy</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>TLS 证书 &#x2F; 代码签名</strong></td>
+<td><strong>ECDSA P-256</strong>、<strong>Ed25519</strong>；RSA 仍普遍</td>
+<td>RSA &lt; 2048 bit</td>
+</tr>
+<tr>
+<td><strong>TLS 密钥交换</strong></td>
+<td><strong>X25519</strong>（ECDHE）</td>
+<td>静态 RSA 密钥传输、DHE 1024 bit</td>
+</tr>
+<tr>
+<td><strong>SSH &#x2F; 现代签名</strong></td>
+<td><strong>Ed25519</strong></td>
+<td>DSA</td>
+</tr>
+<tr>
+<td><strong>小数据 RSA 加密</strong></td>
+<td><strong>RSA-OAEP 2048+</strong>（仅短载荷）</td>
+<td>PKCS#1 v1.5 加密、裸 RSA</td>
+</tr>
+<tr>
+<td><strong>长期根 CA</strong></td>
+<td><strong>RSA 4096</strong> 或 <strong>EC P-384</strong></td>
+<td>RSA 1024</td>
+</tr>
+</tbody></table>
+<pre>
+<code class="mermaid">
+
+flowchart TB
+  subgraph asym [非对称]
+    Pub[公钥 可公开]
+    Priv[私钥 绝密]
+  end
+  subgraph uses [典型用途]
+    Sign[数字签名]
+    KX[密钥交换 ECDHE]
+    Wrap[加密对称密钥 短数据]
+  end
+  Priv --&gt; Sign
+  Pub --&gt; Sign
+  Priv --&gt; KX
+  Pub --&gt; KX
+  Pub --&gt; Wrap
+  Priv --&gt; Wrap
+</code>
+</pre>
+
+<hr>
+<h1 id="一、RSA"><a href="#一、RSA" class="headerlink" title="一、RSA"></a>一、RSA</h1><h2 id="特点"><a href="#特点" class="headerlink" title="特点"></a>特点</h2><ul>
+<li>基于大整数分解困难性。  </li>
+<li><strong>加密</strong>：只适合<strong>很短</strong>数据（密钥长度限制）；长数据用 <strong>混合加密</strong>（RSA 包 AES 密钥）。  </li>
+<li><strong>签名 &#x2F; 证书</strong>：仍大量存在；新站点可优先 <strong>EC&#x2F;Ed25519</strong>。</li>
+</ul>
+<h2 id="推荐用法"><a href="#推荐用法" class="headerlink" title="推荐用法"></a>推荐用法</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 生成 RSA 私钥（生产建议 4096 + 口令）</span></span><br><span class="line">openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:4096 \</span><br><span class="line">  -aes256 -out private.pem -pass pass:changeit</span><br><span class="line"></span><br><span class="line"><span class="comment"># 导出公钥</span></span><br><span class="line">openssl pkey -<span class="keyword">in</span> private.pem -pubout -out public.pem -pass pass:changeit</span><br><span class="line"></span><br><span class="line"><span class="comment"># 短数据加密（OAEP 依 OpenSSL 默认为 SHA-1 MGF1，生产用库 API 指定 SHA-256）</span></span><br><span class="line">openssl pkeyutl -encrypt -pubin -inkey public.pem -<span class="keyword">in</span> secret.bin -out secret.rsa</span><br><span class="line">openssl pkeyutl -decrypt -inkey private.pem -<span class="keyword">in</span> secret.rsa -out secret.bin -pass pass:changeit</span><br></pre></td></tr></table></figure>
+
+<p><strong>HTTPS 证书</strong>仍常见 RSA-2048&#x2F;4096：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl req -x509 -newkey rsa:2048 -keyout server.key -out server.crt -days 365 -nodes</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="二、椭圆曲线-EC-ECDSA"><a href="#二、椭圆曲线-EC-ECDSA" class="headerlink" title="二、椭圆曲线 EC &#x2F; ECDSA"></a>二、椭圆曲线 EC &#x2F; ECDSA</h1><h2 id="特点-1"><a href="#特点-1" class="headerlink" title="特点"></a>特点</h2><ul>
+<li>更短密钥达到相当安全强度（<strong>P-256 ≈ RSA-3072</strong> 量级）。  </li>
+<li><strong>ECDSA</strong>：签名与证书（<strong>secp256r1 &#x2F; prime256v1</strong> 最常用）。  </li>
+<li><strong>ECDH</strong>：密钥交换（TLS 中 <strong>ECDHE</strong>）。</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># ECDSA P-256 私钥</span></span><br><span class="line">openssl genpkey -algorithm EC -pkeyopt ec_paramgen_curve:P-256 -out ec-private.pem</span><br><span class="line"></span><br><span class="line">openssl pkey -<span class="keyword">in</span> ec-private.pem -pubout -out ec-public.pem</span><br><span class="line"></span><br><span class="line"><span class="comment"># 自签名 EC 证书</span></span><br><span class="line">openssl req -x509 -new -key ec-private.pem -out ec-cert.crt -days 365 -sha256</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="三、Ed25519-X25519（现代首选）"><a href="#三、Ed25519-X25519（现代首选）" class="headerlink" title="三、Ed25519 &#x2F; X25519（现代首选）"></a>三、Ed25519 &#x2F; X25519（<strong>现代首选</strong>）</h1><table>
+<thead>
+<tr>
+<th>算法</th>
+<th>类型</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Ed25519</strong></td>
+<td>签名</td>
+<td>SSH、代码签名、部分 TLS 证书</td>
+</tr>
+<tr>
+<td><strong>X25519</strong></td>
+<td>密钥交换</td>
+<td>TLS 1.3 <strong>(EC)DHE</strong> 主流</td>
+</tr>
+</tbody></table>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Ed25519 签名密钥</span></span><br><span class="line">openssl genpkey -algorithm ED25519 -out ed25519-private.pem</span><br><span class="line">openssl pkey -<span class="keyword">in</span> ed25519-private.pem -pubout -out ed25519-public.pem</span><br><span class="line"></span><br><span class="line"><span class="comment"># X25519 密钥交换密钥</span></span><br><span class="line">openssl genpkey -algorithm X25519 -out x25519-private.pem</span><br><span class="line">openssl pkey -<span class="keyword">in</span> x25519-private.pem -pubout -out x25519-public.pem</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="四、TLS-中的密钥交换（与-HTTPS）"><a href="#四、TLS-中的密钥交换（与-HTTPS）" class="headerlink" title="四、TLS 中的密钥交换（与 HTTPS）"></a>四、TLS 中的密钥交换（与 HTTPS）</h1><a href="/2026/05/01/Protocol/HTTPS/" title="HTTPS 详解：TLS 握手、证书与 openssl&#x2F;curl 示例">HTTPS</a> 握手典型组合：
+
+<table>
+<thead>
+<tr>
+<th>TLS 1.3 常见</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>TLS_AES_256_GCM_SHA384</strong></td>
+<td>ECDHE + AES-GCM</td>
+</tr>
+<tr>
+<td><strong>TLS_CHACHA20_POLY1305_SHA256</strong></td>
+<td>ECDHE + ChaCha20</td>
+</tr>
+</tbody></table>
+<p>握手时用 <strong>X25519 &#x2F; secp256r1</strong> 协商<strong>临时对称密钥</strong>（前向保密 <strong>PFS</strong>），而非用 RSA 直接加密预主密钥。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl s_client -connect example.com:443 -tls1_3 &lt;/dev/null 2&gt;&amp;1 | grep -E <span class="string">&#x27;Protocol|Cipher&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="五、查看与对比"><a href="#五、查看与对比" class="headerlink" title="五、查看与对比"></a>五、查看与对比</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">openssl list -public-key-algorithms</span><br><span class="line">openssl pkey -<span class="keyword">in</span> private.pem -text -noout</span><br><span class="line">openssl x509 -<span class="keyword">in</span> cert.crt -text -noout | grep -E <span class="string">&#x27;Public Key|Signature Algorithm&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="延伸阅读"><a href="#延伸阅读" class="headerlink" title="延伸阅读"></a>延伸阅读</h1><table>
+<thead>
+<tr>
+<th>文档</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="/2026/05/01/openssl-sign-hmac/" title="OpenSSL 数字签名与 HMAC：完整性、身份与推荐用法">数字签名</a></td>
+<td><code>-sign</code> &#x2F; <code>-verify</code></td>
+</tr>
+<tr>
+<td><a href="/2026/05/01/openssl-symmetric/" title="OpenSSL 对称加密：AES-GCM、ChaCha20 与推荐用法">对称加密</a></td>
+<td>混合加密中的 AES</td>
+</tr>
+<tr>
+<td><a href="/2026/05/01/openssl-features/" title="OpenSSL功能">局域网 CA</a></td>
+<td>签发服务器证书</td>
+</tr>
+</tbody></table>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/openssl-symmetric/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/05/01/openssl-symmetric/" class="post-title-link" itemprop="url">OpenSSL 对称加密：AES-GCM、ChaCha20 与推荐用法</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-05-01 14:05:00" itemprop="dateCreated datePublished" datetime="2026-05-01T14:05:00+08:00">2026-05-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-06-03 20:57:51" itemprop="dateModified" datetime="2026-06-03T20:57:51+08:00">2026-06-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/OpenSSL/" itemprop="url" rel="index"><span itemprop="name">OpenSSL</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>864</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>3 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p><strong>对称加密</strong>使用<strong>同一密钥</strong>加解密，适合** bulk 数据**（文件、会话流量）。OpenSSL 命令行主要用 <strong><code>openssl enc</code></strong>；<a href="/2026/05/01/Protocol/HTTPS/" title="HTTPS 详解：TLS 握手、证书与 openssl&#x2F;curl 示例">TLS</a> 会话密钥也是对称算法（如 <strong>AES-128-GCM</strong>）。操作入门见 <a href="/2026/05/01/OpenSSL/OpenSSL/" title="OpenSSL">OpenSSL 常用操作</a>。</p>
+<h1 id="推荐算法（2020s-生产）"><a href="#推荐算法（2020s-生产）" class="headerlink" title="推荐算法（2020s 生产）"></a>推荐算法（2020s 生产）</h1><table>
+<thead>
+<tr>
+<th>优先级</th>
+<th>算法 &#x2F; 模式</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>首选</strong></td>
+<td><strong>AES-256-GCM</strong></td>
+<td>文件加密、磁盘、API 载荷（须唯一 nonce）</td>
+</tr>
+<tr>
+<td><strong>首选（无 AES 硬件加速时）</strong></td>
+<td><strong>ChaCha20-Poly1305</strong></td>
+<td>移动端、部分 TLS 1.3 套件</td>
+</tr>
+<tr>
+<td>可用</td>
+<td><strong>AES-256-CBC + HMAC</strong>（Encrypt-then-MAC）</td>
+<td>老系统；须正确实现</td>
+</tr>
+<tr>
+<td><strong>避免</strong></td>
+<td><strong>AES-CBC 无 MAC</strong>、<strong>ECB</strong>、<strong>DES&#x2F;3DES</strong>、<strong>RC4</strong></td>
+<td>填充 oracle、模式泄露、已淘汰</td>
+</tr>
+</tbody></table>
+<pre>
+<code class="mermaid">
+
+flowchart LR
+  Plain[明文] --&gt; ENC[AES-256-GCM + 随机 IV]
+  Key[256 bit 密钥] --&gt; ENC
+  ENC --&gt; Cipher[密文 + Auth Tag]
+  Cipher --&gt; DEC[解密 + 验 Tag]
+  Key --&gt; DEC
+  DEC --&gt; Plain
+</code>
+</pre>
+
+<hr>
+<h1 id="一、算法特点"><a href="#一、算法特点" class="headerlink" title="一、算法特点"></a>一、算法特点</h1><h2 id="1-AES（Advanced-Encryption-Standard）"><a href="#1-AES（Advanced-Encryption-Standard）" class="headerlink" title="1. AES（Advanced Encryption Standard）"></a>1. AES（Advanced Encryption Standard）</h2><table>
+<thead>
+<tr>
+<th>密钥长度</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>AES-128</strong></td>
+<td>TLS 常用；足够多数场景</td>
+</tr>
+<tr>
+<td><strong>AES-256</strong></td>
+<td>文件加密、高合规场景 <strong>推荐</strong></td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>模式</th>
+<th>特点</th>
+<th>推荐</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>GCM</strong></td>
+<td>认证加密（AEAD），防篡改</td>
+<td><strong>是</strong></td>
+</tr>
+<tr>
+<td><strong>CTR</strong></td>
+<td>流式；需额外 MAC</td>
+<td>需配合 HMAC</td>
+</tr>
+<tr>
+<td><strong>CBC</strong></td>
+<td>传统模式；需随机 IV + 防 padding oracle</td>
+<td>legacy</td>
+</tr>
+<tr>
+<td><strong>ECB</strong></td>
+<td>相同块相同密文</td>
+<td><strong>否</strong></td>
+</tr>
+</tbody></table>
+<h2 id="2-ChaCha20-Poly1305"><a href="#2-ChaCha20-Poly1305" class="headerlink" title="2. ChaCha20-Poly1305"></a>2. ChaCha20-Poly1305</h2><ul>
+<li>256 bit 密钥，<strong>256 bit nonce</strong>（TLS 中规范用法由协议约束）。  </li>
+<li>常数时间实现友好，<strong>TLS 1.3</strong> 默认套件之一。  </li>
+<li>OpenSSL <strong><code>enc</code></strong> 对 ChaCha20 支持依版本而异；应用层多用库 API 或 TLS。</li>
+</ul>
+<h2 id="3-已淘汰（legacy-provider）"><a href="#3-已淘汰（legacy-provider）" class="headerlink" title="3. 已淘汰（legacy provider）"></a>3. 已淘汰（legacy provider）</h2><p><strong>DES、3DES、RC4、Blowfish</strong> — 仅维护老设备；新系统勿选。</p>
+<hr>
+<h1 id="二、推荐：openssl-enc-加密文件"><a href="#二、推荐：openssl-enc-加密文件" class="headerlink" title="二、推荐：openssl enc 加密文件"></a>二、推荐：<code>openssl enc</code> 加密文件</h1><h2 id="1-AES-256-CBC-PBKDF2（口令保护，通用）"><a href="#1-AES-256-CBC-PBKDF2（口令保护，通用）" class="headerlink" title="1. AES-256-CBC + PBKDF2（口令保护，通用）"></a>1. AES-256-CBC + PBKDF2（口令保护，通用）</h2><p>比裸 CBC 更安全：<strong><code>-pbkdf2</code></strong> 迭代派生密钥、<strong><code>-salt</code></strong> 防彩虹表。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 加密</span></span><br><span class="line">openssl enc -aes-256-cbc -pbkdf2 -iter 600000 -salt \</span><br><span class="line">  -<span class="keyword">in</span> secret.pdf -out secret.pdf.enc \</span><br><span class="line">  -pass pass:<span class="string">&#x27;强口令或环境变量&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 解密（算法参数必须一致）</span></span><br><span class="line">openssl enc -d -aes-256-cbc -pbkdf2 -iter 600000 \</span><br><span class="line">  -<span class="keyword">in</span> secret.pdf.enc -out secret.pdf \</span><br><span class="line">  -pass pass:<span class="string">&#x27;强口令或环境变量&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>生产更推荐</strong>：随机 <strong>32 字节密钥</strong> 写文件或 KMS，而非长期口令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">openssl rand -hex 32 &gt; key.bin</span><br><span class="line">openssl enc -aes-256-cbc -pbkdf2 -iter 1 -salt \</span><br><span class="line">  -<span class="keyword">in</span> plain.txt -out cipher.bin -pass file:./key.bin</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-查看支持的-cipher"><a href="#2-查看支持的-cipher" class="headerlink" title="2. 查看支持的 cipher"></a>2. 查看支持的 cipher</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">openssl enc -ciphers</span><br><span class="line">openssl list -cipher-algorithms | grep -i aes</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="三、AEAD（GCM）在-OpenSSL-中的注意点"><a href="#三、AEAD（GCM）在-OpenSSL-中的注意点" class="headerlink" title="三、AEAD（GCM）在 OpenSSL 中的注意点"></a>三、AEAD（GCM）在 OpenSSL 中的注意点</h1><p><strong>GCM</strong> 必须保证 <strong>(key, nonce&#x2F;IV) 永不重复</strong>。命令行 <strong><code>enc -aes-256-gcm</code></strong> 在 OpenSSL 3.x 可用，但 <strong>tag 处理</strong> 与 <strong><code>enc</code> 默认行为</strong> 因版本而异；<strong>生产 bulk 加密</strong>更建议：</p>
+<ul>
+<li>应用代码使用 <strong>EVP_aes_256_gcm</strong> 并显式管理 IV + tag；或  </li>
+<li>使用 <strong>age</strong>、<strong>libsodium</strong> 等封装好的文件加密工具。</li>
+</ul>
+<p>演示（OpenSSL 3.x，以本机 <code>enc -help</code> 为准）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">openssl enc -aes-256-gcm -pbkdf2 -iter 600000 -salt \</span><br><span class="line">  -<span class="keyword">in</span> note.txt -out note.enc -pass pass:demo</span><br><span class="line">openssl enc -d -aes-256-gcm -pbkdf2 -iter 600000 \</span><br><span class="line">  -<span class="keyword">in</span> note.enc -out note.txt -pass pass:demo</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="四、与-TLS-HTTPS-的关系"><a href="#四、与-TLS-HTTPS-的关系" class="headerlink" title="四、与 TLS &#x2F; HTTPS 的关系"></a>四、与 TLS &#x2F; HTTPS 的关系</h1><p>浏览器访问 <strong>HTTPS</strong> 时：</p>
+<ol>
+<li><strong>TLS 握手</strong>（<a href="/2026/05/01/openssl-asymmetric/" title="OpenSSL 非对称加密与密钥交换：RSA、Ed25519、X25519">非对称&#x2F;密钥交换</a>）协商出 <strong>对称会话密钥</strong>；  </li>
+<li>记录层用 <strong>AES-GCM</strong> 或 <strong>ChaCha20-Poly1305</strong> 加密 HTTP 数据。</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl s_client -connect example.com:443 -tls1_3 &lt;/dev/null 2&gt;&amp;1 | grep -E <span class="string">&#x27;Protocol|Cipher&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="五、选型小结"><a href="#五、选型小结" class="headerlink" title="五、选型小结"></a>五、选型小结</h1><table>
+<thead>
+<tr>
+<th>需求</th>
+<th>推荐</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>本地加密单个文件</td>
+<td><strong>AES-256-CBC + PBKDF2</strong> 或专用 <strong>age</strong></td>
+</tr>
+<tr>
+<td>API &#x2F; 数据库字段</td>
+<td><strong>AES-256-GCM</strong>，随机 IV 随密文存储</td>
+</tr>
+<tr>
+<td>大流量通道</td>
+<td><strong>TLS 1.3</strong>（内置 AEAD）</td>
+</tr>
+<tr>
+<td>不要用</td>
+<td>ECB、裸 CBC、RC4、DES</td>
+</tr>
+</tbody></table>
+<hr>
+<h1 id="延伸阅读"><a href="#延伸阅读" class="headerlink" title="延伸阅读"></a>延伸阅读</h1><table>
+<thead>
+<tr>
+<th>文档</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="/2026/05/01/openssl-hash/" title="OpenSSL 哈希算法：SHA-256、SHA-3 与推荐用法">哈希算法</a></td>
+<td>完整性摘要</td>
+</tr>
+<tr>
+<td><a href="/2026/05/01/openssl-asymmetric/" title="OpenSSL 非对称加密与密钥交换：RSA、Ed25519、X25519">非对称与密钥交换</a></td>
+<td>包装对称密钥</td>
+</tr>
+<tr>
+<td><a href="/2026/05/01/openssl-kdf-rand/" title="OpenSSL 密钥派生与随机数：PBKDF2、rand 与推荐用法">密钥派生与随机数</a></td>
+<td>从口令派生 AES 密钥</td>
+</tr>
+</tbody></table>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/openssl-hash/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/05/01/openssl-hash/" class="post-title-link" itemprop="url">OpenSSL 哈希算法：SHA-256、SHA-3 与推荐用法</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-05-01 14:00:00" itemprop="dateCreated datePublished" datetime="2026-05-01T14:00:00+08:00">2026-05-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-06-03 20:56:52" itemprop="dateModified" datetime="2026-06-03T20:56:52+08:00">2026-06-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/OpenSSL/" itemprop="url" rel="index"><span itemprop="name">OpenSSL</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>699</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>2 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p><strong>哈希（Digest &#x2F; Hash）</strong> 把任意长度输入映射为<strong>固定长度摘要</strong>，具有<strong>单向性</strong>与<strong>抗碰撞性</strong>（理想情况下）。OpenSSL 通过 <strong><code>openssl dgst</code></strong> 提供命令行；库侧对应 <strong>EVP_MD</strong> 系列。命令总览见 <a href="/2026/05/01/OpenSSL/OpenSSL/" title="OpenSSL">OpenSSL 常用操作</a>，能力索引见 <a href="/2026/05/01/openssl-features/" title="OpenSSL功能">OpenSSL 功能</a>。</p>
+<h1 id="算法选型（推荐）"><a href="#算法选型（推荐）" class="headerlink" title="算法选型（推荐）"></a>算法选型（推荐）</h1><table>
+<thead>
+<tr>
+<th>场景</th>
+<th>推荐</th>
+<th>避免</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>文件完整性校验、软件发布</td>
+<td><strong>SHA-256</strong>、<strong>SHA-512</strong></td>
+<td>MD5、SHA-1</td>
+</tr>
+<tr>
+<td>密码存储</td>
+<td><strong>Argon2</strong> &#x2F; <strong>bcrypt</strong>（应用层库）+ 盐；OpenSSL 侧用 <strong>PBKDF2-HMAC-SHA256</strong> 见 <a href="/2026/05/01/openssl-kdf-rand/" title="OpenSSL 密钥派生与随机数：PBKDF2、rand 与推荐用法">密钥派生</a></td>
+<td>裸 SHA-256(password)</td>
+</tr>
+<tr>
+<td>证书&#x2F;CSR 签名摘要</td>
+<td><strong>SHA-256</strong></td>
+<td>SHA-1</td>
+</tr>
+<tr>
+<td>长数据流式哈希</td>
+<td><strong>SHA-256</strong></td>
+<td>—</td>
+</tr>
+<tr>
+<td>新标准&#x2F;长摘要需求</td>
+<td><strong>SHA-3-256</strong></td>
+<td>—</td>
+</tr>
+</tbody></table>
+<pre>
+<code class="mermaid">
+
+flowchart LR
+  Data[文件或消息] --&gt; H[SHA-256 &#x2F; SHA-512]
+  H --&gt; Digest[固定长度摘要 hex&#x2F;base64]
+  Digest --&gt; Use[校验 &#x2F; 签名输入 &#x2F; 区块链 Merkle 等]
+</code>
+</pre>
+
+<hr>
+<h1 id="一、常见算法特点"><a href="#一、常见算法特点" class="headerlink" title="一、常见算法特点"></a>一、常见算法特点</h1><h2 id="1-SHA-2-系列（首选）"><a href="#1-SHA-2-系列（首选）" class="headerlink" title="1. SHA-2 系列（首选）"></a>1. SHA-2 系列（<strong>首选</strong>）</h2><table>
+<thead>
+<tr>
+<th>算法</th>
+<th>输出长度</th>
+<th>特点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>SHA-256</strong></td>
+<td>256 bit</td>
+<td><strong>默认推荐</strong>；TLS、Git、证书、区块链广泛使用</td>
+</tr>
+<tr>
+<td><strong>SHA-384</strong></td>
+<td>384 bit</td>
+<td>更高安全余量</td>
+</tr>
+<tr>
+<td><strong>SHA-512</strong></td>
+<td>512 bit</td>
+<td>大文件、64 位 CPU 上常更快</td>
+</tr>
+</tbody></table>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">openssl dgst -sha256 file.bin</span><br><span class="line">openssl sha256 file.bin</span><br><span class="line">openssl dgst -sha512 file.bin</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-SHA-3-系列"><a href="#2-SHA-3-系列" class="headerlink" title="2. SHA-3 系列"></a>2. SHA-3 系列</h2><p>基于 <strong>Keccak</strong>，与 SHA-2 <strong>结构不同</strong>；适合需要与 SHA-2 <strong>算法多样性</strong>的场景（合规、新标准）。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">openssl dgst -sha3-256 file.bin</span><br><span class="line">openssl dgst -sha3-512 file.bin</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-SHA-1-MD5（仅兼容）"><a href="#3-SHA-1-MD5（仅兼容）" class="headerlink" title="3. SHA-1 &#x2F; MD5（仅兼容）"></a>3. SHA-1 &#x2F; MD5（<strong>仅兼容</strong>）</h2><table>
+<thead>
+<tr>
+<th>算法</th>
+<th>状态</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>SHA-1</strong></td>
+<td>已破碰撞</td>
+<td>勿用于签名、证书；老 Git 对象可能仍见</td>
+</tr>
+<tr>
+<td><strong>MD5</strong></td>
+<td>已破碰撞</td>
+<td>仅文件<strong>非安全</strong>校验或遗留系统</td>
+</tr>
+</tbody></table>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 仅当对接老系统时使用</span></span><br><span class="line">openssl dgst -md5 legacy.iso</span><br><span class="line">openssl dgst -sha1 old-artifact</span><br></pre></td></tr></table></figure>
+
+<h2 id="4-BLAKE2（OpenSSL-3-x）"><a href="#4-BLAKE2（OpenSSL-3-x）" class="headerlink" title="4. BLAKE2（OpenSSL 3.x）"></a>4. BLAKE2（OpenSSL 3.x）</h2><p>高性能现代哈希；若本机 <code>openssl list -digest-algorithms</code> 含 <strong>BLAKE2b512</strong> 可用：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl dgst -blake2b512 file.bin</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="二、推荐用法"><a href="#二、推荐用法" class="headerlink" title="二、推荐用法"></a>二、推荐用法</h1><h2 id="1-校验下载包"><a href="#1-校验下载包" class="headerlink" title="1. 校验下载包"></a>1. 校验下载包</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">curl -LO https://example.com/app.tar.gz</span><br><span class="line">openssl dgst -sha256 app.tar.gz</span><br><span class="line"><span class="comment"># 与官网公布的 SHA256 比对</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="2-管道-字符串（注意换行）"><a href="#2-管道-字符串（注意换行）" class="headerlink" title="2. 管道 &#x2F; 字符串（注意换行）"></a>2. 管道 &#x2F; 字符串（注意换行）</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> -n <span class="string">&quot;payload&quot;</span> | openssl dgst -sha256</span><br></pre></td></tr></table></figure>
+
+<p><strong><code>echo</code> 默认带 <code>\n</code></strong>，校验短字符串务必 <strong><code>-n</code></strong>。</p>
+<h2 id="3-配合数字签名"><a href="#3-配合数字签名" class="headerlink" title="3. 配合数字签名"></a>3. 配合数字签名</h2><p>摘要算法常作为签名输入（见 <a href="/2026/05/01/openssl-sign-hmac/" title="OpenSSL 数字签名与 HMAC：完整性、身份与推荐用法">数字签名</a>）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">openssl dgst -sha256 -sign private.key -out sign.sig data.bin</span><br><span class="line">openssl dgst -sha256 -verify public.key -signature sign.sig data.bin</span><br></pre></td></tr></table></figure>
+
+<h2 id="4-查看本机支持"><a href="#4-查看本机支持" class="headerlink" title="4. 查看本机支持"></a>4. 查看本机支持</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl list -digest-algorithms</span><br></pre></td></tr></table></figure>
+
+<p>OpenSSL 3.x 中部分老旧算法在 <strong>legacy provider</strong>，需 <code>-provider legacy</code> 才可用（不推荐启用除非维护遗留）。</p>
+<hr>
+<h1 id="三、与「加密」的区别"><a href="#三、与「加密」的区别" class="headerlink" title="三、与「加密」的区别"></a>三、与「加密」的区别</h1><table>
+<thead>
+<tr>
+<th></th>
+<th>哈希</th>
+<th>对称加密</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>可逆</td>
+<td><strong>否</strong></td>
+<td>是（有密钥）</td>
+</tr>
+<tr>
+<td>用途</td>
+<td>完整性、指纹</td>
+<td>保密性</td>
+</tr>
+<tr>
+<td>OpenSSL 命令</td>
+<td><strong><code>dgst</code></strong></td>
+<td><strong><code>enc</code></strong></td>
+</tr>
+</tbody></table>
+<p><strong>Base64</strong>（<code>openssl base64</code>）只是编码，<strong>不是哈希也不是加密</strong>。</p>
+<hr>
+<h1 id="延伸阅读"><a href="#延伸阅读" class="headerlink" title="延伸阅读"></a>延伸阅读</h1><table>
+<thead>
+<tr>
+<th>文档</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="/2026/05/01/openssl-symmetric/" title="OpenSSL 对称加密：AES-GCM、ChaCha20 与推荐用法">对称加密</a></td>
+<td>AES-256-GCM 文件加密</td>
+</tr>
+<tr>
+<td><a href="/2026/05/01/openssl-sign-hmac/" title="OpenSSL 数字签名与 HMAC：完整性、身份与推荐用法">数字签名与 HMAC</a></td>
+<td>带密钥的完整性</td>
+</tr>
+<tr>
+<td><a href="/2026/05/01/Protocol/HTTPS/" title="HTTPS 详解：TLS 握手、证书与 openssl&#x2F;curl 示例">HTTPS</a></td>
+<td>TLS 中的 SHA-256 握手</td>
+</tr>
+</tbody></table>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
     <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/OpenSSL/OpenSSL/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -706,7 +2149,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-31 23:47:21" itemprop="dateModified" datetime="2026-05-31T23:47:21+08:00">2026-05-31</time>
+      <time title="修改时间：2026-06-03 20:57:29" itemprop="dateModified" datetime="2026-06-03T20:57:29+08:00">2026-06-03</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -725,7 +2168,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>1.4k</span>
+      <span>1.6k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -743,7 +2186,35 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="OpenSSL-常用操作完整指南"><a href="#OpenSSL-常用操作完整指南" class="headerlink" title="OpenSSL 常用操作完整指南"></a>OpenSSL 常用操作完整指南</h1><p>OpenSSL 是生成、管理<strong>非对称密钥</strong>和<strong>数字证书</strong>的标准工具，广泛用于 <a href="/2026/05/01/Protocol/HTTPS/" title="HTTPS 详解：TLS 握手、证书与 openssl&#x2F;curl 示例">HTTPS</a>、SSL&#x2F;TLS、身份认证等。能力概览见 <a href="/2026/05/01/openssl-features/" title="OpenSSL功能">OpenSSL 功能</a>；本文侧重<strong>命令行操作</strong>。</p>
+          <h1 id="OpenSSL-常用操作完整指南"><a href="#OpenSSL-常用操作完整指南" class="headerlink" title="OpenSSL 常用操作完整指南"></a>OpenSSL 常用操作完整指南</h1><p>OpenSSL 是生成、管理<strong>非对称密钥</strong>和<strong>数字证书</strong>的标准工具，广泛用于 <a href="/2026/05/01/Protocol/HTTPS/" title="HTTPS 详解：TLS 握手、证书与 openssl&#x2F;curl 示例">HTTPS</a>、SSL&#x2F;TLS、身份认证等。能力概览见 <a href="/2026/05/01/openssl-features/" title="OpenSSL功能">OpenSSL 功能</a>；<strong>算法分类与推荐用法</strong>见下表；本文侧重<strong>命令行操作</strong>。</p>
+<table>
+<thead>
+<tr>
+<th>类别</th>
+<th>文档</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>哈希</td>
+<td><a href="/2026/05/01/openssl-hash/" title="OpenSSL 哈希算法：SHA-256、SHA-3 与推荐用法">哈希算法</a></td>
+</tr>
+<tr>
+<td>对称加密</td>
+<td><a href="/2026/05/01/openssl-symmetric/" title="OpenSSL 对称加密：AES-GCM、ChaCha20 与推荐用法">对称加密</a></td>
+</tr>
+<tr>
+<td>非对称 &#x2F; 密钥交换</td>
+<td><a href="/2026/05/01/openssl-asymmetric/" title="OpenSSL 非对称加密与密钥交换：RSA、Ed25519、X25519">非对称与密钥交换</a></td>
+</tr>
+<tr>
+<td>签名 &#x2F; HMAC</td>
+<td><a href="/2026/05/01/openssl-sign-hmac/" title="OpenSSL 数字签名与 HMAC：完整性、身份与推荐用法">数字签名与 HMAC</a></td>
+</tr>
+<tr>
+<td>密钥派生 &#x2F; 随机数</td>
+<td><a href="/2026/05/01/openssl-kdf-rand/" title="OpenSSL 密钥派生与随机数：PBKDF2、rand 与推荐用法">密钥派生与随机数</a></td>
+</tr>
+</tbody></table>
 <hr>
 <h2 id="一、核心概念（快速看懂）"><a href="#一、核心概念（快速看懂）" class="headerlink" title="一、核心概念（快速看懂）"></a>一、核心概念（快速看懂）</h2><ol>
 <li><strong>私钥（private key）</strong>：.key &#x2F; .pem，必须保密，用于解密、签名</li>
@@ -903,7 +2374,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-31 23:47:21" itemprop="dateModified" datetime="2026-05-31T23:47:21+08:00">2026-05-31</time>
+      <time title="修改时间：2026-06-03 20:57:29" itemprop="dateModified" datetime="2026-06-03T20:57:29+08:00">2026-06-03</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -922,7 +2393,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>1.1k</span>
+      <span>1.3k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -980,12 +2451,42 @@
 <li>公钥验签</li>
 </ul>
 <hr>
-<h3 id="8-支持所有主流加密算法"><a href="#8-支持所有主流加密算法" class="headerlink" title="8. 支持所有主流加密算法"></a>8. 支持所有主流加密算法</h3><ul>
-<li>RSA、ECC（非对称加密）</li>
-<li>AES、ChaCha20（对称加密）</li>
-<li>SHA256、SHA3、MD5（哈希）</li>
-<li>TLS 1.3 &#x2F; QUIC 等最新协议</li>
-</ul>
+<h3 id="8-密码算法（分类文档）"><a href="#8-密码算法（分类文档）" class="headerlink" title="8. 密码算法（分类文档）"></a>8. 密码算法（分类文档）</h3><p>OpenSSL <strong>不包含世界上所有算法</strong>，但覆盖 <strong>TLS &#x2F; HTTPS &#x2F; 证书 &#x2F; 文件加密</strong> 等场景的<strong>主流与推荐</strong>实现。按类别详见：</p>
+<table>
+<thead>
+<tr>
+<th>类别</th>
+<th>文档</th>
+<th>推荐算法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>哈希</td>
+<td><a href="/2026/05/01/openssl-hash/" title="OpenSSL 哈希算法：SHA-256、SHA-3 与推荐用法">哈希算法</a></td>
+<td><strong>SHA-256</strong>、SHA-512、SHA-3</td>
+</tr>
+<tr>
+<td>对称加密</td>
+<td><a href="/2026/05/01/openssl-symmetric/" title="OpenSSL 对称加密：AES-GCM、ChaCha20 与推荐用法">对称加密</a></td>
+<td><strong>AES-256-GCM</strong>、ChaCha20-Poly1305</td>
+</tr>
+<tr>
+<td>非对称 &#x2F; 密钥交换</td>
+<td><a href="/2026/05/01/openssl-asymmetric/" title="OpenSSL 非对称加密与密钥交换：RSA、Ed25519、X25519">非对称与密钥交换</a></td>
+<td><strong>Ed25519</strong>、<strong>X25519</strong>、EC P-256、RSA 2048+</td>
+</tr>
+<tr>
+<td>签名 &#x2F; HMAC</td>
+<td><a href="/2026/05/01/openssl-sign-hmac/" title="OpenSSL 数字签名与 HMAC：完整性、身份与推荐用法">数字签名与 HMAC</a></td>
+<td><strong>Ed25519</strong>、ECDSA、<strong>HMAC-SHA256</strong></td>
+</tr>
+<tr>
+<td>密钥派生 &#x2F; 随机数</td>
+<td><a href="/2026/05/01/openssl-kdf-rand/" title="OpenSSL 密钥派生与随机数：PBKDF2、rand 与推荐用法">密钥派生与随机数</a></td>
+<td><strong>openssl rand</strong>、<strong>PBKDF2</strong></td>
+</tr>
+</tbody></table>
+<p>查看本机支持：<code>openssl list -digest-algorithms</code>、<code>-cipher-algorithms</code>、<code>-public-key-algorithms</code>。</p>
 <hr>
 <h2 id="三、哪些软件在底层使用-OpenSSL？"><a href="#三、哪些软件在底层使用-OpenSSL？" class="headerlink" title="三、哪些软件在底层使用 OpenSSL？"></a>三、哪些软件在底层使用 OpenSSL？</h2><ul>
 <li><strong>Nginx &#x2F; Apache</strong>（HTTPS 加密）</li>
@@ -1081,1100 +2582,8 @@
 
 
 
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/OpenCV/OpenCV/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="miracle">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="my">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | my">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/05/01/OpenCV/OpenCV/" class="post-title-link" itemprop="url">OpenCV</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2026-05-01 13:42:38" itemprop="dateCreated datePublished" datetime="2026-05-01T13:42:38+08:00">2026-05-01</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-31 23:47:21" itemprop="dateModified" datetime="2026-05-31T23:47:21+08:00">2026-05-31</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/OpenCV/" itemprop="url" rel="index"><span itemprop="name">OpenCV</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>372</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>1 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p><strong>OpenCV</strong>（Open Source Computer Vision Library）是开源<strong>计算机视觉</strong>库：图像读写、几何变换、特征检测、目标跟踪、相机标定等，提供 <strong>C++</strong> 核心与 <strong>Python</strong> 绑定。下面从「<strong>安装与基本 I&#x2F;O</strong> → <strong>图像处理</strong> → <strong>特征与匹配</strong> → <strong>与 DL 的结合</strong> → <strong>与 FFmpeg 的关系</strong>」顺序写清楚。</p>
-<hr>
-<h1 id="一、安装与基本读写"><a href="#一、安装与基本读写" class="headerlink" title="一、安装与基本读写"></a>一、安装与基本读写</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">pip install opencv-python</span><br><span class="line"><span class="comment"># 含额外模块：opencv-contrib-python</span></span><br></pre></td></tr></table></figure>
-
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> cv2</span><br><span class="line"></span><br><span class="line">img = cv2.imread(<span class="string">&quot;photo.jpg&quot;</span>)  <span class="comment"># BGR 顺序</span></span><br><span class="line"><span class="built_in">print</span>(img.shape)</span><br><span class="line">cv2.imshow(<span class="string">&quot;demo&quot;</span>, img)</span><br><span class="line">cv2.waitKey(<span class="number">0</span>)</span><br><span class="line">cv2.destroyAllWindows()</span><br><span class="line">cv2.imwrite(<span class="string">&quot;out.jpg&quot;</span>, img)</span><br></pre></td></tr></table></figure>
-
-<p>视频：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">cap = cv2.VideoCapture(<span class="string">&quot;video.mp4&quot;</span>)</span><br><span class="line"><span class="keyword">while</span> cap.isOpened():</span><br><span class="line">    ok, frame = cap.read()</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> ok:</span><br><span class="line">        <span class="keyword">break</span></span><br><span class="line">    cv2.imshow(<span class="string">&quot;v&quot;</span>, frame)</span><br><span class="line">    <span class="keyword">if</span> cv2.waitKey(<span class="number">1</span>) &amp; <span class="number">0xFF</span> == <span class="built_in">ord</span>(<span class="string">&quot;q&quot;</span>):</span><br><span class="line">        <span class="keyword">break</span></span><br><span class="line">cap.release()</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h1 id="二、常用图像处理"><a href="#二、常用图像处理" class="headerlink" title="二、常用图像处理"></a>二、常用图像处理</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)</span><br><span class="line">blur = cv2.GaussianBlur(gray, (<span class="number">5</span>, <span class="number">5</span>), <span class="number">0</span>)</span><br><span class="line">edges = cv2.Canny(blur, <span class="number">50</span>, <span class="number">150</span>)</span><br><span class="line"></span><br><span class="line">h, w = img.shape[:<span class="number">2</span>]</span><br><span class="line">resized = cv2.resize(img, (w // <span class="number">2</span>, h // <span class="number">2</span>))</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><strong>色彩空间</strong>：BGR、HSV、Lab。  </li>
-<li><strong>形态学</strong>：<strong><code>erode</code> &#x2F; <code>dilate</code> &#x2F; <code>morphologyEx</code></strong>。  </li>
-<li><strong>阈值</strong>：<strong><code>threshold</code></strong>、<strong><code>adaptiveThreshold</code></strong>。</li>
-</ul>
-<hr>
-<h1 id="三、特征与几何"><a href="#三、特征与几何" class="headerlink" title="三、特征与几何"></a>三、特征与几何</h1><table>
-<thead>
-<tr>
-<th>API</th>
-<th>用途</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>ORB&#x2F;SIFT&#x2F;SURF</strong></td>
-<td>关键点与描述子（版本与专利注意）</td>
-</tr>
-<tr>
-<td><strong>findHomography</strong></td>
-<td>透视变换、文档扫描</td>
-</tr>
-<tr>
-<td><strong>matchTemplate</strong></td>
-<td>模板匹配</td>
-</tr>
-<tr>
-<td><strong>CascadeClassifier</strong></td>
-<td>经典 Haar 人脸检测（演示级）</td>
-</tr>
-</tbody></table>
-<p>生产级检测&#x2F;分割多改用 <a href="/2026/05/01/PyTorch/PyTorch/" title="PyTorch">PyTorch</a> + <strong>YOLO</strong>、<strong>Mask R-CNN</strong> 等 <a href="/2026/05/01/AI/DL/" title="DL">DL</a> 模型；OpenCV 负责<strong>前后处理</strong>（resize、NMS 辅助、绘制框）。</p>
-<hr>
-<h1 id="四、与深度学习流水线"><a href="#四、与深度学习流水线" class="headerlink" title="四、与深度学习流水线"></a>四、与深度学习流水线</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">blob = cv2.dnn.blobFromImage(img, <span class="number">1</span>/<span class="number">255.0</span>, (<span class="number">640</span>, <span class="number">640</span>), swapRB=<span class="literal">True</span>, crop=<span class="literal">False</span>)</span><br><span class="line">net.setInput(blob)</span><br><span class="line">outs = net.forward()</span><br></pre></td></tr></table></figure>
-
-<p><strong><code>cv2.dnn</code></strong> 可加载 <strong>ONNX</strong>、部分 <strong>TensorFlow&#x2F;Caffe</strong> 模型做推理；训练仍在 PyTorch 等框架。</p>
-<hr>
-<h1 id="五、延伸阅读"><a href="#五、延伸阅读" class="headerlink" title="五、延伸阅读"></a>五、延伸阅读</h1><ul>
-<li>视频编解码与转码：<a href="/2026/05/01/FFmpeg/FFmpeg/" title="FFmpeg">FFmpeg</a>  </li>
-<li>官方文档：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://docs.opencv.org/">https://docs.opencv.org/</a></li>
-</ul>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/FFmpeg/FFmpeg/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="miracle">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="my">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | my">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/05/01/FFmpeg/FFmpeg/" class="post-title-link" itemprop="url">FFmpeg</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2026-05-01 13:41:59" itemprop="dateCreated datePublished" datetime="2026-05-01T13:41:59+08:00">2026-05-01</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-31 23:47:21" itemprop="dateModified" datetime="2026-05-31T23:47:21+08:00">2026-05-31</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/FFmpeg/" itemprop="url" rel="index"><span itemprop="name">FFmpeg</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>388</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>1 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p><strong>FFmpeg</strong> 是开源<strong>音视频处理</strong>套件：<strong>libavcodec</strong> 编解码、<strong>libavformat</strong> 封装、<strong>libavfilter</strong> 滤镜、<strong>ffmpeg&#x2F;ffprobe</strong> 命令行工具。下面从「<strong>命令结构</strong> → <strong>转码与压缩</strong> → <strong>裁剪与截图</strong> → <strong>流媒体</strong> → <strong>与 OpenCV 的关系</strong>」顺序写清楚。</p>
-<hr>
-<h1 id="一、命令结构"><a href="#一、命令结构" class="headerlink" title="一、命令结构"></a>一、命令结构</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ffmpeg [全局选项] -i 输入 [输出选项] 输出</span><br><span class="line">ffprobe -show_format -show_streams input.mp4</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><strong><code>-i</code></strong>：输入文件或流 URL。  </li>
-<li><strong><code>-c:v</code> &#x2F; <code>-c:a</code></strong>：视频&#x2F;音频编码器（<strong>copy</strong> 表示不重编码）。  </li>
-<li><strong><code>-f</code></strong>：强制输出格式。</li>
-</ul>
-<hr>
-<h1 id="二、转码示例"><a href="#二、转码示例" class="headerlink" title="二、转码示例"></a>二、转码示例</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># H.264 + AAC，CRF 质量控制体积</span></span><br><span class="line">ffmpeg -i input.mov -c:v libx264 -crf 23 -preset medium -c:a aac -b:a 128k output.mp4</span><br><span class="line"></span><br><span class="line"><span class="comment"># 仅换容器，不重编码（快）</span></span><br><span class="line">ffmpeg -i input.mkv -c copy output.mp4</span><br><span class="line"></span><br><span class="line"><span class="comment"># 缩放分辨率</span></span><br><span class="line">ffmpeg -i input.mp4 -vf <span class="string">&quot;scale=1280:-2&quot;</span> -c:v libx264 -crf 23 out.mp4</span><br></pre></td></tr></table></figure>
-
-<p><strong>CRF</strong> 越小质量越高、文件越大；<strong>preset</strong> 越慢压缩率通常越好。</p>
-<hr>
-<h1 id="三、裁剪、截图与-GIF"><a href="#三、裁剪、截图与-GIF" class="headerlink" title="三、裁剪、截图与 GIF"></a>三、裁剪、截图与 GIF</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 截取 00:01:00 起 30 秒</span></span><br><span class="line">ffmpeg -ss 00:01:00 -i input.mp4 -t 30 -c copy clip.mp4</span><br><span class="line"></span><br><span class="line"><span class="comment"># 第 5 秒一帧</span></span><br><span class="line">ffmpeg -ss 00:00:05 -i input.mp4 -frames:v 1 frame.jpg</span><br><span class="line"></span><br><span class="line"><span class="comment"># 简单 GIF</span></span><br><span class="line">ffmpeg -i input.mp4 -vf <span class="string">&quot;fps=10,scale=480:-1&quot;</span> -t 5 demo.gif</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h1 id="四、流媒体（概念）"><a href="#四、流媒体（概念）" class="headerlink" title="四、流媒体（概念）"></a>四、流媒体（概念）</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 推 RTMP（示例，地址需替换）</span></span><br><span class="line">ffmpeg -re -i input.mp4 -c copy -f flv rtmp://live.example.com/app/stream</span><br><span class="line"></span><br><span class="line"><span class="comment"># HLS 切片</span></span><br><span class="line">ffmpeg -i input.mp4 -c:v libx264 -hls_time 6 -hls_list_size 0 -f hls index.m3u8</span><br></pre></td></tr></table></figure>
-
-<p>协议层见 <a href="/2026/05/01/Protocol/HTTP/" title="HTTP 详解：报文、方法、版本与 curl&#x2F;nc 示例">HTTP</a>、<a href="/2026/05/01/Protocol/WebSocket/" title="WebSocket 详解：握手、帧与 Python 示例">WebSocket</a>；低延迟场景还有 <strong>WebRTC</strong>、<strong>SRT</strong> 等。</p>
-<hr>
-<h1 id="五、滤镜与硬件加速"><a href="#五、滤镜与硬件加速" class="headerlink" title="五、滤镜与硬件加速"></a>五、滤镜与硬件加速</h1><ul>
-<li><strong><code>-vf</code></strong> 视频滤镜链：<strong><code>crop</code></strong>、<strong><code>overlay</code></strong>、<strong><code>subtitles</code></strong>。  </li>
-<li><strong>硬件编码</strong>：<strong><code>-c:v h264_nvenc</code></strong>（NVIDIA）、<strong><code>h264_qsv</code></strong>（Intel）等，依驱动与编译选项。  </li>
-<li><strong>与 <a href="/2026/05/01/OpenCV/OpenCV/" title="OpenCV">OpenCV</a></strong>：OpenCV 可读帧做 CV；<strong>FFmpeg</strong> 负责编解码与封装，二者常组合使用。</li>
-</ul>
-<p>官方文档：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://ffmpeg.org/documentation.html">https://ffmpeg.org/documentation.html</a></p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/GraphQL/GraphQL/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="miracle">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="my">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | my">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/05/01/GraphQL/GraphQL/" class="post-title-link" itemprop="url">GraphQL</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2026-05-01 13:38:08" itemprop="dateCreated datePublished" datetime="2026-05-01T13:38:08+08:00">2026-05-01</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-31 22:49:39" itemprop="dateModified" datetime="2026-05-31T22:49:39+08:00">2026-05-31</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/GraphQL/" itemprop="url" rel="index"><span itemprop="name">GraphQL</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>782</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>3 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p><strong>GraphQL 是由 Meta（原 Facebook）于 2012 年创建、2015 年开源的一种用于 API 的查询语言与运行时</strong>，核心是让客户端<strong>精确请求所需数据</strong>，解决 REST 的“过度获取”和“多次请求”问题。下面从核心概念、优势、与 REST 对比、基本用法四方面详细说明。</p>
-<h1 id="请求模型"><a href="#请求模型" class="headerlink" title="请求模型"></a>请求模型</h1><pre>
-<code class="mermaid">
-
-flowchart LR
-  Client[GraphQL Client] --&gt;|单 POST &#x2F;graphql| S[Schema Resolver]
-  S --&gt; DB[(多数据源)]
-  S --&gt; Client
-</code>
-</pre>
-
-<hr>
-<h3 id="一、核心概念"><a href="#一、核心概念" class="headerlink" title="一、核心概念"></a>一、核心概念</h3><ul>
-<li><strong>Schema（模式）</strong>：用强类型定义数据结构与关系，是 GraphQL 的“契约”，包含：<ul>
-<li><strong>Query</strong>：查询（读操作）入口</li>
-<li><strong>Mutation</strong>：变更（写操作）入口</li>
-<li><strong>Subscription</strong>：订阅（实时更新，基于 WebSocket）</li>
-</ul>
-</li>
-<li><strong>Type（类型）</strong>：定义对象结构，如 <code>User</code>、<code>Post</code>，含字段与类型（标量&#x2F;对象&#x2F;列表&#x2F;非空）。<figure class="highlight graphql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> User <span class="punctuation">&#123;</span></span><br><span class="line">  <span class="symbol">id</span><span class="punctuation">:</span> ID<span class="punctuation">!</span>          <span class="comment"># 非空ID</span></span><br><span class="line">  <span class="symbol">name</span><span class="punctuation">:</span> String<span class="punctuation">!</span>    <span class="comment"># 非空字符串</span></span><br><span class="line">  <span class="symbol">age</span><span class="punctuation">:</span> Int</span><br><span class="line">  <span class="symbol">posts</span><span class="punctuation">:</span> <span class="punctuation">[</span>Post<span class="punctuation">]</span>    <span class="comment"># Post列表</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure></li>
-<li><strong>Resolver（解析器）</strong>：服务端函数，负责<strong>按字段获取&#x2F;处理数据</strong>（数据库、微服务、第三方 API 均可）。</li>
-<li><strong>Query（查询）</strong>：客户端声明式请求，<strong>结构即响应结构</strong>。<figure class="highlight graphql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">query</span> GetUser <span class="punctuation">&#123;</span></span><br><span class="line">  user<span class="punctuation">(</span><span class="symbol">id</span><span class="punctuation">:</span> <span class="string">&quot;1&quot;</span><span class="punctuation">)</span> <span class="punctuation">&#123;</span></span><br><span class="line">    name</span><br><span class="line">    posts <span class="punctuation">&#123;</span> title <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure></li>
-<li><strong>Mutation（变更）</strong>：用于创建&#x2F;更新&#x2F;删除数据，语法类似 Query。<figure class="highlight graphql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">mutation</span> CreateUser <span class="punctuation">&#123;</span></span><br><span class="line">  createUser<span class="punctuation">(</span><span class="symbol">name</span><span class="punctuation">:</span> <span class="string">&quot;Alice&quot;</span><span class="punctuation">)</span> <span class="punctuation">&#123;</span> id name <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure></li>
-</ul>
-<hr>
-<h3 id="二、核心优势（对比-REST）"><a href="#二、核心优势（对比-REST）" class="headerlink" title="二、核心优势（对比 REST）"></a>二、核心优势（对比 REST）</h3><table>
-<thead>
-<tr>
-<th>维度</th>
-<th>GraphQL</th>
-<th>REST</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>数据获取</strong></td>
-<td>客户端精准指定字段，<strong>无过度获取</strong></td>
-<td>固定返回结构，易冗余</td>
-</tr>
-<tr>
-<td><strong>请求次数</strong></td>
-<td><strong>单一请求</strong>获取多资源（如用户+文章）</td>
-<td>需多端点请求，易“请求瀑布”</td>
-</tr>
-<tr>
-<td><strong>版本控制</strong></td>
-<td>Schema 渐进演进，<strong>无需版本号</strong></td>
-<td>需维护 v1&#x2F;v2 多版本</td>
-</tr>
-<tr>
-<td><strong>文档</strong></td>
-<td>基于 Schema <strong>自动生成</strong>（如 GraphiQL）</td>
-<td>需手动维护（Swagger 等）</td>
-</tr>
-<tr>
-<td><strong>实时能力</strong></td>
-<td>原生支持 Subscription（WebSocket）</td>
-<td>需轮询&#x2F;SSE，成本高</td>
-</tr>
-<tr>
-<td><strong>缓存</strong></td>
-<td>依赖客户端&#x2F;实体缓存（如 Apollo）</td>
-<td>天然适配 HTTP 缓存</td>
-</tr>
-</tbody></table>
-<p>关键结论：GraphQL 显著<strong>减少数据传输量与请求次数</strong>，弱网&#x2F;移动端收益极大；REST 更<strong>简单、成熟、缓存友好</strong>，适合简单场景。</p>
-<hr>
-<h3 id="三、工作流程"><a href="#三、工作流程" class="headerlink" title="三、工作流程"></a>三、工作流程</h3><ol>
-<li><strong>定义 Schema</strong>：服务端用 SDL（Schema Definition Language）定义类型、Query、Mutation。</li>
-<li><strong>实现 Resolver</strong>：每个字段对应解析器，对接数据源。</li>
-<li><strong>客户端请求</strong>：发送 POST 到单一端点（如 <code>/graphql</code>），携带 Query&#x2F;Mutation。</li>
-<li><strong>服务端执行</strong>：校验 Query → 调用 Resolver → 按请求结构返回 JSON。</li>
-<li><strong>客户端接收</strong>：响应结构与 Query 完全一致，直接渲染。</li>
-</ol>
-<hr>
-<h3 id="四、适用场景"><a href="#四、适用场景" class="headerlink" title="四、适用场景"></a>四、适用场景</h3><ul>
-<li>✅ <strong>复杂前端应用</strong>（如电商、社交）：多数据关联、按需字段。</li>
-<li>✅ <strong>移动端&#x2F;弱网环境</strong>：减少请求与数据体积。</li>
-<li>✅ <strong>微服务架构</strong>：统一网关聚合多服务数据。</li>
-<li>✅ <strong>实时功能</strong>（聊天、通知、实时看板）：Subscription 原生支持。</li>
-<li>❌ <strong>简单 CRUD 服务</strong>：REST 更轻量、易维护。</li>
-<li>❌ <strong>高缓存吞吐场景</strong>：REST HTTP 缓存更高效。</li>
-</ul>
-<hr>
-<h3 id="五、常用工具"><a href="#五、常用工具" class="headerlink" title="五、常用工具"></a>五、常用工具</h3><ul>
-<li><strong>服务端</strong>：Apollo Server、Relay、Hasura（自动生成 GraphQL）。</li>
-<li><strong>客户端</strong>：Apollo Client（React&#x2F;Vue&#x2F;Angular）、Relay（Meta）、urql。</li>
-<li><strong>开发工具</strong>：GraphiQL（内置 IDE）、Playground、GraphQL Voyager（可视化 Schema）。</li>
-</ul>
-<hr>
-<h3 id="六、示例（对比-REST）"><a href="#六、示例（对比-REST）" class="headerlink" title="六、示例（对比 REST）"></a>六、示例（对比 REST）</h3><p><strong>REST（需 2 次请求）</strong></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">GET /users/1</span><br><span class="line">GET /users/1/posts</span><br></pre></td></tr></table></figure>
-
-<p><strong>GraphQL（1 次请求，按需字段）</strong></p>
-<figure class="highlight graphql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">query</span> <span class="punctuation">&#123;</span></span><br><span class="line">  user<span class="punctuation">(</span><span class="symbol">id</span><span class="punctuation">:</span> <span class="string">&quot;1&quot;</span><span class="punctuation">)</span> <span class="punctuation">&#123;</span></span><br><span class="line">    name</span><br><span class="line">    posts <span class="punctuation">&#123;</span></span><br><span class="line">      title</span><br><span class="line">      createdAt</span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
-
-<p>响应：</p>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;data&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;user&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;Bob&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;posts&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span><span class="punctuation">&#123;</span><span class="attr">&quot;title&quot;</span><span class="punctuation">:</span> <span class="string">&quot;GraphQL 入门&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;createdAt&quot;</span><span class="punctuation">:</span> <span class="string">&quot;2026-01-01&quot;</span><span class="punctuation">&#125;</span><span class="punctuation">]</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/rocketmq-mq/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="miracle">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="my">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | my">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/05/01/rocketmq-mq/" class="post-title-link" itemprop="url">RocketMQ 消息中间件入门</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2026-05-01 13:35:45" itemprop="dateCreated datePublished" datetime="2026-05-01T13:35:45+08:00">2026-05-01</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-31 23:47:21" itemprop="dateModified" datetime="2026-05-31T23:47:21+08:00">2026-05-31</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/MQ/" itemprop="url" rel="index"><span itemprop="name">MQ</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>469</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>2 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p><strong>Apache RocketMQ</strong> 是阿里开源后捐赠的分布式消息中间件：支持<strong>顺序消息、延迟消息、事务消息、死信队列</strong>，在国内电商与微服务场景广泛使用。本文侧重 <strong>MQ 通用概念</strong>；Spring Cloud Stream 集成见 <a href="/2026/05/17/springcloud-rocketmq/" title="Spring Cloud 集成 RocketMQ">Spring Cloud 集成 RocketMQ</a>。</p>
-<h1 id="架构"><a href="#架构" class="headerlink" title="架构"></a>架构</h1><pre>
-<code class="mermaid">
-
-flowchart TB
-  P[Producer] --&gt; B[Broker Master]
-  B --&gt; NS[NameServer 路由]
-  C[Consumer Group] --&gt; B
-  NS -.-&gt; P
-  NS -.-&gt; C
-</code>
-</pre>
-
-<hr>
-<h1 id="一、架构组件"><a href="#一、架构组件" class="headerlink" title="一、架构组件"></a>一、架构组件</h1><table>
-<thead>
-<tr>
-<th>组件</th>
-<th>作用</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>NameServer</strong></td>
-<td>路由注册中心，轻量、无状态</td>
-</tr>
-<tr>
-<td><strong>Broker</strong></td>
-<td>存储与转发，分 <strong>Master &#x2F; Slave</strong></td>
-</tr>
-<tr>
-<td><strong>Producer</strong></td>
-<td>发送消息</td>
-</tr>
-<tr>
-<td><strong>Consumer</strong></td>
-<td>拉取消息，Push 底层为长轮询</td>
-</tr>
-</tbody></table>
-<p>客户端通过 <strong>NameServer</strong> 发现 <strong>Broker</strong> 地址。</p>
-<hr>
-<h1 id="二、Topic-与-Queue"><a href="#二、Topic-与-Queue" class="headerlink" title="二、Topic 与 Queue"></a>二、Topic 与 Queue</h1><ul>
-<li><strong>Topic</strong>：逻辑分类。  </li>
-<li><strong>Message Queue</strong>：Topic 下分片（类似 Kafka 分区，语义不同）。  </li>
-<li><strong>Tag &#x2F; Key</strong>：二级过滤与索引。</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">Message</span> <span class="variable">msg</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Message</span>(<span class="string">&quot;OrderTopic&quot;</span>, <span class="string">&quot;create&quot;</span>, orderId.getBytes(), body.getBytes());</span><br><span class="line">producer.send(msg);</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h1 id="三、消费模型"><a href="#三、消费模型" class="headerlink" title="三、消费模型"></a>三、消费模型</h1><table>
-<thead>
-<tr>
-<th>模式</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>CLUSTERING</strong></td>
-<td>同组负载均衡，一条消息只被一个实例消费</td>
-</tr>
-<tr>
-<td><strong>BROADCASTING</strong></td>
-<td>组内每实例全量接收</td>
-</tr>
-<tr>
-<td><strong>重试 &#x2F; DLQ</strong></td>
-<td>消费失败进入重试队列，超限进死信</td>
-</tr>
-</tbody></table>
-<hr>
-<h1 id="四、顺序、延迟与事务"><a href="#四、顺序、延迟与事务" class="headerlink" title="四、顺序、延迟与事务"></a>四、顺序、延迟与事务</h1><h2 id="1-顺序消息"><a href="#1-顺序消息" class="headerlink" title="1. 顺序消息"></a>1. 顺序消息</h2><p>同一 <strong>MessageQueue</strong> 内 FIFO；发送端按 <strong>orderId</strong> 等 sharding key 固定路由。</p>
-<h2 id="2-延迟消息"><a href="#2-延迟消息" class="headerlink" title="2. 延迟消息"></a>2. 延迟消息</h2><p>内置延迟级别（1s、5s、1m…），适合订单超时关闭。</p>
-<h2 id="3-事务消息"><a href="#3-事务消息" class="headerlink" title="3. 事务消息"></a>3. 事务消息</h2><p><strong>Half 消息</strong> + 本地事务 + 回查；与 <strong>Seata</strong> 同步事务可对照选型（见 <a href="/2026/05/17/SpringCloud/cloud/" title="cloud">cloud</a> 当前 <strong>Feign + Seata</strong> 链路）。</p>
-<hr>
-<h1 id="五、与-Kafka-的对照"><a href="#五、与-Kafka-的对照" class="headerlink" title="五、与 Kafka 的对照"></a>五、与 Kafka 的对照</h1><table>
-<thead>
-<tr>
-<th>场景</th>
-<th>更常选</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>日志、CDC、流计算生态</td>
-<td><a href="/2026/05/01/kafka-mq/" title="Kafka 消息中间件入门">Kafka 消息中间件入门</a></td>
-</tr>
-<tr>
-<td>电商订单、定时、事务消息</td>
-<td><strong>RocketMQ</strong></td>
-</tr>
-<tr>
-<td>Spring Cloud Alibaba</td>
-<td><a href="/2026/05/17/springcloud-rocketmq/" title="Spring Cloud 集成 RocketMQ">Spring Cloud 集成 RocketMQ</a></td>
-</tr>
-</tbody></table>
-<hr>
-<h1 id="六、部署与运维"><a href="#六、部署与运维" class="headerlink" title="六、部署与运维"></a>六、部署与运维</h1><p>Docker：<a href="/2026/05/01/MQ/RocketMQ-Docker/" title="Docker 部署 RocketMQ">RocketMQ-Docker</a>。局域网见 <a href="/service/">服务</a>（NameServer <strong><code>:30876</code></strong>、Dashboard <strong><code>:30877</code></strong>）。</p>
-<table>
-<thead>
-<tr>
-<th>项</th>
-<th>注意</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>磁盘</strong></td>
-<td>CommitLog 顺序写，监控刷盘与磁盘</td>
-</tr>
-<tr>
-<td><strong>主从</strong></td>
-<td>Master 故障切换策略依版本（DLedger 等）</td>
-</tr>
-<tr>
-<td><strong>版本</strong></td>
-<td>客户端与 Broker 主版本对齐</td>
-</tr>
-</tbody></table>
-<p>官方文档：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://rocketmq.apache.org/docs/">https://rocketmq.apache.org/docs/</a></p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/kafka-mq/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="miracle">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="my">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | my">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/05/01/kafka-mq/" class="post-title-link" itemprop="url">Kafka 消息中间件入门</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2026-05-01 13:35:18" itemprop="dateCreated datePublished" datetime="2026-05-01T13:35:18+08:00">2026-05-01</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-31 23:47:21" itemprop="dateModified" datetime="2026-05-31T23:47:21+08:00">2026-05-31</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/MQ/" itemprop="url" rel="index"><span itemprop="name">MQ</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>801</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>3 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p><strong>Apache Kafka</strong> 是分布式<strong>事件流平台</strong>：高吞吐、持久化、可回放的分区日志，用于消息队列、日志管道、流式处理与数据集成。本文侧重 <strong>MQ &#x2F; 微服务</strong> 视角；大数据总线、CDC、Flink 集成见 <a href="/2026/05/01/kafka-bigdata/" title="Kafka 大数据数据总线">Kafka 大数据数据总线</a>。</p>
-<h1 id="生产消费架构"><a href="#生产消费架构" class="headerlink" title="生产消费架构"></a>生产消费架构</h1><pre>
-<code class="mermaid">
-
-flowchart LR
-  P[Producer] --&gt; B[Broker]
-  B --&gt; Part[Topic 分区]
-  Part --&gt; C1[Consumer 实例 1]
-  Part --&gt; C2[Consumer 实例 2]
-  C1 &amp; C2 --&gt; G[同一 Consumer Group]
-</code>
-</pre>
-
-<hr>
-<h1 id="一、核心概念"><a href="#一、核心概念" class="headerlink" title="一、核心概念"></a>一、核心概念</h1><table>
-<thead>
-<tr>
-<th>概念</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>Topic</strong></td>
-<td>逻辑消息流名称</td>
-</tr>
-<tr>
-<td><strong>Partition</strong></td>
-<td>Topic 的分片，有序日志；并行度与分区数相关</td>
-</tr>
-<tr>
-<td><strong>Offset</strong></td>
-<td>分区内每条消息的唯一递增序号</td>
-</tr>
-<tr>
-<td><strong>Producer</strong></td>
-<td>写入消息，可指定 <strong>key</strong> 做分区路由</td>
-</tr>
-<tr>
-<td><strong>Consumer Group</strong></td>
-<td>组内消费者分摊分区，同组不重复消费同一分区</td>
-</tr>
-<tr>
-<td><strong>Broker</strong></td>
-<td>存储与 Serving 分区的服务器进程</td>
-</tr>
-</tbody></table>
-<p>消息<strong>持久化在磁盘</strong>（顺序写 + page cache），可配置保留时间与大小。</p>
-<hr>
-<h1 id="二、生产者与消费者"><a href="#二、生产者与消费者" class="headerlink" title="二、生产者与消费者"></a>二、生产者与消费者</h1><h2 id="1-生产者"><a href="#1-生产者" class="headerlink" title="1. 生产者"></a>1. 生产者</h2><ul>
-<li><strong><code>acks</code></strong>：<strong><code>0</code></strong> &#x2F; <strong><code>1</code></strong> &#x2F; <strong><code>all</code></strong> 权衡延迟与持久性。  </li>
-<li><strong>幂等生产者</strong>：避免重试导致重复（下游仍可能需要业务去重）。  </li>
-<li><strong>事务</strong>：跨分区 <strong>exactly-once</strong> 与 <strong>Kafka Streams</strong> 场景。</li>
-</ul>
-<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 生产者常见配置（概念）</span></span><br><span class="line"><span class="attr">acks</span>=<span class="string">all</span></span><br><span class="line"><span class="attr">enable.idempotence</span>=<span class="string">true</span></span><br><span class="line"><span class="attr">retries</span>=<span class="string">3</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="2-消费者"><a href="#2-消费者" class="headerlink" title="2. 消费者"></a>2. 消费者</h2><ul>
-<li><strong><code>auto.offset.reset</code></strong>：<strong><code>earliest</code></strong> &#x2F; <strong><code>latest</code></strong>。  </li>
-<li><strong>手动提交 offset</strong>：处理成功后再 <strong><code>commitSync</code> &#x2F; <code>commitAsync</code></strong>。  </li>
-<li><strong>再均衡（Rebalance）</strong>：组成员变化时重新分配分区；消费逻辑应支持<strong>幂等</strong>。</li>
-</ul>
-<h2 id="3-投递语义（需业务配合）"><a href="#3-投递语义（需业务配合）" class="headerlink" title="3. 投递语义（需业务配合）"></a>3. 投递语义（需业务配合）</h2><table>
-<thead>
-<tr>
-<th>语义</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>At most once</strong></td>
-<td>先提交 offset 再处理，可能丢</td>
-</tr>
-<tr>
-<td><strong>At least once</strong></td>
-<td>先处理再提交，可能重复</td>
-</tr>
-<tr>
-<td><strong>Exactly once</strong></td>
-<td>事务 + 幂等存储，成本高</td>
-</tr>
-</tbody></table>
-<hr>
-<h1 id="三、分区、副本与-ISR"><a href="#三、分区、副本与-ISR" class="headerlink" title="三、分区、副本与 ISR"></a>三、分区、副本与 ISR</h1><ul>
-<li><strong>Leader &#x2F; Follower</strong>：每个分区一个 <strong>Leader</strong> 负责读写，Follower 同步。  </li>
-<li><strong>ISR（In-Sync Replicas）</strong>：与 Leader 差距在阈值内的副本；<strong><code>min.insync.replicas</code></strong> 与 <strong><code>acks=all</code></strong> 共同定义「写成功」。  </li>
-<li><strong>扩容</strong>：增加分区数<strong>不会</strong>重分布历史 key；规划分区数宜前置。</li>
-</ul>
-<hr>
-<h1 id="四、KRaft-与-ZooKeeper"><a href="#四、KRaft-与-ZooKeeper" class="headerlink" title="四、KRaft 与 ZooKeeper"></a>四、KRaft 与 ZooKeeper</h1><p><strong>Kafka 3.x+</strong> 可用 <strong>KRaft</strong>（内置 Raft 元数据）替代 <strong>ZooKeeper</strong>。新集群建议 <strong>KRaft</strong>；存量 <strong>ZK</strong> 集群按官方迁移指南操作。本站 <a href="/2026/05/01/MQ/Kafka-Docker/" title="Docker 部署 Kafka">Docker 部署 Kafka</a> 采用 <strong>KRaft</strong> 单节点示例。</p>
-<hr>
-<h1 id="五、与-RocketMQ-的对照"><a href="#五、与-RocketMQ-的对照" class="headerlink" title="五、与 RocketMQ 的对照"></a>五、与 RocketMQ 的对照</h1><table>
-<thead>
-<tr>
-<th>维度</th>
-<th><strong>Kafka</strong></th>
-<th><strong>RocketMQ</strong></th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>模型</strong></td>
-<td>分区日志、流式优先</td>
-<td>Topic + Queue、顺序&#x2F;延迟&#x2F;事务消息</td>
-</tr>
-<tr>
-<td><strong>生态</strong></td>
-<td>Connect、Streams、Flink&#x2F;Spark</td>
-<td>国内电商、SCA 集成</td>
-</tr>
-<tr>
-<td><strong>典型场景</strong></td>
-<td>日志、指标、CDC、流计算</td>
-<td>订单、定时、强业务 MQ</td>
-</tr>
-</tbody></table>
-<p>RocketMQ 入门见 <a href="/2026/05/01/rocketmq-mq/" title="RocketMQ 消息中间件入门">RocketMQ 消息中间件入门</a>；Spring Cloud 集成见 <a href="/2026/05/17/springcloud-rocketmq/" title="Spring Cloud 集成 RocketMQ">Spring Cloud 集成 RocketMQ</a>。</p>
-<hr>
-<h1 id="六、部署与命令行探测"><a href="#六、部署与命令行探测" class="headerlink" title="六、部署与命令行探测"></a>六、部署与命令行探测</h1><p>容器部署：<a href="/2026/05/01/MQ/Kafka-Docker/" title="Docker 部署 Kafka">Docker 部署 Kafka</a>。局域网中间件见 <a href="/service/">服务</a>（<strong><code>:30006</code></strong> 等）。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建 topic</span></span><br><span class="line">kafka-topics.sh --bootstrap-server localhost:9092 \</span><br><span class="line">  --create --topic demo --partitions 3 --replication-factor 1</span><br><span class="line"></span><br><span class="line"><span class="comment"># 生产 / 消费</span></span><br><span class="line">kafka-console-producer.sh --bootstrap-server localhost:9092 --topic demo</span><br><span class="line">kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic demo --from-beginning</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看消费组 lag</span></span><br><span class="line">kafka-consumer-groups.sh --bootstrap-server localhost:9092 --describe --group my-group</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h1 id="七、生产注意"><a href="#七、生产注意" class="headerlink" title="七、生产注意"></a>七、生产注意</h1><table>
-<thead>
-<tr>
-<th>项</th>
-<th>建议</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>分区数</strong></td>
-<td>与消费者并行度、磁盘并行写相关；不宜过少</td>
-</tr>
-<tr>
-<td><strong>保留</strong></td>
-<td><code>retention.ms</code> 与磁盘容量；合规场景可能需归档到对象存储</td>
-</tr>
-<tr>
-<td><strong>监控</strong></td>
-<td>Under-replicated partitions、请求 P99、磁盘使用率</td>
-</tr>
-<tr>
-<td><strong>安全</strong></td>
-<td>SASL&#x2F;SSL、ACL；勿将 <strong><code>9092</code></strong> 裸奔公网</td>
-</tr>
-</tbody></table>
-<p>官方文档：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://kafka.apache.org/documentation/">https://kafka.apache.org/documentation/</a></p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/Nginx/Nginx/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="miracle">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="my">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | my">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/05/01/Nginx/Nginx/" class="post-title-link" itemprop="url">Nginx</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2026-05-01 13:31:50" itemprop="dateCreated datePublished" datetime="2026-05-01T13:31:50+08:00">2026-05-01</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-31 23:47:21" itemprop="dateModified" datetime="2026-05-31T23:47:21+08:00">2026-05-31</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Nginx/" itemprop="url" rel="index"><span itemprop="name">Nginx</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>427</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>1 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p><strong>Nginx</strong> 是高性能 <strong>Web 服务器</strong>与<strong>反向代理</strong>：事件驱动、低内存占用，常用于静态资源、<strong>HTTPS 终结</strong>、负载均衡与 <strong>API 网关</strong>前置。下面从「<strong>角色</strong> → <strong>基本配置</strong> → <strong>反向代理与负载均衡</strong> → <strong>HTTPS</strong> → <strong>与前端&#x2F;Vue 部署</strong> → <strong>常用运维</strong>」顺序写清楚。</p>
-<h1 id="反向代理"><a href="#反向代理" class="headerlink" title="反向代理"></a>反向代理</h1><pre>
-<code class="mermaid">
-
-flowchart LR
-  U[用户] --&gt; N[Nginx :443]
-  N --&gt;|proxy_pass| A1[upstream 实例 1]
-  N --&gt; A2[upstream 实例 2]
-  N --&gt; Static[静态 dist&#x2F;]
-</code>
-</pre>
-
-<hr>
-<h1 id="一、常见角色"><a href="#一、常见角色" class="headerlink" title="一、常见角色"></a>一、常见角色</h1><table>
-<thead>
-<tr>
-<th>角色</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>静态文件</strong></td>
-<td>托管 HTML&#x2F;CSS&#x2F;JS（如 <a href="/2026/05/01/Frontend/Vite/" title="Vite">Vite</a> 构建的 <strong><code>dist</code></strong>）</td>
-</tr>
-<tr>
-<td><strong>反向代理</strong></td>
-<td>将 <strong><code>/api</code></strong> 转发到后端 <strong>Spring Boot &#x2F; Node</strong></td>
-</tr>
-<tr>
-<td><strong>负载均衡</strong></td>
-<td><strong><code>upstream</code></strong> 多实例 <strong>round-robin</strong>、<strong>ip_hash</strong>、<strong>least_conn</strong></td>
-</tr>
-<tr>
-<td><strong>TLS 终结</strong></td>
-<td>证书在 Nginx 卸载，后端走 HTTP</td>
-</tr>
-</tbody></table>
-<p>底层基于 <a href="/2026/05/01/Protocol/HTTP/" title="HTTP 详解：报文、方法、版本与 curl&#x2F;nc 示例">HTTP</a> 语义；HTTP&#x2F;2 可在 <strong><code>listen 443 ssl http2</code></strong> 启用。</p>
-<hr>
-<h1 id="二、最小静态站点"><a href="#二、最小静态站点" class="headerlink" title="二、最小静态站点"></a>二、最小静态站点</h1><figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">server</span> &#123;</span><br><span class="line">    <span class="attribute">listen</span> <span class="number">80</span>;</span><br><span class="line">    <span class="attribute">server_name</span> example.com;</span><br><span class="line">    <span class="attribute">root</span> /usr/share/nginx/html;</span><br><span class="line">    <span class="attribute">index</span> index.html;</span><br><span class="line"></span><br><span class="line">    <span class="section">location</span> / &#123;</span><br><span class="line">        <span class="attribute">try_files</span> <span class="variable">$uri</span> <span class="variable">$uri</span>/ /index.html;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong><code>try_files</code></strong> 最后一项 <strong><code>/index.html</code></strong> 用于 <strong>SPA</strong>（<a href="/2026/05/01/Frontend/VUE3/" title="VUE3">VUE3</a> history 路由）。</p>
-<hr>
-<h1 id="三、反向代理"><a href="#三、反向代理" class="headerlink" title="三、反向代理"></a>三、反向代理</h1><figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">upstream</span> backend &#123;</span><br><span class="line">    <span class="attribute">server</span> <span class="number">127.0.0.1:8080</span>;</span><br><span class="line">    <span class="attribute">server</span> <span class="number">127.0.0.1:8081</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="section">server</span> &#123;</span><br><span class="line">    <span class="attribute">listen</span> <span class="number">80</span>;</span><br><span class="line">    <span class="attribute">server_name</span> api.example.com;</span><br><span class="line"></span><br><span class="line">    <span class="section">location</span> / &#123;</span><br><span class="line">        <span class="attribute">proxy_pass</span> http://backend;</span><br><span class="line">        <span class="attribute">proxy_set_header</span> Host <span class="variable">$host</span>;</span><br><span class="line">        <span class="attribute">proxy_set_header</span> X-Real-IP <span class="variable">$remote_addr</span>;</span><br><span class="line">        <span class="attribute">proxy_set_header</span> X-Forwarded-For <span class="variable">$proxy_add_x_forwarded_for</span>;</span><br><span class="line">        <span class="attribute">proxy_set_header</span> X-Forwarded-Proto <span class="variable">$scheme</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><strong><code>proxy_pass</code></strong> 末尾 <strong><code>/</code></strong> 是否带，影响 URI 拼接规则。  </li>
-<li><strong>WebSocket</strong>：需 <strong><code>proxy_http_version 1.1</code></strong>、<strong><code>Upgrade</code></strong> &#x2F; <strong><code>Connection</code></strong> 头，见 <a href="/2026/05/01/Protocol/WebSocket/" title="WebSocket 详解：握手、帧与 Python 示例">WebSocket</a>。</li>
-</ul>
-<hr>
-<h1 id="四、HTTPS（概念）"><a href="#四、HTTPS（概念）" class="headerlink" title="四、HTTPS（概念）"></a>四、HTTPS（概念）</h1><figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">server</span> &#123;</span><br><span class="line">    <span class="attribute">listen</span> <span class="number">443</span> ssl http2;</span><br><span class="line">    <span class="attribute">server_name</span> example.com;</span><br><span class="line"></span><br><span class="line">    <span class="attribute">ssl_certificate</span>     /etc/nginx/certs/fullchain.pem;</span><br><span class="line">    <span class="attribute">ssl_certificate_key</span> /etc/nginx/certs/privkey.pem;</span><br><span class="line"></span><br><span class="line">    <span class="attribute">ssl_protocols</span> TLSv1.<span class="number">2</span> TLSv1.<span class="number">3</span>;</span><br><span class="line">    <span class="comment"># 现代 cipher 套件按 Mozilla 或发行版建议配置</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>证书可用 <strong>Let’s Encrypt（certbot）</strong> 自动续期；密码学背景见 <a href="/2026/05/01/OpenSSL/OpenSSL/" title="OpenSSL">OpenSSL</a>。</p>
-<hr>
-<h1 id="五、安装与运维"><a href="#五、安装与运维" class="headerlink" title="五、安装与运维"></a>五、安装与运维</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Debian/Ubuntu</span></span><br><span class="line"><span class="built_in">sudo</span> apt install nginx</span><br><span class="line"><span class="built_in">sudo</span> nginx -t</span><br><span class="line"><span class="built_in">sudo</span> systemctl reload nginx</span><br><span class="line"></span><br><span class="line"><span class="comment"># 日志</span></span><br><span class="line"><span class="built_in">tail</span> -f /var/log/nginx/access.log</span><br><span class="line"><span class="built_in">tail</span> -f /var/log/nginx/error.log</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><strong>限流</strong>：<strong><code>limit_req_zone</code></strong>、<strong><code>limit_conn_zone</code></strong>  </li>
-<li><strong>缓存</strong>：<strong><code>proxy_cache</code></strong> 减轻后端压力  </li>
-<li><strong>与 K8s</strong>：<strong>Ingress Controller</strong> 常用 Nginx 实现</li>
-</ul>
-<p>官方文档：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://nginx.org/en/docs/">https://nginx.org/en/docs/</a></p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
   <nav class="pagination">
-    <a class="extend prev" rel="prev" title="上一页" aria-label="上一页" href="/page/6/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><span class="page-number current">7</span><a class="page-number" href="/page/8/">8</a><span class="space">&hellip;</span><a class="page-number" href="/page/19/">19</a><a class="extend next" rel="next" title="下一页" aria-label="下一页" href="/page/8/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" title="上一页" aria-label="上一页" href="/page/6/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><span class="page-number current">7</span><a class="page-number" href="/page/8/">8</a><span class="space">&hellip;</span><a class="page-number" href="/page/20/">20</a><a class="extend next" rel="next" title="下一页" aria-label="下一页" href="/page/8/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 </div>
@@ -2196,13 +2605,13 @@ flowchart LR
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">186k</span>
+    <span title="站点总字数">195k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">10:18</span>
+    <span title="站点阅读时长">10:49</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

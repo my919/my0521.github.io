@@ -174,18 +174,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">184</span>
+          <span class="site-state-item-count">192</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">38</span>
+        <span class="site-state-item-count">39</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">107</span>
+        <span class="site-state-item-count">108</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -213,6 +213,351 @@
     </div>
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/06/06/Cloud/Helm/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/06/06/Cloud/Helm/" class="post-title-link" itemprop="url">Helm</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-06-06 10:00:00" itemprop="dateCreated datePublished" datetime="2026-06-06T10:00:00+08:00">2026-06-06</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-07-11 09:44:30" itemprop="dateModified" datetime="2026-07-11T09:44:30+08:00">2026-07-11</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Helm/" itemprop="url" rel="index"><span itemprop="name">Helm</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>1.5k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>5 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p><strong>Helm</strong> 是 <strong>Kubernetes（K8s）</strong> 的包管理工具，相当于 Linux 的 <strong><code>apt/yum</code></strong>、Node.js 的 <strong><code>npm</code></strong>、Python 的 <strong><code>pip</code></strong>，专门用来简化 K8s 应用的部署、升级与回滚。下面从「<strong>核心概念</strong> → <strong>仓库与安装</strong> → <strong>Release 生命周期</strong> → <strong>自定义 Chart</strong> → <strong>为什么要用 Helm</strong>」顺序写清楚；集群基础见 <a href="/2026/05/01/Cloud/Kubernetes/" title="Kubernetes">Kubernetes</a>。</p>
+<h1 id="Chart-到-Release"><a href="#Chart-到-Release" class="headerlink" title="Chart 到 Release"></a>Chart 到 Release</h1><pre>
+<code class="mermaid">
+
+flowchart LR
+  Repo[Repository 仓库] --&gt;|helm pull| Chart[Chart 安装包]
+  Chart --&gt;|helm install| Release[Release 运行实例]
+  Values[values.yaml 配置] --&gt; Chart
+  Release --&gt; K8s[K8s 集群 Pod&#x2F;Service 等]
+</code>
+</pre>
+
+<hr>
+<h1 id="一、核心概念"><a href="#一、核心概念" class="headerlink" title="一、核心概念"></a>一、核心概念</h1><table>
+<thead>
+<tr>
+<th>概念</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Chart</strong></td>
+<td>Helm 的应用安装包，含部署 K8s 应用所需的 <strong>YAML 模板</strong>、默认配置与 <strong>依赖</strong></td>
+</tr>
+<tr>
+<td><strong>Release</strong></td>
+<td>Chart 在集群中<strong>运行的实例</strong>；同一 Chart 可部署多个 Release（不同命名空间&#x2F;版本）</td>
+</tr>
+<tr>
+<td><strong>Repository</strong></td>
+<td>Chart 仓库（官方、第三方或自建），用于存储与共享 Chart</td>
+</tr>
+<tr>
+<td><strong>Values.yaml</strong></td>
+<td>Chart 的配置文件，自定义端口、副本数、镜像等参数</td>
+</tr>
+</tbody></table>
+<hr>
+<h1 id="二、安装与基础环境"><a href="#二、安装与基础环境" class="headerlink" title="二、安装与基础环境"></a>二、安装与基础环境</h1><h2 id="1-安装-Helm（Linux）"><a href="#1-安装-Helm（Linux）" class="headerlink" title="1. 安装 Helm（Linux）"></a>1. 安装 Helm（Linux）</h2><p>在 <strong>K8s 控制节点</strong>（或本机已配置 <code>kubectl</code> 的机器）执行官方安装脚本：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建工作目录（已存在可跳过）</span></span><br><span class="line"><span class="built_in">mkdir</span> -p /home/helm</span><br><span class="line"><span class="built_in">cd</span> /home/helm</span><br><span class="line"></span><br><span class="line"><span class="comment"># 下载 Helm 3 官方安装脚本</span></span><br><span class="line">curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3</span><br><span class="line"></span><br><span class="line"><span class="comment"># 赋予执行权限</span></span><br><span class="line"><span class="built_in">chmod</span> +x get_helm.sh</span><br><span class="line"></span><br><span class="line"><span class="comment"># 执行安装（自动检测系统并安装最新稳定版）</span></span><br><span class="line">./get_helm.sh</span><br></pre></td></tr></table></figure>
+
+<p>安装完成后验证：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">helm version</span><br></pre></td></tr></table></figure>
+
+<p>示例输出：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">version.BuildInfo&#123;Version:&quot;v3.19.0&quot;, ...&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong>说明</strong></p>
+<ul>
+<li>脚本会安装 <strong>Helm v3</strong> 最新稳定版（如 <strong>v3.19.0</strong>）；若已安装同版本，会提示 <code>Helm v3.x.x is already latest</code>。</li>
+<li>若出现 <code>[WARNING] Could not find git. It is required for plugin installation.</code>，表示 <strong><code>helm plugin install</code></strong> 依赖 <strong>Git</strong>，请先安装 Git（见 <a href="/tool/">工具</a> 或 <a href="/2026/05/01/Git/" title="Git 版本控制入门">Git 版本控制入门</a>），不影响 <code>helm install</code> &#x2F; <code>upgrade</code> 等核心命令。</li>
+<li>安装脚本来源为 Helm 官方仓库：<a target="_blank" rel="noopener" href="https://github.com/helm/helm">https://github.com/helm/helm</a>。</li>
+</ul>
+</blockquote>
+<h2 id="2-仓库与常用命令"><a href="#2-仓库与常用命令" class="headerlink" title="2. 仓库与常用命令"></a>2. 仓库与常用命令</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看已添加的仓库</span></span><br><span class="line">helm repo list</span><br><span class="line"></span><br><span class="line"><span class="comment"># 添加常用仓库（bitnami 维护活跃）</span></span><br><span class="line">helm repo add bitnami https://charts.bitnami.com/bitnami</span><br><span class="line"></span><br><span class="line"><span class="comment"># 更新仓库索引</span></span><br><span class="line">helm repo update</span><br><span class="line"></span><br><span class="line"><span class="comment"># 搜索 Chart</span></span><br><span class="line">helm search repo nginx</span><br></pre></td></tr></table></figure>
+
+<h3 id="常用公共仓库"><a href="#常用公共仓库" class="headerlink" title="常用公共仓库"></a>常用公共仓库</h3><table>
+<thead>
+<tr>
+<th>仓库名</th>
+<th>地址</th>
+<th>添加命令</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Bitnami</strong></td>
+<td><a target="_blank" rel="noopener external nofollow noreferrer" href="https://charts.bitnami.com/bitnami">https://charts.bitnami.com/bitnami</a></td>
+<td><code>helm repo add bitnami https://charts.bitnami.com/bitnami</code></td>
+<td>最常用；MySQL、Redis、Nginx、Kafka 等中间件 Chart 维护活跃</td>
+</tr>
+<tr>
+<td><strong>Prometheus Community</strong></td>
+<td><a target="_blank" rel="noopener external nofollow noreferrer" href="https://prometheus-community.github.io/helm-charts">https://prometheus-community.github.io/helm-charts</a></td>
+<td><code>helm repo add prometheus-community https://prometheus-community.github.io/helm-charts</code></td>
+<td>Prometheus、Alertmanager、kube-state-metrics 等</td>
+</tr>
+<tr>
+<td><strong>Grafana</strong></td>
+<td><a target="_blank" rel="noopener external nofollow noreferrer" href="https://grafana.github.io/helm-charts">https://grafana.github.io/helm-charts</a></td>
+<td><code>helm repo add grafana https://grafana.github.io/helm-charts</code></td>
+<td>Grafana、Loki、Tempo 等可观测组件</td>
+</tr>
+<tr>
+<td><strong>Ingress-NGINX</strong></td>
+<td><a target="_blank" rel="noopener external nofollow noreferrer" href="https://kubernetes.github.io/ingress-nginx">https://kubernetes.github.io/ingress-nginx</a></td>
+<td><code>helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx</code></td>
+<td>K8s Ingress 控制器</td>
+</tr>
+<tr>
+<td><strong>Jetstack</strong></td>
+<td><a target="_blank" rel="noopener external nofollow noreferrer" href="https://charts.jetstack.io/">https://charts.jetstack.io</a></td>
+<td><code>helm repo add jetstack https://charts.jetstack.io</code></td>
+<td>cert-manager 证书自动签发</td>
+</tr>
+<tr>
+<td><strong>Elastic</strong></td>
+<td><a target="_blank" rel="noopener external nofollow noreferrer" href="https://helm.elastic.co/">https://helm.elastic.co</a></td>
+<td><code>helm repo add elastic https://helm.elastic.co</code></td>
+<td>Elasticsearch、Kibana、Logstash</td>
+</tr>
+<tr>
+<td><strong>Strimzi</strong></td>
+<td><a target="_blank" rel="noopener external nofollow noreferrer" href="https://strimzi.io/charts/">https://strimzi.io/charts/</a></td>
+<td><code>helm repo add strimzi https://strimzi.io/charts/</code></td>
+<td>Kafka Operator</td>
+</tr>
+<tr>
+<td><strong>MinIO</strong></td>
+<td><a target="_blank" rel="noopener external nofollow noreferrer" href="https://charts.min.io/">https://charts.min.io/</a></td>
+<td><code>helm repo add minio https://charts.min.io/</code></td>
+<td>S3 兼容对象存储</td>
+</tr>
+<tr>
+<td><strong>Harbor</strong></td>
+<td><a target="_blank" rel="noopener external nofollow noreferrer" href="https://helm.goharbor.io/">https://helm.goharbor.io</a></td>
+<td><code>helm repo add harbor https://helm.goharbor.io</code></td>
+<td>镜像与 Chart 私有仓库</td>
+</tr>
+<tr>
+<td><strong>JupyterHub</strong></td>
+<td><a target="_blank" rel="noopener external nofollow noreferrer" href="https://hub.jupyter.org/helm-chart/">https://hub.jupyter.org/helm-chart/</a></td>
+<td><code>helm repo add jupyterhub https://hub.jupyter.org/helm-chart/</code></td>
+<td>多用户 Jupyter Notebook</td>
+</tr>
+</tbody></table>
+<h3 id="本机已配置仓库"><a href="#本机已配置仓库" class="headerlink" title="本机已配置仓库"></a>本机已配置仓库</h3><table>
+<thead>
+<tr>
+<th>仓库名</th>
+<th>地址</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>bitnami</strong></td>
+<td><a target="_blank" rel="noopener external nofollow noreferrer" href="https://charts.bitnami.com/bitnami">https://charts.bitnami.com/bitnami</a></td>
+<td>公共中间件 Chart</td>
+</tr>
+<tr>
+<td><strong>local</strong></td>
+<td><a target="_blank" rel="noopener external nofollow noreferrer" href="http://192.168.1.22:30124/">http://192.168.1.22:30124</a></td>
+<td>内网 <strong>ChartMuseum</strong> 私有仓库 API</td>
+</tr>
+<tr>
+<td><strong>kubernetes-dashboard</strong></td>
+<td><a target="_blank" rel="noopener external nofollow noreferrer" href="http://k8s-sh.xuxiaowei.com.cn/charts/kubernetes/dashboard">http://k8s-sh.xuxiaowei.com.cn/charts/kubernetes/dashboard</a></td>
+<td>Kubernetes Dashboard Chart</td>
+</tr>
+<tr>
+<td><strong>ali-stable</strong></td>
+<td><a target="_blank" rel="noopener external nofollow noreferrer" href="https://kubernetes.oss-cn-hangzhou.aliyuncs.com/charts">https://kubernetes.oss-cn-hangzhou.aliyuncs.com/charts</a></td>
+<td>阿里云镜像的旧版 stable Charts</td>
+</tr>
+<tr>
+<td><strong>jupyterhub</strong></td>
+<td><a target="_blank" rel="noopener external nofollow noreferrer" href="https://hub.jupyter.org/helm-chart/">https://hub.jupyter.org/helm-chart/</a></td>
+<td>JupyterHub 多用户 Notebook</td>
+</tr>
+</tbody></table>
+<h3 id="已归档仓库（不推荐新项目使用）"><a href="#已归档仓库（不推荐新项目使用）" class="headerlink" title="已归档仓库（不推荐新项目使用）"></a>已归档仓库（不推荐新项目使用）</h3><table>
+<thead>
+<tr>
+<th>仓库名</th>
+<th>地址</th>
+<th>状态</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>stable</strong></td>
+<td><a target="_blank" rel="noopener external nofollow noreferrer" href="https://charts.helm.sh/stable">https://charts.helm.sh/stable</a></td>
+<td>2020 年已归档，不再更新</td>
+</tr>
+<tr>
+<td><strong>incubator</strong></td>
+<td><a target="_blank" rel="noopener external nofollow noreferrer" href="https://charts.helm.sh/incubator">https://charts.helm.sh/incubator</a></td>
+<td>已归档</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p><strong>说明</strong></p>
+<ul>
+<li>早年常用的 <strong><code>stable</code></strong> 仓库已归档，新 Chart 请优先从 <strong>Bitnami</strong>、<a target="_blank" rel="noopener external nofollow noreferrer" href="https://artifacthub.io/">Artifact Hub</a> 或厂商自建仓库获取。</li>
+<li><strong><a target="_blank" rel="noopener external nofollow noreferrer" href="https://artifacthub.io/">Artifact Hub</a></strong> 可搜索任意 Chart 及其所属仓库，找到后执行 <code>helm repo add &lt;名&gt; &lt;URL&gt;</code> 即可。</li>
+<li>内网私有 Chart 可推送到本站 <strong>ChartMuseum</strong>（<a target="_blank" rel="noopener external nofollow noreferrer" href="http://192.168.1.22:30124/">http://192.168.1.22:30124</a>，Web 管理 <a target="_blank" rel="noopener external nofollow noreferrer" href="http://192.168.1.22:30125/">http://192.168.1.22:30125</a>），添加方式：<code>helm repo add local http://192.168.1.22:30124</code>。</li>
+</ul>
+</blockquote>
+<hr>
+<h1 id="三、查找与查看-Chart"><a href="#三、查找与查看-Chart" class="headerlink" title="三、查找与查看 Chart"></a>三、查找与查看 Chart</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 搜索仓库中的应用</span></span><br><span class="line">helm search repo nginx</span><br><span class="line">helm search repo mysql</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看 Chart 默认配置与参数说明</span></span><br><span class="line">helm show values bitnami/nginx</span><br><span class="line">helm show chart bitnami/nginx</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="四、安装应用"><a href="#四、安装应用" class="headerlink" title="四、安装应用"></a>四、安装应用</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 一键安装 nginx</span></span><br><span class="line">helm install my-nginx bitnami/nginx</span><br><span class="line"></span><br><span class="line"><span class="comment"># 自定义配置（端口、副本数）</span></span><br><span class="line">helm install my-nginx bitnami/nginx \</span><br><span class="line">  --<span class="built_in">set</span> service.ports.http=8080,replicaCount=3</span><br><span class="line"></span><br><span class="line"><span class="comment"># 指定命名空间（需已存在或配合 --create-namespace）</span></span><br><span class="line">helm install my-nginx bitnami/nginx -n dev --create-namespace</span><br><span class="line"></span><br><span class="line"><span class="comment"># 使用本地 values 文件</span></span><br><span class="line">helm install my-nginx bitnami/nginx -f values-prod.yaml</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="五、管理-Release"><a href="#五、管理-Release" class="headerlink" title="五、管理 Release"></a>五、管理 Release</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看所有 Release（可加 -A 跨命名空间）</span></span><br><span class="line">helm list</span><br><span class="line">helm list -A</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看 Release 详情</span></span><br><span class="line">helm status my-nginx</span><br><span class="line"></span><br><span class="line"><span class="comment"># 升级（版本或配置变更）</span></span><br><span class="line">helm upgrade my-nginx bitnami/nginx --<span class="built_in">set</span> replicaCount=5</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看历史版本</span></span><br><span class="line">helm <span class="built_in">history</span> my-nginx</span><br><span class="line"></span><br><span class="line"><span class="comment"># 回滚到指定版本</span></span><br><span class="line">helm rollback my-nginx 1</span><br><span class="line"></span><br><span class="line"><span class="comment"># 卸载（保留历史记录，便于回滚审计）</span></span><br><span class="line">helm uninstall my-nginx --keep-history</span><br><span class="line"></span><br><span class="line"><span class="comment"># 彻底删除 Release</span></span><br><span class="line">helm uninstall my-nginx</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="六、自定义-Chart"><a href="#六、自定义-Chart" class="headerlink" title="六、自定义 Chart"></a>六、自定义 Chart</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建 Chart 脚手架</span></span><br><span class="line">helm create my-chart</span><br><span class="line"></span><br><span class="line"><span class="comment"># 本地渲染 YAML（不真正部署，便于调试模板）</span></span><br><span class="line">helm template my-release my-chart</span><br><span class="line"></span><br><span class="line"><span class="comment"># 带 values 渲染</span></span><br><span class="line">helm template my-release my-chart -f values-dev.yaml</span><br><span class="line"></span><br><span class="line"><span class="comment"># 校验 Chart 格式</span></span><br><span class="line">helm lint my-chart</span><br><span class="line"></span><br><span class="line"><span class="comment"># 打包为 .tgz</span></span><br><span class="line">helm package my-chart</span><br></pre></td></tr></table></figure>
+
+<p>典型目录结构：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">my-chart/</span><br><span class="line">├── Chart.yaml          # Chart 元数据与依赖</span><br><span class="line">├── values.yaml         # 默认配置</span><br><span class="line">├── templates/          # K8s 资源模板（Deployment、Service 等）</span><br><span class="line">└── charts/             # 子 Chart 依赖</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="七、为什么要用-Helm？"><a href="#七、为什么要用-Helm？" class="headerlink" title="七、为什么要用 Helm？"></a>七、为什么要用 Helm？</h1><table>
+<thead>
+<tr>
+<th>能力</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>一键部署</strong></td>
+<td>MySQL、Redis、ES、Nginx 等中间件，一行命令起栈</td>
+</tr>
+<tr>
+<td><strong>版本管理</strong></td>
+<td><strong><code>upgrade</code> &#x2F; <code>rollback</code></strong> 与 <strong><code>history</code></strong>，与 K8s 滚动升级互补</td>
+</tr>
+<tr>
+<td><strong>模板化</strong></td>
+<td>重复 YAML 抽成模板，<strong>values</strong> 区分 dev&#x2F;test&#x2F;prod</td>
+</tr>
+<tr>
+<td><strong>依赖管理</strong></td>
+<td><strong><code>Chart.yaml</code> dependencies</strong> 自动拉取子 Chart</td>
+</tr>
+<tr>
+<td><strong>环境隔离</strong></td>
+<td>同一 Chart + 不同 <strong>values</strong> 文件适配多环境</td>
+</tr>
+</tbody></table>
+<p>本站中间件在 K8s 上的部署可参考 <a href="/service/">服务</a> 与各 <strong>*-Docker</strong> 文章中的清单；生产环境更推荐用 <strong>Helm Chart</strong> 或 <strong>Operator</strong> 替代手写多文档 YAML。</p>
+<hr>
+<h1 id="八、与-kubectl-的关系"><a href="#八、与-kubectl-的关系" class="headerlink" title="八、与 kubectl 的关系"></a>八、与 kubectl 的关系</h1><ul>
+<li><strong><code>kubectl apply -f</code></strong>：直接应用静态或 Kustomize 渲染后的清单，适合简单、少量资源。  </li>
+<li><strong><code>helm install/upgrade</code></strong>：基于模板与 values 生成清单并<strong>记录 Release 版本</strong>，适合可复用、可升级的应用包。  </li>
+<li>二者可并存：Helm 管理的资源仍可用 <strong><code>kubectl get</code></strong> 查看；勿对同一 Release 资源混用手动 <strong><code>kubectl edit</code></strong> 导致 <strong>drift</strong>，升级时以 Helm values 为准。</li>
+</ul>
+<hr>
+<h1 id="九、延伸阅读"><a href="#九、延伸阅读" class="headerlink" title="九、延伸阅读"></a>九、延伸阅读</h1><ul>
+<li>容器与镜像：<a href="/2026/05/01/Cloud/Docker/" title="Docker">Docker</a>  </li>
+<li>集群对象与 <strong><code>kubectl</code></strong>：<a href="/2026/05/01/Cloud/Kubernetes/" title="Kubernetes">Kubernetes</a>  </li>
+<li>局域网 <strong>ChartMuseum</strong> 私有仓库：<a target="_blank" rel="noopener external nofollow noreferrer" href="http://192.168.1.22:30124/">http://192.168.1.22:30124</a>（K8s 部署脚本见 <code>scripts/src/k8s/deploy/chartmuseum/</code>）  </li>
+<li>官方文档：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://helm.sh/docs/">https://helm.sh/docs/</a></li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -2771,239 +3116,8 @@ flowchart TB
 
 
 
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/17/SpringCloud/%E9%9B%86%E6%88%90SpringCloudGateway/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="miracle">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="my">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | my">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/05/17/SpringCloud/%E9%9B%86%E6%88%90SpringCloudGateway/" class="post-title-link" itemprop="url">集成SpringCloudGateway</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2026-05-17 10:10:00" itemprop="dateCreated datePublished" datetime="2026-05-17T10:10:00+08:00">2026-05-17</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-31 23:47:37" itemprop="dateModified" datetime="2026-05-31T23:47:37+08:00">2026-05-31</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/SpringCloud/" itemprop="url" rel="index"><span itemprop="name">SpringCloud</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>826</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>3 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p><strong>cloud-gateway</strong> 基于 <strong>Spring Cloud Gateway</strong>（WebFlux），端口 <strong>9000</strong>，作为对外统一入口。路由使用 <code>lb://服务名</code> 经 <strong>Spring Cloud LoadBalancer</strong> 从 Nacos 取实例；同时启用 <strong>discovery locator</strong> 可按服务名自动生成路由。</p>
-<h1 id="架构"><a href="#架构" class="headerlink" title="架构"></a>架构</h1><pre>
-<code class="mermaid">
-
-flowchart LR
-  C[Client] --&gt; G[Gateway :9000]
-  G --&gt;|&#x2F;user&#x2F;**| U[cloud-user]
-  G --&gt;|&#x2F;web&#x2F;**| A[cloud-app]
-  G --&gt;|&#x2F;order&#x2F;**| O[cloud-order]
-  G --&gt;|&#x2F;stock&#x2F;**| S[cloud-stock]
-  G --&gt; N[(Nacos)]
-  U --&gt; N
-  O --&gt; N
-</code>
-</pre>
-
-<h1 id="Maven-依赖"><a href="#Maven-依赖" class="headerlink" title="Maven 依赖"></a>Maven 依赖</h1><p><code>cloud-gateway/pom.xml</code> 核心：</p>
-<ul>
-<li><code>spring-cloud-starter-gateway-server-webflux</code>（或项目内等价 Gateway 起步依赖）</li>
-<li><code>spring-cloud-starter-loadbalancer</code></li>
-<li><code>spring-cloud-starter-alibaba-nacos-discovery</code></li>
-<li>Sentinel Gateway 适配（与 <code>application-shared.yml</code> 中 <code>spring.cloud.sentinel.enabled</code> 配合）</li>
-</ul>
-<h1 id="路由配置"><a href="#路由配置" class="headerlink" title="路由配置"></a>路由配置</h1><p><code>cloud-gateway/src/main/resources/application.yml</code>：</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">cloud:</span></span><br><span class="line">    <span class="attr">gateway:</span></span><br><span class="line">      <span class="attr">discovery:</span></span><br><span class="line">        <span class="attr">locator:</span></span><br><span class="line">          <span class="attr">enabled:</span> <span class="literal">true</span></span><br><span class="line">          <span class="attr">lower-case-service-id:</span> <span class="literal">true</span></span><br><span class="line">      <span class="attr">server:</span></span><br><span class="line">        <span class="attr">webflux:</span></span><br><span class="line">          <span class="attr">routes:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">id:</span> <span class="string">cloud-app</span></span><br><span class="line">              <span class="attr">uri:</span> <span class="string">lb://cloud-app</span></span><br><span class="line">              <span class="attr">predicates:</span></span><br><span class="line">                <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Path</span></span><br><span class="line">                  <span class="attr">args:</span></span><br><span class="line">                    <span class="attr">pattern:</span> <span class="string">/web/**</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">id:</span> <span class="string">cloud-user</span></span><br><span class="line">              <span class="attr">uri:</span> <span class="string">lb://cloud-user</span></span><br><span class="line">              <span class="attr">predicates:</span></span><br><span class="line">                <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Path</span></span><br><span class="line">                  <span class="attr">args:</span></span><br><span class="line">                    <span class="attr">pattern:</span> <span class="string">/user/**</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">id:</span> <span class="string">cloud-order</span></span><br><span class="line">              <span class="attr">uri:</span> <span class="string">lb://cloud-order</span></span><br><span class="line">              <span class="attr">predicates:</span></span><br><span class="line">                <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Path</span></span><br><span class="line">                  <span class="attr">args:</span></span><br><span class="line">                    <span class="attr">pattern:</span> <span class="string">/order/**</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">id:</span> <span class="string">cloud-stock</span></span><br><span class="line">              <span class="attr">uri:</span> <span class="string">lb://cloud-stock</span></span><br><span class="line">              <span class="attr">predicates:</span></span><br><span class="line">                <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Path</span></span><br><span class="line">                  <span class="attr">args:</span></span><br><span class="line">                    <span class="attr">pattern:</span> <span class="string">/stock/**</span></span><br></pre></td></tr></table></figure>
-
-<table>
-<thead>
-<tr>
-<th>路径前缀</th>
-<th>目标服务</th>
-<th>示例</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><code>/web/**</code></td>
-<td>cloud-app</td>
-<td><code>GET /web/...</code></td>
-</tr>
-<tr>
-<td><code>/user/**</code></td>
-<td>cloud-user</td>
-<td><code>GET /user/...</code></td>
-</tr>
-<tr>
-<td><code>/order/**</code></td>
-<td>cloud-order</td>
-<td><code>POST /order/place</code></td>
-</tr>
-<tr>
-<td><code>/stock/**</code></td>
-<td>cloud-stock</td>
-<td><code>GET /stock/goods/1</code></td>
-</tr>
-</tbody></table>
-<p><strong>注意</strong>：直连服务 Swagger 用 <code>http://host:8003/swagger-ui.html</code>；经网关访问文档需额外路由或直连端口（本仓库推荐联调 API 走 <strong>9000</strong>，文档开发时直连各服务端口）。</p>
-<h1 id="配置-import"><a href="#配置-import" class="headerlink" title="配置 import"></a>配置 import</h1><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">config:</span></span><br><span class="line">    <span class="attr">import:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">optional:classpath:application-shared.yml</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">optional:classpath:application-sentinel-client.yml</span></span><br></pre></td></tr></table></figure>
-
-<p>Profile 的 <code>application-dev.yml</code> 再引入 <code>optional:nacos:application.yml</code>。</p>
-<h1 id="验证"><a href="#验证" class="headerlink" title="验证"></a>验证</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 商品查询（经网关）</span></span><br><span class="line">curl -s <span class="string">&quot;http://127.0.0.1:9000/stock/goods/1&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 下单（JSON 文件避免 PowerShell 转义问题）</span></span><br><span class="line">curl.exe -s -X POST <span class="string">&quot;http://127.0.0.1:9000/order/place&quot;</span> ^</span><br><span class="line">  -H <span class="string">&quot;Content-Type: application/json&quot;</span> ^</span><br><span class="line">  -d <span class="string">&quot;@sql/place-order-body.json&quot;</span></span><br></pre></td></tr></table></figure>
-
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$body</span> = <span class="built_in">Get-Content</span> <span class="string">&quot;sql\place-order-body.json&quot;</span> <span class="literal">-Raw</span></span><br><span class="line"><span class="built_in">Invoke-RestMethod</span> <span class="literal">-Method</span> Post <span class="literal">-Uri</span> <span class="string">&quot;http://127.0.0.1:9000/order/place&quot;</span> `</span><br><span class="line">  <span class="literal">-ContentType</span> <span class="string">&quot;application/json&quot;</span> <span class="literal">-Body</span> <span class="variable">$body</span></span><br></pre></td></tr></table></figure>
-
-<p>成功时 <code>code</code> 为 <code>0</code>；库存不足等业务失败常为 <code>code: 1</code>（见订单专题）。</p>
-<h1 id="常见问题"><a href="#常见问题" class="headerlink" title="常见问题"></a>常见问题</h1><p><strong>Q：504 &#x2F; 503 Service Unavailable？</strong><br>A：下游未注册到 Nacos，或网关先于下游启动。先起 stock&#x2F;order，再起 gateway；在 Nacos 服务列表确认实例健康。</p>
-<p><strong>Q：<code>GET /order/place</code> 报错？</strong><br>A：<code>place</code> 是 <strong>POST</strong> 接口；<code>GET /order/&#123;id&#125;</code> 仅匹配数字 id，避免把 <code>place</code> 当成 id。</p>
-<p><strong>Q：路径要不要 StripPrefix？</strong><br>A：本仓库各服务 Controller 带完整前缀（如 <code>/order</code>），网关 <strong>未</strong> 剥离前缀，转发路径与直连一致。</p>
-<h1 id="生产注意"><a href="#生产注意" class="headerlink" title="生产注意"></a>生产注意</h1><p>与 <a href="/2026/05/17/SpringCloud/cloud/" title="cloud">cloud 架构总览</a> 上线清单配合使用。</p>
-<table>
-<thead>
-<tr>
-<th>项</th>
-<th>建议</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>唯一公网入口</strong></td>
-<td>仅暴露 <strong>9000</strong>（或前置 Caddy&#x2F;HAProxy）；业务 <strong>8001–8004</strong> 不对公网</td>
-</tr>
-<tr>
-<td><strong><code>discovery.locator</code></strong></td>
-<td>生产宜<strong>关闭</strong>或严格限制，避免 Nacos 新服务被自动暴露</td>
-</tr>
-<tr>
-<td><strong>HTTPS &#x2F; 鉴权</strong></td>
-<td>TLS 在边缘终结；JWT 等用 <strong>GlobalFilter</strong> 统一验签</td>
-</tr>
-<tr>
-<td><strong>超时</strong></td>
-<td>配置 <code>httpclient.response-timeout</code>，与 Feign、客户端超时<strong>逐层对齐</strong></td>
-</tr>
-<tr>
-<td><strong>重试</strong></td>
-<td><strong><code>POST /order/place</code> 等非幂等接口</strong>禁止盲目 Retry</td>
-</tr>
-<tr>
-<td><strong>Sentinel</strong></td>
-<td>为热点路由配 QPS&#x2F;慢调用，见 <a href="/2026/05/17/SpringCloud/%E9%9B%86%E6%88%90Sentinel/" title="集成Sentinel">集成 Sentinel</a></td>
-</tr>
-<tr>
-<td><strong>多实例</strong></td>
-<td>Gateway 无状态，≥2 副本 + readiness；<strong>最后启动</strong>（下游已在 Nacos）</td>
-</tr>
-<tr>
-<td><strong>可观测</strong></td>
-<td>SkyWalking Agent、Prometheus <code>gateway.requests</code>、访问日志 GlobalFilter</td>
-</tr>
-<tr>
-<td><strong>Swagger&#x2F;Actuator</strong></td>
-<td>生产勿经网关暴露；或 IP 白名单</td>
-</tr>
-</tbody></table>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 生产 timeout 示例（概念）</span></span><br><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">cloud:</span></span><br><span class="line">    <span class="attr">gateway:</span></span><br><span class="line">      <span class="attr">server:</span></span><br><span class="line">        <span class="attr">webflux:</span></span><br><span class="line">          <span class="attr">httpclient:</span></span><br><span class="line">            <span class="attr">connect-timeout:</span> <span class="number">3000</span></span><br><span class="line">            <span class="attr">response-timeout:</span> <span class="string">30s</span></span><br><span class="line">          <span class="attr">discovery:</span></span><br><span class="line">            <span class="attr">locator:</span></span><br><span class="line">              <span class="attr">enabled:</span> <span class="literal">false</span>   <span class="comment"># 生产建议显式 routes</span></span><br></pre></td></tr></table></figure>
-
-<p>环境变量与 Nacos import 见 <a href="/2026/05/17/springcloud-profiles/" title="Spring Cloud 多环境配置与 Nacos">Spring Cloud 多环境配置与 Nacos</a>。</p>
-<h1 id="生产请求路径"><a href="#生产请求路径" class="headerlink" title="生产请求路径"></a>生产请求路径</h1><pre>
-<code class="mermaid">
-
-flowchart LR
-  C[Client] --&gt; LB[Caddy&#x2F;HAProxy]
-  LB --&gt; GW[Gateway :9000]
-  GW --&gt; S[Sentinel 规则]
-  GW --&gt;|lb:&#x2F;&#x2F;| O[cloud-order]
-  GW --&gt;|lb:&#x2F;&#x2F;| T[cloud-stock]
-  O --&gt; N[(Nacos 解析实例)]
-</code>
-</pre>
-
-<h1 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h1><ul>
-<li><a target="_blank" rel="noopener external nofollow noreferrer" href="https://docs.spring.io/spring-cloud-gateway/reference/">Spring Cloud Gateway 参考文档</a></li>
-<li><a target="_blank" rel="noopener external nofollow noreferrer" href="https://docs.spring.io/spring-cloud-commons/reference/spring-cloud-commons/loadbalancer.html">Spring Cloud LoadBalancer</a></li>
-</ul>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/19/">19</a><a class="extend next" rel="next" title="下一页" aria-label="下一页" href="/page/2/"><i class="fa fa-angle-right"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/20/">20</a><a class="extend next" rel="next" title="下一页" aria-label="下一页" href="/page/2/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 </div>
@@ -3025,13 +3139,13 @@ flowchart LR
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">186k</span>
+    <span title="站点总字数">195k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">10:18</span>
+    <span title="站点阅读时长">10:49</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

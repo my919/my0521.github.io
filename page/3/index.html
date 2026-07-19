@@ -174,18 +174,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">184</span>
+          <span class="site-state-item-count">192</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">38</span>
+        <span class="site-state-item-count">39</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">107</span>
+        <span class="site-state-item-count">108</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -213,6 +213,159 @@
     </div>
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/16/SpringBoot/%E5%85%A8%E5%B1%80%E6%9E%9A%E4%B8%BE%E4%B8%8E%E5%AD%97%E5%85%B8API/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/05/16/SpringBoot/%E5%85%A8%E5%B1%80%E6%9E%9A%E4%B8%BE%E4%B8%8E%E5%AD%97%E5%85%B8API/" class="post-title-link" itemprop="url">SpringBoot全局枚举与字典API</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-05-16 10:30:00" itemprop="dateCreated datePublished" datetime="2026-05-16T10:30:00+08:00">2026-05-16</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-05-31 22:46:35" itemprop="dateModified" datetime="2026-05-31T22:46:35+08:00">2026-05-31</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/SpringBoot/" itemprop="url" rel="index"><span itemprop="name">SpringBoot</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>311</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>1 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><ul>
+<li>数据库存 <strong>数字 code</strong></li>
+<li>JSON 出入参为 <strong><code>&#123; &quot;code&quot;, &quot;desc&quot; &#125;</code></strong></li>
+<li>前端下拉字典统一走 <strong><code>/api/enums</code></strong></li>
+</ul>
+<h1 id="枚举序列化流程"><a href="#枚举序列化流程" class="headerlink" title="枚举序列化流程"></a>枚举序列化流程</h1><pre>
+<code class="mermaid">
+
+flowchart LR
+  DB[(DB 存 code INT)] --&gt; MF[MyBatis-Flex @EnumValue]
+  MF --&gt; Svc[Service 实体]
+  Svc --&gt; J[Jackson BaseEnum 模块]
+  J --&gt; JSON[&quot;JSON code+desc&quot;]
+  JSON --&gt; FE[前端 &#x2F;api&#x2F;enums 字典]
+</code>
+</pre>
+
+<h1 id="搭建步骤"><a href="#搭建步骤" class="headerlink" title="搭建步骤"></a>搭建步骤</h1><h2 id="1-定义-BaseEnum"><a href="#1-定义-BaseEnum" class="headerlink" title="1. 定义 BaseEnum"></a>1. 定义 <code>BaseEnum</code></h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">BaseEnum</span> &#123;</span><br><span class="line">    Integer <span class="title function_">getCode</span><span class="params">()</span>;</span><br><span class="line">    String <span class="title function_">getDesc</span><span class="params">()</span>;</span><br><span class="line">    <span class="comment">// getByCode / getByDesc 静态工具</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-实现业务枚举"><a href="#2-实现业务枚举" class="headerlink" title="2. 实现业务枚举"></a>2. 实现业务枚举</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">enum</span> <span class="title class_">UserStatusEnum</span> <span class="keyword">implements</span> <span class="title class_">BaseEnum</span> &#123;</span><br><span class="line">    NORMAL(<span class="number">1</span>, <span class="string">&quot;正常&quot;</span>),</span><br><span class="line">    DISABLED(<span class="number">0</span>, <span class="string">&quot;停用&quot;</span>);</span><br><span class="line">    <span class="meta">@EnumValue</span>  <span class="comment">// MyBatis-Flex：入库字段</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> Integer <span class="title function_">getCode</span><span class="params">()</span> &#123; <span class="keyword">return</span> code; &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>mybatis-flex.type-enums-package: org.my919.springboot.enums</code></p>
+<h2 id="3-注册表（唯一入口）"><a href="#3-注册表（唯一入口）" class="headerlink" title="3. 注册表（唯一入口）"></a>3. 注册表（唯一入口）</h2><p><code>BaseEnumRegistry.DESCRIPTORS</code>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">new</span> <span class="title class_">EnumDescriptor</span>(<span class="string">&quot;userStatus&quot;</span>, UserStatusEnum.class, <span class="string">&quot;用户账号状态&quot;</span>),</span><br><span class="line"><span class="keyword">new</span> <span class="title class_">EnumDescriptor</span>(<span class="string">&quot;commonStatus&quot;</span>, CommonStatusEnum.class, <span class="string">&quot;通用启用/停用&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>新增枚举 <strong>只改此处</strong>，Jackson 与字典 API 自动同步。</p>
+<h2 id="4-Jackson-配置"><a href="#4-Jackson-配置" class="headerlink" title="4. Jackson 配置"></a>4. Jackson 配置</h2><ul>
+<li><code>BaseEnumJsonSerializer</code>：序列化为 <code>&#123;code, desc&#125;</code></li>
+<li><code>BaseEnumCodeDeserializer</code>：反序列化支持数字、字符串、常量名、<code>&#123;code,desc&#125;</code></li>
+<li><code>EnumJacksonConfiguration</code>：<code>JsonMapperBuilderCustomizer</code> 按注册表注册</li>
+</ul>
+<h2 id="5-字典-API"><a href="#5-字典-API" class="headerlink" title="5. 字典 API"></a>5. 字典 API</h2><table>
+<thead>
+<tr>
+<th>类</th>
+<th>路径</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>EnumCatalogService</code></td>
+<td>组装选项列表</td>
+</tr>
+<tr>
+<td><code>EnumController</code></td>
+<td><code>/api/enums</code>、<code>/api/enums/catalog</code>、<code>/api/enums/&#123;key&#125;</code></td>
+</tr>
+</tbody></table>
+<p>选项结构：<code>EnumItemVo</code> → <code>code</code>、<code>desc</code>、<code>name</code>（枚举常量名）。</p>
+<h2 id="6-实体字段"><a href="#6-实体字段" class="headerlink" title="6. 实体字段"></a>6. 实体字段</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// SysUser.java</span></span><br><span class="line"><span class="keyword">private</span> UserStatusEnum status;</span><br></pre></td></tr></table></figure>
+
+<h1 id="验证"><a href="#验证" class="headerlink" title="验证"></a>验证</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">curl http://localhost:8082/api/enums</span><br><span class="line">curl http://localhost:8082/api/enums/userStatus</span><br></pre></td></tr></table></figure>
+
+<p>非法枚举值在 JSON 反序列化时由 <code>GlobalExceptionHandler</code> 返回 400。</p>
+<h1 id="相关文件"><a href="#相关文件" class="headerlink" title="相关文件"></a>相关文件</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">enums/BaseEnum.java</span><br><span class="line">enums/BaseEnumRegistry.java</span><br><span class="line">enums/jackson/*</span><br><span class="line">config/EnumJacksonConfiguration.java</span><br><span class="line">controller/EnumController.java</span><br><span class="line">service/EnumCatalogService.java</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -2013,169 +2166,8 @@ flowchart TD
 
 
 
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/05/Java/Java%E5%B9%B6%E5%8F%91%E9%94%81/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="miracle">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="my">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | my">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/05/05/Java/Java%E5%B9%B6%E5%8F%91%E9%94%81/" class="post-title-link" itemprop="url">Java并发锁</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-      
-
-      <time title="创建时间：2026-05-05 12:06:14 / 修改时间：12:11:13" itemprop="dateCreated datePublished" datetime="2026-05-05T12:06:14+08:00">2026-05-05</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>1.2k</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>4 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="Java-并发锁全解-完整代码示例-适用场景"><a href="#Java-并发锁全解-完整代码示例-适用场景" class="headerlink" title="Java 并发锁全解 + 完整代码示例 + 适用场景"></a>Java 并发锁全解 + 完整代码示例 + 适用场景</h1><p>涵盖：<strong>synchronized、ReentrantLock、ReentrantReadWriteLock、StampedLock、Atomic原子类、volatile</strong></p>
-<h2 id="一、synchronized-内置锁"><a href="#一、synchronized-内置锁" class="headerlink" title="一、synchronized 内置锁"></a>一、synchronized 内置锁</h2><h3 id="特性"><a href="#特性" class="headerlink" title="特性"></a>特性</h3><p>可重入、非公平、悲观独占锁，JVM 自动加解锁。</p>
-<h3 id="适用场景"><a href="#适用场景" class="headerlink" title="适用场景"></a>适用场景</h3><p>简单临界区、单体小并发、不想手动释放锁。</p>
-<h3 id="代码示例"><a href="#代码示例" class="headerlink" title="代码示例"></a>代码示例</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">SyncDemo</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="type">int</span> <span class="variable">count</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 修饰静态方法 类锁</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title function_">incr</span><span class="params">()</span> &#123;</span><br><span class="line">        count++;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> InterruptedException &#123;</span><br><span class="line">        <span class="type">Runnable</span> <span class="variable">task</span> <span class="operator">=</span> () -&gt; &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; <span class="number">1000</span>; i++) &#123;</span><br><span class="line">                incr();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;;</span><br><span class="line"></span><br><span class="line">        <span class="type">Thread</span> <span class="variable">t1</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Thread</span>(task);</span><br><span class="line">        <span class="type">Thread</span> <span class="variable">t2</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Thread</span>(task);</span><br><span class="line">        t1.start();</span><br><span class="line">        t2.start();</span><br><span class="line">        t1.join();</span><br><span class="line">        t2.join();</span><br><span class="line"></span><br><span class="line">        System.out.println(<span class="string">&quot;count = &quot;</span> + count);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="二、ReentrantLock-可重入显式锁"><a href="#二、ReentrantLock-可重入显式锁" class="headerlink" title="二、ReentrantLock 可重入显式锁"></a>二、ReentrantLock 可重入显式锁</h2><h3 id="特性-1"><a href="#特性-1" class="headerlink" title="特性"></a>特性</h3><p>可重入、支持公平&#x2F;非公平、可超时、可中断、多 Condition 精准唤醒。</p>
-<h3 id="适用场景-1"><a href="#适用场景-1" class="headerlink" title="适用场景"></a>适用场景</h3><p>需要<strong>锁超时、可中断、公平锁、复杂生产者消费者</strong>。</p>
-<h3 id="基础使用示例"><a href="#基础使用示例" class="headerlink" title="基础使用示例"></a>基础使用示例</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.concurrent.locks.Lock;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.locks.ReentrantLock;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ReentrantLockDemo</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="type">int</span> <span class="variable">count</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">    <span class="comment">// 非公平锁：new ReentrantLock()</span></span><br><span class="line">    <span class="comment">// 公平锁：new ReentrantLock(true)</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">Lock</span> <span class="variable">lock</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ReentrantLock</span>();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">incr</span><span class="params">()</span> &#123;</span><br><span class="line">        lock.lock(); <span class="comment">// 加锁</span></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            count++;</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            lock.unlock(); <span class="comment">// 必须finally释放</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> InterruptedException &#123;</span><br><span class="line">        <span class="type">Runnable</span> <span class="variable">task</span> <span class="operator">=</span> () -&gt; &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; <span class="number">1000</span>; i++) &#123;</span><br><span class="line">                incr();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;;</span><br><span class="line"></span><br><span class="line">        <span class="type">Thread</span> <span class="variable">t1</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Thread</span>(task);</span><br><span class="line">        <span class="type">Thread</span> <span class="variable">t2</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Thread</span>(task);</span><br><span class="line">        t1.start();</span><br><span class="line">        t2.start();</span><br><span class="line">        t1.join();</span><br><span class="line">        t2.join();</span><br><span class="line"></span><br><span class="line">        System.out.println(<span class="string">&quot;count = &quot;</span> + count);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="tryLock-超时避免死锁"><a href="#tryLock-超时避免死锁" class="headerlink" title="tryLock 超时避免死锁"></a>tryLock 超时避免死锁</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">TryLockDemo</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">Lock</span> <span class="variable">lock</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ReentrantLock</span>();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="keyword">new</span> <span class="title class_">Thread</span>(() -&gt; &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="comment">// 等待2秒拿不到就放弃</span></span><br><span class="line">                <span class="keyword">if</span> (lock.tryLock(<span class="number">2</span>, java.util.concurrent.TimeUnit.SECONDS)) &#123;</span><br><span class="line">                    <span class="keyword">try</span> &#123;</span><br><span class="line">                        System.out.println(<span class="string">&quot;线程1获取到锁&quot;</span>);</span><br><span class="line">                        Thread.sleep(<span class="number">3000</span>);</span><br><span class="line">                    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">                        lock.unlock();</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    System.out.println(<span class="string">&quot;线程1获取锁超时&quot;</span>);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;).start();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">new</span> <span class="title class_">Thread</span>(() -&gt; &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="keyword">if</span> (lock.tryLock(<span class="number">2</span>, java.util.concurrent.TimeUnit.SECONDS)) &#123;</span><br><span class="line">                    <span class="keyword">try</span> &#123;</span><br><span class="line">                        System.out.println(<span class="string">&quot;线程2获取到锁&quot;</span>);</span><br><span class="line">                    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">                        lock.unlock();</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    System.out.println(<span class="string">&quot;线程2获取锁超时&quot;</span>);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;).start();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="三、ReentrantReadWriteLock-读写锁"><a href="#三、ReentrantReadWriteLock-读写锁" class="headerlink" title="三、ReentrantReadWriteLock 读写锁"></a>三、ReentrantReadWriteLock 读写锁</h2><h3 id="特性-2"><a href="#特性-2" class="headerlink" title="特性"></a>特性</h3><p>读读共享、读写互斥、写写互斥。</p>
-<h3 id="适用场景-2"><a href="#适用场景-2" class="headerlink" title="适用场景"></a>适用场景</h3><p><strong>读多写少</strong>：本地缓存、配置类、字典数据。</p>
-<h3 id="代码示例-1"><a href="#代码示例-1" class="headerlink" title="代码示例"></a>代码示例</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.concurrent.locks.ReadWriteLock;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.locks.ReentrantReadWriteLock;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ReadWriteLockDemo</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="type">String</span> <span class="variable">cacheData</span> <span class="operator">=</span> <span class="string">&quot;初始数据&quot;</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">ReadWriteLock</span> <span class="variable">rwLock</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ReentrantReadWriteLock</span>();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 读锁：共享</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">read</span><span class="params">()</span> &#123;</span><br><span class="line">        rwLock.readLock().lock();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            System.out.println(Thread.currentThread().getName() + <span class="string">&quot; 读取：&quot;</span> + cacheData);</span><br><span class="line">            Thread.sleep(<span class="number">200</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            rwLock.readLock().unlock();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 写锁：独占</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">write</span><span class="params">(String newData)</span> &#123;</span><br><span class="line">        rwLock.writeLock().lock();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            System.out.println(Thread.currentThread().getName() + <span class="string">&quot; 写入：&quot;</span> + newData);</span><br><span class="line">            cacheData = newData;</span><br><span class="line">            Thread.sleep(<span class="number">200</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            rwLock.writeLock().unlock();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="comment">// 多个读线程</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; <span class="number">3</span>; i++) &#123;</span><br><span class="line">            <span class="keyword">new</span> <span class="title class_">Thread</span>(ReadWriteLockDemo::read, <span class="string">&quot;读线程&quot;</span> + i).start();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 写线程</span></span><br><span class="line">        <span class="keyword">new</span> <span class="title class_">Thread</span>(() -&gt; write(<span class="string">&quot;更新后数据&quot;</span>), <span class="string">&quot;写线程&quot;</span>).start();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="四、StampedLock-乐观读写锁（JDK8-）"><a href="#四、StampedLock-乐观读写锁（JDK8-）" class="headerlink" title="四、StampedLock 乐观读写锁（JDK8+）"></a>四、StampedLock 乐观读写锁（JDK8+）</h2><h3 id="特性-3"><a href="#特性-3" class="headerlink" title="特性"></a>特性</h3><p>支持<strong>乐观读、悲观读、写锁</strong>，无锁乐观读性能极高。</p>
-<h3 id="适用场景-3"><a href="#适用场景-3" class="headerlink" title="适用场景"></a>适用场景</h3><p><strong>超高并发、读极多写极少</strong>，追求极致性能。</p>
-<h3 id="代码示例-2"><a href="#代码示例-2" class="headerlink" title="代码示例"></a>代码示例</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.concurrent.locks.StampedLock;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">StampedLockDemo</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="type">int</span> <span class="variable">x</span> <span class="operator">=</span> <span class="number">10</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">StampedLock</span> <span class="variable">stampedLock</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">StampedLock</span>();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 乐观读</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">optimisticRead</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="type">long</span> <span class="variable">stamp</span> <span class="operator">=</span> stampedLock.tryOptimisticRead();</span><br><span class="line">        <span class="type">int</span> <span class="variable">val</span> <span class="operator">=</span> x;</span><br><span class="line">        <span class="comment">// 校验期间是否被写修改</span></span><br><span class="line">        <span class="keyword">if</span> (!stampedLock.validate(stamp)) &#123;</span><br><span class="line">            <span class="comment">// 升级为悲观读锁</span></span><br><span class="line">            stamp = stampedLock.readLock();</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                val = x;</span><br><span class="line">            &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">                stampedLock.unlockRead(stamp);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(<span class="string">&quot;读取值：&quot;</span> + val);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 写锁</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">write</span><span class="params">(<span class="type">int</span> newVal)</span> &#123;</span><br><span class="line">        <span class="type">long</span> <span class="variable">stamp</span> <span class="operator">=</span> stampedLock.writeLock();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            x = newVal;</span><br><span class="line">            System.out.println(<span class="string">&quot;写入值：&quot;</span> + newVal);</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            stampedLock.unlockWrite(stamp);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="keyword">new</span> <span class="title class_">Thread</span>(StampedLockDemo::optimisticRead).start();</span><br><span class="line">        <span class="keyword">new</span> <span class="title class_">Thread</span>(() -&gt; write(<span class="number">20</span>)).start();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="五、Atomic-原子类（无锁-CAS）"><a href="#五、Atomic-原子类（无锁-CAS）" class="headerlink" title="五、Atomic 原子类（无锁 CAS）"></a>五、Atomic 原子类（无锁 CAS）</h2><h3 id="特性-4"><a href="#特性-4" class="headerlink" title="特性"></a>特性</h3><p>基于 CAS 无锁，原子性、高性能，不阻塞。</p>
-<h3 id="适用场景-4"><a href="#适用场景-4" class="headerlink" title="适用场景"></a>适用场景</h3><p>计数器、序号生成、简单状态标记，<strong>单个变量原子操作</strong>。</p>
-<h3 id="代码示例-3"><a href="#代码示例-3" class="headerlink" title="代码示例"></a>代码示例</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.concurrent.atomic.AtomicInteger;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">AtomicDemo</span> &#123;</span><br><span class="line">    <span class="comment">// 原子整型</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">AtomicInteger</span> <span class="variable">count</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">AtomicInteger</span>(<span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">incr</span><span class="params">()</span> &#123;</span><br><span class="line">        count.incrementAndGet(); <span class="comment">// 原子自增</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> InterruptedException &#123;</span><br><span class="line">        <span class="type">Runnable</span> <span class="variable">task</span> <span class="operator">=</span> () -&gt; &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; <span class="number">1000</span>; i++) &#123;</span><br><span class="line">                incr();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;;</span><br><span class="line"></span><br><span class="line">        <span class="type">Thread</span> <span class="variable">t1</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Thread</span>(task);</span><br><span class="line">        <span class="type">Thread</span> <span class="variable">t2</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Thread</span>(task);</span><br><span class="line">        t1.start();</span><br><span class="line">        t2.start();</span><br><span class="line">        t1.join();</span><br><span class="line">        t2.join();</span><br><span class="line"></span><br><span class="line">        System.out.println(<span class="string">&quot;atomic count = &quot;</span> + count.get());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="六、volatile-轻量级可见性（非锁）"><a href="#六、volatile-轻量级可见性（非锁）" class="headerlink" title="六、volatile 轻量级可见性（非锁）"></a>六、volatile 轻量级可见性（非锁）</h2><h3 id="特性-5"><a href="#特性-5" class="headerlink" title="特性"></a>特性</h3><p>保证<strong>可见性、禁止指令重排</strong>，<strong>不保证原子性</strong>。</p>
-<h3 id="适用场景-5"><a href="#适用场景-5" class="headerlink" title="适用场景"></a>适用场景</h3><p>状态标志位、双重校验单例。</p>
-<h3 id="代码示例-4"><a href="#代码示例-4" class="headerlink" title="代码示例"></a>代码示例</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">VolatileDemo</span> &#123;</span><br><span class="line">    <span class="comment">// 保证多线程可见</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">volatile</span> <span class="type">boolean</span> <span class="variable">flag</span> <span class="operator">=</span> <span class="literal">true</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> InterruptedException &#123;</span><br><span class="line">        <span class="keyword">new</span> <span class="title class_">Thread</span>(() -&gt; &#123;</span><br><span class="line">            <span class="keyword">while</span> (flag) &#123;</span><br><span class="line">                <span class="comment">// 循环等待</span></span><br><span class="line">            &#125;</span><br><span class="line">            System.out.println(<span class="string">&quot;线程感知到flag变为false，退出循环&quot;</span>);</span><br><span class="line">        &#125;).start();</span><br><span class="line"></span><br><span class="line">        Thread.sleep(<span class="number">1000</span>);</span><br><span class="line">        flag = <span class="literal">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="七、锁选型速查表"><a href="#七、锁选型速查表" class="headerlink" title="七、锁选型速查表"></a>七、锁选型速查表</h2><table>
-<thead>
-<tr>
-<th>锁类型</th>
-<th>核心特点</th>
-<th>适用场景</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>synchronized</td>
-<td>简单自动加解锁、可重入</td>
-<td>简单临界区、低并发、快速开发</td>
-</tr>
-<tr>
-<td>ReentrantLock</td>
-<td>公平&#x2F;非公平、超时、中断、Condition</td>
-<td>复杂同步、需要超时&#x2F;可中断、生产者消费者</td>
-</tr>
-<tr>
-<td>ReentrantReadWriteLock</td>
-<td>读读共享、读写互斥</td>
-<td>读多写少：本地缓存、配置字典</td>
-</tr>
-<tr>
-<td>StampedLock</td>
-<td>乐观读、高性能</td>
-<td>超高并发、读极多写极少</td>
-</tr>
-<tr>
-<td>AtomicXXX</td>
-<td>CAS无锁、高性能</td>
-<td>计数器、自增序号、单个变量原子操作</td>
-</tr>
-<tr>
-<td>volatile</td>
-<td>可见性+禁止重排</td>
-<td>状态标记、双重检查单例</td>
-</tr>
-</tbody></table>
-<h2 id="八、补充：简单生产者消费者（ReentrantLock-Condition）"><a href="#八、补充：简单生产者消费者（ReentrantLock-Condition）" class="headerlink" title="八、补充：简单生产者消费者（ReentrantLock + Condition）"></a>八、补充：简单生产者消费者（ReentrantLock + Condition）</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.concurrent.locks.Condition;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.locks.Lock;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.locks.ReentrantLock;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ProducerConsumerDemo</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">Lock</span> <span class="variable">lock</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ReentrantLock</span>();</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">Condition</span> <span class="variable">notFull</span> <span class="operator">=</span> lock.newCondition();</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">Condition</span> <span class="variable">notEmpty</span> <span class="operator">=</span> lock.newCondition();</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="type">int</span> <span class="variable">num</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">int</span> <span class="variable">MAX</span> <span class="operator">=</span> <span class="number">5</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 生产</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">produce</span><span class="params">()</span> <span class="keyword">throws</span> InterruptedException &#123;</span><br><span class="line">        lock.lock();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">while</span> (num &gt;= MAX) &#123;</span><br><span class="line">                notFull.await(); <span class="comment">// 满了等待</span></span><br><span class="line">            &#125;</span><br><span class="line">            num++;</span><br><span class="line">            System.out.println(<span class="string">&quot;生产，当前数量：&quot;</span> + num);</span><br><span class="line">            notEmpty.signal(); <span class="comment">// 唤醒消费者</span></span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            lock.unlock();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 消费</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">consume</span><span class="params">()</span> <span class="keyword">throws</span> InterruptedException &#123;</span><br><span class="line">        lock.lock();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">while</span> (num &lt;= <span class="number">0</span>) &#123;</span><br><span class="line">                notEmpty.await(); <span class="comment">// 空了等待</span></span><br><span class="line">            &#125;</span><br><span class="line">            num--;</span><br><span class="line">            System.out.println(<span class="string">&quot;消费，当前数量：&quot;</span> + num);</span><br><span class="line">            notFull.signal(); <span class="comment">// 唤醒生产者</span></span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            lock.unlock();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="keyword">new</span> <span class="title class_">Thread</span>(() -&gt; &#123;</span><br><span class="line">            <span class="keyword">while</span> (<span class="literal">true</span>) <span class="keyword">try</span> &#123; produce();Thread.sleep(<span class="number">500</span>); &#125; <span class="keyword">catch</span> (Exception e) &#123;&#125;</span><br><span class="line">        &#125;).start();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">new</span> <span class="title class_">Thread</span>(() -&gt; &#123;</span><br><span class="line">            <span class="keyword">while</span> (<span class="literal">true</span>) <span class="keyword">try</span> &#123; consume();Thread.sleep(<span class="number">800</span>); &#125; <span class="keyword">catch</span> (Exception e) &#123;&#125;</span><br><span class="line">        &#125;).start();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
   <nav class="pagination">
-    <a class="extend prev" rel="prev" title="上一页" aria-label="上一页" href="/page/2/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/19/">19</a><a class="extend next" rel="next" title="下一页" aria-label="下一页" href="/page/4/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" title="上一页" aria-label="上一页" href="/page/2/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/20/">20</a><a class="extend next" rel="next" title="下一页" aria-label="下一页" href="/page/4/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 </div>
@@ -2197,13 +2189,13 @@ flowchart TD
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">186k</span>
+    <span title="站点总字数">195k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">10:18</span>
+    <span title="站点阅读时长">10:49</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

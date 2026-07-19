@@ -28,7 +28,7 @@
 <meta property="og:description" content="机器学习（Machine Learning，ML） 让计算机从数据中学习规律，对新样本做预测或决策，而无需为每种情况手写规则。下面从「问题类型 → 典型流程 → 常用算法 → 评估与过拟合 → 与 DL&#x2F;LLM 的关系」顺序写清楚。 典型流程   flowchart LR   Raw[原始数据] --&gt; Clean[清洗特征]   Clean --&gt; Train[训练模型]">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-05-01T05:22:45.000Z">
-<meta property="article:modified_time" content="2026-05-31T15:47:21.966Z">
+<meta property="article:modified_time" content="2026-07-04T09:54:25.295Z">
 <meta property="article:author" content="miracle">
 <meta property="article:tag" content="ML">
 <meta name="twitter:card" content="summary">
@@ -180,18 +180,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">184</span>
+          <span class="site-state-item-count">192</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">38</span>
+        <span class="site-state-item-count">39</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">107</span>
+        <span class="site-state-item-count">108</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -265,7 +265,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-31 23:47:21" itemprop="dateModified" datetime="2026-05-31T23:47:21+08:00">2026-05-31</time>
+      <time title="修改时间：2026-07-04 17:54:25" itemprop="dateModified" datetime="2026-07-04T17:54:25+08:00">2026-07-04</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -284,7 +284,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>538</span>
+      <span>689</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -346,7 +346,7 @@ flowchart LR
 <li><strong>模型训练与验证</strong>：训练集 &#x2F; 验证集 &#x2F; 测试集或 <strong>K 折交叉验证</strong>。  </li>
 <li><strong>部署与监控</strong>：数据漂移、模型退化、在线 A&#x2F;B。</li>
 </ol>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># scikit-learn 极简示例（概念）</span></span><br><span class="line"><span class="keyword">from</span> sklearn.model_selection <span class="keyword">import</span> train_test_split</span><br><span class="line"><span class="keyword">from</span> sklearn.linear_model <span class="keyword">import</span> LogisticRegression</span><br><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> classification_report</span><br><span class="line"></span><br><span class="line">X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=<span class="number">0.2</span>)</span><br><span class="line">clf = LogisticRegression(max_iter=<span class="number">1000</span>)</span><br><span class="line">clf.fit(X_train, y_train)</span><br><span class="line"><span class="built_in">print</span>(classification_report(y_test, clf.predict(X_test)))</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># PyTorch 极简示例（概念）：逻辑回归</span></span><br><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn</span><br><span class="line"><span class="keyword">from</span> torch.utils.data <span class="keyword">import</span> TensorDataset, DataLoader, random_split</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"></span><br><span class="line"><span class="comment"># 合成二分类数据（示例；实际场景替换为你的 X, y）</span></span><br><span class="line">rng = np.random.default_rng(<span class="number">42</span>)</span><br><span class="line">X = np.r_[rng.normal(<span class="number">0</span>, <span class="number">1</span>, (<span class="number">500</span>, <span class="number">10</span>)), rng.normal(<span class="number">1</span>, <span class="number">1</span>, (<span class="number">500</span>, <span class="number">10</span>))]</span><br><span class="line">y = np.array([<span class="number">0</span>] * <span class="number">500</span> + [<span class="number">1</span>] * <span class="number">500</span>)</span><br><span class="line">X = torch.tensor(X, dtype=torch.float32)</span><br><span class="line">y = torch.tensor(y, dtype=torch.long)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 划分训练集 / 测试集（test_size=0.2）</span></span><br><span class="line">dataset = TensorDataset(X, y)</span><br><span class="line">n_test = <span class="built_in">int</span>(<span class="built_in">len</span>(dataset) * <span class="number">0.2</span>)</span><br><span class="line">train_set, test_set = random_split(</span><br><span class="line">    dataset, [<span class="built_in">len</span>(dataset) - n_test, n_test],</span><br><span class="line">    generator=torch.Generator().manual_seed(<span class="number">42</span>),</span><br><span class="line">)</span><br><span class="line">train_loader = DataLoader(train_set, batch_size=<span class="number">32</span>, shuffle=<span class="literal">True</span>)</span><br><span class="line">test_loader = DataLoader(test_set, batch_size=<span class="number">256</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 线性层 + 交叉熵 ≈ sklearn 的 LogisticRegression</span></span><br><span class="line">model = nn.Linear(X.shape[<span class="number">1</span>], <span class="number">2</span>)</span><br><span class="line">criterion = nn.CrossEntropyLoss()</span><br><span class="line">optimizer = torch.optim.Adam(model.parameters(), lr=<span class="number">0.01</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">100</span>):</span><br><span class="line">    model.train()</span><br><span class="line">    <span class="keyword">for</span> xb, yb <span class="keyword">in</span> train_loader:</span><br><span class="line">        optimizer.zero_grad()</span><br><span class="line">        criterion(model(xb), yb).backward()</span><br><span class="line">        optimizer.step()</span><br><span class="line"></span><br><span class="line">model.<span class="built_in">eval</span>()</span><br><span class="line">correct, total = <span class="number">0</span>, <span class="number">0</span></span><br><span class="line"><span class="keyword">with</span> torch.no_grad():</span><br><span class="line">    <span class="keyword">for</span> xb, yb <span class="keyword">in</span> test_loader:</span><br><span class="line">        pred = model(xb).argmax(dim=<span class="number">1</span>)</span><br><span class="line">        correct += (pred == yb).<span class="built_in">sum</span>().item()</span><br><span class="line">        total += yb.size(<span class="number">0</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;test accuracy: <span class="subst">&#123;correct / total:<span class="number">.4</span>f&#125;</span>&quot;</span>)</span><br></pre></td></tr></table></figure>
 
 <hr>
 <h1 id="三、常用算法（概览）"><a href="#三、常用算法（概览）" class="headerlink" title="三、常用算法（概览）"></a>三、常用算法（概览）</h1><ul>
@@ -437,13 +437,13 @@ flowchart LR
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">186k</span>
+    <span title="站点总字数">195k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">10:18</span>
+    <span title="站点阅读时长">10:49</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

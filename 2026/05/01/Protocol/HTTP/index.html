@@ -28,7 +28,7 @@
 <meta property="og:description" content="HTTP（Hypertext Transfer Protocol）是 Web 的应用层协议：基于请求 &#x2F; 响应模型，在语义层使用方法、URI、首部与可选正文表达操作。下面从「无状态与资源模型 → 报文结构原理 → 方法与幂等 → 状态码 → HTTP&#x2F;1.1 与 HTTP&#x2F;2 → curl 与原始报文示例」顺序写清楚；传输层默认依赖 TCP，安全传输见 HTTPS，全">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-05-01T04:46:50.000Z">
-<meta property="article:modified_time" content="2026-05-31T15:47:21.955Z">
+<meta property="article:modified_time" content="2026-06-03T12:25:51.391Z">
 <meta property="article:author" content="miracle">
 <meta property="article:tag" content="HTTP">
 <meta property="article:tag" content="Protocol">
@@ -168,7 +168,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AF%B7%E6%B1%82%E5%93%8D%E5%BA%94%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.</span> <span class="nav-text">请求响应模型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E6%97%A0%E7%8A%B6%E6%80%81%E4%B8%8E%E8%B5%84%E6%BA%90%E6%A8%A1%E5%9E%8B%EF%BC%88%E5%8E%9F%E7%90%86%EF%BC%89"><span class="nav-number">2.</span> <span class="nav-text">一、无状态与资源模型（原理）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E6%8A%A5%E6%96%87%E7%BB%93%E6%9E%84%EF%BC%88%E4%BD%9C%E7%94%A8%EF%BC%89"><span class="nav-number">3.</span> <span class="nav-text">二、报文结构（作用）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E8%AF%B7%E6%B1%82"><span class="nav-number">3.1.</span> <span class="nav-text">1. 请求</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E5%93%8D%E5%BA%94"><span class="nav-number">3.2.</span> <span class="nav-text">2. 响应</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E5%B8%B8%E7%94%A8%E6%96%B9%E6%B3%95%E4%B8%8E%E5%B9%82%E7%AD%89%EF%BC%88%E5%8E%9F%E7%90%86%EF%BC%89"><span class="nav-number">4.</span> <span class="nav-text">三、常用方法与幂等（原理）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E7%8A%B6%E6%80%81%E7%A0%81%EF%BC%88%E5%88%86%E7%B1%BB%EF%BC%89"><span class="nav-number">5.</span> <span class="nav-text">四、状态码（分类）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%94%E3%80%81HTTP-1-1-%E4%B8%8E-HTTP-2%EF%BC%88%E6%BC%94%E8%BF%9B%EF%BC%89"><span class="nav-number">6.</span> <span class="nav-text">五、HTTP&#x2F;1.1 与 HTTP&#x2F;2（演进）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E7%A4%BA%E4%BE%8B%EF%BC%9Acurl-%E8%A7%82%E5%AF%9F%E6%8A%A5%E6%96%87"><span class="nav-number">7.</span> <span class="nav-text">六、示例：curl 观察报文</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%83%E3%80%81%E7%A4%BA%E4%BE%8B%EF%BC%9A%E7%94%A8-nc-%E5%8F%91%E9%80%81%E6%9C%80%E5%B0%8F-HTTP-1-1-%E8%AF%B7%E6%B1%82%EF%BC%88%E6%98%8E%E6%96%87%EF%BC%89"><span class="nav-number">8.</span> <span class="nav-text">七、示例：用 nc 发送最小 HTTP&#x2F;1.1 请求（明文）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%AB%E3%80%81%E7%A4%BA%E4%BE%8B%EF%BC%9APython-3-%E6%9C%80%E5%B0%8F-HTTP-%E5%AE%A2%E6%88%B7%E7%AB%AF%EF%BC%88%E6%A0%87%E5%87%86%E5%BA%93%EF%BC%89"><span class="nav-number">9.</span> <span class="nav-text">八、示例：Python 3 最小 HTTP 客户端（标准库）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B9%9D%E3%80%81%E5%B0%8F%E7%BB%93"><span class="nav-number">10.</span> <span class="nav-text">九、小结</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AF%B7%E6%B1%82%E5%93%8D%E5%BA%94%E6%A8%A1%E5%9E%8B%EF%BC%88%E8%AF%AD%E4%B9%89%E5%B1%82%EF%BC%89"><span class="nav-number">1.</span> <span class="nav-text">请求响应模型（语义层）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%8C%E6%95%B4%E9%80%9A%E4%BF%A1%E6%95%B0%E6%8D%AE%E6%B5%81%E7%A8%8B%EF%BC%88%E7%AB%AF%E5%88%B0%E7%AB%AF%EF%BC%89"><span class="nav-number">2.</span> <span class="nav-text">完整通信数据流程（端到端）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E5%8D%8F%E8%AE%AE%E6%A0%88%E4%B8%8E%E5%90%84%E5%B1%82%E8%81%8C%E8%B4%A3"><span class="nav-number">2.1.</span> <span class="nav-text">1. 协议栈与各层职责</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E6%97%B6%E5%BA%8F%EF%BC%9ADNS-%E2%86%92-TCP-%E2%86%92-TLS-%E2%86%92-HTTP-%E2%86%92-%E5%85%B3%E9%97%AD"><span class="nav-number">2.2.</span> <span class="nav-text">2. 时序：DNS → TCP → TLS → HTTP → 关闭</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E7%BA%BF%E8%B7%AF%E4%B8%8A%E3%80%8C%E9%95%BF%E4%BB%80%E4%B9%88%E6%A0%B7%E3%80%8D%EF%BC%9AHTTP-%E5%9C%A8-TCP-%E5%AD%97%E8%8A%82%E6%B5%81%E4%B8%AD"><span class="nav-number">2.3.</span> <span class="nav-text">3. 线路上「长什么样」：HTTP 在 TCP 字节流中</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-POST-%E6%8F%90%E4%BA%A4-JSON-%E7%9A%84%E5%AE%8C%E6%95%B4%E6%95%B0%E6%8D%AE%E8%B7%AF%E5%BE%84"><span class="nav-number">2.4.</span> <span class="nav-text">4. POST 提交 JSON 的完整数据路径</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-HTTP-1-1-%E8%BF%9E%E6%8E%A5%E5%A4%8D%E7%94%A8-vs-HTTP-2-%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8"><span class="nav-number">2.5.</span> <span class="nav-text">5. HTTP&#x2F;1.1 连接复用 vs HTTP&#x2F;2 多路复用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-%E7%94%A8-curl-%E5%AF%B9%E7%85%A7%E5%90%84%E9%98%B6%E6%AE%B5"><span class="nav-number">2.6.</span> <span class="nav-text">6. 用 curl 对照各阶段</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-%E4%B8%8E%E7%9B%B8%E9%82%BB%E5%8D%8F%E8%AE%AE%E6%96%87%E6%A1%A3%E7%9A%84%E5%AF%B9%E7%85%A7"><span class="nav-number">2.7.</span> <span class="nav-text">7. 与相邻协议文档的对照</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E6%97%A0%E7%8A%B6%E6%80%81%E4%B8%8E%E8%B5%84%E6%BA%90%E6%A8%A1%E5%9E%8B%EF%BC%88%E5%8E%9F%E7%90%86%EF%BC%89"><span class="nav-number">3.</span> <span class="nav-text">一、无状态与资源模型（原理）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E6%8A%A5%E6%96%87%E7%BB%93%E6%9E%84%EF%BC%88%E4%BD%9C%E7%94%A8%EF%BC%89"><span class="nav-number">4.</span> <span class="nav-text">二、报文结构（作用）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E8%AF%B7%E6%B1%82"><span class="nav-number">4.1.</span> <span class="nav-text">1. 请求</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E5%93%8D%E5%BA%94"><span class="nav-number">4.2.</span> <span class="nav-text">2. 响应</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E5%B8%B8%E7%94%A8%E6%96%B9%E6%B3%95%E4%B8%8E%E5%B9%82%E7%AD%89%EF%BC%88%E5%8E%9F%E7%90%86%EF%BC%89"><span class="nav-number">5.</span> <span class="nav-text">三、常用方法与幂等（原理）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E7%8A%B6%E6%80%81%E7%A0%81%EF%BC%88%E5%88%86%E7%B1%BB%EF%BC%89"><span class="nav-number">6.</span> <span class="nav-text">四、状态码（分类）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%94%E3%80%81HTTP-1-1-%E4%B8%8E-HTTP-2%EF%BC%88%E6%BC%94%E8%BF%9B%EF%BC%89"><span class="nav-number">7.</span> <span class="nav-text">五、HTTP&#x2F;1.1 与 HTTP&#x2F;2（演进）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E7%A4%BA%E4%BE%8B%EF%BC%9Acurl-%E8%A7%82%E5%AF%9F%E6%8A%A5%E6%96%87"><span class="nav-number">8.</span> <span class="nav-text">六、示例：curl 观察报文</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%83%E3%80%81%E7%A4%BA%E4%BE%8B%EF%BC%9A%E7%94%A8-nc-%E5%8F%91%E9%80%81%E6%9C%80%E5%B0%8F-HTTP-1-1-%E8%AF%B7%E6%B1%82%EF%BC%88%E6%98%8E%E6%96%87%EF%BC%89"><span class="nav-number">9.</span> <span class="nav-text">七、示例：用 nc 发送最小 HTTP&#x2F;1.1 请求（明文）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%AB%E3%80%81%E7%A4%BA%E4%BE%8B%EF%BC%9APython-3-%E6%9C%80%E5%B0%8F-HTTP-%E5%AE%A2%E6%88%B7%E7%AB%AF%EF%BC%88%E6%A0%87%E5%87%86%E5%BA%93%EF%BC%89"><span class="nav-number">10.</span> <span class="nav-text">八、示例：Python 3 最小 HTTP 客户端（标准库）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B9%9D%E3%80%81%E5%B0%8F%E7%BB%93"><span class="nav-number">11.</span> <span class="nav-text">九、小结</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -181,18 +181,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">184</span>
+          <span class="site-state-item-count">192</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">38</span>
+        <span class="site-state-item-count">39</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">107</span>
+        <span class="site-state-item-count">108</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -266,7 +266,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-31 23:47:21" itemprop="dateModified" datetime="2026-05-31T23:47:21+08:00">2026-05-31</time>
+      <time title="修改时间：2026-06-03 20:25:51" itemprop="dateModified" datetime="2026-06-03T20:25:51+08:00">2026-06-03</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -285,14 +285,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>729</span>
+      <span>2.1k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>2 分钟</span>
+      <span>7 分钟</span>
     </span>
 </div>
 
@@ -303,7 +303,7 @@
     
     
     <div class="post-body" itemprop="articleBody"><p><strong>HTTP</strong>（<strong>Hypertext Transfer Protocol</strong>）是 <strong>Web</strong> 的应用层协议：基于<strong>请求 &#x2F; 响应</strong>模型，在语义层使用<strong>方法、URI、首部与可选正文</strong>表达操作。下面从「<strong>无状态与资源模型</strong> → <strong>报文结构原理</strong> → <strong>方法与幂等</strong> → <strong>状态码</strong> → <strong>HTTP&#x2F;1.1 与 HTTP&#x2F;2</strong> → <strong>curl 与原始报文示例</strong>」顺序写清楚；传输层默认依赖 <a href="/2026/05/01/Protocol/TCP/" title="TCP 协议详解：连接、可靠传输与编程示例">TCP</a>，安全传输见 <a href="/2026/05/01/Protocol/HTTPS/" title="HTTPS 详解：TLS 握手、证书与 openssl&#x2F;curl 示例">HTTPS</a>，全双工见 <a href="/2026/05/01/Protocol/WebSocket/" title="WebSocket 详解：握手、帧与 Python 示例">WebSocket</a>，<strong>HTTP&#x2F;3</strong> 见 <a href="/2026/05/01/Protocol/QUIC/" title="QUIC 详解：基于 UDP 的可靠传输、TLS 集成与 HTTP&#x2F;3">QUIC</a>。</p>
-<h1 id="请求响应模型"><a href="#请求响应模型" class="headerlink" title="请求响应模型"></a>请求响应模型</h1><pre>
+<h1 id="请求响应模型（语义层）"><a href="#请求响应模型（语义层）" class="headerlink" title="请求响应模型（语义层）"></a>请求响应模型（语义层）</h1><pre>
 <code class="mermaid">
 
 sequenceDiagram
@@ -316,6 +316,256 @@ sequenceDiagram
 </code>
 </pre>
 
+<hr>
+<h1 id="完整通信数据流程（端到端）"><a href="#完整通信数据流程（端到端）" class="headerlink" title="完整通信数据流程（端到端）"></a>完整通信数据流程（端到端）</h1><p>下面以浏览器访问 <strong><code>https://api.example.com/v1/users?page=1</code></strong> 为例，从<strong>应用层到链路层</strong>走一遍真实链路。明文 <strong>HTTP</strong> 跳过 <strong>TLS</strong> 阶段，端口由 <strong>443</strong> 换为 <strong>80</strong> 即可。</p>
+<h2 id="1-协议栈与各层职责"><a href="#1-协议栈与各层职责" class="headerlink" title="1. 协议栈与各层职责"></a>1. 协议栈与各层职责</h2><pre>
+<code class="mermaid">
+
+flowchart TB
+  subgraph app [应用层]
+    UA[浏览器 &#x2F; curl &#x2F; 后端 HttpClient]
+    HTTP[HTTP 请求行 + 首部 + Body]
+  end
+  subgraph transport [传输层]
+    TLS[TLS 1.3 加密记录 可选]
+    TCP[TCP 可靠字节流 :443 &#x2F; :80]
+  end
+  subgraph network [网络层与以下]
+    IP[IP 分组 源&#x2F;目的 IP]
+    MAC[以太网&#x2F;WiFi 帧]
+  end
+  UA --&gt; HTTP
+  HTTP --&gt; TLS
+  TLS --&gt; TCP
+  TCP --&gt; IP
+  IP --&gt; MAC
+</code>
+</pre>
+
+<table>
+<thead>
+<tr>
+<th>层次</th>
+<th>本例中的关键信息</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>HTTP</strong></td>
+<td><code>GET /v1/users?page=1</code>、<code>Host</code>、<code>Accept</code>、<code>Authorization</code></td>
+<td>表达<strong>资源</strong>与<strong>操作语义</strong></td>
+</tr>
+<tr>
+<td><strong>TLS</strong></td>
+<td><strong>SNI</strong>&#x3D;<code>api.example.com</code>、证书链、会话密钥</td>
+<td>加密与完整性（见 <a href="/2026/05/01/Protocol/HTTPS/" title="HTTPS 详解：TLS 握手、证书与 openssl&#x2F;curl 示例">HTTPS</a>）</td>
+</tr>
+<tr>
+<td><strong>TCP</strong></td>
+<td>四元组 <code>(客户端IP, 随机端口, 服务端IP, 443)</code>、序号&#x2F;ACK</td>
+<td><strong>面向连接</strong>的可靠管道</td>
+</tr>
+<tr>
+<td><strong>IP</strong></td>
+<td>源&#x2F;目的 IP、TTL</td>
+<td>跨网段<strong>路由</strong>（见 <a href="/2026/05/01/Protocol/IP/" title="IP 协议详解：原理、编址与排障示例">IP</a>）</td>
+</tr>
+<tr>
+<td><strong>DNS</strong></td>
+<td><code>A</code> &#x2F; <code>AAAA</code> 记录</td>
+<td>把<strong>主机名</strong>解析为 IP（见 <a href="/2026/05/01/Protocol/DNS/" title="DNS 详解：解析原理、记录类型与命令&#x2F;代码示例">DNS</a>）</td>
+</tr>
+</tbody></table>
+<h2 id="2-时序：DNS-→-TCP-→-TLS-→-HTTP-→-关闭"><a href="#2-时序：DNS-→-TCP-→-TLS-→-HTTP-→-关闭" class="headerlink" title="2. 时序：DNS → TCP → TLS → HTTP → 关闭"></a>2. 时序：DNS → TCP → TLS → HTTP → 关闭</h2><pre>
+<code class="mermaid">
+
+sequenceDiagram
+  participant B as 浏览器
+  participant DNS as DNS 解析器
+  participant S as api.example.com :443
+
+  Note over B,DNS: ① 名称解析
+  B-&gt;&gt;DNS: 查询 api.example.com A&#x2F;AAAA
+  DNS--&gt;&gt;B: 93.184.216.34
+
+  Note over B,S: ② TCP 三次握手
+  B-&gt;&gt;S: SYN
+  S--&gt;&gt;B: SYN-ACK
+  B-&gt;&gt;S: ACK
+
+  Note over B,S: ③ TLS 握手 HTTP 在加密记录内传输
+  B-&gt;&gt;S: ClientHello SNI&#x3D;api.example.com
+  S--&gt;&gt;B: ServerHello + 证书链
+  B-&gt;&gt;S: Finished 会话密钥就绪
+
+  Note over B,S: ④ HTTP 请求 &#x2F; 响应
+  B-&gt;&gt;S: GET &#x2F;v1&#x2F;users?page&#x3D;1 HTTP&#x2F;1.1 Host Accept
+  S-&gt;&gt;S: 路由 Controller 查库
+  S--&gt;&gt;B: 200 OK Content-Type application&#x2F;json Body
+
+  Note over B,S: ⑤ 连接处置
+  alt Connection close
+    B-&gt;&gt;S: FIN 四次挥手
+  else Keep-Alive
+    B-&gt;&gt;S: 下一请求复用同 TCP
+  end
+</code>
+</pre>
+
+<p><strong>阶段说明</strong>：</p>
+<ol>
+<li><strong>DNS</strong>：若本地&#x2F;系统缓存无记录，先 <a href="/2026/05/01/Protocol/DNS/" title="DNS 详解：解析原理、记录类型与命令&#x2F;代码示例">DNS</a> 递归查询得到 <strong>IP</strong>；否则直接进入 <strong>TCP</strong>。  </li>
+<li><strong>TCP 握手</strong>：<a href="/2026/05/01/Protocol/TCP/" title="TCP 协议详解：连接、可靠传输与编程示例">TCP</a> <strong>SYN → SYN-ACK → ACK</strong> 后，两端才有可用的<strong>字节流管道</strong>（详见 TCP 文「完整通信流程」）。  </li>
+<li><strong>TLS</strong>（HTTPS）：在 TCP 之上协商密钥；<strong>ALPN</strong> 常协商 <code>h2</code>（HTTP&#x2F;2）或 <code>http/1.1</code>。  </li>
+<li><strong>HTTP 交换</strong>：请求&#x2F;响应作为<strong>明文语义</strong>（TLS 下被加密后写入 TCP）。  </li>
+<li><strong>连接结束</strong>：<strong>HTTP&#x2F;1.1</strong> 默认 <strong><code>Connection: keep-alive</code></strong> 可复用 TCP；显式 <strong><code>close</code></strong> 或空闲超时后 <strong>TCP 挥手</strong>。</li>
+</ol>
+<h2 id="3-线路上「长什么样」：HTTP-在-TCP-字节流中"><a href="#3-线路上「长什么样」：HTTP-在-TCP-字节流中" class="headerlink" title="3. 线路上「长什么样」：HTTP 在 TCP 字节流中"></a>3. 线路上「长什么样」：HTTP 在 TCP 字节流中</h2><p><strong>HTTP&#x2F;1.1</strong> 是<strong>文本协议</strong>，在 TCP 上按序发送；一次 <strong>GET</strong> 在链路上近似如下（<code>\r\n</code> 为行结束，空行分隔首部与正文）：</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">GET /v1/users?page=1 HTTP/1.1\r\n</span><br><span class="line"><span class="attribute">Host</span><span class="punctuation">: </span>api.example.com\r\n</span><br><span class="line"><span class="attribute">User-Agent</span><span class="punctuation">: </span>curl/8.0\r\n</span><br><span class="line"><span class="attribute">Accept</span><span class="punctuation">: </span>application/json\r\n</span><br><span class="line"><span class="attribute">Connection</span><span class="punctuation">: </span>keep-alive\r\n</span><br><span class="line">\r\n</span><br></pre></td></tr></table></figure>
+
+<p>服务端返回：</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">HTTP/1.1</span> <span class="number">200</span> OK\r\n</span><br><span class="line"><span class="attribute">Content-Type</span><span class="punctuation">: </span>application/json; charset=utf-8\r\n</span><br><span class="line"><span class="attribute">Content-Length</span><span class="punctuation">: </span>42\r\n</span><br><span class="line"><span class="attribute">Connection</span><span class="punctuation">: </span>keep-alive\r\n</span><br><span class="line">\r\n</span><br><span class="line">&#123;&quot;data&quot;:[],&quot;page&quot;:1,&quot;total&quot;:0&#125;</span><br></pre></td></tr></table></figure>
+
+<pre>
+<code class="mermaid">
+
+flowchart LR
+  subgraph req [请求方向 Client → Server]
+    R1[请求行 GET ... HTTP&#x2F;1.1]
+    R2[首部 Host Accept ...]
+    R3[空行]
+    R4[Body 可选 POST&#x2F;PUT]
+  end
+  R1 --&gt; R2 --&gt; R3 --&gt; R4
+  subgraph tcp [TCP 分段]
+    Seg1[Segment seq&#x3D;n]
+    Seg2[Segment seq&#x3D;n+k]
+  end
+  R1 --&gt; Seg1
+  R2 --&gt; Seg1
+  R3 --&gt; Seg2
+  R4 --&gt; Seg2
+</code>
+</pre>
+
+<table>
+<thead>
+<tr>
+<th>机制</th>
+<th>原理</th>
+<th>典型场景</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong><code>Content-Length</code></strong></td>
+<td>首部给出正文<strong>字节数</strong>，读满即结束</td>
+<td>固定大小 JSON、文件</td>
+</tr>
+<tr>
+<td><strong><code>Transfer-Encoding: chunked</code></strong></td>
+<td>分块传输，每块带长度，<strong>0 块</strong>结束</td>
+<td>流式生成、未知总长</td>
+</tr>
+<tr>
+<td><strong><code>Connection: keep-alive</code></strong></td>
+<td>同一 <strong>TCP</strong> 上连续多个 HTTP 事务</td>
+<td>浏览器多资源、API 高频调用</td>
+</tr>
+</tbody></table>
+<h2 id="4-POST-提交-JSON-的完整数据路径"><a href="#4-POST-提交-JSON-的完整数据路径" class="headerlink" title="4. POST 提交 JSON 的完整数据路径"></a>4. POST 提交 JSON 的完整数据路径</h2><p>以 <strong><code>POST /v1/users</code></strong> 创建用户为例（仍走 HTTPS）：</p>
+<pre>
+<code class="mermaid">
+
+sequenceDiagram
+  participant C as Client
+  participant S as Server
+
+  C-&gt;&gt;C: 序列化 JSON 到 Body
+  C-&gt;&gt;S: POST &#x2F;v1&#x2F;users HTTP&#x2F;1.1
+  Note right of C: Content-Type application&#x2F;json&lt;br&#x2F;&gt;Content-Length N
+  C-&gt;&gt;S: Body name email ...
+  S-&gt;&gt;S: 解析 JSON 校验 写库
+  S--&gt;&gt;C: 201 Created Location &#x2F;v1&#x2F;users&#x2F;42
+  Note left of S: Body id 42 ...
+</code>
+</pre>
+
+<p>客户端必须告知服务端<strong>如何解析正文</strong>：<strong><code>Content-Type: application/json</code></strong> + <strong><code>Content-Length</code></strong>（或 <strong>chunked</strong>）。服务端按 <strong>状态码</strong> 区分成功：<strong>201 Created</strong> 常带 <strong><code>Location</code></strong> 指向新资源 URI。</p>
+<h2 id="5-HTTP-1-1-连接复用-vs-HTTP-2-多路复用"><a href="#5-HTTP-1-1-连接复用-vs-HTTP-2-多路复用" class="headerlink" title="5. HTTP&#x2F;1.1 连接复用 vs HTTP&#x2F;2 多路复用"></a>5. HTTP&#x2F;1.1 连接复用 vs HTTP&#x2F;2 多路复用</h2><p><strong>HTTP&#x2F;1.1 + Keep-Alive</strong>：多个请求<strong>串行</strong>占用同一 TCP，避免重复握手，但仍可能<strong>队头阻塞</strong>（前一响应慢会拖后后续请求）。</p>
+<pre>
+<code class="mermaid">
+
+sequenceDiagram
+  participant C as Client
+  participant S as Server
+  Note over C,S: 同一 TCP 连接
+  C-&gt;&gt;S: GET &#x2F;style.css
+  S--&gt;&gt;C: 200 CSS
+  C-&gt;&gt;S: GET &#x2F;api&#x2F;data
+  S--&gt;&gt;C: 200 JSON
+</code>
+</pre>
+
+<p><strong>HTTP&#x2F;2</strong>：在<strong>单 TCP</strong> 上拆成<strong>二进制帧</strong>、<strong>Stream ID</strong> 多路并行（见下文「HTTP&#x2F;1.1 与 HTTP&#x2F;2」）。<strong>HTTP&#x2F;3</strong> 则把语义映射到 <a href="/2026/05/01/Protocol/QUIC/" title="QUIC 详解：基于 UDP 的可靠传输、TLS 集成与 HTTP&#x2F;3">QUIC</a>，传输层不再依赖 TCP。</p>
+<h2 id="6-用-curl-对照各阶段"><a href="#6-用-curl-对照各阶段" class="headerlink" title="6. 用 curl 对照各阶段"></a>6. 用 curl 对照各阶段</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># -v 打印 DNS、TCP/TLS、HTTP 首部；-w 输出各阶段耗时</span></span><br><span class="line">curl -v -w <span class="string">&#x27;\nnamelookup:%&#123;time_namelookup&#125; connect:%&#123;time_connect&#125; tls:%&#123;time_appconnect&#125; starttransfer:%&#123;time_starttransfer&#125;\n&#x27;</span> \</span><br><span class="line">  <span class="string">&#x27;https://api.example.com/v1/users?page=1&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th>curl 输出段</th>
+<th>对应流程</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Trying ... Connected</code></td>
+<td><strong>DNS</strong> 完成 + <strong>TCP 握手</strong></td>
+</tr>
+<tr>
+<td><code>TLSv1.3 ... SSL certificate verify ok</code></td>
+<td><strong>TLS</strong> 握手与证书校验</td>
+</tr>
+<tr>
+<td><code>&gt; GET /v1/...</code></td>
+<td>发出 <strong>HTTP 请求</strong></td>
+</tr>
+<tr>
+<td><code>&lt; HTTP/1.1 200</code></td>
+<td>收到 <strong>HTTP 响应</strong> 状态行</td>
+</tr>
+<tr>
+<td><code>namelookup</code> &#x2F; <code>connect</code> &#x2F; <code>tls</code> &#x2F; <code>starttransfer</code></td>
+<td>各阶段耗时（排障常用）</td>
+</tr>
+</tbody></table>
+<p>明文 <strong>HTTP</strong> 本地实验（<strong>无 TLS</strong>）仍可用 <strong>nc</strong>（见本文第七节）；生产环境对外服务应使用 <a href="/2026/05/01/Protocol/HTTPS/" title="HTTPS 详解：TLS 握手、证书与 openssl&#x2F;curl 示例">HTTPS</a>。</p>
+<h2 id="7-与相邻协议文档的对照"><a href="#7-与相邻协议文档的对照" class="headerlink" title="7. 与相邻协议文档的对照"></a>7. 与相邻协议文档的对照</h2><table>
+<thead>
+<tr>
+<th>主题</th>
+<th>文档</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>主机名 → IP</td>
+<td><a href="/2026/05/01/Protocol/DNS/" title="DNS 详解：解析原理、记录类型与命令&#x2F;代码示例">DNS</a></td>
+</tr>
+<tr>
+<td>可靠传输、握手&#x2F;挥手</td>
+<td><a href="/2026/05/01/Protocol/TCP/" title="TCP 协议详解：连接、可靠传输与编程示例">TCP</a></td>
+</tr>
+<tr>
+<td>加密与证书</td>
+<td><a href="/2026/05/01/Protocol/HTTPS/" title="HTTPS 详解：TLS 握手、证书与 openssl&#x2F;curl 示例">HTTPS</a></td>
+</tr>
+<tr>
+<td>全双工推送</td>
+<td><a href="/2026/05/01/Protocol/WebSocket/" title="WebSocket 详解：握手、帧与 Python 示例">WebSocket</a></td>
+</tr>
+<tr>
+<td>UDP 上的 HTTP&#x2F;3</td>
+<td><a href="/2026/05/01/Protocol/HTTP3/" title="HTTP3 详解：报文、方法、版本与 curl&#x2F;nc 示例">HTTP&#x2F;3</a> · <a href="/2026/05/01/Protocol/QUIC/" title="QUIC 详解：基于 UDP 的可靠传输、TLS 集成与 HTTP&#x2F;3">QUIC</a></td>
+</tr>
+</tbody></table>
 <hr>
 <h1 id="一、无状态与资源模型（原理）"><a href="#一、无状态与资源模型（原理）" class="headerlink" title="一、无状态与资源模型（原理）"></a>一、无状态与资源模型（原理）</h1><p><strong>HTTP</strong> 本身<strong>无状态</strong>：服务器默认不记住「上一次请求」；会话常靠 <strong>Cookie</strong>、<strong>Token</strong>、服务端会话存储实现。<strong>REST</strong> 风格强调用 <strong>URI</strong> 表示<strong>资源</strong>，用 <strong>HTTP 方法</strong>表达操作（与 <a href="/2026/05/01/Protocol/RPC/" title="RPC 概念详解：原理、形态与 JSON-RPC &#x2F; curl 示例">RPC</a> 风格对照）。</p>
 <hr>
@@ -438,6 +688,10 @@ sequenceDiagram
 <td><strong>请求&#x2F;响应</strong>、<strong>无状态</strong>、<strong>URI + 方法</strong></td>
 </tr>
 <tr>
+<td>端到端</td>
+<td><strong>DNS → TCP → TLS → HTTP</strong> 完整数据流程（见上文）</td>
+</tr>
+<tr>
 <td>作用</td>
 <td><strong>Web</strong> 与 <strong>API</strong> 的基础语义层</td>
 </tr>
@@ -506,13 +760,13 @@ sequenceDiagram
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">186k</span>
+    <span title="站点总字数">195k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">10:18</span>
+    <span title="站点阅读时长">10:49</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

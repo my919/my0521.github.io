@@ -174,18 +174,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">184</span>
+          <span class="site-state-item-count">192</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">38</span>
+        <span class="site-state-item-count">39</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">107</span>
+        <span class="site-state-item-count">108</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -213,6 +213,945 @@
     </div>
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/03/MySQL/MySQL%E9%AB%98%E7%BA%A7%E6%9F%A5%E8%AF%A2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/05/03/MySQL/MySQL%E9%AB%98%E7%BA%A7%E6%9F%A5%E8%AF%A2/" class="post-title-link" itemprop="url">MySQL 高级查询示例</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2026-05-03 12:38:39 / 修改时间：12:55:44" itemprop="dateCreated datePublished" datetime="2026-05-03T12:38:39+08:00">2026-05-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>2.4k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>8 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>面向 <strong>SELECT</strong> 侧的常用进阶写法；示例基于 <strong>InnoDB</strong>，<strong><code>utf8mb4</code></strong>。<strong>公共表表达式（WITH）</strong> 与 <strong>窗口函数</strong> 需 <strong>MySQL 8.0+</strong>（文中已标注）。</p>
+<hr>
+<h2 id="示例数据（一键建表）"><a href="#示例数据（一键建表）" class="headerlink" title="示例数据（一键建表）"></a>示例数据（一键建表）</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> DATABASE IF <span class="keyword">NOT</span> <span class="keyword">EXISTS</span> adv_demo <span class="keyword">DEFAULT</span> <span class="keyword">CHARACTER SET</span> utf8mb4 <span class="keyword">COLLATE</span> utf8mb4_unicode_ci;</span><br><span class="line">USE adv_demo;</span><br><span class="line"></span><br><span class="line"><span class="keyword">DROP</span> <span class="keyword">TABLE</span> IF <span class="keyword">EXISTS</span> emp;</span><br><span class="line"><span class="keyword">DROP</span> <span class="keyword">TABLE</span> IF <span class="keyword">EXISTS</span> dept;</span><br><span class="line"><span class="keyword">DROP</span> <span class="keyword">TABLE</span> IF <span class="keyword">EXISTS</span> orders;</span><br><span class="line"></span><br><span class="line"><span class="keyword">CREATE TABLE</span> dept (</span><br><span class="line">    id <span class="type">INT</span> <span class="keyword">PRIMARY KEY</span>,</span><br><span class="line">    name <span class="type">VARCHAR</span>(<span class="number">50</span>) <span class="keyword">NOT NULL</span></span><br><span class="line">) ENGINE<span class="operator">=</span>InnoDB <span class="keyword">DEFAULT</span> CHARSET<span class="operator">=</span>utf8mb4;</span><br><span class="line"></span><br><span class="line"><span class="keyword">CREATE TABLE</span> emp (</span><br><span class="line">    id <span class="type">INT</span> <span class="keyword">PRIMARY KEY</span>,</span><br><span class="line">    name <span class="type">VARCHAR</span>(<span class="number">50</span>) <span class="keyword">NOT NULL</span>,</span><br><span class="line">    dept_id <span class="type">INT</span>,</span><br><span class="line">    salary <span class="type">DECIMAL</span>(<span class="number">10</span>,<span class="number">2</span>),</span><br><span class="line">    hire_date <span class="type">DATE</span>,</span><br><span class="line">    <span class="keyword">CONSTRAINT</span> fk_emp_dept <span class="keyword">FOREIGN KEY</span> (dept_id) <span class="keyword">REFERENCES</span> dept(id)</span><br><span class="line">) ENGINE<span class="operator">=</span>InnoDB <span class="keyword">DEFAULT</span> CHARSET<span class="operator">=</span>utf8mb4;</span><br><span class="line"></span><br><span class="line"><span class="keyword">CREATE TABLE</span> orders (</span><br><span class="line">    id <span class="type">INT</span> <span class="keyword">PRIMARY KEY</span> AUTO_INCREMENT,</span><br><span class="line">    emp_id <span class="type">INT</span> <span class="keyword">NOT NULL</span>,</span><br><span class="line">    amount <span class="type">DECIMAL</span>(<span class="number">10</span>,<span class="number">2</span>) <span class="keyword">NOT NULL</span>,</span><br><span class="line">    order_date <span class="type">DATE</span> <span class="keyword">NOT NULL</span>,</span><br><span class="line">    <span class="keyword">CONSTRAINT</span> fk_ord_emp <span class="keyword">FOREIGN KEY</span> (emp_id) <span class="keyword">REFERENCES</span> emp(id)</span><br><span class="line">) ENGINE<span class="operator">=</span>InnoDB <span class="keyword">DEFAULT</span> CHARSET<span class="operator">=</span>utf8mb4;</span><br><span class="line"></span><br><span class="line"><span class="keyword">INSERT INTO</span> dept (id, name) <span class="keyword">VALUES</span></span><br><span class="line">(<span class="number">1</span>, <span class="string">&#x27;研发&#x27;</span>), (<span class="number">2</span>, <span class="string">&#x27;市场&#x27;</span>), (<span class="number">3</span>, <span class="string">&#x27;财务&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">INSERT INTO</span> emp (id, name, dept_id, salary, hire_date) <span class="keyword">VALUES</span></span><br><span class="line">(<span class="number">1</span>, <span class="string">&#x27;张三&#x27;</span>, <span class="number">1</span>, <span class="number">15000.00</span>, <span class="string">&#x27;2020-03-01&#x27;</span>),</span><br><span class="line">(<span class="number">2</span>, <span class="string">&#x27;李四&#x27;</span>, <span class="number">1</span>, <span class="number">18000.00</span>, <span class="string">&#x27;2019-07-15&#x27;</span>),</span><br><span class="line">(<span class="number">3</span>, <span class="string">&#x27;王五&#x27;</span>, <span class="number">2</span>, <span class="number">12000.00</span>, <span class="string">&#x27;2021-01-10&#x27;</span>),</span><br><span class="line">(<span class="number">4</span>, <span class="string">&#x27;赵六&#x27;</span>, <span class="number">2</span>, <span class="keyword">NULL</span>, <span class="string">&#x27;2022-05-20&#x27;</span>),</span><br><span class="line">(<span class="number">5</span>, <span class="string">&#x27;钱七&#x27;</span>, <span class="keyword">NULL</span>, <span class="number">9000.00</span>, <span class="string">&#x27;2023-11-01&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">INSERT INTO</span> orders (emp_id, amount, order_date) <span class="keyword">VALUES</span></span><br><span class="line">(<span class="number">1</span>, <span class="number">100.00</span>, <span class="string">&#x27;2024-06-01&#x27;</span>),</span><br><span class="line">(<span class="number">1</span>, <span class="number">200.50</span>, <span class="string">&#x27;2024-06-10&#x27;</span>),</span><br><span class="line">(<span class="number">2</span>, <span class="number">300.00</span>, <span class="string">&#x27;2024-06-12&#x27;</span>),</span><br><span class="line">(<span class="number">3</span>, <span class="number">50.00</span>, <span class="string">&#x27;2024-06-15&#x27;</span>);</span><br></pre></td></tr></table></figure>
+
+<p><strong>示例结果</strong>（仅展示插入后的基表；<strong><code>orders.id</code></strong> 由自增生成，下列 <strong><code>orders</code></strong> 行为常见顺序）：</p>
+<p><strong><code>dept</code></strong></p>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>name</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>研发</td>
+</tr>
+<tr>
+<td>2</td>
+<td>市场</td>
+</tr>
+<tr>
+<td>3</td>
+<td>财务</td>
+</tr>
+</tbody></table>
+<p><strong><code>emp</code></strong></p>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>name</th>
+<th>dept_id</th>
+<th>salary</th>
+<th>hire_date</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>张三</td>
+<td>1</td>
+<td>15000.00</td>
+<td>2020-03-01</td>
+</tr>
+<tr>
+<td>2</td>
+<td>李四</td>
+<td>1</td>
+<td>18000.00</td>
+<td>2019-07-15</td>
+</tr>
+<tr>
+<td>3</td>
+<td>王五</td>
+<td>2</td>
+<td>12000.00</td>
+<td>2021-01-10</td>
+</tr>
+<tr>
+<td>4</td>
+<td>赵六</td>
+<td>2</td>
+<td>NULL</td>
+<td>2022-05-20</td>
+</tr>
+<tr>
+<td>5</td>
+<td>钱七</td>
+<td>NULL</td>
+<td>9000.00</td>
+<td>2023-11-01</td>
+</tr>
+</tbody></table>
+<p><strong><code>orders</code></strong>（<strong><code>id</code></strong> 以实际自增值为准，下表按 <strong><code>id</code> 1～4</strong> 示意）</p>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>emp_id</th>
+<th>amount</th>
+<th>order_date</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>1</td>
+<td>100.00</td>
+<td>2024-06-01</td>
+</tr>
+<tr>
+<td>2</td>
+<td>1</td>
+<td>200.50</td>
+<td>2024-06-10</td>
+</tr>
+<tr>
+<td>3</td>
+<td>2</td>
+<td>300.00</td>
+<td>2024-06-12</td>
+</tr>
+<tr>
+<td>4</td>
+<td>3</td>
+<td>50.00</td>
+<td>2024-06-15</td>
+</tr>
+</tbody></table>
+<p>下文默认 <strong><code>USE adv_demo;</code></strong>。各小节 <strong>「示例结果」</strong> 均按上述数据推算（与本地执行相比，仅可能出现行顺序差异）。</p>
+<hr>
+<h2 id="一、多表连接-JOIN"><a href="#一、多表连接-JOIN" class="headerlink" title="一、多表连接 JOIN"></a>一、多表连接 JOIN</h2><h3 id="1-内连接-INNER-JOIN（两表都有匹配才出现）"><a href="#1-内连接-INNER-JOIN（两表都有匹配才出现）" class="headerlink" title="1. 内连接 INNER JOIN（两表都有匹配才出现）"></a>1. 内连接 INNER JOIN（两表都有匹配才出现）</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> e.id, e.name, d.name <span class="keyword">AS</span> dept_name, e.salary</span><br><span class="line"><span class="keyword">FROM</span> emp e</span><br><span class="line"><span class="keyword">INNER</span> <span class="keyword">JOIN</span> dept d <span class="keyword">ON</span> e.dept_id <span class="operator">=</span> d.id;</span><br></pre></td></tr></table></figure>
+
+<p><strong>示例结果</strong>（无部门者不出现在内连接中）：</p>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>name</th>
+<th>dept_name</th>
+<th>salary</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>张三</td>
+<td>研发</td>
+<td>15000.00</td>
+</tr>
+<tr>
+<td>2</td>
+<td>李四</td>
+<td>研发</td>
+<td>18000.00</td>
+</tr>
+<tr>
+<td>3</td>
+<td>王五</td>
+<td>市场</td>
+<td>12000.00</td>
+</tr>
+<tr>
+<td>4</td>
+<td>赵六</td>
+<td>市场</td>
+<td>NULL</td>
+</tr>
+</tbody></table>
+<h3 id="2-左外连接-LEFT-JOIN（保留左表全部行，右表无匹配则右列为-NULL）"><a href="#2-左外连接-LEFT-JOIN（保留左表全部行，右表无匹配则右列为-NULL）" class="headerlink" title="2. 左外连接 LEFT JOIN（保留左表全部行，右表无匹配则右列为 NULL）"></a>2. 左外连接 LEFT JOIN（保留左表全部行，右表无匹配则右列为 NULL）</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> e.name, d.name <span class="keyword">AS</span> dept_name</span><br><span class="line"><span class="keyword">FROM</span> emp e</span><br><span class="line"><span class="keyword">LEFT</span> <span class="keyword">JOIN</span> dept d <span class="keyword">ON</span> e.dept_id <span class="operator">=</span> d.id;</span><br></pre></td></tr></table></figure>
+
+<p><strong>示例结果</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>dept_name</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>张三</td>
+<td>研发</td>
+</tr>
+<tr>
+<td>李四</td>
+<td>研发</td>
+</tr>
+<tr>
+<td>王五</td>
+<td>市场</td>
+</tr>
+<tr>
+<td>赵六</td>
+<td>市场</td>
+</tr>
+<tr>
+<td>钱七</td>
+<td>NULL</td>
+</tr>
+</tbody></table>
+<h3 id="3-右外连接-RIGHT-JOIN"><a href="#3-右外连接-RIGHT-JOIN" class="headerlink" title="3. 右外连接 RIGHT JOIN"></a>3. 右外连接 RIGHT JOIN</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> e.name, d.name <span class="keyword">AS</span> dept_name</span><br><span class="line"><span class="keyword">FROM</span> emp e</span><br><span class="line"><span class="keyword">RIGHT</span> <span class="keyword">JOIN</span> dept d <span class="keyword">ON</span> e.dept_id <span class="operator">=</span> d.id;</span><br></pre></td></tr></table></figure>
+
+<p><strong>示例结果</strong>（右表 <strong><code>dept</code></strong> 全保留；无员工部门左表为 <strong>NULL</strong>；行顺序依优化器可能不同）：</p>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>dept_name</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>张三</td>
+<td>研发</td>
+</tr>
+<tr>
+<td>李四</td>
+<td>研发</td>
+</tr>
+<tr>
+<td>王五</td>
+<td>市场</td>
+</tr>
+<tr>
+<td>赵六</td>
+<td>市场</td>
+</tr>
+<tr>
+<td>NULL</td>
+<td>财务</td>
+</tr>
+</tbody></table>
+<h3 id="4-多表连接（员工-部门-订单汇总）"><a href="#4-多表连接（员工-部门-订单汇总）" class="headerlink" title="4. 多表连接（员工 + 部门 + 订单汇总）"></a>4. 多表连接（员工 + 部门 + 订单汇总）</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> e.name,</span><br><span class="line">       d.name <span class="keyword">AS</span> dept_name,</span><br><span class="line">       <span class="built_in">COUNT</span>(o.id) <span class="keyword">AS</span> order_cnt,</span><br><span class="line">       IFNULL(<span class="built_in">SUM</span>(o.amount), <span class="number">0</span>) <span class="keyword">AS</span> total_amount</span><br><span class="line"><span class="keyword">FROM</span> emp e</span><br><span class="line"><span class="keyword">LEFT</span> <span class="keyword">JOIN</span> dept d <span class="keyword">ON</span> e.dept_id <span class="operator">=</span> d.id</span><br><span class="line"><span class="keyword">LEFT</span> <span class="keyword">JOIN</span> orders o <span class="keyword">ON</span> o.emp_id <span class="operator">=</span> e.id</span><br><span class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span> e.id, e.name, d.name;</span><br></pre></td></tr></table></figure>
+
+<p><strong>示例结果</strong>（<strong><code>order_cnt</code></strong> &#x2F; <strong><code>total_amount</code></strong> 按 <strong><code>orders</code></strong> 示意 <strong><code>id</code></strong> 推算）：</p>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>dept_name</th>
+<th>order_cnt</th>
+<th>total_amount</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>张三</td>
+<td>研发</td>
+<td>2</td>
+<td>300.50</td>
+</tr>
+<tr>
+<td>李四</td>
+<td>研发</td>
+<td>1</td>
+<td>300.00</td>
+</tr>
+<tr>
+<td>王五</td>
+<td>市场</td>
+<td>1</td>
+<td>50.00</td>
+</tr>
+<tr>
+<td>赵六</td>
+<td>市场</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>钱七</td>
+<td>NULL</td>
+<td>0</td>
+<td>0</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="二、子查询"><a href="#二、子查询" class="headerlink" title="二、子查询"></a>二、子查询</h2><h3 id="1-标量子查询（返回单行单列，可当表达式）"><a href="#1-标量子查询（返回单行单列，可当表达式）" class="headerlink" title="1. 标量子查询（返回单行单列，可当表达式）"></a>1. 标量子查询（返回单行单列，可当表达式）</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> name, salary,</span><br><span class="line">       (<span class="keyword">SELECT</span> <span class="built_in">AVG</span>(salary) <span class="keyword">FROM</span> emp <span class="keyword">WHERE</span> salary <span class="keyword">IS</span> <span class="keyword">NOT NULL</span>) <span class="keyword">AS</span> company_avg_salary</span><br><span class="line"><span class="keyword">FROM</span> emp;</span><br></pre></td></tr></table></figure>
+
+<p><strong>示例结果</strong>（全表平均薪 <strong>(15000+18000+12000+9000)&#x2F;4 &#x3D; 13500</strong>；<strong><code>NULL</code></strong> 薪资不参与子查询平均）：</p>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>salary</th>
+<th>company_avg_salary</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>张三</td>
+<td>15000.00</td>
+<td>13500.000000</td>
+</tr>
+<tr>
+<td>李四</td>
+<td>18000.00</td>
+<td>13500.000000</td>
+</tr>
+<tr>
+<td>王五</td>
+<td>12000.00</td>
+<td>13500.000000</td>
+</tr>
+<tr>
+<td>赵六</td>
+<td>NULL</td>
+<td>13500.000000</td>
+</tr>
+<tr>
+<td>钱七</td>
+<td>9000.00</td>
+<td>13500.000000</td>
+</tr>
+</tbody></table>
+<h3 id="2-IN-NOT-IN（集合成员判断）"><a href="#2-IN-NOT-IN（集合成员判断）" class="headerlink" title="2. IN &#x2F; NOT IN（集合成员判断）"></a>2. IN &#x2F; NOT IN（集合成员判断）</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> name <span class="keyword">FROM</span> emp</span><br><span class="line"><span class="keyword">WHERE</span> dept_id <span class="keyword">IN</span> (<span class="keyword">SELECT</span> id <span class="keyword">FROM</span> dept <span class="keyword">WHERE</span> name <span class="keyword">IN</span> (<span class="string">&#x27;研发&#x27;</span>, <span class="string">&#x27;市场&#x27;</span>));</span><br></pre></td></tr></table></figure>
+
+<p><strong>示例结果</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>name</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>张三</td>
+</tr>
+<tr>
+<td>李四</td>
+</tr>
+<tr>
+<td>王五</td>
+</tr>
+<tr>
+<td>赵六</td>
+</tr>
+</tbody></table>
+<h3 id="3-EXISTS-NOT-EXISTS（关心「是否存在」，常比大-IN-更省内存）"><a href="#3-EXISTS-NOT-EXISTS（关心「是否存在」，常比大-IN-更省内存）" class="headerlink" title="3. EXISTS &#x2F; NOT EXISTS（关心「是否存在」，常比大 IN 更省内存）"></a>3. EXISTS &#x2F; NOT EXISTS（关心「是否存在」，常比大 <strong>IN</strong> 更省内存）</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> e.name</span><br><span class="line"><span class="keyword">FROM</span> emp e</span><br><span class="line"><span class="keyword">WHERE</span> <span class="keyword">EXISTS</span> (</span><br><span class="line">    <span class="keyword">SELECT</span> <span class="number">1</span> <span class="keyword">FROM</span> orders o <span class="keyword">WHERE</span> o.emp_id <span class="operator">=</span> e.id</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<p><strong>示例结果</strong>（在 <strong><code>orders</code></strong> 中出现过 <strong><code>emp_id</code></strong> 的员工）：</p>
+<table>
+<thead>
+<tr>
+<th>name</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>张三</td>
+</tr>
+<tr>
+<td>李四</td>
+</tr>
+<tr>
+<td>王五</td>
+</tr>
+</tbody></table>
+<h3 id="4-派生表（FROM-子查询，须有别名）"><a href="#4-派生表（FROM-子查询，须有别名）" class="headerlink" title="4. 派生表（FROM 子查询，须有别名）"></a>4. 派生表（FROM 子查询，须有别名）</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> t.dept_name, t.cnt</span><br><span class="line"><span class="keyword">FROM</span> (</span><br><span class="line">    <span class="keyword">SELECT</span> d.name <span class="keyword">AS</span> dept_name, <span class="built_in">COUNT</span>(<span class="operator">*</span>) <span class="keyword">AS</span> cnt</span><br><span class="line">    <span class="keyword">FROM</span> emp e</span><br><span class="line">    <span class="keyword">JOIN</span> dept d <span class="keyword">ON</span> e.dept_id <span class="operator">=</span> d.id</span><br><span class="line">    <span class="keyword">GROUP</span> <span class="keyword">BY</span> d.id, d.name</span><br><span class="line">) <span class="keyword">AS</span> t</span><br><span class="line"><span class="keyword">WHERE</span> t.cnt <span class="operator">&gt;=</span> <span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+
+<p><strong>示例结果</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>dept_name</th>
+<th>cnt</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>研发</td>
+<td>2</td>
+</tr>
+<tr>
+<td>市场</td>
+<td>2</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="三、UNION-与-UNION-ALL"><a href="#三、UNION-与-UNION-ALL" class="headerlink" title="三、UNION 与 UNION ALL"></a>三、UNION 与 UNION ALL</h2><p><strong><code>UNION</code></strong>：合并结果集并<strong>去重</strong>；<strong><code>UNION ALL</code></strong>：不去重，性能通常更好。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> name, <span class="string">&#x27;emp&#x27;</span> <span class="keyword">AS</span> src <span class="keyword">FROM</span> emp <span class="keyword">WHERE</span> dept_id <span class="operator">=</span> <span class="number">1</span></span><br><span class="line"><span class="keyword">UNION</span> <span class="keyword">ALL</span></span><br><span class="line"><span class="keyword">SELECT</span> name, <span class="string">&#x27;dept&#x27;</span> <span class="keyword">AS</span> src <span class="keyword">FROM</span> dept <span class="keyword">WHERE</span> id <span class="operator">=</span> <span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+
+<p><strong>示例结果</strong>（<strong><code>UNION ALL</code></strong> 保留上下两段所有行）：</p>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>src</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>张三</td>
+<td>emp</td>
+</tr>
+<tr>
+<td>李四</td>
+<td>emp</td>
+</tr>
+<tr>
+<td>研发</td>
+<td>dept</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="四、公共表表达式-WITH（CTE）（MySQL-8-0-）"><a href="#四、公共表表达式-WITH（CTE）（MySQL-8-0-）" class="headerlink" title="四、公共表表达式 WITH（CTE）（MySQL 8.0+）"></a>四、公共表表达式 WITH（CTE）（MySQL 8.0+）</h2><p>把复杂查询拆成可读的多段「临时结果」。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">WITH</span> dept_stat <span class="keyword">AS</span> (</span><br><span class="line">    <span class="keyword">SELECT</span> dept_id, <span class="built_in">COUNT</span>(<span class="operator">*</span>) <span class="keyword">AS</span> emp_cnt, <span class="built_in">AVG</span>(salary) <span class="keyword">AS</span> avg_sal</span><br><span class="line">    <span class="keyword">FROM</span> emp</span><br><span class="line">    <span class="keyword">WHERE</span> salary <span class="keyword">IS</span> <span class="keyword">NOT NULL</span></span><br><span class="line">    <span class="keyword">GROUP</span> <span class="keyword">BY</span> dept_id</span><br><span class="line">)</span><br><span class="line"><span class="keyword">SELECT</span> d.name, ds.emp_cnt, ROUND(ds.avg_sal, <span class="number">2</span>) <span class="keyword">AS</span> avg_salary</span><br><span class="line"><span class="keyword">FROM</span> dept_stat ds</span><br><span class="line"><span class="keyword">JOIN</span> dept d <span class="keyword">ON</span> d.id <span class="operator">=</span> ds.dept_id;</span><br></pre></td></tr></table></figure>
+
+<p><strong>示例结果</strong>（<strong><code>dept_stat</code></strong> 中 <strong><code>dept_id</code></strong> 为 <strong>NULL</strong> 的分组与 <strong><code>dept</code></strong> 内连接时被过滤；<strong><code>AVG(salary)</code></strong> 在部门 <strong>2</strong> 仅统计非 <strong>NULL</strong> 薪资）：</p>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>emp_cnt</th>
+<th>avg_salary</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>研发</td>
+<td>2</td>
+<td>16500.00</td>
+</tr>
+<tr>
+<td>市场</td>
+<td>1</td>
+<td>12000.00</td>
+</tr>
+</tbody></table>
+<p><strong>递归 CTE</strong>（如组织架构、树路径）亦在 <strong>8.0+</strong> 支持，需 <strong><code>WITH RECURSIVE</code></strong>，此处从略。</p>
+<hr>
+<h2 id="五、窗口函数（MySQL-8-0-）"><a href="#五、窗口函数（MySQL-8-0-）" class="headerlink" title="五、窗口函数（MySQL 8.0+）"></a>五、窗口函数（MySQL 8.0+）</h2><p>在<strong>不减少结果行数</strong>的前提下，对分区内的行做排序、累计等。</p>
+<h3 id="1-分区排序：ROW-NUMBER-RANK-DENSE-RANK"><a href="#1-分区排序：ROW-NUMBER-RANK-DENSE-RANK" class="headerlink" title="1. 分区排序：ROW_NUMBER &#x2F; RANK &#x2F; DENSE_RANK"></a>1. 分区排序：ROW_NUMBER &#x2F; RANK &#x2F; DENSE_RANK</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> id, name, dept_id, salary,</span><br><span class="line">       <span class="built_in">ROW_NUMBER</span>() <span class="keyword">OVER</span> (<span class="keyword">PARTITION</span> <span class="keyword">BY</span> dept_id <span class="keyword">ORDER</span> <span class="keyword">BY</span> salary <span class="keyword">DESC</span>) <span class="keyword">AS</span> rn_in_dept,</span><br><span class="line">       <span class="built_in">RANK</span>()       <span class="keyword">OVER</span> (<span class="keyword">PARTITION</span> <span class="keyword">BY</span> dept_id <span class="keyword">ORDER</span> <span class="keyword">BY</span> salary <span class="keyword">DESC</span>) <span class="keyword">AS</span> rk,</span><br><span class="line">       <span class="built_in">DENSE_RANK</span>() <span class="keyword">OVER</span> (<span class="keyword">PARTITION</span> <span class="keyword">BY</span> dept_id <span class="keyword">ORDER</span> <span class="keyword">BY</span> salary <span class="keyword">DESC</span>) <span class="keyword">AS</span> drk</span><br><span class="line"><span class="keyword">FROM</span> emp</span><br><span class="line"><span class="keyword">WHERE</span> dept_id <span class="keyword">IS</span> <span class="keyword">NOT NULL</span>;</span><br></pre></td></tr></table></figure>
+
+<p><strong>示例结果</strong>（<strong><code>dept_id = 1</code></strong>：薪资降序 <strong>李四 → 张三</strong>；<strong><code>dept_id = 2</code></strong>：<strong>王五</strong> 在前、<strong><code>NULL</code></strong> 薪资在后；<strong><code>rk</code> &#x2F; <code>drk</code></strong> 在无并列时与 <strong><code>rn_in_dept</code></strong> 一致）：</p>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>name</th>
+<th>dept_id</th>
+<th>salary</th>
+<th>rn_in_dept</th>
+<th>rk</th>
+<th>drk</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>2</td>
+<td>李四</td>
+<td>1</td>
+<td>18000.00</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr>
+<td>1</td>
+<td>张三</td>
+<td>1</td>
+<td>15000.00</td>
+<td>2</td>
+<td>2</td>
+<td>2</td>
+</tr>
+<tr>
+<td>3</td>
+<td>王五</td>
+<td>2</td>
+<td>12000.00</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr>
+<td>4</td>
+<td>赵六</td>
+<td>2</td>
+<td>NULL</td>
+<td>2</td>
+<td>2</td>
+<td>2</td>
+</tr>
+</tbody></table>
+<h3 id="2-累计与滑动：SUM-AVG-OVER"><a href="#2-累计与滑动：SUM-AVG-OVER" class="headerlink" title="2. 累计与滑动：SUM &#x2F; AVG OVER"></a>2. 累计与滑动：SUM &#x2F; AVG OVER</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> emp_id, order_date, amount,</span><br><span class="line">       <span class="built_in">SUM</span>(amount) <span class="keyword">OVER</span> (<span class="keyword">PARTITION</span> <span class="keyword">BY</span> emp_id <span class="keyword">ORDER</span> <span class="keyword">BY</span> order_date</span><br><span class="line">                           <span class="keyword">ROWS</span> <span class="keyword">BETWEEN</span> UNBOUNDED PRECEDING <span class="keyword">AND</span> <span class="keyword">CURRENT</span> <span class="type">ROW</span>) <span class="keyword">AS</span> running_sum</span><br><span class="line"><span class="keyword">FROM</span> orders;</span><br></pre></td></tr></table></figure>
+
+<p><strong>示例结果</strong>（<strong><code>running_sum</code></strong> 按 <strong><code>emp_id</code> + <code>order_date</code></strong> 分区累计；行顺序与存储顺序一致时如下）：</p>
+<table>
+<thead>
+<tr>
+<th>emp_id</th>
+<th>order_date</th>
+<th>amount</th>
+<th>running_sum</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>2024-06-01</td>
+<td>100.00</td>
+<td>100.00</td>
+</tr>
+<tr>
+<td>1</td>
+<td>2024-06-10</td>
+<td>200.50</td>
+<td>300.50</td>
+</tr>
+<tr>
+<td>2</td>
+<td>2024-06-12</td>
+<td>300.00</td>
+<td>300.00</td>
+</tr>
+<tr>
+<td>3</td>
+<td>2024-06-15</td>
+<td>50.00</td>
+<td>50.00</td>
+</tr>
+</tbody></table>
+<h3 id="3-取每组-Top-N-的常见写法（例如每部门工资前两名）"><a href="#3-取每组-Top-N-的常见写法（例如每部门工资前两名）" class="headerlink" title="3. 取每组 Top N 的常见写法（例如每部门工资前两名）"></a>3. 取每组 Top N 的常见写法（例如每部门工资前两名）</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> (</span><br><span class="line">    <span class="keyword">SELECT</span> id, name, dept_id, salary,</span><br><span class="line">           <span class="built_in">ROW_NUMBER</span>() <span class="keyword">OVER</span> (<span class="keyword">PARTITION</span> <span class="keyword">BY</span> dept_id <span class="keyword">ORDER</span> <span class="keyword">BY</span> salary <span class="keyword">DESC</span>) <span class="keyword">AS</span> rn</span><br><span class="line">    <span class="keyword">FROM</span> emp</span><br><span class="line">    <span class="keyword">WHERE</span> dept_id <span class="keyword">IS</span> <span class="keyword">NOT NULL</span></span><br><span class="line">) x</span><br><span class="line"><span class="keyword">WHERE</span> x.rn <span class="operator">&lt;=</span> <span class="number">2</span>;</span><br></pre></td></tr></table></figure>
+
+<p><strong>示例结果</strong>（每部门 <strong><code>rn &lt;= 2</code></strong>，即薪资前两行；<strong><code>dept_id = 2</code></strong> 含 <strong><code>NULL</code></strong> 薪资）：</p>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>name</th>
+<th>dept_id</th>
+<th>salary</th>
+<th>rn</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>2</td>
+<td>李四</td>
+<td>1</td>
+<td>18000.00</td>
+<td>1</td>
+</tr>
+<tr>
+<td>1</td>
+<td>张三</td>
+<td>1</td>
+<td>15000.00</td>
+<td>2</td>
+</tr>
+<tr>
+<td>3</td>
+<td>王五</td>
+<td>2</td>
+<td>12000.00</td>
+<td>1</td>
+</tr>
+<tr>
+<td>4</td>
+<td>赵六</td>
+<td>2</td>
+<td>NULL</td>
+<td>2</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="六、分组与条件聚合-GROUP-BY-HAVING"><a href="#六、分组与条件聚合-GROUP-BY-HAVING" class="headerlink" title="六、分组与条件聚合 GROUP BY &#x2F; HAVING"></a>六、分组与条件聚合 GROUP BY &#x2F; HAVING</h2><p><strong><code>WHERE</code></strong> 在分组前过滤行；<strong><code>HAVING</code></strong> 在分组后过滤聚合结果。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> d.name <span class="keyword">AS</span> dept_name,</span><br><span class="line">       <span class="built_in">COUNT</span>(e.id) <span class="keyword">AS</span> emp_cnt,</span><br><span class="line">       <span class="built_in">MAX</span>(e.salary) <span class="keyword">AS</span> max_salary</span><br><span class="line"><span class="keyword">FROM</span> dept d</span><br><span class="line"><span class="keyword">LEFT</span> <span class="keyword">JOIN</span> emp e <span class="keyword">ON</span> e.dept_id <span class="operator">=</span> d.id</span><br><span class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span> d.id, d.name</span><br><span class="line"><span class="keyword">HAVING</span> <span class="built_in">COUNT</span>(e.id) <span class="operator">&gt;</span> <span class="number">0</span>;</span><br></pre></td></tr></table></figure>
+
+<p><strong>示例结果</strong>（<strong><code>HAVING</code></strong> 去掉无员工的 <strong>财务</strong>）：</p>
+<table>
+<thead>
+<tr>
+<th>dept_name</th>
+<th>emp_cnt</th>
+<th>max_salary</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>研发</td>
+<td>2</td>
+<td>18000.00</td>
+</tr>
+<tr>
+<td>市场</td>
+<td>2</td>
+<td>12000.00</td>
+</tr>
+</tbody></table>
+<p><strong><code>COUNT(*)</code></strong> 与 <strong><code>COUNT(列)</code></strong> 区别：对 <strong><code>salary</code></strong> 统计时 <strong><code>NULL</code></strong> 不计入 <strong><code>COUNT(salary)</code></strong>。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> dept_id,</span><br><span class="line">       <span class="built_in">COUNT</span>(<span class="operator">*</span>) <span class="keyword">AS</span> rows_cnt,</span><br><span class="line">       <span class="built_in">COUNT</span>(salary) <span class="keyword">AS</span> non_null_salary_cnt</span><br><span class="line"><span class="keyword">FROM</span> emp</span><br><span class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span> dept_id;</span><br></pre></td></tr></table></figure>
+
+<p><strong>示例结果</strong>（<strong><code>dept_id = 2</code></strong> 两行里 <strong><code>salary</code></strong> 仅一行非 <strong>NULL</strong>，故 <strong><code>COUNT(salary)=1</code></strong>）：</p>
+<table>
+<thead>
+<tr>
+<th>dept_id</th>
+<th>rows_cnt</th>
+<th>non_null_salary_cnt</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>NULL</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr>
+<td>1</td>
+<td>2</td>
+<td>2</td>
+</tr>
+<tr>
+<td>2</td>
+<td>2</td>
+<td>1</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="七、CASE-表达式与条件计数"><a href="#七、CASE-表达式与条件计数" class="headerlink" title="七、CASE 表达式与条件计数"></a>七、CASE 表达式与条件计数</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> name, salary,</span><br><span class="line">       <span class="keyword">CASE</span></span><br><span class="line">           <span class="keyword">WHEN</span> salary <span class="keyword">IS</span> <span class="keyword">NULL</span> <span class="keyword">THEN</span> <span class="string">&#x27;未填&#x27;</span></span><br><span class="line">           <span class="keyword">WHEN</span> salary <span class="operator">&gt;=</span> <span class="number">15000</span> <span class="keyword">THEN</span> <span class="string">&#x27;高&#x27;</span></span><br><span class="line">           <span class="keyword">WHEN</span> salary <span class="operator">&gt;=</span> <span class="number">10000</span> <span class="keyword">THEN</span> <span class="string">&#x27;中&#x27;</span></span><br><span class="line">           <span class="keyword">ELSE</span> <span class="string">&#x27;低&#x27;</span></span><br><span class="line">       <span class="keyword">END</span> <span class="keyword">AS</span> salary_level</span><br><span class="line"><span class="keyword">FROM</span> emp;</span><br></pre></td></tr></table></figure>
+
+<p><strong>示例结果</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>salary</th>
+<th>salary_level</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>张三</td>
+<td>15000.00</td>
+<td>高</td>
+</tr>
+<tr>
+<td>李四</td>
+<td>18000.00</td>
+<td>高</td>
+</tr>
+<tr>
+<td>王五</td>
+<td>12000.00</td>
+<td>中</td>
+</tr>
+<tr>
+<td>赵六</td>
+<td>NULL</td>
+<td>未填</td>
+</tr>
+<tr>
+<td>钱七</td>
+<td>9000.00</td>
+<td>低</td>
+</tr>
+</tbody></table>
+<p><strong>条件聚合</strong>（列转行统计）：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span></span><br><span class="line">    <span class="built_in">SUM</span>(<span class="keyword">CASE</span> <span class="keyword">WHEN</span> dept_id <span class="operator">=</span> <span class="number">1</span> <span class="keyword">THEN</span> <span class="number">1</span> <span class="keyword">ELSE</span> <span class="number">0</span> <span class="keyword">END</span>) <span class="keyword">AS</span> dept1_cnt,</span><br><span class="line">    <span class="built_in">SUM</span>(<span class="keyword">CASE</span> <span class="keyword">WHEN</span> dept_id <span class="operator">=</span> <span class="number">2</span> <span class="keyword">THEN</span> <span class="number">1</span> <span class="keyword">ELSE</span> <span class="number">0</span> <span class="keyword">END</span>) <span class="keyword">AS</span> dept2_cnt</span><br><span class="line"><span class="keyword">FROM</span> emp;</span><br></pre></td></tr></table></figure>
+
+<p><strong>示例结果</strong>（单行汇总）：</p>
+<table>
+<thead>
+<tr>
+<th>dept1_cnt</th>
+<th>dept2_cnt</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>2</td>
+<td>2</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="八、分组字符串拼接-GROUP-CONCAT"><a href="#八、分组字符串拼接-GROUP-CONCAT" class="headerlink" title="八、分组字符串拼接 GROUP_CONCAT"></a>八、分组字符串拼接 GROUP_CONCAT</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> d.name <span class="keyword">AS</span> dept_name,</span><br><span class="line">       GROUP_CONCAT(e.name <span class="keyword">ORDER</span> <span class="keyword">BY</span> e.salary <span class="keyword">DESC</span> SEPARATOR <span class="string">&#x27; | &#x27;</span>) <span class="keyword">AS</span> members</span><br><span class="line"><span class="keyword">FROM</span> dept d</span><br><span class="line"><span class="keyword">LEFT</span> <span class="keyword">JOIN</span> emp e <span class="keyword">ON</span> e.dept_id <span class="operator">=</span> d.id</span><br><span class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span> d.id, d.name;</span><br></pre></td></tr></table></figure>
+
+<p><strong>示例结果</strong>（<strong><code>members</code></strong> 按薪资降序拼接；无员工部门 <strong><code>GROUP_CONCAT</code></strong> 常为 <strong>NULL</strong>；表中用 <strong>→</strong> 表示 <strong><code>SEPARATOR &#39; | &#39;</code></strong> 的实际竖线拼接顺序）：</p>
+<table>
+<thead>
+<tr>
+<th>dept_name</th>
+<th>members</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>研发</td>
+<td>李四 → 张三</td>
+</tr>
+<tr>
+<td>市场</td>
+<td>王五 → 赵六</td>
+</tr>
+<tr>
+<td>财务</td>
+<td>NULL</td>
+</tr>
+</tbody></table>
+<p><strong>注意</strong>：默认 <strong><code>group_concat_max_len</code></strong> 有限，大结果需调大会话或全局参数。</p>
+<hr>
+<h2 id="九、分页与稳定排序"><a href="#九、分页与稳定排序" class="headerlink" title="九、分页与稳定排序"></a>九、分页与稳定排序</h2><p><strong><code>LIMIT offset, row_count</code></strong> 在大 <strong>offset</strong> 时变慢，生产常配合「覆盖索引 + 上一页最大值」做<strong>键集分页</strong>；入门可先掌握 <strong><code>LIMIT</code></strong>。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> id, name, hire_date</span><br><span class="line"><span class="keyword">FROM</span> emp</span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> hire_date <span class="keyword">DESC</span>, id <span class="keyword">DESC</span></span><br><span class="line">LIMIT <span class="number">10</span> <span class="keyword">OFFSET</span> <span class="number">0</span>;</span><br></pre></td></tr></table></figure>
+
+<p><strong>示例结果</strong>（<strong><code>LIMIT 10</code></strong> 在本数据上等于取全表；<strong><code>hire_date</code></strong> 降序）：</p>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>name</th>
+<th>hire_date</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>5</td>
+<td>钱七</td>
+<td>2023-11-01</td>
+</tr>
+<tr>
+<td>4</td>
+<td>赵六</td>
+<td>2022-05-20</td>
+</tr>
+<tr>
+<td>3</td>
+<td>王五</td>
+<td>2021-01-10</td>
+</tr>
+<tr>
+<td>1</td>
+<td>张三</td>
+<td>2020-03-01</td>
+</tr>
+<tr>
+<td>2</td>
+<td>李四</td>
+<td>2019-07-15</td>
+</tr>
+</tbody></table>
+<p><strong>MySQL 8.0+</strong> 可与窗口函数结合做「第 <strong>N</strong> 页」（下例取 <strong><code>rn</code></strong> 在 <strong>2～4</strong> 的行，避免演示数据过少时中间页为空）：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> (</span><br><span class="line">    <span class="keyword">SELECT</span> id, name, salary,</span><br><span class="line">           <span class="built_in">ROW_NUMBER</span>() <span class="keyword">OVER</span> (<span class="keyword">ORDER</span> <span class="keyword">BY</span> (salary <span class="keyword">IS</span> <span class="keyword">NULL</span>), salary <span class="keyword">DESC</span>, id) <span class="keyword">AS</span> rn</span><br><span class="line">    <span class="keyword">FROM</span> emp</span><br><span class="line">) t</span><br><span class="line"><span class="keyword">WHERE</span> t.rn <span class="keyword">BETWEEN</span> <span class="number">2</span> <span class="keyword">AND</span> <span class="number">4</span>;</span><br></pre></td></tr></table></figure>
+
+<p><strong>示例结果</strong>（<strong><code>rn=1</code></strong> 为 <strong>李四</strong>；本例为 <strong><code>rn</code> 2～4</strong>）：</p>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>name</th>
+<th>salary</th>
+<th>rn</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>张三</td>
+<td>15000.00</td>
+<td>2</td>
+</tr>
+<tr>
+<td>3</td>
+<td>王五</td>
+<td>12000.00</td>
+<td>3</td>
+</tr>
+<tr>
+<td>5</td>
+<td>钱七</td>
+<td>9000.00</td>
+<td>4</td>
+</tr>
+</tbody></table>
+<p><strong><code>ORDER BY (salary IS NULL), salary DESC</code></strong>：先排「非 <strong>NULL</strong> 薪资」在前，<strong><code>NULL</code></strong> 在后，兼容各 <strong>8.0</strong> 小版本。</p>
+<hr>
+<h2 id="十、常用补充：DISTINCT、COALESCE、正则"><a href="#十、常用补充：DISTINCT、COALESCE、正则" class="headerlink" title="十、常用补充：DISTINCT、COALESCE、正则"></a>十、常用补充：DISTINCT、COALESCE、正则</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 去重部门编号</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="keyword">DISTINCT</span> dept_id <span class="keyword">FROM</span> emp <span class="keyword">WHERE</span> dept_id <span class="keyword">IS</span> <span class="keyword">NOT NULL</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- NULL 与默认值</span></span><br><span class="line"><span class="keyword">SELECT</span> name, <span class="built_in">COALESCE</span>(salary, <span class="number">0</span>) <span class="keyword">AS</span> salary_or_zero <span class="keyword">FROM</span> emp;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 正则筛选（简单示例）</span></span><br><span class="line"><span class="keyword">SELECT</span> name <span class="keyword">FROM</span> emp <span class="keyword">WHERE</span> name REGEXP <span class="string">&#x27;^[张李王].*&#x27;</span>;</span><br></pre></td></tr></table></figure>
+
+<p><strong>示例结果</strong></p>
+<p><strong><code>DISTINCT dept_id</code></strong></p>
+<table>
+<thead>
+<tr>
+<th>dept_id</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+</tr>
+<tr>
+<td>2</td>
+</tr>
+</tbody></table>
+<p><strong><code>COALESCE(salary, 0)</code></strong></p>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>salary_or_zero</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>张三</td>
+<td>15000.00</td>
+</tr>
+<tr>
+<td>李四</td>
+<td>18000.00</td>
+</tr>
+<tr>
+<td>王五</td>
+<td>12000.00</td>
+</tr>
+<tr>
+<td>赵六</td>
+<td>0</td>
+</tr>
+<tr>
+<td>钱七</td>
+<td>9000.00</td>
+</tr>
+</tbody></table>
+<p><strong><code>REGEXP &#39;^[张李王].*&#39;</code></strong>（姓为 <strong>张 &#x2F; 李 &#x2F; 王</strong> 之一开头）</p>
+<table>
+<thead>
+<tr>
+<th>name</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>张三</td>
+</tr>
+<tr>
+<td>李四</td>
+</tr>
+<tr>
+<td>王五</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="十一、速查小结"><a href="#十一、速查小结" class="headerlink" title="十一、速查小结"></a>十一、速查小结</h2><table>
+<thead>
+<tr>
+<th>场景</th>
+<th>典型写法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>多表关联</td>
+<td><strong><code>INNER JOIN</code> &#x2F; <code>LEFT JOIN</code></strong> + <strong><code>ON</code></strong></td>
+</tr>
+<tr>
+<td>是否存在</td>
+<td><strong><code>EXISTS (SELECT 1 …)</code></strong></td>
+</tr>
+<tr>
+<td>合并结果</td>
+<td><strong><code>UNION ALL</code></strong>（优先）&#x2F; <strong><code>UNION</code></strong></td>
+</tr>
+<tr>
+<td>可读拆分（8.0+）</td>
+<td><strong><code>WITH cte AS (...)</code></strong></td>
+</tr>
+<tr>
+<td>组内排名、累计（8.0+）</td>
+<td><strong><code>ROW_NUMBER()</code>、<code>SUM() OVER (...)</code></strong></td>
+</tr>
+<tr>
+<td>聚合后过滤</td>
+<td><strong><code>GROUP BY</code> + <code>HAVING</code></strong></td>
+</tr>
+<tr>
+<td>分支与透视列</td>
+<td><strong><code>CASE WHEN</code></strong></td>
+</tr>
+<tr>
+<td>组内拼字符串</td>
+<td><strong><code>GROUP_CONCAT</code></strong></td>
+</tr>
+<tr>
+<td>分页</td>
+<td><strong><code>ORDER BY</code> + <code>LIMIT</code></strong>；大表慎用深 <strong><code>OFFSET</code></strong></td>
+</tr>
+</tbody></table>
+<p>练习时可在测试库执行<strong>文首「示例数据」建表脚本</strong>，再逐段复制运行，对照各小节 <strong>「示例结果」</strong> 表格验算。</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -2454,217 +3393,8 @@ flowchart TD
 
 
 
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/MongoDB/MongoDB-Docker/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="miracle">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="my">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | my">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/05/01/MongoDB/MongoDB-Docker/" class="post-title-link" itemprop="url">Docker 部署 MongoDB</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2026-05-01 20:35:17" itemprop="dateCreated datePublished" datetime="2026-05-01T20:35:17+08:00">2026-05-01</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-04 11:40:01" itemprop="dateModified" datetime="2026-05-04T11:40:01+08:00">2026-05-04</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/MongoDB/" itemprop="url" rel="index"><span itemprop="name">MongoDB</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>1.4k</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>5 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>在 <strong>Docker</strong> 中运行 <strong>MongoDB</strong>，适合本地开发、与 <strong>Compose</strong> 编排其它服务、或在 <strong>Kubernetes</strong> 中单实例部署。下文给出<strong>镜像选型</strong>、<strong>一条命令起容器</strong>、<strong>Compose 一键起栈</strong>与<strong>一份多文档 K8s 清单</strong>；密码与数据卷请按环境自行替换，勿把生产密钥提交进仓库。</p>
-<hr>
-<h1 id="一、前置条件"><a href="#一、前置条件" class="headerlink" title="一、前置条件"></a>一、前置条件</h1><p>本机已安装 <strong><code>docker</code></strong>，并能使用 <strong><code>docker compose</code></strong>（<strong>Compose V2</strong> 插件，命令为 <strong><code>docker compose</code></strong>；若仍使用旧版独立程序，则将下文中的 <strong><code>docker compose</code></strong> 换成 <strong><code>docker-compose</code></strong>）。</p>
-<p>验证：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker version</span><br><span class="line">docker compose version</span><br></pre></td></tr></table></figure>
-
-<p>满足即可，与宿主机操作系统无关。</p>
-<hr>
-<h1 id="二、MongoDB-镜像选择"><a href="#二、MongoDB-镜像选择" class="headerlink" title="二、MongoDB 镜像选择"></a>二、MongoDB 镜像选择</h1><h2 id="1-官方镜像（推荐）"><a href="#1-官方镜像（推荐）" class="headerlink" title="1. 官方镜像（推荐）"></a>1. 官方镜像（推荐）</h2><ul>
-<li><strong>仓库</strong>：<strong><code>mongo</code></strong>（Docker Hub 官方库，由 <strong>MongoDB Inc.</strong> 维护）。  </li>
-<li><strong>常用标签</strong>：  <ul>
-<li><strong><code>mongo:7.0</code></strong>：<strong>7.x</strong> 稳定线，驱动与工具链成熟。  </li>
-<li><strong><code>mongo:8.0</code></strong> 或 <strong><code>mongo:latest</code></strong>：较新大版本（以 <a target="_blank" rel="noopener external nofollow noreferrer" href="https://hub.docker.com/_/mongo/tags">Docker Hub mongo tags</a> 为准）。</li>
-</ul>
-</li>
-<li><strong>生产建议</strong>：固定小版本标签（如 <strong><code>mongo:7.0.15</code></strong>）或记录 <strong>digest</strong>，避免 <strong><code>latest</code></strong> 漂移导致行为变化。</li>
-</ul>
-<h2 id="2-变体说明"><a href="#2-变体说明" class="headerlink" title="2. 变体说明"></a>2. 变体说明</h2><table>
-<thead>
-<tr>
-<th>需求</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>认证与 root</strong></td>
-<td>同时设置 <strong><code>MONGO_INITDB_ROOT_USERNAME</code></strong>、<strong><code>MONGO_INITDB_ROOT_PASSWORD</code></strong> 时启用<strong>超级用户</strong>；连接串中 <strong><code>authSource=admin</code></strong> 常指向管理库。</td>
-</tr>
-<tr>
-<td><strong>ARM64</strong>（Apple Silicon 等）</td>
-<td>官方 <strong><code>mongo</code></strong> 多架构镜像一般可直接拉取；若某标签缺架构，换标签或查 Hub <strong>OS&#x2F;ARCH</strong>。</td>
-</tr>
-<tr>
-<td><strong>极简&#x2F;定制</strong></td>
-<td>社区有 <strong><code>bitnami/mongodb</code></strong> 等，环境变量与数据路径与官方不同，切换镜像时需对照该镜像文档。</td>
-</tr>
-</tbody></table>
-<h2 id="3-初始化脚本"><a href="#3-初始化脚本" class="headerlink" title="3. 初始化脚本"></a>3. 初始化脚本</h2><p><strong><code>/docker-entrypoint-initdb.d/</code></strong> 下 <strong><code>*.js</code></strong>、<strong><code>*.sh</code></strong> 仅在<strong>首次初始化空数据目录</strong>时执行；已有数据卷时不会重复执行。</p>
-<hr>
-<p><strong>1Panel（推荐）</strong>：在 <strong>Linux</strong> 宿主机上若希望少手写命令、仍以容器方式跑 <strong>MongoDB</strong>，可先安装 <a target="_blank" rel="noopener external nofollow noreferrer" href="https://1panel.cn/"><strong>1Panel</strong></a>（开源 <strong>Linux</strong> 运维面板），在 <strong>「应用商店」</strong> 中选择 <strong>MongoDB</strong> 一键部署：由面板管理镜像版本、数据持久化、<strong><code>27017</code></strong> 端口、<strong><code>MONGO_INITDB_ROOT_*</code></strong> 与（可选）备份，启停与日志可在界面查看。与下文 <strong><code>docker run</code> &#x2F; Compose &#x2F; K8s<code>** 的环境变量、**</code>&#x2F;data&#x2F;db<code>** 与 **</code>&#x2F;docker-entrypoint-initdb.d&#96;</strong> 语义对齐或排障时，自 <strong># 三</strong> 起各节仍可作对照。适合单台 <strong>VPS</strong>、家庭服务器等「一台机子上稳态跑库」的场景。</p>
-<hr>
-<h1 id="三、单容器一键部署（docker-run）"><a href="#三、单容器一键部署（docker-run）" class="headerlink" title="三、单容器一键部署（docker run）"></a>三、单容器一键部署（<code>docker run</code>）</h1><p>在<strong>当前目录</strong>先建数据与初始化目录（仅首次）：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">mkdir</span> -p ./mongo-data ./mongo-init</span><br></pre></td></tr></table></figure>
-
-<p><strong>一条命令</strong>启动（请按需改账号、密码、端口、卷路径；示例仅供本地）：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -d --name mongodb-dev -e MONGO_INITDB_ROOT_USERNAME=root -e MONGO_INITDB_ROOT_PASSWORD=dev-root-change-me -e MONGO_INITDB_DATABASE=appdb -p 27017:27017 -v <span class="string">&quot;<span class="subst">$(pwd)</span>/mongo-data:/data/db&quot;</span> -v <span class="string">&quot;<span class="subst">$(pwd)</span>/mongo-init:/docker-entrypoint-initdb.d:ro&quot;</span> mongo:7.0</span><br></pre></td></tr></table></figure>
-
-<p>常用运维一条命令：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker logs -f mongodb-dev</span><br><span class="line">docker stop mongodb-dev &amp;&amp; docker <span class="built_in">rm</span> mongodb-dev</span><br></pre></td></tr></table></figure>
-
-<p>本机连接示例（<strong><code>mongosh</code></strong> 与镜像主版本一致即可）：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mongosh <span class="string">&quot;mongodb://root:dev-root-change-me@127.0.0.1:27017/appdb?authSource=admin&quot;</span></span><br></pre></td></tr></table></figure>
-
-<hr>
-<h1 id="四、Docker-Compose-一键部署"><a href="#四、Docker-Compose-一键部署" class="headerlink" title="四、Docker Compose 一键部署"></a>四、Docker Compose 一键部署</h1><p>将下面内容保存为 <strong><code>docker-compose.mongo.yml</code></strong>（与 <strong><code># 一</code></strong> 要求一致：已能执行 <strong><code>docker compose</code></strong>）。敏感项建议放在同目录 <strong><code>.env</code></strong>（加入 <strong><code>.gitignore</code></strong>），勿长期写死在仓库。</p>
-<p><strong>一条命令</strong>启动全栈（在 <strong><code>docker-compose.mongo.yml</code></strong> 所在目录执行）：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker compose -f docker-compose.mongo.yml up -d</span><br></pre></td></tr></table></figure>
-
-<p>以下为 <strong><code>docker-compose.mongo.yml</code></strong> 全文：<strong><code>version</code></strong>、<strong><code>name</code></strong>、<strong>命名卷</strong>、<strong>健康检查</strong>。</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">version:</span> <span class="string">&quot;3.8&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="attr">name:</span> <span class="string">mongo-stack</span></span><br><span class="line"></span><br><span class="line"><span class="attr">services:</span></span><br><span class="line">  <span class="attr">mongodb:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">mongo:7.0</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">mongo-7</span></span><br><span class="line">    <span class="attr">restart:</span> <span class="string">unless-stopped</span></span><br><span class="line">    <span class="attr">environment:</span></span><br><span class="line">      <span class="attr">MONGO_INITDB_ROOT_USERNAME:</span> <span class="string">$&#123;MONGO_INITDB_ROOT_USERNAME:-root&#125;</span></span><br><span class="line">      <span class="attr">MONGO_INITDB_ROOT_PASSWORD:</span> <span class="string">$&#123;MONGO_INITDB_ROOT_PASSWORD:-dev-root-change-me&#125;</span></span><br><span class="line">      <span class="attr">MONGO_INITDB_DATABASE:</span> <span class="string">$&#123;MONGO_INITDB_DATABASE:-appdb&#125;</span></span><br><span class="line">      <span class="attr">TZ:</span> <span class="string">Asia/Shanghai</span></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;27017:27017&quot;</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">mongo_data:/data/db</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">./mongo-init:/docker-entrypoint-initdb.d:ro</span></span><br><span class="line">    <span class="attr">healthcheck:</span></span><br><span class="line">      <span class="attr">test:</span> [<span class="string">&quot;CMD-SHELL&quot;</span>, <span class="string">&quot;mongosh -u \&quot;$$MONGO_INITDB_ROOT_USERNAME\&quot; -p \&quot;$$MONGO_INITDB_ROOT_PASSWORD\&quot; --authenticationDatabase admin --quiet --eval &#x27;db.adminCommand(&#123;ping:1&#125;)&#x27; || exit 1&quot;</span>]</span><br><span class="line">      <span class="attr">interval:</span> <span class="string">10s</span></span><br><span class="line">      <span class="attr">timeout:</span> <span class="string">5s</span></span><br><span class="line">      <span class="attr">retries:</span> <span class="number">12</span></span><br><span class="line">      <span class="attr">start_period:</span> <span class="string">40s</span></span><br><span class="line"></span><br><span class="line"><span class="attr">volumes:</span></span><br><span class="line">  <span class="attr">mongo_data:</span></span><br><span class="line">    <span class="attr">driver:</span> <span class="string">local</span></span><br></pre></td></tr></table></figure>
-
-<p>同目录可选 <strong><code>.env</code></strong>（勿提交）：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">MONGO_INITDB_ROOT_USERNAME=root</span><br><span class="line">MONGO_INITDB_ROOT_PASSWORD=your-strong-root-password</span><br><span class="line">MONGO_INITDB_DATABASE=appdb</span><br></pre></td></tr></table></figure>
-
-<p>查看状态、日志、停止并删除容器（保留数据卷）：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">docker compose -f docker-compose.mongo.yml ps</span><br><span class="line">docker compose -f docker-compose.mongo.yml logs -f mongodb</span><br><span class="line">docker compose -f docker-compose.mongo.yml down</span><br></pre></td></tr></table></figure>
-
-<p><strong><code>down</code></strong> 默认保留命名卷 <strong><code>mongo_data</code></strong>；若需清空数据加 <strong><code>docker compose ... down -v</code></strong>（<strong>会删库</strong>）。</p>
-<hr>
-<h1 id="五、Kubernetes-一键部署（单文件完整清单）"><a href="#五、Kubernetes-一键部署（单文件完整清单）" class="headerlink" title="五、Kubernetes 一键部署（单文件完整清单）"></a>五、Kubernetes 一键部署（单文件完整清单）</h1><p>将下面内容保存为 <strong><code>mongo-k8s.yaml</code></strong> 后，<strong>一条命令</strong>应用：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl apply -f mongo-k8s.yaml</span><br></pre></td></tr></table></figure>
-
-<p>清单含 <strong>Secret</strong>（<strong>root</strong> 账号与初始库名）、<strong>PVC</strong>、<strong>Deployment</strong>、<strong>ClusterIP Service</strong>。未写 <strong><code>storageClassName</code></strong> 时使用集群默认 <strong>StorageClass</strong>；无默认 <strong>SC</strong> 时请在 <strong>PVC</strong> 中补上 <strong><code>storageClassName</code></strong>。命名空间为 <strong><code>default</code></strong>，可按需修改 <strong><code>metadata.namespace</code></strong>。</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Secret</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">mongo-secret</span></span><br><span class="line">  <span class="attr">namespace:</span> <span class="string">default</span></span><br><span class="line"><span class="attr">type:</span> <span class="string">Opaque</span></span><br><span class="line"><span class="attr">stringData:</span></span><br><span class="line">  <span class="attr">MONGO_INITDB_ROOT_USERNAME:</span> <span class="string">&quot;root&quot;</span></span><br><span class="line">  <span class="attr">MONGO_INITDB_ROOT_PASSWORD:</span> <span class="string">&quot;请替换为强密码&quot;</span></span><br><span class="line">  <span class="attr">MONGO_INITDB_DATABASE:</span> <span class="string">&quot;appdb&quot;</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">PersistentVolumeClaim</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">mongo-data</span></span><br><span class="line">  <span class="attr">namespace:</span> <span class="string">default</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">accessModes:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">ReadWriteOnce</span></span><br><span class="line">  <span class="attr">resources:</span></span><br><span class="line">    <span class="attr">requests:</span></span><br><span class="line">      <span class="attr">storage:</span> <span class="string">20Gi</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">apps/v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Deployment</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">mongodb</span></span><br><span class="line">  <span class="attr">namespace:</span> <span class="string">default</span></span><br><span class="line">  <span class="attr">labels:</span></span><br><span class="line">    <span class="attr">app:</span> <span class="string">mongodb</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">replicas:</span> <span class="number">1</span></span><br><span class="line">  <span class="attr">selector:</span></span><br><span class="line">    <span class="attr">matchLabels:</span></span><br><span class="line">      <span class="attr">app:</span> <span class="string">mongodb</span></span><br><span class="line">  <span class="attr">strategy:</span></span><br><span class="line">    <span class="attr">type:</span> <span class="string">Recreate</span></span><br><span class="line">  <span class="attr">template:</span></span><br><span class="line">    <span class="attr">metadata:</span></span><br><span class="line">      <span class="attr">labels:</span></span><br><span class="line">        <span class="attr">app:</span> <span class="string">mongodb</span></span><br><span class="line">    <span class="attr">spec:</span></span><br><span class="line">      <span class="attr">containers:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">mongodb</span></span><br><span class="line">          <span class="attr">image:</span> <span class="string">mongo:7.0</span></span><br><span class="line">          <span class="attr">ports:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">containerPort:</span> <span class="number">27017</span></span><br><span class="line">              <span class="attr">name:</span> <span class="string">mongodb</span></span><br><span class="line">          <span class="attr">env:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">MONGO_INITDB_ROOT_USERNAME</span></span><br><span class="line">              <span class="attr">valueFrom:</span></span><br><span class="line">                <span class="attr">secretKeyRef:</span></span><br><span class="line">                  <span class="attr">name:</span> <span class="string">mongo-secret</span></span><br><span class="line">                  <span class="attr">key:</span> <span class="string">MONGO_INITDB_ROOT_USERNAME</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">MONGO_INITDB_ROOT_PASSWORD</span></span><br><span class="line">              <span class="attr">valueFrom:</span></span><br><span class="line">                <span class="attr">secretKeyRef:</span></span><br><span class="line">                  <span class="attr">name:</span> <span class="string">mongo-secret</span></span><br><span class="line">                  <span class="attr">key:</span> <span class="string">MONGO_INITDB_ROOT_PASSWORD</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">MONGO_INITDB_DATABASE</span></span><br><span class="line">              <span class="attr">valueFrom:</span></span><br><span class="line">                <span class="attr">secretKeyRef:</span></span><br><span class="line">                  <span class="attr">name:</span> <span class="string">mongo-secret</span></span><br><span class="line">                  <span class="attr">key:</span> <span class="string">MONGO_INITDB_DATABASE</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">TZ</span></span><br><span class="line">              <span class="attr">value:</span> <span class="string">&quot;Asia/Shanghai&quot;</span></span><br><span class="line">          <span class="attr">volumeMounts:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">data</span></span><br><span class="line">              <span class="attr">mountPath:</span> <span class="string">/data/db</span></span><br><span class="line">          <span class="attr">readinessProbe:</span></span><br><span class="line">            <span class="attr">exec:</span></span><br><span class="line">              <span class="attr">command:</span></span><br><span class="line">                <span class="bullet">-</span> <span class="string">/bin/sh</span></span><br><span class="line">                <span class="bullet">-</span> <span class="string">-c</span></span><br><span class="line">                <span class="bullet">-</span> <span class="string">&#x27;mongosh --quiet -u &quot;$MONGO_INITDB_ROOT_USERNAME&quot; -p &quot;$MONGO_INITDB_ROOT_PASSWORD&quot; --authenticationDatabase admin --eval &quot;db.adminCommand(&#123; ping: 1 &#125;)&quot;&#x27;</span></span><br><span class="line">            <span class="attr">initialDelaySeconds:</span> <span class="number">15</span></span><br><span class="line">            <span class="attr">periodSeconds:</span> <span class="number">10</span></span><br><span class="line">            <span class="attr">timeoutSeconds:</span> <span class="number">5</span></span><br><span class="line">            <span class="attr">failureThreshold:</span> <span class="number">12</span></span><br><span class="line">          <span class="attr">livenessProbe:</span></span><br><span class="line">            <span class="attr">tcpSocket:</span></span><br><span class="line">              <span class="attr">port:</span> <span class="number">27017</span></span><br><span class="line">            <span class="attr">initialDelaySeconds:</span> <span class="number">60</span></span><br><span class="line">            <span class="attr">periodSeconds:</span> <span class="number">15</span></span><br><span class="line">            <span class="attr">timeoutSeconds:</span> <span class="number">5</span></span><br><span class="line">            <span class="attr">failureThreshold:</span> <span class="number">6</span></span><br><span class="line">          <span class="attr">resources:</span></span><br><span class="line">            <span class="attr">requests:</span></span><br><span class="line">              <span class="attr">memory:</span> <span class="string">&quot;512Mi&quot;</span></span><br><span class="line">              <span class="attr">cpu:</span> <span class="string">&quot;250m&quot;</span></span><br><span class="line">            <span class="attr">limits:</span></span><br><span class="line">              <span class="attr">memory:</span> <span class="string">&quot;1Gi&quot;</span></span><br><span class="line">              <span class="attr">cpu:</span> <span class="string">&quot;1000m&quot;</span></span><br><span class="line">      <span class="attr">volumes:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">data</span></span><br><span class="line">          <span class="attr">persistentVolumeClaim:</span></span><br><span class="line">            <span class="attr">claimName:</span> <span class="string">mongo-data</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Service</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">mongodb</span></span><br><span class="line">  <span class="attr">namespace:</span> <span class="string">default</span></span><br><span class="line">  <span class="attr">labels:</span></span><br><span class="line">    <span class="attr">app:</span> <span class="string">mongodb</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">type:</span> <span class="string">ClusterIP</span></span><br><span class="line">  <span class="attr">selector:</span></span><br><span class="line">    <span class="attr">app:</span> <span class="string">mongodb</span></span><br><span class="line">  <span class="attr">ports:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">mongodb</span></span><br><span class="line">      <span class="attr">port:</span> <span class="number">27017</span></span><br><span class="line">      <span class="attr">targetPort:</span> <span class="number">27017</span></span><br></pre></td></tr></table></figure>
-
-<p>查看资源与连接前检查：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl get pods,svc,pvc -l app=mongodb</span><br></pre></td></tr></table></figure>
-
-<p>集群内连接串示例（按 <strong>namespace</strong> 与 <strong>Secret</strong> 中密码替换）：<strong><code>mongodb://root:请替换@mongodb.default.svc.cluster.local:27017/appdb?authSource=admin</code></strong>。</p>
-<p><strong>说明</strong>：<strong><code>strategy: Recreate</code></strong> 避免 <strong>RWO</strong> 卷被多副本 <strong>RollingUpdate</strong> 同时挂载；副本集、分片、运维自动化请使用 <strong>MongoDB Kubernetes Operator</strong> 等方案，勿直接水平扩展上述 <strong>Deployment</strong>。</p>
-<hr>
-<h1 id="六、小结"><a href="#六、小结" class="headerlink" title="六、小结"></a>六、小结</h1><table>
-<thead>
-<tr>
-<th>项</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>前置</strong></td>
-<td>已安装 <strong><code>docker</code></strong> 与 <strong><code>docker compose</code></strong>（或 <strong><code>docker-compose</code></strong>）</td>
-</tr>
-<tr>
-<td><strong>镜像</strong></td>
-<td>优先官方 <strong><code>mongo:7.0</code></strong> &#x2F; 固定补丁标签；<strong><code>mongosh</code></strong> 与镜像主版本对齐</td>
-</tr>
-<tr>
-<td><strong>单容器</strong></td>
-<td><strong><code>mkdir</code></strong> 后一条 <strong><code>docker run ...</code></strong></td>
-</tr>
-<tr>
-<td><strong>Compose</strong></td>
-<td>保存 <strong><code>docker-compose.mongo.yml</code></strong> 后 <strong><code>docker compose -f ... up -d</code></strong></td>
-</tr>
-<tr>
-<td><strong>Kubernetes</strong></td>
-<td>保存 <strong><code>mongo-k8s.yaml</code></strong> 后 <strong><code>kubectl apply -f ...</code></strong></td>
-</tr>
-</tbody></table>
-<p>生产环境请配合备份、监控、网络策略与 <strong>TLS</strong>；<strong>Secret</strong> 建议对接 <strong>External Secrets</strong> &#x2F; <strong>Sealed Secrets</strong> 等管控流程。</p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
   <nav class="pagination">
-    <a class="extend prev" rel="prev" title="上一页" aria-label="上一页" href="/page/5/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><span class="page-number current">6</span><a class="page-number" href="/page/7/">7</a><span class="space">&hellip;</span><a class="page-number" href="/page/19/">19</a><a class="extend next" rel="next" title="下一页" aria-label="下一页" href="/page/7/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" title="上一页" aria-label="上一页" href="/page/5/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><span class="page-number current">6</span><a class="page-number" href="/page/7/">7</a><span class="space">&hellip;</span><a class="page-number" href="/page/20/">20</a><a class="extend next" rel="next" title="下一页" aria-label="下一页" href="/page/7/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 </div>
@@ -2686,13 +3416,13 @@ flowchart TD
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">186k</span>
+    <span title="站点总字数">195k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">10:18</span>
+    <span title="站点阅读时长">10:49</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

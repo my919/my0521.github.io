@@ -174,18 +174,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">184</span>
+          <span class="site-state-item-count">192</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">38</span>
+        <span class="site-state-item-count">39</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">107</span>
+        <span class="site-state-item-count">108</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -213,6 +213,1212 @@
     </div>
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/Frontend/Vite/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/05/01/Frontend/Vite/" class="post-title-link" itemprop="url">Vite</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-05-01 12:53:57" itemprop="dateCreated datePublished" datetime="2026-05-01T12:53:57+08:00">2026-05-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-05-31 23:47:21" itemprop="dateModified" datetime="2026-05-31T23:47:21+08:00">2026-05-31</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Frontend/" itemprop="url" rel="index"><span itemprop="name">Frontend</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>430</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>1 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p><strong>Vite</strong> 是新一代前端构建工具：开发阶段利用浏览器原生 <strong>ESM</strong> 与 <strong>esbuild</strong> 预构建依赖，实现<strong>秒级冷启动</strong>；生产构建使用 <strong>Rollup</strong> 打包。下面从「<strong>开发与生产模式</strong> → <strong>创建项目</strong> → <strong>配置要点</strong> → <strong>插件与代理</strong> → <strong>与 Vue&#x2F;React 的关系</strong>」顺序写清楚。</p>
+<h1 id="Dev-vs-Build"><a href="#Dev-vs-Build" class="headerlink" title="Dev vs Build"></a>Dev vs Build</h1><pre>
+<code class="mermaid">
+
+flowchart LR
+  subgraph dev [开发 vite dev]
+    SRC[源码 ESM] --&gt; ESB[esbuild 预构建 deps]
+    ESB --&gt; HMR[浏览器 HMR]
+  end
+  subgraph prod [生产 vite build]
+    SRC2[源码] --&gt; ROL[Rollup 打包]
+    ROL --&gt; DIST[dist 静态资源]
+  end
+</code>
+</pre>
+
+<hr>
+<h1 id="一、为何快"><a href="#一、为何快" class="headerlink" title="一、为何快"></a>一、为何快</h1><table>
+<thead>
+<tr>
+<th>阶段</th>
+<th>机制</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>开发</strong></td>
+<td>按需编译单文件，不打包整图；依赖用 <strong>esbuild</strong> 预打包</td>
+</tr>
+<tr>
+<td><strong>HMR</strong></td>
+<td>模块热替换，保留应用状态（依模块类型）</td>
+</tr>
+<tr>
+<td><strong>生产</strong></td>
+<td><strong>Rollup</strong> Tree-shaking、代码分割、资源哈希</td>
+</tr>
+</tbody></table>
+<p>对比 <strong>Webpack</strong>  dev：大型项目冷启动与 HMR 通常明显更快。</p>
+<hr>
+<h1 id="二、创建与脚本"><a href="#二、创建与脚本" class="headerlink" title="二、创建与脚本"></a>二、创建与脚本</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">npm create vite@latest my-app -- --template vue-ts</span><br><span class="line"><span class="built_in">cd</span> my-app</span><br><span class="line">npm install</span><br><span class="line">npm run dev      <span class="comment"># 开发，默认 http://localhost:5173</span></span><br><span class="line">npm run build    <span class="comment"># 输出 dist/</span></span><br><span class="line">npm run preview  <span class="comment"># 本地预览生产包</span></span><br></pre></td></tr></table></figure>
+
+<p>常用模板：<strong><code>vanilla-ts</code></strong>、<strong><code>vue-ts</code></strong>、<strong><code>react-ts</code></strong>、<strong><code>vue</code></strong>。</p>
+<hr>
+<h1 id="三、vite-config-ts-要点"><a href="#三、vite-config-ts-要点" class="headerlink" title="三、vite.config.ts 要点"></a>三、vite.config.ts 要点</h1><figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; defineConfig &#125; <span class="keyword">from</span> <span class="string">&#x27;vite&#x27;</span></span><br><span class="line"><span class="keyword">import</span> vue <span class="keyword">from</span> <span class="string">&#x27;@vitejs/plugin-vue&#x27;</span></span><br><span class="line"><span class="keyword">import</span> path <span class="keyword">from</span> <span class="string">&#x27;node:path&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="title function_">defineConfig</span>(&#123;</span><br><span class="line">  <span class="attr">plugins</span>: [<span class="title function_">vue</span>()],</span><br><span class="line">  <span class="attr">resolve</span>: &#123;</span><br><span class="line">    <span class="attr">alias</span>: &#123; <span class="string">&#x27;@&#x27;</span>: path.<span class="title function_">resolve</span>(__dirname, <span class="string">&#x27;src&#x27;</span>) &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">server</span>: &#123;</span><br><span class="line">    <span class="attr">port</span>: <span class="number">5173</span>,</span><br><span class="line">    <span class="attr">proxy</span>: &#123;</span><br><span class="line">      <span class="string">&#x27;/api&#x27;</span>: &#123;</span><br><span class="line">        <span class="attr">target</span>: <span class="string">&#x27;http://127.0.0.1:8080&#x27;</span>,</span><br><span class="line">        <span class="attr">changeOrigin</span>: <span class="literal">true</span></span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">build</span>: &#123;</span><br><span class="line">    <span class="attr">outDir</span>: <span class="string">&#x27;dist&#x27;</span>,</span><br><span class="line">    <span class="attr">sourcemap</span>: <span class="literal">true</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong><code>base</code></strong>：部署子路径时设为 <strong><code>&#39;/blog/&#39;</code></strong> 等。  </li>
+<li><strong><code>env</code></strong>：<strong><code>.env.development</code></strong> 中 <strong><code>VITE_*</code></strong> 变量通过 <strong><code>import.meta.env</code></strong> 暴露。</li>
+</ul>
+<hr>
+<h1 id="四、插件生态"><a href="#四、插件生态" class="headerlink" title="四、插件生态"></a>四、插件生态</h1><ul>
+<li><strong><code>@vitejs/plugin-vue</code></strong> &#x2F; <strong><code>plugin-react</code></strong>  </li>
+<li><strong><code>vite-plugin-vue-devtools</code></strong>  </li>
+<li><strong>Legacy</strong>：<strong><code>@vitejs/plugin-legacy</code></strong> 为旧浏览器注入 polyfill</li>
+</ul>
+<p><strong>SSR</strong>：<strong><code>vite-plugin-ssr</code></strong> 或框架内置方案（Nuxt 3 等基于 Vite）。</p>
+<hr>
+<h1 id="五、与-Vue-3-及部署"><a href="#五、与-Vue-3-及部署" class="headerlink" title="五、与 Vue 3 及部署"></a>五、与 Vue 3 及部署</h1><ul>
+<li><a href="/2026/05/01/Frontend/VUE3/" title="VUE3">VUE3</a> 官方推荐 **Vite** 作为默认脚手架。  </li>
+<li>生产 <strong><code>dist</code></strong> 为静态文件，由 <a href="/2026/05/01/Nginx/Nginx/" title="Nginx">Nginx</a> 或 CDN 托管；<strong><code>try_files</code></strong> 支持 SPA  history 模式。</li>
+</ul>
+<p>官方文档：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://vite.dev/">https://vite.dev/</a></p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/Frontend/VUE3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/05/01/Frontend/VUE3/" class="post-title-link" itemprop="url">VUE3</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-05-01 12:53:01" itemprop="dateCreated datePublished" datetime="2026-05-01T12:53:01+08:00">2026-05-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-05-31 23:47:21" itemprop="dateModified" datetime="2026-05-31T23:47:21+08:00">2026-05-31</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Frontend/" itemprop="url" rel="index"><span itemprop="name">Frontend</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>412</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>1 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p><strong>Vue 3</strong> 是渐进式前端框架：采用 <strong>Composition API</strong>、<strong>Proxy</strong> 响应式、更小的运行时与更好的 <strong>TypeScript</strong> 支持。下面从「<strong>核心概念</strong> → <strong>Composition API</strong> → <strong>组件与路由</strong> → <strong>状态管理</strong> → <strong>与 Vite 工程的关系</strong>」顺序写清楚。</p>
+<h1 id="组件与数据流"><a href="#组件与数据流" class="headerlink" title="组件与数据流"></a>组件与数据流</h1><pre>
+<code class="mermaid">
+
+flowchart TB
+  Props[props 父传子] --&gt; Comp[Vue 组件 SFC]
+  Comp --&gt; Emit[emit 子传父]
+  Comp --&gt; Store[Pinia 全局状态]
+  Store --&gt; Comp
+</code>
+</pre>
+
+<hr>
+<h1 id="一、核心概念"><a href="#一、核心概念" class="headerlink" title="一、核心概念"></a>一、核心概念</h1><ul>
+<li><strong>单文件组件（SFC）</strong>：<strong><code>.vue</code></strong> 含 <strong><code>&lt;template&gt;</code></strong>、<strong><code>&lt;script&gt;</code></strong>、<strong><code>&lt;style&gt;</code></strong>。  </li>
+<li><strong>响应式</strong>：<strong><code>ref</code></strong> &#x2F; <strong><code>reactive</code></strong> 包装数据，模板自动追踪依赖并更新 DOM。  </li>
+<li><strong>虚拟 DOM + 编译优化</strong>：静态提升、补丁标志减少运行时开销。</li>
+</ul>
+<p>与 <strong>Vue 2</strong>：移除 <strong><code>Vue.set</code></strong>、<strong><code>$on</code></strong> 等 API；全局 API 改为 <strong><code>createApp</code></strong>。</p>
+<hr>
+<h1 id="二、Composition-API-示例"><a href="#二、Composition-API-示例" class="headerlink" title="二、Composition API 示例"></a>二、Composition API 示例</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">&lt;script setup lang=&quot;ts&quot;&gt;</span><br><span class="line">import &#123; ref, computed, onMounted &#125; from &#x27;vue&#x27;</span><br><span class="line"></span><br><span class="line">const count = ref(0)</span><br><span class="line">const double = computed(() =&gt; count.value * 2)</span><br><span class="line"></span><br><span class="line">function inc() &#123;</span><br><span class="line">  count.value++</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">onMounted(() =&gt; &#123;</span><br><span class="line">  console.log(&#x27;mounted&#x27;)</span><br><span class="line">&#125;)</span><br><span class="line">&lt;/script&gt;</span><br><span class="line"></span><br><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;button @click=&quot;inc&quot;&gt;&#123;&#123; count &#125;&#125; ×2 = &#123;&#123; double &#125;&#125;&lt;/button&gt;</span><br><span class="line">&lt;/template&gt;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong><code>script setup</code></strong>：编译期糖，少写 <strong><code>export default</code></strong>。  </li>
+<li><strong>组合式函数（Composables）</strong>：<strong><code>useXxx()</code></strong> 抽离可复用逻辑。</li>
+</ul>
+<hr>
+<h1 id="三、组件通信"><a href="#三、组件通信" class="headerlink" title="三、组件通信"></a>三、组件通信</h1><table>
+<thead>
+<tr>
+<th>方式</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Props &#x2F; Emits</strong></td>
+<td>父 → 子、子 → 父事件</td>
+</tr>
+<tr>
+<td><strong>Provide &#x2F; Inject</strong></td>
+<td>跨层级依赖注入</td>
+</tr>
+<tr>
+<td><strong>v-model</strong></td>
+<td>双向绑定（<strong><code>modelValue</code> + <code>update:modelValue</code></strong>）</td>
+</tr>
+<tr>
+<td><strong>Slots</strong></td>
+<td>默认插槽、具名插槽、作用域插槽</td>
+</tr>
+</tbody></table>
+<hr>
+<h1 id="四、路由与状态"><a href="#四、路由与状态" class="headerlink" title="四、路由与状态"></a>四、路由与状态</h1><ul>
+<li><strong>Vue Router 4</strong>：<strong><code>createRouter</code></strong>、嵌套路由、导航守卫、懒加载 <strong><code>() =&gt; import(&#39;./Page.vue&#39;)</code></strong>。  </li>
+<li><strong>Pinia</strong>：官方推荐状态库，替代 Vuex，模块即 <strong><code>defineStore</code></strong>。</li>
+</ul>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; defineStore &#125; <span class="keyword">from</span> <span class="string">&#x27;pinia&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> useUserStore = <span class="title function_">defineStore</span>(<span class="string">&#x27;user&#x27;</span>, &#123;</span><br><span class="line">  <span class="attr">state</span>: <span class="function">() =&gt;</span> (&#123; <span class="attr">name</span>: <span class="string">&#x27;&#x27;</span> &#125;),</span><br><span class="line">  <span class="attr">actions</span>: &#123;</span><br><span class="line">    <span class="title function_">setName</span>(<span class="params"><span class="attr">n</span>: <span class="built_in">string</span></span>) &#123;</span><br><span class="line">      <span class="variable language_">this</span>.<span class="property">name</span> = n</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="五、工程化"><a href="#五、工程化" class="headerlink" title="五、工程化"></a>五、工程化</h1><p>推荐使用 <a href="/2026/05/01/Frontend/Vite/" title="Vite">Vite</a> 创建项目：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">npm create vite@latest my-app -- --template vue-ts</span><br><span class="line"><span class="built_in">cd</span> my-app &amp;&amp; npm install &amp;&amp; npm run dev</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>类型检查</strong>：<strong><code>vue-tsc --noEmit</code></strong>  </li>
+<li><strong>UI 库</strong>：Element Plus、Naive UI、Ant Design Vue 等  </li>
+<li><strong>构建产物</strong>：静态资源可部署到 <a href="/2026/05/01/Nginx/Nginx/" title="Nginx">Nginx</a></li>
+</ul>
+<p>官方文档：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://vuejs.org/">https://vuejs.org/</a></p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/Protocol/QUIC/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/05/01/Protocol/QUIC/" class="post-title-link" itemprop="url">QUIC 详解：基于 UDP 的可靠传输、TLS 集成与 HTTP/3</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-05-01 12:51:12" itemprop="dateCreated datePublished" datetime="2026-05-01T12:51:12+08:00">2026-05-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-05-31 23:47:21" itemprop="dateModified" datetime="2026-05-31T23:47:21+08:00">2026-05-31</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/QUIC/" itemprop="url" rel="index"><span itemprop="name">QUIC</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>1.6k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>5 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p><strong>QUIC</strong>（<strong>IETF QUIC</strong>，<strong>RFC 9000</strong>）在 <a href="/2026/05/01/Protocol/UDP/" title="UDP 协议详解：数据报语义、MTU 与示例代码">UDP</a> 之上实现<strong>加密、多路复用、连接迁移</strong>与<strong>类 <a href="/2026/05/01/Protocol/TCP/" title="TCP 协议详解：连接、可靠传输与编程示例">TCP</a> 的可靠传输</strong>；<strong>HTTP&#x2F;3</strong>（<strong>RFC 9114</strong>）将 <a href="/2026/05/01/Protocol/HTTP/" title="HTTP 详解：报文、方法、版本与 curl&#x2F;nc 示例">HTTP</a> 语义映射到 <strong>QUIC</strong> 流上。下面从「<strong>设计目标</strong> → <strong>连接与完整通信流程（握手、传数据、关闭）</strong> → <strong>流、可靠性与拥塞控制</strong> → <strong>Connection ID 与端口</strong> → <strong>TLS 1.3</strong> → <strong>HTTP&#x2F;3 与 HTTP&#x2F;2</strong> → <strong>抓包与可观测性</strong> → <strong><code>curl</code>&#x2F;Python 验证</strong> → <strong>运维注意</strong>」顺序写清楚。</p>
+<hr>
+<h1 id="一、设计目标与作用"><a href="#一、设计目标与作用" class="headerlink" title="一、设计目标与作用"></a>一、设计目标与作用</h1><h2 id="1-解决什么问题"><a href="#1-解决什么问题" class="headerlink" title="1. 解决什么问题"></a>1. 解决什么问题</h2><ul>
+<li><strong>在 UDP 上重建可靠管道</strong>：丢包检测、重传、拥塞控制发生在 <strong>QUIC</strong> 层，而不依赖 <a href="/2026/05/01/Protocol/TCP/" title="TCP 协议详解：连接、可靠传输与编程示例">TCP</a> 单一流上的队头阻塞。  </li>
+<li><strong>默认加密</strong>：传输与握手深度绑定 <strong>TLS 1.3</strong>（<strong>RFC 9001</strong>），减少「明文旁路」与分层带来的额外往返。  </li>
+<li><strong>多流与连接标识</strong>：<strong>Stream</strong> 隔离应用数据；<strong>Connection ID</strong> 让四元组变化时仍能延续同一逻辑连接（<strong>连接迁移</strong>）。</li>
+</ul>
+<h2 id="2-相对-TCP-TLS-的典型取舍"><a href="#2-相对-TCP-TLS-的典型取舍" class="headerlink" title="2. 相对 TCP + TLS 的典型取舍"></a>2. 相对 TCP + TLS 的典型取舍</h2><table>
+<thead>
+<tr>
+<th>问题</th>
+<th><strong><a href="/2026/05/01/Protocol/TCP/" title="TCP 协议详解：连接、可靠传输与编程示例">TCP</a> + TLS</strong> 常见表现</th>
+<th><strong>QUIC</strong> 思路</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>队头阻塞</strong></td>
+<td><strong>TCP</strong> 字节流级丢包会阻塞后续所有应用数据</td>
+<td><strong>QUIC</strong> 在<strong>流</strong>级相对独立地做丢包恢复</td>
+</tr>
+<tr>
+<td><strong>握手 RTT</strong></td>
+<td>常需 <strong>TCP</strong> 三次握手再叠 <strong>TLS</strong> 往返</td>
+<td>常把加密与传输握手合并，目标 <strong>1-RTT</strong> 建连（<strong>0-RTT</strong> 为可选加速）</td>
+</tr>
+<tr>
+<td><strong>NAT 重绑定</strong></td>
+<td>四元组变化常被视作「新连接」</td>
+<td><strong>Connection ID</strong> 标识逻辑连接，支持<strong>连接迁移</strong></td>
+</tr>
+<tr>
+<td><strong>中间设备</strong></td>
+<td><strong>TCP</strong> 成熟、穿透好</td>
+<td>依赖 <strong><a href="/2026/05/01/Protocol/UDP/" title="UDP 协议详解：数据报语义、MTU 与示例代码">UDP</a></strong> 放行（如 <strong>UDP&#x2F;443</strong>）；企业网策略需对齐</td>
+</tr>
+</tbody></table>
+<hr>
+<h1 id="二、连接与完整通信流程（原理）"><a href="#二、连接与完整通信流程（原理）" class="headerlink" title="二、连接与完整通信流程（原理）"></a>二、连接与完整通信流程（原理）</h1><p><strong>QUIC</strong> 报文封装在 <strong>UDP</strong> 数据报中（常见 <strong>HTTPS</strong> 场景为 <strong>UDP&#x2F;443</strong>）。以下极度简化，省略版本协商、重试包、地址验证等细节。</p>
+<h2 id="1-建立连接（简化）"><a href="#1-建立连接（简化）" class="headerlink" title="1. 建立连接（简化）"></a>1. 建立连接（简化）</h2><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">客户端                                   服务端</span><br><span class="line">   |    Initial（含加密握手负载）         |</span><br><span class="line">   |------------------------------------&gt;|</span><br><span class="line">   |    Initial / Handshake（应答）      |</span><br><span class="line">   |&lt;------------------------------------|</span><br><span class="line">   |    1-RTT 应用数据（如 HTTP/3）       |</span><br><span class="line">   |&lt;-----------------------------------&gt;|</span><br><span class="line">   |         逻辑上进入「可传数据」阶段    |</span><br></pre></td></tr></table></figure>
+
+<p>首包常带 <strong>TLS ClientHello</strong>；成功后在 <strong>1-RTT</strong> 密钥下发送应用数据。<strong>0-RTT</strong> 可在重复连接时提前带数据，见第五节安全注意。</p>
+<h2 id="2-关闭连接（简化）"><a href="#2-关闭连接（简化）" class="headerlink" title="2. 关闭连接（简化）"></a>2. 关闭连接（简化）</h2><p>任一方可发送 <strong>CONNECTION_CLOSE</strong> 帧；对端进入<strong>排空（draining）<strong>期，不再发送新数据。与 <a href="/2026/05/01/Protocol/TCP/" title="TCP 协议详解：连接、可靠传输与编程示例">TCP</a> 的 <strong>FIN&#x2F;ACK</strong> 不同，<strong>QUIC</strong> 在</strong>连接</strong>粒度表达关闭，内部再回收流与 <strong>UDP</strong> 套接字资源。</p>
+<h2 id="3-与典型「套接字-协议栈」的对应"><a href="#3-与典型「套接字-协议栈」的对应" class="headerlink" title="3. 与典型「套接字 &#x2F; 协议栈」的对应"></a>3. 与典型「套接字 &#x2F; 协议栈」的对应</h2><p>与 <a href="/2026/05/01/Protocol/TCP/" title="TCP 协议详解：连接、可靠传输与编程示例">TCP</a> 的 <code>connect</code>&#x2F;<code>accept</code> 由内核一条龙完成不同，<strong>QUIC</strong> 一般由<strong>用户态库</strong>（如 <strong>ngtcp2</strong>、<strong>quiche</strong>、<strong>MsQuic</strong>、<strong>aioquic</strong>）或浏览器网络栈实现：底层仍是 <strong><a href="/2026/05/01/Protocol/UDP/" title="UDP 协议详解：数据报语义、MTU 与示例代码">UDP</a> <code>sendto</code>&#x2F;<code>recvfrom</code></strong>，其上是 <strong>TLS 1.3</strong>、<strong>ACK&#x2F;重传</strong>、<strong>流控</strong>与 <strong>HTTP&#x2F;3</strong> 帧。<strong>HTTP&#x2F;3</strong> 客户端日常通过 <strong><code>curl --http3-only</code></strong> 或内置 <strong>HTTP&#x2F;3</strong> 的 SDK 使用，而不是手写裸 <strong>UDP</strong> 报文。</p>
+<hr>
+<h1 id="三、流、可靠性与拥塞控制（原理要点）"><a href="#三、流、可靠性与拥塞控制（原理要点）" class="headerlink" title="三、流、可靠性与拥塞控制（原理要点）"></a>三、流、可靠性与拥塞控制（原理要点）</h1><ul>
+<li><strong>Connection</strong>：加密上下文、<strong>ACK</strong> 与拥塞控制的归属单位（类似「一条加密了的类 TCP 管道」）。  </li>
+<li><strong>Stream</strong>：单向或双向；<strong>HTTP&#x2F;3</strong> 将请求&#x2F;响应映射到不同流，减轻应用级队头阻塞。  </li>
+<li><strong>Packet Number</strong>：单调递增，配合 <strong>ACK</strong> 范围与<strong>密钥更新</strong>，降低与 <a href="/2026/05/01/Protocol/TCP/" title="TCP 协议详解：连接、可靠传输与编程示例">TCP</a> 序号相关的歧义；<strong>重传不重用旧 PN</strong>（新包新号）。  </li>
+<li><strong>拥塞控制</strong>：在 <strong>Connection</strong> 上运作（如 <strong>Cubic</strong>、<strong>BBR</strong> 等实现依栈而定），与 <a href="/2026/05/01/Protocol/TCP/" title="TCP 协议详解：连接、可靠传输与编程示例">TCP</a> 一样受网络条件约束，但并非「一条字节流管所有多路复用对象」。</li>
+</ul>
+<hr>
+<h1 id="四、Connection-ID、端口与「会话标识」"><a href="#四、Connection-ID、端口与「会话标识」" class="headerlink" title="四、Connection ID、端口与「会话标识」"></a>四、Connection ID、端口与「会话标识」</h1><ul>
+<li><strong>UDP 四元组</strong>仍用于路由首个报文；<strong>Connection ID</strong> 使<strong>源 IP&#x2F;端口变化</strong>（如蜂窝切换 <strong>Wi-Fi</strong>）后，对端仍能识别同一 <strong>QUIC</strong> 连接。  </li>
+<li>公网 <strong>HTTP&#x2F;3</strong> 常见端口为 <strong>443</strong>（<strong>UDP</strong>），与 <a href="/2026/05/01/Protocol/TCP/" title="TCP 协议详解：连接、可靠传输与编程示例">TCP</a> <strong>443</strong> 并存、互不替代。  </li>
+<li>服务端可协商 <strong>CID</strong> 长度与轮换策略，以兼顾隐私与路由。</li>
+</ul>
+<hr>
+<h1 id="五、TLS-1-3-与-QUIC（原理）"><a href="#五、TLS-1-3-与-QUIC（原理）" class="headerlink" title="五、TLS 1.3 与 QUIC（原理）"></a>五、TLS 1.3 与 QUIC（原理）</h1><p><strong>QUIC</strong> 使用 <strong>TLS 1.3</strong> 做<strong>身份认证</strong>与<strong>密钥导出</strong>；载荷由 <strong>AEAD</strong> 保护，<strong>PADDING</strong> 等机制缓解流量分析。<strong>0-RTT</strong> 可加速重复连接，但存在<strong>重放</strong>风险：对金融类写操作应禁用或在应用层做幂等与二次校验。</p>
+<hr>
+<h1 id="六、HTTP-3-与-对比（概念）"><a href="#六、HTTP-3-与-对比（概念）" class="headerlink" title="六、HTTP&#x2F;3 与  对比（概念）"></a>六、HTTP&#x2F;3 与 <a href="/2026/05/01/Protocol/HTTP/" title="HTTP 详解：报文、方法、版本与 curl&#x2F;nc 示例">HTTP&#x2F;2</a> 对比（概念）</h1><table>
+<thead>
+<tr>
+<th>项</th>
+<th><strong>HTTP&#x2F;2 over <a href="/2026/05/01/Protocol/TCP/" title="TCP 协议详解：连接、可靠传输与编程示例">TCP</a></strong></th>
+<th><strong>HTTP&#x2F;3 over QUIC</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>传输</td>
+<td><strong>TCP</strong> 字节流</td>
+<td><strong><a href="/2026/05/01/Protocol/UDP/" title="UDP 协议详解：数据报语义、MTU 与示例代码">UDP</a></strong> 上的 <strong>QUIC</strong></td>
+</tr>
+<tr>
+<td>多路复用</td>
+<td><strong>H2</strong> 帧共享一条 <strong>TCP</strong> 连接</td>
+<td><strong>QUIC</strong> 流级隔离，丢包影响面更小</td>
+</tr>
+<tr>
+<td><strong>TLS</strong></td>
+<td>传统分层（先 <strong>TCP</strong> 再 <strong>TLS</strong>）</td>
+<td>与 <strong>QUIC</strong> 握手紧耦合</td>
+</tr>
+</tbody></table>
+<p><strong>HTTP</strong> 语义（方法、状态码、首部）仍见 <a href="/2026/05/01/Protocol/HTTP/" title="HTTP 详解：报文、方法、版本与 curl&#x2F;nc 示例">HTTP</a> 一文；<a href="/2026/05/01/Protocol/HTTPS/" title="HTTPS 详解：TLS 握手、证书与 openssl&#x2F;curl 示例">HTTPS</a> 在 <strong>HTTP&#x2F;3</strong> 场景下体现为 <strong>QUIC + TLS 1.3</strong> 的组合。</p>
+<hr>
+<h1 id="七、抓包与可观测性"><a href="#七、抓包与可观测性" class="headerlink" title="七、抓包与可观测性"></a>七、抓包与可观测性</h1><p>在 <strong>Linux</strong> 上可先看 <strong>UDP</strong> 外层（载荷默认加密）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> tcpdump -n -i any <span class="string">&#x27;udp port 443 and host cloudflare.com&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>用支持 <strong>HTTP&#x2F;3</strong> 的浏览器或下文 <strong><code>curl</code></strong> 访问时，可观察到 <strong>UDP</strong> 双向流量。<strong>Wireshark</strong> 在合规前提下可用 <strong>SSLKEYLOGFILE</strong> 或端点导出密钥做解密分析；生产排障更多依赖<strong>端侧日志</strong>、<strong>CDN&#x2F;网关指标</strong>，而非明文抓包。</p>
+<hr>
+<h1 id="八、工具示例：curl-与-Python（包装调用）"><a href="#八、工具示例：curl-与-Python（包装调用）" class="headerlink" title="八、工具示例：curl 与 Python（包装调用）"></a>八、工具示例：<strong><code>curl</code></strong> 与 <strong>Python</strong>（包装调用）</h1><p>完整 <strong>QUIC</strong> 客户端&#x2F;服务端开发需引入 <strong>QUIC</strong> 实现库；日常验证 <strong>HTTP&#x2F;3</strong> 以 <strong><code>curl</code></strong> 最省事（需 <strong><code>curl</code></strong> 编译时启用 <strong>HTTP&#x2F;3</strong>，如 <strong>ngtcp2</strong>&#x2F;<strong>quiche</strong> 等后端）。</p>
+<h2 id="1-curl"><a href="#1-curl" class="headerlink" title="1. curl"></a>1. <strong><code>curl</code></strong></h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl --http3-only -I https://cloudflare.com/</span><br></pre></td></tr></table></figure>
+
+<p>查看当前 <strong><code>curl</code></strong> 是否带 <strong>HTTP&#x2F;3</strong>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -V | grep -i -E <span class="string">&#x27;http3|ngtcp2|quiche&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>若报协议不支持，请换用发行版或自行编译带 <strong>HTTP&#x2F;3</strong> 的 <strong><code>curl</code></strong>。</p>
+<h2 id="2-Python（通过-subprocess-调用-curl）"><a href="#2-Python（通过-subprocess-调用-curl）" class="headerlink" title="2. Python（通过 subprocess 调用 curl）"></a>2. <strong>Python</strong>（通过 <strong><code>subprocess</code></strong> 调用 <strong><code>curl</code></strong>）</h2><p>丢弃响应体，只取 <strong>HTTP</strong> 状态码（避免 <strong><code>curl -I</code></strong> 把首部打印到 <strong>stdout</strong> 与 <strong><code>%&#123;http_code&#125;</code></strong> 混在一起）：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> subprocess</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">http3_status</span>(<span class="params">url: <span class="built_in">str</span></span>) -&gt; <span class="built_in">int</span>:</span><br><span class="line">    p = subprocess.run(</span><br><span class="line">        [</span><br><span class="line">            <span class="string">&quot;curl&quot;</span>,</span><br><span class="line">            <span class="string">&quot;-sS&quot;</span>,</span><br><span class="line">            <span class="string">&quot;--http3-only&quot;</span>,</span><br><span class="line">            <span class="string">&quot;-o&quot;</span>,</span><br><span class="line">            <span class="string">&quot;/dev/null&quot;</span>,</span><br><span class="line">            <span class="string">&quot;-w&quot;</span>,</span><br><span class="line">            <span class="string">&quot;%&#123;http_code&#125;&quot;</span>,</span><br><span class="line">            url,</span><br><span class="line">        ],</span><br><span class="line">        capture_output=<span class="literal">True</span>,</span><br><span class="line">        text=<span class="literal">True</span>,</span><br><span class="line">        check=<span class="literal">False</span>,</span><br><span class="line">    )</span><br><span class="line">    <span class="keyword">if</span> p.returncode != <span class="number">0</span>:</span><br><span class="line">        <span class="keyword">raise</span> RuntimeError(p.stderr <span class="keyword">or</span> <span class="string">f&quot;curl exit <span class="subst">&#123;p.returncode&#125;</span>&quot;</span>)</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">int</span>(p.stdout.strip() <span class="keyword">or</span> <span class="string">&quot;0&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;status:&quot;</span>, http3_status(<span class="string">&quot;https://cloudflare.com/&quot;</span>))</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="九、运维注意（落地）"><a href="#九、运维注意（落地）" class="headerlink" title="九、运维注意（落地）"></a>九、运维注意（落地）</h1><table>
+<thead>
+<tr>
+<th>项</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>UDP 放行</strong></td>
+<td>防火墙、<strong>ACL</strong>、运营商策略可能拦或未优先 <strong>UDP&#x2F;443</strong></td>
+</tr>
+<tr>
+<td><strong>观测</strong></td>
+<td>明文 <strong>QUIC</strong> 少；依赖日志、指标、合规密钥导出</td>
+</tr>
+<tr>
+<td><strong>QoS</strong></td>
+<td><strong>UDP</strong> 易被误伤；与网络团队确认分类与限速</td>
+</tr>
+<tr>
+<td><strong>安全</strong></td>
+<td>反射放大主要针对未鉴权 <strong>UDP</strong> 服务；正规 <strong>HTTP&#x2F;3</strong> 栈需跟紧 CVE 与版本</td>
+</tr>
+</tbody></table>
+<hr>
+<h1 id="十、小结"><a href="#十、小结" class="headerlink" title="十、小结"></a>十、小结</h1><table>
+<thead>
+<tr>
+<th>项</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>原理</td>
+<td><strong><a href="/2026/05/01/Protocol/UDP/" title="UDP 协议详解：数据报语义、MTU 与示例代码">UDP</a></strong> 上的可靠、加密、多流；<strong>CID</strong> 与迁移</td>
+</tr>
+<tr>
+<td>作用</td>
+<td><strong>HTTP&#x2F;3</strong>、移动网络、降低握手延迟</td>
+</tr>
+<tr>
+<td>依赖</td>
+<td><strong><a href="/2026/05/01/Protocol/UDP/" title="UDP 协议详解：数据报语义、MTU 与示例代码">UDP</a></strong>、<strong>TLS 1.3</strong></td>
+</tr>
+<tr>
+<td>示例</td>
+<td><strong><code>tcpdump</code> <code>udp port 443</code></strong>、<strong><code>curl --http3-only</code></strong>、<strong>Python + <code>subprocess</code></strong></td>
+</tr>
+<tr>
+<td>延伸</td>
+<td><a href="/2026/05/01/Protocol/TCP/" title="TCP 协议详解：连接、可靠传输与编程示例">TCP</a> · <a href="/2026/05/01/Protocol/UDP/" title="UDP 协议详解：数据报语义、MTU 与示例代码">UDP</a> · <a href="/2026/05/01/Protocol/HTTPS/" title="HTTPS 详解：TLS 握手、证书与 openssl&#x2F;curl 示例">HTTPS</a></td>
+</tr>
+</tbody></table>
+<p>实现细节以 <strong>RFC 9000、9001、9114</strong> 与浏览器、<strong>CDN</strong> 发布说明为准。</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/Protocol/RPC/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/05/01/Protocol/RPC/" class="post-title-link" itemprop="url">RPC 概念详解：原理、形态与 JSON-RPC / curl 示例</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-05-01 12:50:51" itemprop="dateCreated datePublished" datetime="2026-05-01T12:50:51+08:00">2026-05-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-05-31 23:47:21" itemprop="dateModified" datetime="2026-05-31T23:47:21+08:00">2026-05-31</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Protocol/" itemprop="url" rel="index"><span itemprop="name">Protocol</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>598</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>2 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p><strong>RPC</strong>（<strong>Remote Procedure Call</strong>，远程过程调用）是一种<strong>编程抽象</strong>：像调用本地函数一样发起远程执行，由 <strong>stub</strong> 负责序列化参数、经网络发送、在服务端 <strong>skeleton</strong> 反序列化并调度真实实现，再返回结果。下面从「<strong>原理与边界</strong> → <strong>常见序列化与传输</strong> → <strong>失败语义与幂等</strong> → <strong>JSON-RPC 2.0 与 curl 示例</strong> → <strong>与 REST、gRPC 对比</strong>」顺序写清楚；<strong>gRPC</strong> 见 <a href="/2026/05/01/Protocol/GRPC/" title="GRPC 详解：Protobuf、HTTP&#x2F;2 与 grpcurl &#x2F; Python 示例">gRPC</a>，<strong>Java Dubbo</strong> 见 <a href="/2026/05/17/SpringCloud/Dubbo/" title="Dubbo">Dubbo</a>。</p>
+<hr>
+<h1 id="一、原理（-stub-与存根）"><a href="#一、原理（-stub-与存根）" class="headerlink" title="一、原理（.stub 与存根）"></a>一、原理（.stub 与存根）</h1><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Client                Network                Server</span><br><span class="line"> |  call add(1,2)       |                      |</span><br><span class="line"> |  stub 序列化          |   请求消息            |</span><br><span class="line"> |---------------------&gt;|---------------------&gt;|</span><br><span class="line"> |                      |  反序列化 + 执行 add |</span><br><span class="line"> |                      |   响应消息            |</span><br><span class="line"> |&lt;---------------------|&lt;---------------------|</span><br><span class="line"> |  返回 3               |                      |</span><br></pre></td></tr></table></figure>
+
+<p><strong>RPC</strong> 不规定具体字节格式；可由 <strong>JSON</strong>、<strong>protobuf</strong>、<strong>Thrift</strong> 等定义。</p>
+<hr>
+<h1 id="二、作用与典型场景"><a href="#二、作用与典型场景" class="headerlink" title="二、作用与典型场景"></a>二、作用与典型场景</h1><ul>
+<li><strong>微服务内部</strong>：低延迟、强类型契约（常选 <a href="/2026/05/01/Protocol/GRPC/" title="GRPC 详解：Protobuf、HTTP&#x2F;2 与 grpcurl &#x2F; Python 示例">gRPC</a>）。  </li>
+<li><strong>链上节点</strong>：<strong>Ethereum JSON-RPC</strong> 等文本 <strong>RPC</strong>。  </li>
+<li><strong>脚本自动化</strong>：轻量 <strong>JSON-RPC</strong> 管理接口。</li>
+</ul>
+<hr>
+<h1 id="三、传输与序列化（对照表）"><a href="#三、传输与序列化（对照表）" class="headerlink" title="三、传输与序列化（对照表）"></a>三、传输与序列化（对照表）</h1><table>
+<thead>
+<tr>
+<th>组合</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>JSON + HTTP</strong></td>
+<td>人可读，易调试</td>
+</tr>
+<tr>
+<td><strong>protobuf + HTTP&#x2F;2</strong></td>
+<td><strong>gRPC</strong> 默认路径</td>
+</tr>
+<tr>
+<td><strong>二进制 + 自定义 TCP</strong></td>
+<td>高性能私有协议</td>
+</tr>
+</tbody></table>
+<hr>
+<h1 id="四、失败语义与幂等（原理）"><a href="#四、失败语义与幂等（原理）" class="headerlink" title="四、失败语义与幂等（原理）"></a>四、失败语义与幂等（原理）</h1><ul>
+<li><strong>超时</strong>：客户端不知服务端是否已执行；<strong>重试</strong>可能导致重复扣款。  </li>
+<li><strong>对策</strong>：<strong>幂等键</strong>、<strong>去重表</strong>、<strong>At-least-once</strong> 消费语义与业务配合。</li>
+</ul>
+<hr>
+<h1 id="五、JSON-RPC-2-0-与-curl-示例"><a href="#五、JSON-RPC-2-0-与-curl-示例" class="headerlink" title="五、JSON-RPC 2.0 与 curl 示例"></a>五、JSON-RPC 2.0 与 <code>curl</code> 示例</h1><p><strong>请求体</strong>（<strong><code>application/json</code></strong>）：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;jsonrpc&quot;</span><span class="punctuation">:</span> <span class="string">&quot;2.0&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;method&quot;</span><span class="punctuation">:</span> <span class="string">&quot;subtract&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;params&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span><span class="attr">&quot;a&quot;</span><span class="punctuation">:</span> <span class="number">42</span><span class="punctuation">,</span> <span class="attr">&quot;b&quot;</span><span class="punctuation">:</span> <span class="number">23</span><span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;id&quot;</span><span class="punctuation">:</span> <span class="number">1</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">curl -sS -X POST <span class="string">&#x27;https://eth.merkle.io/&#x27;</span> \</span><br><span class="line">  -H <span class="string">&#x27;Content-Type: application/json&#x27;</span> \</span><br><span class="line">  -d <span class="string">&#x27;&#123;&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;method&quot;:&quot;eth_blockNumber&quot;,&quot;params&quot;:[],&quot;id&quot;:1&#125;&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>（公共端点仅供演示，勿在高频生产直接依赖第三方。）</p>
+<p><strong>成功响应</strong>形如：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span><span class="attr">&quot;jsonrpc&quot;</span><span class="punctuation">:</span><span class="string">&quot;2.0&quot;</span><span class="punctuation">,</span><span class="attr">&quot;id&quot;</span><span class="punctuation">:</span><span class="number">1</span><span class="punctuation">,</span><span class="attr">&quot;result&quot;</span><span class="punctuation">:</span><span class="string">&quot;0x...&quot;</span><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>错误</strong>带 <strong><code>error</code></strong> 对象（<strong><code>code</code> &#x2F; <code>message</code> &#x2F; <code>data</code></strong>）。</p>
+<hr>
+<h1 id="六、Python-最小-JSON-RPC-客户端（标准库）"><a href="#六、Python-最小-JSON-RPC-客户端（标准库）" class="headerlink" title="六、Python 最小 JSON-RPC 客户端（标准库）"></a>六、Python 最小 <strong>JSON-RPC</strong> 客户端（标准库）</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> json</span><br><span class="line"><span class="keyword">import</span> urllib.request</span><br><span class="line"></span><br><span class="line">req = urllib.request.Request(</span><br><span class="line">    <span class="string">&quot;https://eth.merkle.io/&quot;</span>,</span><br><span class="line">    data=json.dumps(&#123;</span><br><span class="line">        <span class="string">&quot;jsonrpc&quot;</span>: <span class="string">&quot;2.0&quot;</span>,</span><br><span class="line">        <span class="string">&quot;method&quot;</span>: <span class="string">&quot;eth_chainId&quot;</span>,</span><br><span class="line">        <span class="string">&quot;params&quot;</span>: [],</span><br><span class="line">        <span class="string">&quot;id&quot;</span>: <span class="number">1</span>,</span><br><span class="line">    &#125;).encode(),</span><br><span class="line">    headers=&#123;<span class="string">&quot;Content-Type&quot;</span>: <span class="string">&quot;application/json&quot;</span>&#125;,</span><br><span class="line">)</span><br><span class="line"><span class="keyword">with</span> urllib.request.urlopen(req, timeout=<span class="number">10</span>) <span class="keyword">as</span> resp:</span><br><span class="line">    <span class="built_in">print</span>(json.load(resp))</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="七、与-REST（-资源风格）对比"><a href="#七、与-REST（-资源风格）对比" class="headerlink" title="七、与 REST（ 资源风格）对比"></a>七、与 <strong>REST</strong>（<a href="/2026/05/01/Protocol/HTTP/" title="HTTP 详解：报文、方法、版本与 curl&#x2F;nc 示例">HTTP</a> 资源风格）对比</h1><table>
+<thead>
+<tr>
+<th></th>
+<th><strong>RPC</strong></th>
+<th><strong>REST</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>建模</td>
+<td><strong>过程&#x2F;动词</strong> 中心</td>
+<td><strong>资源&#x2F;名词</strong> 中心</td>
+</tr>
+<tr>
+<td>缓存</td>
+<td>较弱</td>
+<td><strong>GET</strong> 与缓存头成熟</td>
+</tr>
+<tr>
+<td>浏览器</td>
+<td><strong>JSON-RPC</strong> 尚可；<strong>gRPC</strong> 常需网关</td>
+<td>友好</td>
+</tr>
+</tbody></table>
+<hr>
+<h1 id="八、小结"><a href="#八、小结" class="headerlink" title="八、小结"></a>八、小结</h1><table>
+<thead>
+<tr>
+<th>项</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>原理</td>
+<td><strong>stub</strong> 隐藏网络，<strong>序列化 + 传输 + 反序列化</strong></td>
+</tr>
+<tr>
+<td>作用</td>
+<td>分布式系统中的「像本地一样调用」</td>
+</tr>
+<tr>
+<td>示例</td>
+<td><strong>JSON-RPC + <code>curl</code></strong></td>
+</tr>
+<tr>
+<td>实现</td>
+<td><a href="/2026/05/01/Protocol/GRPC/" title="GRPC 详解：Protobuf、HTTP&#x2F;2 与 grpcurl &#x2F; Python 示例">gRPC</a> · <a href="/2026/05/17/SpringCloud/Dubbo/" title="Dubbo">Dubbo</a> 等</td>
+</tr>
+</tbody></table>
+<p>选型需同时考虑<strong>观测性</strong>（<strong>trace id</strong>）、<strong>版本演进</strong>与<strong>跨组织边界</strong>（是否暴露 <strong>RPC</strong> 还是 <strong>REST</strong> 网关）。</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/Protocol/GRPC/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/05/01/Protocol/GRPC/" class="post-title-link" itemprop="url">GRPC 详解：Protobuf、HTTP/2 与 grpcurl / Python 示例</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-05-01 12:50:35" itemprop="dateCreated datePublished" datetime="2026-05-01T12:50:35+08:00">2026-05-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-05-31 23:47:21" itemprop="dateModified" datetime="2026-05-31T23:47:21+08:00">2026-05-31</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Protocol/" itemprop="url" rel="index"><span itemprop="name">Protocol</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>562</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>2 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p><strong>gRPC</strong> 是跨语言 <strong>RPC</strong> 框架：接口用 <strong>Protocol Buffers（protobuf）</strong> 描述，默认基于 <a href="/2026/05/01/Protocol/HTTP/" title="HTTP 详解：报文、方法、版本与 curl&#x2F;nc 示例">HTTP&#x2F;2</a> 帧传输二进制消息，支持一元与多种流式调用。下面从「<strong>与泛型 <a href="/2026/05/01/Protocol/RPC/" title="RPC 概念详解：原理、形态与 JSON-RPC &#x2F; curl 示例">RPC</a> 的关系</strong> → <strong><code>.proto</code> 与代码生成原理</strong> → <strong>传输与安全</strong> → <strong><code>grpcurl</code> 无代码调用</strong> → <strong>Python 最小客户端思路</strong>」顺序写清楚；磁盘文件名为 <strong><code>GRPC.md</code></strong>，正文统一使用官方拼写 <strong>gRPC</strong>。</p>
+<hr>
+<h1 id="一、在协议栈中的位置（作用）"><a href="#一、在协议栈中的位置（作用）" class="headerlink" title="一、在协议栈中的位置（作用）"></a>一、在协议栈中的位置（作用）</h1><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[ 应用：gRPC 生成的 Stub / Server 接口 ]</span><br><span class="line">            ↓</span><br><span class="line">[ gRPC：HTTP/2 帧 + protobuf 消息体 ]</span><br><span class="line">            ↓</span><br><span class="line">[ TLS（生产推荐）]</span><br><span class="line">            ↓</span><br><span class="line">[ TCP → IP ]</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="二、-proto-与代码生成（原理）"><a href="#二、-proto-与代码生成（原理）" class="headerlink" title="二、.proto 与代码生成（原理）"></a>二、<code>.proto</code> 与代码生成（原理）</h1><p><strong><code>helloworld.proto</code></strong>（节选）：</p>
+<figure class="highlight protobuf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">syntax = <span class="string">&quot;proto3&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">package</span> demo;</span><br><span class="line"></span><br><span class="line"><span class="keyword">service </span><span class="title class_">Greeter</span> &#123;</span><br><span class="line">  <span class="function"><span class="keyword">rpc</span> SayHello (HelloRequest) <span class="keyword">returns</span> (HelloReply)</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">message </span><span class="title class_">HelloRequest</span> &#123; <span class="type">string</span> name = <span class="number">1</span>; &#125;</span><br><span class="line"><span class="keyword">message </span><span class="title class_">HelloReply</span> &#123; <span class="type">string</span> message = <span class="number">1</span>; &#125;</span><br></pre></td></tr></table></figure>
+
+<p>使用 <strong><code>protoc</code></strong> 与 <strong>Go&#x2F;Java&#x2F;Python</strong> 等插件生成 <strong>stub</strong> 与 <strong>service</strong> 骨架；<strong><code>protoc</code></strong> 将 <strong><code>.proto</code></strong> 编译为各语言类型与序列化&#x2F;反序列化代码。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">python -m pip install grpcio grpcio-tools</span><br><span class="line">python -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. helloworld.proto</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="三、四种调用类型（作用）"><a href="#三、四种调用类型（作用）" class="headerlink" title="三、四种调用类型（作用）"></a>三、四种调用类型（作用）</h1><table>
+<thead>
+<tr>
+<th>类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Unary</strong></td>
+<td>一问一答</td>
+</tr>
+<tr>
+<td><strong>Server streaming</strong></td>
+<td>一个请求，多个响应消息</td>
+</tr>
+<tr>
+<td><strong>Client streaming</strong></td>
+<td>多个请求消息，一个响应</td>
+</tr>
+<tr>
+<td><strong>Bidirectional streaming</strong></td>
+<td>双向流</td>
+</tr>
+</tbody></table>
+<hr>
+<h1 id="四、安全：TLS-与元数据"><a href="#四、安全：TLS-与元数据" class="headerlink" title="四、安全：TLS 与元数据"></a>四、安全：TLS 与元数据</h1><p>生产应对外 <strong><code>grpcs://</code></strong> 或等价 <strong>TLS</strong> 配置；<strong>Metadata</strong> 类似 <a href="/2026/05/01/Protocol/HTTP/" title="HTTP 详解：报文、方法、版本与 curl&#x2F;nc 示例">HTTP</a> 首部，用于传递 <strong>Token</strong>、<strong>trace id</strong> 等（注意大小写规则以文档为准）。</p>
+<hr>
+<h1 id="五、grpcurl-示例（需单独安装）"><a href="#五、grpcurl-示例（需单独安装）" class="headerlink" title="五、grpcurl 示例（需单独安装）"></a>五、<code>grpcurl</code> 示例（需单独安装）</h1><p>列出服务（反射开启时）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">grpcurl -plaintext localhost:50051 list</span><br></pre></td></tr></table></figure>
+
+<p><strong>Unary</strong> 调用（示例服务名与方法名按你的 <strong>proto</strong> 替换）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">grpcurl -plaintext -d <span class="string">&#x27;&#123;&quot;name&quot;:&quot;world&quot;&#125;&#x27;</span> localhost:50051 demo.Greeter/SayHello</span><br></pre></td></tr></table></figure>
+
+<p><strong><code>-plaintext</code></strong> 表示不使用 <strong>TLS</strong>，仅本地调试。</p>
+<hr>
+<h1 id="六、Python-调用骨架（protoc-生成-helloworld-pb2-py-之后）"><a href="#六、Python-调用骨架（protoc-生成-helloworld-pb2-py-之后）" class="headerlink" title="六、Python 调用骨架（protoc 生成 helloworld_pb2*.py 之后）"></a>六、Python 调用骨架（<strong><code>protoc</code> 生成 <code>helloworld_pb2*.py</code> 之后</strong>）</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python -m pip install grpcio grpcio-tools</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> grpc</span><br><span class="line"><span class="keyword">import</span> helloworld_pb2 <span class="keyword">as</span> pb</span><br><span class="line"><span class="keyword">import</span> helloworld_pb2_grpc <span class="keyword">as</span> pbg</span><br><span class="line"></span><br><span class="line"><span class="keyword">with</span> grpc.insecure_channel(<span class="string">&quot;127.0.0.1:50051&quot;</span>) <span class="keyword">as</span> ch:</span><br><span class="line">    stub = pbg.GreeterStub(ch)</span><br><span class="line">    resp = stub.SayHello(pb.HelloRequest(name=<span class="string">&quot;world&quot;</span>))</span><br><span class="line">    <span class="built_in">print</span>(resp.message)</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="七、与-风格-HTTP-JSON-对比"><a href="#七、与-风格-HTTP-JSON-对比" class="headerlink" title="七、与  风格 HTTP+JSON 对比"></a>七、与 <a href="/2026/05/01/Protocol/HTTP/" title="HTTP 详解：报文、方法、版本与 curl&#x2F;nc 示例">REST</a> 风格 <strong>HTTP+JSON</strong> 对比</h1><table>
+<thead>
+<tr>
+<th></th>
+<th><strong>gRPC</strong></th>
+<th><strong>REST+JSON</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>契约</td>
+<td><strong>protobuf</strong> 强类型</td>
+<td><strong>OpenAPI</strong> 等</td>
+</tr>
+<tr>
+<td>浏览器</td>
+<td>受限，常需 <strong>gRPC-Web</strong> 或网关</td>
+<td>原生友好</td>
+</tr>
+<tr>
+<td>流式</td>
+<td>一等公民</td>
+<td><strong>SSE&#x2F;WebSocket</strong> 等组合</td>
+</tr>
+</tbody></table>
+<hr>
+<h1 id="八、小结"><a href="#八、小结" class="headerlink" title="八、小结"></a>八、小结</h1><table>
+<thead>
+<tr>
+<th>项</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>原理</td>
+<td><strong>HTTP&#x2F;2</strong> 承载 <strong>protobuf</strong> <strong>RPC</strong></td>
+</tr>
+<tr>
+<td>作用</td>
+<td>高性能多语言微服务内部调用</td>
+</tr>
+<tr>
+<td>工具</td>
+<td><strong><code>protoc</code></strong>、<strong><code>grpcurl</code></strong></td>
+</tr>
+<tr>
+<td>范式</td>
+<td><a href="/2026/05/01/Protocol/RPC/" title="RPC 概念详解：原理、形态与 JSON-RPC &#x2F; curl 示例">RPC</a> 的一种实现；同类见 <a href="/2026/05/17/SpringCloud/Dubbo/" title="Dubbo">Dubbo</a></td>
+</tr>
+</tbody></table>
+<p>版本兼容与 <strong>Breaking Change</strong> 管理以 <strong>protobuf</strong> 字段编号与 <strong>API 版本</strong>策略为准。</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/Protocol/MQTT/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/05/01/Protocol/MQTT/" class="post-title-link" itemprop="url">MQTT 详解：发布订阅、QoS 与 mosquitto / Python 示例</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-05-01 12:50:19" itemprop="dateCreated datePublished" datetime="2026-05-01T12:50:19+08:00">2026-05-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-05-31 23:47:21" itemprop="dateModified" datetime="2026-05-31T23:47:21+08:00">2026-05-31</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Protocol/" itemprop="url" rel="index"><span itemprop="name">Protocol</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>660</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>2 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p><strong>MQTT</strong> 是轻量级<strong>发布&#x2F;订阅</strong>消息传输协议（<strong>OASIS MQTT v3.1.1 &#x2F; v5.0</strong>），面向低带宽与不稳定链路，常用于 <strong>IoT</strong> 与遥测。客户端连接 <strong>Broker</strong>，按 <strong>Topic</strong> 发布与订阅消息，彼此<strong>解耦</strong>。下面从「<strong>模型与作用</strong> → <strong>主题与通配符</strong> → <strong>QoS 语义（原理）</strong> → <strong>会话与遗嘱（v5 简述）</strong> → <strong><code>mosquitto</code> 命令行示例</strong> → <strong>Python <code>paho-mqtt</code> 示例</strong>」顺序写清楚；传输层通常为 <a href="/2026/05/01/Protocol/TCP/" title="TCP 协议详解：连接、可靠传输与编程示例">TCP</a> <strong>1883</strong> 或 <strong>TLS 8883</strong>，与 <a href="/2026/05/01/Protocol/HTTP/" title="HTTP 详解：报文、方法、版本与 curl&#x2F;nc 示例">HTTP</a> 请求&#x2F;响应模型不同。</p>
+<h1 id="发布订阅模型"><a href="#发布订阅模型" class="headerlink" title="发布订阅模型"></a>发布订阅模型</h1><pre>
+<code class="mermaid">
+
+flowchart TB
+  P1[Publisher 传感器] --&gt;|publish topic&#x2F;sensor| B[MQTT Broker]
+  P2[Publisher 设备] --&gt; B
+  B --&gt;|subscribe| C1[Consumer 大屏]
+  B --&gt; C2[Consumer 规则引擎]
+</code>
+</pre>
+
+<hr>
+<h1 id="一、模型与作用（原理）"><a href="#一、模型与作用（原理）" class="headerlink" title="一、模型与作用（原理）"></a>一、模型与作用（原理）</h1><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Publisher --+                +-- Subscriber A</span><br><span class="line">            |    [ Broker ]  |</span><br><span class="line">Publisher --+------路由 Topic--+-- Subscriber B</span><br></pre></td></tr></table></figure>
+
+<p><strong>Broker</strong> 根据 <strong>Topic</strong> 字符串路由消息；发布者不必知道订阅者列表。</p>
+<hr>
+<h1 id="二、主题与通配符（作用）"><a href="#二、主题与通配符（作用）" class="headerlink" title="二、主题与通配符（作用）"></a>二、主题与通配符（作用）</h1><ul>
+<li><strong>层级</strong>：用 <strong><code>/</code></strong> 分层，如 <strong><code>factory/line1/temp</code></strong>。  </li>
+<li><strong>单级通配 <code>+</code></strong>：匹配一层，如 <strong><code>factory/+/temp</code></strong>。  </li>
+<li><strong>多级通配 <code>#</code></strong>：匹配剩余层级，须在<strong>末尾</strong>（细节以 <strong>v5</strong> 文档为准）。</li>
+</ul>
+<p><strong>Topic</strong> 大小写敏感；<strong>$SYS&#x2F;</strong> 常为 Broker 系统主题（依实现）。</p>
+<hr>
+<h1 id="三、QoS（原理）"><a href="#三、QoS（原理）" class="headerlink" title="三、QoS（原理）"></a>三、QoS（原理）</h1><table>
+<thead>
+<tr>
+<th>QoS</th>
+<th>名称</th>
+<th>语义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>0</strong></td>
+<td>至多一次</td>
+<td>可能丢，不重试</td>
+</tr>
+<tr>
+<td><strong>1</strong></td>
+<td>至少一次</td>
+<td>可能重复，需业务幂等</td>
+</tr>
+<tr>
+<td><strong>2</strong></td>
+<td>恰好一次</td>
+<td>四次握手，开销最大</td>
+</tr>
+</tbody></table>
+<p><strong>QoS</strong> 在<strong>发布方向</strong>与<strong>订阅方向</strong>可分别指定，最终有效语义取<strong>二者较高</strong>一侧规则（以 <strong>Broker</strong> 实现与文档为准）。</p>
+<hr>
+<h1 id="四、遗嘱消息（Last-Will，概念）"><a href="#四、遗嘱消息（Last-Will，概念）" class="headerlink" title="四、遗嘱消息（Last Will，概念）"></a>四、遗嘱消息（<strong>Last Will</strong>，概念）</h1><p>连接异常断开时 <strong>Broker</strong> 可代发预设 <strong>Payload</strong> 到指定 <strong>Topic</strong>，用于设备离线告警；须正确配置 <strong>Keep Alive</strong> 与心跳。</p>
+<hr>
+<h1 id="五、命令行示例（Eclipse-Mosquitto-客户端）"><a href="#五、命令行示例（Eclipse-Mosquitto-客户端）" class="headerlink" title="五、命令行示例（Eclipse Mosquitto 客户端）"></a>五、命令行示例（<strong>Eclipse Mosquitto</strong> 客户端）</h1><p>安装（<strong>Debian&#x2F;Ubuntu</strong> 示例）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> apt install -y mosquitto-clients mosquitto</span><br><span class="line"><span class="built_in">sudo</span> systemctl start mosquitto</span><br></pre></td></tr></table></figure>
+
+<p>订阅：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mosquitto_sub -h 127.0.0.1 -t <span class="string">&#x27;demo/#&#x27;</span> -v</span><br></pre></td></tr></table></figure>
+
+<p>发布：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mosquitto_pub -h 127.0.0.1 -t <span class="string">&#x27;demo/sensor&#x27;</span> -m <span class="string">&#x27;&#123;&quot;t&quot;:23.5&#125;&#x27;</span> -q 1</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="六、Python-示例（paho-mqtt）"><a href="#六、Python-示例（paho-mqtt）" class="headerlink" title="六、Python 示例（paho-mqtt）"></a>六、Python 示例（<code>paho-mqtt</code>）</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python -m pip install paho-mqtt</span><br></pre></td></tr></table></figure>
+
+<p><strong><code>pub.py</code></strong>（<strong><code>paho-mqtt</code> 1.6.x &#x2F; 2.x</strong> 均可；若 <strong>2.x</strong> 告警可改用其推荐构造方式）：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> paho.mqtt.client <span class="keyword">as</span> mqtt</span><br><span class="line"></span><br><span class="line">c = mqtt.Client()</span><br><span class="line">c.connect(<span class="string">&quot;127.0.0.1&quot;</span>, <span class="number">1883</span>, <span class="number">60</span>)</span><br><span class="line">c.publish(<span class="string">&quot;demo/sensor&quot;</span>, payload=<span class="string">b&quot;hello-mqtt&quot;</span>, qos=<span class="number">1</span>)</span><br><span class="line">c.disconnect()</span><br></pre></td></tr></table></figure>
+
+<p><strong><code>sub.py</code></strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> paho.mqtt.client <span class="keyword">as</span> mqtt</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">on_connect</span>(<span class="params">client, userdata, flags, rc</span>):</span><br><span class="line">    client.subscribe(<span class="string">&quot;demo/#&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">on_message</span>(<span class="params">client, userdata, msg</span>):</span><br><span class="line">    <span class="built_in">print</span>(msg.topic, msg.payload.decode())</span><br><span class="line"></span><br><span class="line">c = mqtt.Client()</span><br><span class="line">c.on_connect = on_connect</span><br><span class="line">c.on_message = on_message</span><br><span class="line">c.connect(<span class="string">&quot;127.0.0.1&quot;</span>, <span class="number">1883</span>, <span class="number">60</span>)</span><br><span class="line">c.loop_forever()</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">python sub.py &amp;</span><br><span class="line">python pub.py</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="七、与-对比（小结表）"><a href="#七、与-对比（小结表）" class="headerlink" title="七、与  对比（小结表）"></a>七、与 <a href="/2026/05/01/Protocol/HTTP/" title="HTTP 详解：报文、方法、版本与 curl&#x2F;nc 示例">HTTP</a> 对比（小结表）</h1><table>
+<thead>
+<tr>
+<th></th>
+<th><strong>MQTT</strong></th>
+<th><strong>HTTP</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>模式</td>
+<td><strong>Pub&#x2F;Sub</strong></td>
+<td><strong>请求&#x2F;响应</strong></td>
+</tr>
+<tr>
+<td>长连接</td>
+<td>常见</td>
+<td><strong>HTTP&#x2F;1.1</strong> 可 <strong>Keep-Alive</strong></td>
+</tr>
+<tr>
+<td>推送</td>
+<td>原生</td>
+<td>需 <strong>SSE&#x2F;WebSocket</strong> 等</td>
+</tr>
+</tbody></table>
+<hr>
+<h1 id="八、小结"><a href="#八、小结" class="headerlink" title="八、小结"></a>八、小结</h1><table>
+<thead>
+<tr>
+<th>项</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>原理</td>
+<td><strong>Broker</strong> 路由；<strong>QoS</strong> 控制投递语义</td>
+</tr>
+<tr>
+<td>作用</td>
+<td><strong>IoT</strong>、遥测、解耦微服务事件（视架构）</td>
+</tr>
+<tr>
+<td>示例</td>
+<td><strong><code>mosquitto_pub/sub</code></strong>、<strong><code>paho-mqtt</code></strong></td>
+</tr>
+<tr>
+<td>安全</td>
+<td><strong>TLS</strong>、<strong>ACL</strong>、强密码或 <strong>mTLS</strong></td>
+</tr>
+</tbody></table>
+<p>生产须限制匿名发布、防 <strong>Topic</strong> 遍历与消息风暴。</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -449,7 +1655,7 @@ sequenceDiagram
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-31 23:47:21" itemprop="dateModified" datetime="2026-05-31T23:47:21+08:00">2026-05-31</time>
+      <time title="修改时间：2026-06-03 20:25:50" itemprop="dateModified" datetime="2026-06-03T20:25:50+08:00">2026-06-03</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -468,7 +1674,7 @@ sequenceDiagram
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>801</span>
+      <span>834</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -487,6 +1693,7 @@ sequenceDiagram
     
     <div class="post-body" itemprop="articleBody">
           <p><strong>DNS</strong>（<strong>Domain Name System</strong>）是分布式数据库，把<strong>域名</strong>映射为 <a href="/2026/05/01/Protocol/IP/" title="IP 协议详解：原理、编址与排障示例">IP</a> 地址、邮件交换子域等 <strong>RR（Resource Record）</strong>；应用访问 <a href="/2026/05/01/Protocol/HTTP/" title="HTTP 详解：报文、方法、版本与 curl&#x2F;nc 示例">HTTP</a> 前几乎总要先解析域名。下面从「<strong>分层与解析原理</strong> → <strong>报文与传输（UDP&#x2F;TCP）</strong> → <strong>常见记录类型</strong> → <strong>加密 DNS</strong> → <strong><code>dig</code> &#x2F; Python 示例</strong>」顺序写清楚。</p>
+<p>在 <strong>HTTP&#x2F;HTTPS 完整通信</strong>中，DNS 是 TCP 握手之前的<strong>第一步</strong>，详见 <a href="/2026/05/01/Protocol/HTTP/" title="HTTP 详解：报文、方法、版本与 curl&#x2F;nc 示例">HTTP 完整通信数据流程</a>。</p>
 <h1 id="递归解析"><a href="#递归解析" class="headerlink" title="递归解析"></a>递归解析</h1><pre>
 <code class="mermaid">
 
@@ -976,1219 +2183,8 @@ flowchart LR
 
 
 
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/Protocol/FTP/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="miracle">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="my">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | my">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/05/01/Protocol/FTP/" class="post-title-link" itemprop="url">FTP 详解：双连接模型、主动/被动与 lftp 示例</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2026-05-01 12:48:31" itemprop="dateCreated datePublished" datetime="2026-05-01T12:48:31+08:00">2026-05-01</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-31 23:47:21" itemprop="dateModified" datetime="2026-05-31T23:47:21+08:00">2026-05-31</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Protocol/" itemprop="url" rel="index"><span itemprop="name">Protocol</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>574</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>2 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p><strong>FTP</strong>（<strong>File Transfer Protocol</strong>，<strong>RFC 959</strong>）使用<strong>两条独立的 TCP 连接</strong>：<strong>控制连接</strong>（默认 <strong>21</strong>）传输命令与应答，<strong>数据连接</strong>传输文件与目录列表。下面从「<strong>设计动机</strong> → <strong>控制与数据通道原理</strong> → <strong>PORT 与 PASV</strong> → <strong>明文风险</strong> → <strong><code>lftp</code> 命令示例</strong> → <strong>与 SFTP 取舍</strong>」顺序写清楚；安全替代见 <a href="/2026/05/01/Protocol/SFTP/" title="SFTP 详解：SSH 子系统、协议栈与 sftp 示例">SFTP</a>。</p>
-<hr>
-<h1 id="一、设计动机（历史作用）"><a href="#一、设计动机（历史作用）" class="headerlink" title="一、设计动机（历史作用）"></a>一、设计动机（历史作用）</h1><p>在 <strong>TCP&#x2F;IP</strong> 早期提供<strong>跨异构系统</strong>的文件列目录、上传、下载与断点续传（由扩展命令支持程度决定）；命令为<strong>可读文本</strong>（如 <strong><code>RETR</code></strong>、<strong><code>STOR</code></strong>、<strong><code>LIST</code></strong>），便于人机调试。</p>
-<hr>
-<h1 id="二、双连接模型（原理）"><a href="#二、双连接模型（原理）" class="headerlink" title="二、双连接模型（原理）"></a>二、双连接模型（原理）</h1><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">客户端                                服务端</span><br><span class="line">  |  TCP 21 控制连接（命令/响应）        |</span><br><span class="line">  |&lt;==================================&gt;|</span><br><span class="line">  |                                    |</span><br><span class="line">  |  数据连接（文件内容 / LIST 输出）    |</span><br><span class="line">  |&lt;==================================&gt;|  端口依 PORT/PASV 而定</span><br></pre></td></tr></table></figure>
-
-<p><strong>控制连接</strong>全程保持；每条数据传送动态建立<strong>数据连接</strong>。</p>
-<hr>
-<h1 id="三、主动-PORT-与被动-PASV"><a href="#三、主动-PORT-与被动-PASV" class="headerlink" title="三、主动 PORT 与被动 PASV"></a>三、主动 PORT 与被动 PASV</h1><h2 id="1-主动（PORT）"><a href="#1-主动（PORT）" class="headerlink" title="1. 主动（PORT）"></a>1. 主动（PORT）</h2><p>服务端从 <strong>20</strong> 端口向客户端在 <strong><code>PORT</code></strong> 命令中声明的 <strong>IP:端口</strong> 主动连出。<strong>客户端在 NAT 后</strong>时常失败（内网端口对服务端不可达）。</p>
-<h2 id="2-被动（PASV）（主流）"><a href="#2-被动（PASV）（主流）" class="headerlink" title="2. 被动（PASV）（主流）"></a>2. 被动（PASV）（主流）</h2><p>服务端在应答中给出<strong>监听 IP 与端口</strong>，客户端主动连入。<strong>防火墙</strong>须在服务端放行<strong>被动端口范围</strong>；<strong>NAT</strong> 下常需配置<strong>对外通告地址</strong>（如 <strong><code>masquerade_address</code></strong>）。</p>
-<hr>
-<h1 id="四、明文与认证"><a href="#四、明文与认证" class="headerlink" title="四、明文与认证"></a>四、明文与认证</h1><p>传统 <strong>FTP</strong> 用户名、密码与数据多为<strong>明文</strong>；<strong>FTPES</strong> 在 <strong>TLS</strong> 上加密，但仍保留双连接复杂性。公网新系统优先 <a href="/2026/05/01/Protocol/SFTP/" title="SFTP 详解：SSH 子系统、协议栈与 sftp 示例">SFTP</a> 或对象存储 <strong>HTTPS</strong> 上传。</p>
-<hr>
-<h1 id="五、命令示例：lftp（若已安装）"><a href="#五、命令示例：lftp（若已安装）" class="headerlink" title="五、命令示例：lftp（若已安装）"></a>五、命令示例：<code>lftp</code>（若已安装）</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">lftp -u anonymous, ftp://speedtest.tele2.net</span><br></pre></td></tr></table></figure>
-
-<p>交互内：</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ls</span><br><span class="line">get 1KB.zip</span><br><span class="line">bye</span><br></pre></td></tr></table></figure>
-
-<p>脚本化：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">lftp -c <span class="string">&quot;open -u user,pass ftp://example.com; ls; get remote.bin -o local.bin&quot;</span></span><br></pre></td></tr></table></figure>
-
-<hr>
-<h1 id="六、原始-FTP-控制序列（telnet-nc-教学向）"><a href="#六、原始-FTP-控制序列（telnet-nc-教学向）" class="headerlink" title="六、原始 FTP 控制序列（telnet&#x2F;nc 教学向）"></a>六、原始 <strong>FTP</strong> 控制序列（<code>telnet</code>&#x2F;<code>nc</code> 教学向）</h1><p><strong>仅本地实验</strong>，手动发 <strong><code>USER</code></strong> &#x2F; <strong><code>PASS</code></strong>（密码进历史，勿在生产使用）：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">printf</span> <span class="string">&#x27;USER anonymous\r\nPASS guest@\r\nQUIT\r\n&#x27;</span> | nc -v ftp.example.com 21</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h1 id="七、小结"><a href="#七、小结" class="headerlink" title="七、小结"></a>七、小结</h1><table>
-<thead>
-<tr>
-<th>项</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>原理</td>
-<td><strong>控制 21</strong> + <strong>动态数据连接</strong></td>
-</tr>
-<tr>
-<td>作用</td>
-<td>历史最广泛的文件交换协议之一</td>
-</tr>
-<tr>
-<td>工具</td>
-<td><strong><code>lftp</code></strong>、<strong><code>ftp</code></strong>、<strong><code>nc</code></strong></td>
-</tr>
-<tr>
-<td>安全</td>
-<td>优先 <a href="/2026/05/01/Protocol/SFTP/" title="SFTP 详解：SSH 子系统、协议栈与 sftp 示例">SFTP</a> &#x2F; <strong>HTTPS</strong></td>
-</tr>
-</tbody></table>
-<hr>
-<h1 id="八、与-对比"><a href="#八、与-对比" class="headerlink" title="八、与  对比"></a>八、与 <a href="/2026/05/01/Protocol/SFTP/" title="SFTP 详解：SSH 子系统、协议栈与 sftp 示例">SFTP</a> 对比</h1><table>
-<thead>
-<tr>
-<th></th>
-<th><strong>FTP</strong></th>
-<th><strong>SFTP</strong></th>
-</tr>
-</thead>
-<tbody><tr>
-<td>连接数</td>
-<td>双连接</td>
-<td>单 <a href="/2026/05/01/Protocol/SSH/" title="SSH 详解：加密远程登录、密钥与端口转发示例">SSH</a> 连接</td>
-</tr>
-<tr>
-<td>加密</td>
-<td>默认无</td>
-<td>强加密</td>
-</tr>
-<tr>
-<td>防火墙</td>
-<td><strong>PASV</strong> 端口范围</td>
-<td>通常单端口 <strong>22</strong></td>
-</tr>
-</tbody></table>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/Protocol/IP/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="miracle">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="my">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | my">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/05/01/Protocol/IP/" class="post-title-link" itemprop="url">IP 协议详解：原理、编址与排障示例</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2026-05-01 12:48:09" itemprop="dateCreated datePublished" datetime="2026-05-01T12:48:09+08:00">2026-05-01</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-31 23:47:21" itemprop="dateModified" datetime="2026-05-31T23:47:21+08:00">2026-05-31</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Protocol/" itemprop="url" rel="index"><span itemprop="name">Protocol</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>991</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>3 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p><strong>IP</strong>（<strong>Internet Protocol</strong>，互联网协议）工作在 <strong>OSI</strong> 第三层（网络层），向上为 <a href="/2026/05/01/Protocol/TCP/" title="TCP 协议详解：连接、可靠传输与编程示例">TCP</a>、<a href="/2026/05/01/Protocol/UDP/" title="UDP 协议详解：数据报语义、MTU 与示例代码">UDP</a> 等传输层协议提供**主机到主机（host-to-host）**的分组投递服务。下面从「<strong>作用与设计目标</strong> → <strong>IPv4 报文与编址原理</strong> → <strong>转发与路由</strong> → <strong>IPv6 差异要点</strong> → <strong>与 DNS&#x2F;TCP 的关系</strong> → <strong>Linux 排障命令示例</strong>」顺序写清楚；命令在 <strong>Linux</strong> 终端演示为主，<strong>macOS</strong> 多数可类比。</p>
-<hr>
-<h1 id="一、作用与设计目标"><a href="#一、作用与设计目标" class="headerlink" title="一、作用与设计目标"></a>一、作用与设计目标</h1><h2 id="1-IP-解决什么问题"><a href="#1-IP-解决什么问题" class="headerlink" title="1. IP 解决什么问题"></a>1. IP 解决什么问题</h2><ul>
-<li><strong>统一寻址</strong>：给互联网上每台参与通信的主机接口分配 <strong>IP 地址</strong>，使跨网段寻址成为可能。  </li>
-<li><strong>无连接、尽力交付（best-effort）</strong>：<strong>IP</strong> 不保证分组一定到达、不保证顺序、不负责重传；<strong>可靠性</strong>由上层（如 <a href="/2026/05/01/Protocol/TCP/" title="TCP 协议详解：连接、可靠传输与编程示例">TCP</a>）或应用自行实现。  </li>
-<li><strong>多路复用下层链路</strong>：无论是以太网、<strong>Wi‑Fi</strong> 还是隧道，都可承载 <strong>IP</strong> 分组。</li>
-</ul>
-<h2 id="2-与上下层的关系（简图）"><a href="#2-与上下层的关系（简图）" class="headerlink" title="2. 与上下层的关系（简图）"></a>2. 与上下层的关系（简图）</h2><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[ 应用层 HTTP / DNS 客户端 … ]</span><br><span class="line">        ↓</span><br><span class="line">[ 传输层 TCP / UDP ]  ← 端口号区分进程</span><br><span class="line">        ↓</span><br><span class="line">[ 网络层 IP ]         ← 本文：逻辑寻址与分组</span><br><span class="line">        ↓</span><br><span class="line">[ 链路层 以太网 … ]   ← MAC 帧、交换机</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h1 id="二、IPv4-报文与编址原理（概念）"><a href="#二、IPv4-报文与编址原理（概念）" class="headerlink" title="二、IPv4 报文与编址原理（概念）"></a>二、IPv4 报文与编址原理（概念）</h1><h2 id="1-IPv4-首部关键字段（理解排障）"><a href="#1-IPv4-首部关键字段（理解排障）" class="headerlink" title="1. IPv4 首部关键字段（理解排障）"></a>1. IPv4 首部关键字段（理解排障）</h2><table>
-<thead>
-<tr>
-<th>字段（概念）</th>
-<th>作用</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>源 &#x2F; 目的地址</strong></td>
-<td>各 <strong>32 bit</strong>，点分十进制如 <strong><code>192.168.1.10</code></strong></td>
-</tr>
-<tr>
-<td><strong>TTL</strong></td>
-<td>每经路由器减 <strong>1</strong>，到 <strong>0</strong> 丢弃，防路由环路</td>
-</tr>
-<tr>
-<td><strong>协议号</strong></td>
-<td>指示载荷是 <strong>TCP(6)</strong>、<strong>UDP(17)</strong>、<strong>ICMP(1)</strong> 等</td>
-</tr>
-<tr>
-<td><strong>总长度 &#x2F; 分片相关</strong></td>
-<td>超过链路 <strong>MTU</strong> 时可能触发 <strong>IP 分片</strong>（<strong>IPv6</strong> 主要在源端处理）</td>
-</tr>
-</tbody></table>
-<h2 id="2-子网与-CIDR"><a href="#2-子网与-CIDR" class="headerlink" title="2. 子网与 CIDR"></a>2. 子网与 CIDR</h2><p><strong>IP 地址 &#x3D; 网络前缀 + 主机号</strong>。<strong><code>/24</code></strong> 表示前 <strong>24 bit</strong> 为网络部分，主机部分 <strong>8 bit</strong>，共 <strong>256</strong> 个地址（含网络地址与广播地址用法依场景而定）。同一二层广播域内主机须在<strong>同一子网</strong>才能「直连」互通；跨子网则须走<strong>默认网关</strong>（路由器）。</p>
-<p><strong>RFC 1918 私有地址</strong>（内网常用）：</p>
-<ul>
-<li><strong><code>10.0.0.0/8</code></strong>、<strong><code>172.16.0.0/12</code></strong>、<strong><code>192.168.0.0/16</code></strong></li>
-</ul>
-<hr>
-<h1 id="三、转发与路由（原理）"><a href="#三、转发与路由（原理）" class="headerlink" title="三、转发与路由（原理）"></a>三、转发与路由（原理）</h1><p>路由器根据<strong>路由表</strong>最长前缀匹配决定下一跳；主机则主要使用<strong>默认路由</strong>（<strong><code>0.0.0.0/0</code></strong>）把非本子网流量交给网关。<strong>NAT</strong> 可在私网与公网之间改写地址&#x2F;端口，但 <strong>NAT</strong> 不是传输层协议；端到端排障仍要区分 <strong>「IP 层是否可达」</strong> 与 <strong>「端口映射&#x2F;防火墙策略」</strong>。</p>
-<hr>
-<h1 id="四、IPv6-要点（与-IPv4-对照）"><a href="#四、IPv6-要点（与-IPv4-对照）" class="headerlink" title="四、IPv6 要点（与 IPv4 对照）"></a>四、IPv6 要点（与 IPv4 对照）</h1><ul>
-<li><strong>128 bit</strong> 地址，冒号十六进制表示；存在<strong>链路本地</strong>、<strong>唯一本地</strong>、<strong>全局单播</strong> 等范围。  </li>
-<li><strong>邻居发现（NDP）</strong> 承担类似 <strong>IPv4 ARP</strong> 的链路地址解析角色。  </li>
-<li>双栈环境下 <a href="/2026/05/01/Protocol/DNS/" title="DNS 详解：解析原理、记录类型与命令&#x2F;代码示例">DNS</a> 常同时返回 <strong>A</strong> 与 <strong>AAAA</strong>，应用与运维需同时考虑两条路径的防火墙与 <strong>MTU</strong>（<strong>IPv6</strong> 最小 <strong>MTU</strong> 要求为 <strong>1280</strong>）。</li>
-</ul>
-<hr>
-<h1 id="五、与-TCP、UDP、DNS-的关系"><a href="#五、与-TCP、UDP、DNS-的关系" class="headerlink" title="五、与 TCP、UDP、DNS 的关系"></a>五、与 TCP、UDP、DNS 的关系</h1><table>
-<thead>
-<tr>
-<th>上层协议</th>
-<th>如何使用 <strong>IP</strong></th>
-</tr>
-</thead>
-<tbody><tr>
-<td><a href="/2026/05/01/Protocol/TCP/" title="TCP 协议详解：连接、可靠传输与编程示例">TCP</a></td>
-<td>在 <strong>IP</strong> 分组载荷中放 <strong>TCP 段</strong>（含端口、序号等）</td>
-</tr>
-<tr>
-<td><a href="/2026/05/01/Protocol/UDP/" title="UDP 协议详解：数据报语义、MTU 与示例代码">UDP</a></td>
-<td>载荷为 <strong>UDP 数据报</strong></td>
-</tr>
-<tr>
-<td><a href="/2026/05/01/Protocol/DNS/" title="DNS 详解：解析原理、记录类型与命令&#x2F;代码示例">DNS</a></td>
-<td>查询&#x2F;响应封装在 <strong>UDP</strong> 或 <strong>TCP</strong> 中，再封装进 <strong>IP</strong></td>
-</tr>
-</tbody></table>
-<hr>
-<h1 id="六、代码与命令示例"><a href="#六、代码与命令示例" class="headerlink" title="六、代码与命令示例"></a>六、代码与命令示例</h1><h2 id="1-查看本机-IP-与路由（Linux）"><a href="#1-查看本机-IP-与路由（Linux）" class="headerlink" title="1. 查看本机 IP 与路由（Linux）"></a>1. 查看本机 <strong>IP</strong> 与路由（Linux）</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ip -4 addr show</span><br><span class="line">ip -4 route show</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ip -6 addr show</span><br><span class="line">ip -6 route show</span><br></pre></td></tr></table></figure>
-
-<h2 id="2-连通性：-ping（ICMP-依赖-IP）"><a href="#2-连通性：-ping（ICMP-依赖-IP）" class="headerlink" title="2. 连通性： ping（ICMP 依赖 IP）"></a>2. 连通性： <strong>ping</strong>（<strong>ICMP</strong> 依赖 <strong>IP</strong>）</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ping -c 4 223.5.5.5</span><br><span class="line">ping -c 4 2400:3200::1</span><br></pre></td></tr></table></figure>
-
-<p>若 <strong>ping</strong> 通 <strong>IP</strong> 但域名不通，优先查 <a href="/2026/05/01/Protocol/DNS/" title="DNS 详解：解析原理、记录类型与命令&#x2F;代码示例">DNS</a> 与 <strong><code>/etc/resolv.conf</code></strong>。</p>
-<h2 id="3-Python：解析域名到-A-AAAA（调用系统解析器）"><a href="#3-Python：解析域名到-A-AAAA（调用系统解析器）" class="headerlink" title="3. Python：解析域名到 A &#x2F; AAAA（调用系统解析器）"></a>3. <strong>Python</strong>：解析域名到 <strong>A &#x2F; AAAA</strong>（调用系统解析器）</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> socket</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> family, kind, proto, canon, sockaddr <span class="keyword">in</span> socket.getaddrinfo(</span><br><span class="line">    <span class="string">&quot;example.com&quot;</span>, <span class="number">443</span>, <span class="built_in">type</span>=socket.SOCK_STREAM</span><br><span class="line">):</span><br><span class="line">    <span class="built_in">print</span>(family, sockaddr)  <span class="comment"># AF_INET / AF_INET6 与 (ip, port)</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="4-traceroute（路径探测，实现因系统而异）"><a href="#4-traceroute（路径探测，实现因系统而异）" class="headerlink" title="4. traceroute（路径探测，实现因系统而异）"></a>4. <strong>traceroute</strong>（路径探测，实现因系统而异）</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">traceroute -4 -n 8.8.8.8</span><br><span class="line">tracepath -n 2400:3200::1</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h1 id="七、小结"><a href="#七、小结" class="headerlink" title="七、小结"></a>七、小结</h1><table>
-<thead>
-<tr>
-<th>项</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>原理</td>
-<td><strong>无连接</strong>、<strong>尽力交付</strong>；<strong>TTL</strong>、<strong>分片</strong>、<strong>协议号</strong></td>
-</tr>
-<tr>
-<td>作用</td>
-<td>全局寻址与跨网段转发基础</td>
-</tr>
-<tr>
-<td>编址</td>
-<td><strong>IPv4 &#x2F; IPv6</strong> + <strong>CIDR</strong>；私网 <strong>RFC 1918</strong></td>
-</tr>
-<tr>
-<td>上层</td>
-<td><a href="/2026/05/01/Protocol/TCP/" title="TCP 协议详解：连接、可靠传输与编程示例">TCP</a> · <a href="/2026/05/01/Protocol/UDP/" title="UDP 协议详解：数据报语义、MTU 与示例代码">UDP</a> · <a href="/2026/05/01/Protocol/DNS/" title="DNS 详解：解析原理、记录类型与命令&#x2F;代码示例">DNS</a></td>
-</tr>
-</tbody></table>
-<p>更深入主题（<strong>策略路由</strong>、<strong>Anycast</strong>、<strong>IPsec</strong>）以 <strong>RFC</strong> 与发行版 <strong>Networking</strong> 文档为准。</p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/Protocol/UDP/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="miracle">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="my">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | my">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/05/01/Protocol/UDP/" class="post-title-link" itemprop="url">UDP 协议详解：数据报语义、MTU 与示例代码</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2026-05-01 12:47:45" itemprop="dateCreated datePublished" datetime="2026-05-01T12:47:45+08:00">2026-05-01</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-31 23:47:21" itemprop="dateModified" datetime="2026-05-31T23:47:21+08:00">2026-05-31</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Protocol/" itemprop="url" rel="index"><span itemprop="name">Protocol</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>1.8k</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>6 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p><strong>UDP</strong>（<strong>User Datagram Protocol</strong>）在 <a href="/2026/05/01/Protocol/IP/" title="IP 协议详解：原理、编址与排障示例">IP</a> 之上提供<strong>无连接</strong>的**数据报（datagram）**服务：<strong>不保证送达、不保证顺序、不维护连接状态</strong>，协议头开销小。下面从「<strong>设计目标</strong> → <strong>无连接与完整通信流程（与套接字 API）</strong> → <strong>首部与校验和</strong> → <strong>MTU 与分片</strong> → <strong>典型应用</strong> → <strong>四元组与套接字</strong> → <strong>抓包</strong> → <strong>C &#x2F; Python 套接字示例</strong>」顺序写清楚；与 <a href="/2026/05/01/Protocol/TCP/" title="TCP 协议详解：连接、可靠传输与编程示例">TCP</a> 的对照见第一节表格。</p>
-<hr>
-<h1 id="一、设计目标与作用"><a href="#一、设计目标与作用" class="headerlink" title="一、设计目标与作用"></a>一、设计目标与作用</h1><h2 id="1-解决什么问题"><a href="#1-解决什么问题" class="headerlink" title="1. 解决什么问题"></a>1. 解决什么问题</h2><ul>
-<li><strong>低延迟</strong>：无握手、无连接状态机，首包即可发数据。  </li>
-<li><strong>保留报文边界</strong>：一次 <strong><code>sendto</code></strong> 对应一个 <strong>UDP</strong> 数据报；对端 <strong><code>recvfrom</code></strong> 通常一次收到完整数据报（受缓冲区与实现限制；载荷过大时可能失败或行为依平台）。  </li>
-<li><strong>实现简单</strong>：适合 <a href="/2026/05/01/Protocol/DNS/" title="DNS 详解：解析原理、记录类型与命令&#x2F;代码示例">DNS</a>、实时音视频、指标上报；<strong>可靠性</strong>由应用或 <a href="/2026/05/01/Protocol/QUIC/" title="QUIC 详解：基于 UDP 的可靠传输、TLS 集成与 HTTP&#x2F;3">QUIC</a> 等在 <strong>UDP</strong> 之上补充。</li>
-</ul>
-<h2 id="2-与-TCP-的本质差异"><a href="#2-与-TCP-的本质差异" class="headerlink" title="2. 与 TCP 的本质差异"></a>2. 与 TCP 的本质差异</h2><table>
-<thead>
-<tr>
-<th>维度</th>
-<th><strong>UDP</strong></th>
-<th><a href="/2026/05/01/Protocol/TCP/" title="TCP 协议详解：连接、可靠传输与编程示例">TCP</a></th>
-</tr>
-</thead>
-<tbody><tr>
-<td>连接</td>
-<td>无</td>
-<td>有（三次握手 &#x2F; 四次挥手）</td>
-</tr>
-<tr>
-<td>交付</td>
-<td>尽力，可能丢、乱序、重复</td>
-<td>可靠有序（重传隐藏丢包）</td>
-</tr>
-<tr>
-<td>语义</td>
-<td><strong>保留消息边界</strong>（数据报）</td>
-<td><strong>字节流</strong>（无消息边界）</td>
-</tr>
-<tr>
-<td>套接字</td>
-<td><strong><code>bind</code> + <code>recvfrom</code> &#x2F; <code>sendto</code></strong>，无 <strong><code>listen</code>&#x2F;<code>accept</code></strong></td>
-<td><strong><code>listen</code>&#x2F;<code>accept</code>&#x2F;<code>connect</code></strong> 等</td>
-</tr>
-</tbody></table>
-<hr>
-<h1 id="二、无连接：通信流程（原理）"><a href="#二、无连接：通信流程（原理）" class="headerlink" title="二、无连接：通信流程（原理）"></a>二、无连接：通信流程（原理）</h1><p><strong>UDP</strong> 不建立会话状态；每个数据报独立路由，「流程」体现在<strong>应用与内核 API</strong> 的调用顺序上。</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">客户端（任意时刻可发）              服务端（先绑定端口）</span><br><span class="line">   |    UDP 数据报（目的 IP/端口）    |</span><br><span class="line">   |-------------------------------&gt;|</span><br><span class="line">   |    UDP 数据报（可选响应）        |</span><br><span class="line">   |&lt;-------------------------------|</span><br><span class="line">   |    （无协议层 FIN/ACK；可反复）   |</span><br></pre></td></tr></table></figure>
-
-<h2 id="1-完整通信流程（与套接字-API-对应）"><a href="#1-完整通信流程（与套接字-API-对应）" class="headerlink" title="1. 完整通信流程（与套接字 API 对应）"></a>1. 完整通信流程（与套接字 API 对应）</h2><ol>
-<li><strong>服务端</strong>：<code>socket(AF_INET, SOCK_DGRAM, 0)</code> → <code>bind</code> 本地地址与端口 → 循环 <strong><code>recvfrom</code></strong>（每次返回<strong>一整报</strong>与<strong>对端地址 <code>sockaddr</code></strong>）→ <strong><code>sendto</code></strong> 把应答写回该地址。无 <strong><code>listen</code></strong>、无 <strong><code>accept</code></strong>。  </li>
-<li><strong>客户端</strong>：<code>socket</code> → 可直接 <strong><code>sendto</code></strong> 指定目的地址；首次发送时内核通常分配<strong>临时源端口</strong>。若需读回应，再 <strong><code>recvfrom</code></strong>（可配合超时或 <strong><code>select</code>&#x2F;<code>poll</code></strong>）。  </li>
-<li><strong>传数据</strong>：每个数据报自带目的信息；<strong>无序号、无确认</strong>，不保证与发送顺序一致，也不保证不丢。  </li>
-<li><strong>关闭</strong>：<code>close</code> 仅释放本进程套接字资源；<strong>不会在协议层通知对端「连接结束」</strong>（与 <a href="/2026/05/01/Protocol/TCP/" title="TCP 协议详解：连接、可靠传输与编程示例">TCP</a> 的 <strong>FIN</strong> 不同）。</li>
-</ol>
-<hr>
-<h1 id="三、UDP-首部与校验和（原理）"><a href="#三、UDP-首部与校验和（原理）" class="headerlink" title="三、UDP 首部与校验和（原理）"></a>三、UDP 首部与校验和（原理）</h1><p><strong>UDP</strong> 首部固定 <strong>8 字节</strong>：源端口、目的端口、长度、校验和。<strong>IPv6</strong> 下 <strong>UDP</strong> 校验和<strong>必填</strong>；<strong>IPv4</strong> 允许为 <strong>0</strong>（表示未使用校验和，实践中少见）。校验覆盖<strong>伪首部</strong>（含 <strong>IP</strong> 地址与协议号）+ <strong>UDP 首部</strong> + <strong>数据</strong>，用于检测传输错误；<strong>通过校验和 ≠ 应用层已处理完毕</strong>（仍可能丢包、乱序）。</p>
-<hr>
-<h1 id="四、MTU-与分片（为何要注意报文长度）"><a href="#四、MTU-与分片（为何要注意报文长度）" class="headerlink" title="四、MTU 与分片（为何要注意报文长度）"></a>四、MTU 与分片（为何要注意报文长度）</h1><p>以太网常见 <strong>MTU 1500</strong>，扣掉 <strong>IP</strong> 首部后 <strong>UDP</strong> 载荷不宜过大，否则触发 <strong>IP 分片</strong>：任一片丢失常导致<strong>整组重组失败</strong>，丢包代价被放大。应用层常将 <strong>UDP</strong> 报文控制在 <strong>1200 字节左右</strong>以下（穿越未知路径更稳），或自行分片与重传。</p>
-<p><strong>Linux</strong> 探测路径 <strong>MTU</strong>（示例）：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ping -M <span class="keyword">do</span> -s 1472 -c 1 8.8.8.8</span><br></pre></td></tr></table></figure>
-
-<p><strong><code>-M do</code></strong> 设置 <strong>DF（Don’t Fragment）</strong>，逐步调整 <strong><code>-s</code></strong> 可粗测路径能通过的<strong>最大未分片载荷</strong>（与 <strong>ICMP</strong> 实现有关，解读需谨慎）。</p>
-<hr>
-<h1 id="五、典型应用"><a href="#五、典型应用" class="headerlink" title="五、典型应用"></a>五、典型应用</h1><table>
-<thead>
-<tr>
-<th>应用</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><a href="/2026/05/01/Protocol/DNS/" title="DNS 详解：解析原理、记录类型与命令&#x2F;代码示例">DNS</a></td>
-<td>传统 <strong>UDP&#x2F;53</strong>；响应过大时回退 <strong>TCP</strong></td>
-</tr>
-<tr>
-<td>实时音视频</td>
-<td>丢旧帧比重传更有意义</td>
-</tr>
-<tr>
-<td><a href="/2026/05/01/Protocol/QUIC/" title="QUIC 详解：基于 UDP 的可靠传输、TLS 集成与 HTTP&#x2F;3">QUIC</a> &#x2F; <strong>HTTP&#x2F;3</strong></td>
-<td>在 <strong>UDP</strong> 上重建可靠与加密</td>
-</tr>
-</tbody></table>
-<hr>
-<h1 id="六、四元组与套接字"><a href="#六、四元组与套接字" class="headerlink" title="六、四元组与套接字"></a>六、四元组与套接字</h1><p>与 <a href="/2026/05/01/Protocol/TCP/" title="TCP 协议详解：连接、可靠传输与编程示例">TCP</a> 相同，<strong>IP 层与常见实现</strong>仍用 <strong>（源 IP，源端口，目的 IP，目的端口）</strong> 区分不同「对话」；区别在于 <strong>UDP</strong> 内核<strong>不维护</strong> <a href="/2026/05/01/Protocol/TCP/" title="TCP 协议详解：连接、可靠传输与编程示例">TCP</a> 那样的连接状态机（无 <strong>ESTABLISHED</strong> &#x2F; <strong>TIME_WAIT</strong> 等）。服务端 <strong><code>bind</code></strong> 固定端口（如 <strong>53</strong>），客户端源端口多为临时端口。</p>
-<hr>
-<h1 id="七、抓包示例（观察数据报）"><a href="#七、抓包示例（观察数据报）" class="headerlink" title="七、抓包示例（观察数据报）"></a>七、抓包示例（观察数据报）</h1><p>在 <strong>Linux</strong> 上（需装 <strong><code>tcpdump</code></strong>），例如抓取本示例端口 <strong>9001</strong>：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> tcpdump -n -i any udp port 9001</span><br></pre></td></tr></table></figure>
-
-<p>另开终端运行下文 <strong>C</strong> 或 <strong>Python</strong> 客户端后，可看到双向 <strong>UDP</strong> 报文。<strong>Wireshark</strong> 中按 <strong>UDP</strong> 过滤并查看载荷即可对比 <a href="/2026/05/01/Protocol/TCP/" title="TCP 协议详解：连接、可靠传输与编程示例">TCP</a> 流式会话。</p>
-<hr>
-<h1 id="八、编程示例：C（POSIX-Socket）与-Python-回显"><a href="#八、编程示例：C（POSIX-Socket）与-Python-回显" class="headerlink" title="八、编程示例：C（POSIX Socket）与 Python 回显"></a>八、编程示例：<strong>C</strong>（<strong>POSIX</strong> <strong>Socket</strong>）与 <strong>Python</strong> 回显</h1><p>以下在 <strong>Linux</strong> 下用 <strong>IPv4</strong> 回环地址演示；端口 <strong>9001</strong>（与 <a href="/2026/05/01/Protocol/TCP/" title="TCP 协议详解：连接、可靠传输与编程示例">TCP</a> 文内 <strong>9000</strong> 错开，避免同时实验时冲突）。编译 <strong>C</strong> 需 <strong>GCC</strong> 与标准 <strong>POSIX</strong> 头文件。</p>
-<h2 id="1-C-服务端-udp-echo-server-c"><a href="#1-C-服务端-udp-echo-server-c" class="headerlink" title="1. C 服务端 udp_echo_server.c"></a>1. <strong>C</strong> 服务端 <code>udp_echo_server.c</code></h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;arpa/inet.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;netinet/in.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/socket.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> PORT 9001</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> BUF 2048</span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">void</span>)</span> &#123;</span><br><span class="line">  <span class="type">int</span> fd = socket(AF_INET, SOCK_DGRAM, <span class="number">0</span>);</span><br><span class="line">  <span class="keyword">if</span> (fd &lt; <span class="number">0</span>) &#123;</span><br><span class="line">    perror(<span class="string">&quot;socket&quot;</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="type">int</span> on = <span class="number">1</span>;</span><br><span class="line">  <span class="keyword">if</span> (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &amp;on, <span class="keyword">sizeof</span>(on)) &lt; <span class="number">0</span>) &#123;</span><br><span class="line">    perror(<span class="string">&quot;setsockopt&quot;</span>);</span><br><span class="line">    close(fd);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_in</span> <span class="title">addr</span>;</span></span><br><span class="line">  <span class="built_in">memset</span>(&amp;addr, <span class="number">0</span>, <span class="keyword">sizeof</span>(addr));</span><br><span class="line">  addr.sin_family = AF_INET;</span><br><span class="line">  addr.sin_port = htons(PORT);</span><br><span class="line">  addr.sin_addr.s_addr = htonl(INADDR_ANY);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (bind(fd, (<span class="keyword">struct</span> sockaddr *)&amp;addr, <span class="keyword">sizeof</span>(addr)) &lt; <span class="number">0</span>) &#123;</span><br><span class="line">    perror(<span class="string">&quot;bind&quot;</span>);</span><br><span class="line">    close(fd);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;UDP echo on %d\n&quot;</span>, PORT);</span><br><span class="line"></span><br><span class="line">  <span class="type">char</span> buf[BUF];</span><br><span class="line">  <span class="keyword">for</span> (;;) &#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_in</span> <span class="title">peer</span>;</span></span><br><span class="line">    <span class="type">socklen_t</span> plen = <span class="keyword">sizeof</span>(peer);</span><br><span class="line">    <span class="type">ssize_t</span> n = recvfrom(fd, buf, <span class="keyword">sizeof</span>(buf), <span class="number">0</span>, (<span class="keyword">struct</span> sockaddr *)&amp;peer, &amp;plen);</span><br><span class="line">    <span class="keyword">if</span> (n &lt; <span class="number">0</span>) &#123;</span><br><span class="line">      perror(<span class="string">&quot;recvfrom&quot;</span>);</span><br><span class="line">      <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (n == <span class="number">0</span>) &#123;</span><br><span class="line">      <span class="keyword">continue</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="type">const</span> <span class="type">char</span> prefix[] = <span class="string">&quot;echo: &quot;</span>;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">iovec</span> <span class="title">iov</span>[2];</span></span><br><span class="line">    iov[<span class="number">0</span>].iov_base = (<span class="type">void</span> *)prefix;</span><br><span class="line">    iov[<span class="number">0</span>].iov_len = <span class="keyword">sizeof</span>(prefix) - <span class="number">1</span>;</span><br><span class="line">    iov[<span class="number">1</span>].iov_base = buf;</span><br><span class="line">    iov[<span class="number">1</span>].iov_len = (<span class="type">size_t</span>)n;</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">msghdr</span> <span class="title">msg</span>;</span></span><br><span class="line">    <span class="built_in">memset</span>(&amp;msg, <span class="number">0</span>, <span class="keyword">sizeof</span>(msg));</span><br><span class="line">    msg.msg_name = &amp;peer;</span><br><span class="line">    msg.msg_namelen = plen;</span><br><span class="line">    msg.msg_iov = iov;</span><br><span class="line">    msg.msg_iovlen = <span class="number">2</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (sendmsg(fd, &amp;msg, <span class="number">0</span>) &lt; <span class="number">0</span>) &#123;</span><br><span class="line">      perror(<span class="string">&quot;sendmsg&quot;</span>);</span><br><span class="line">      <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  close(fd);</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>为在<strong>不拷贝</strong>的情况下把 <strong><code>echo: </code></strong> 与对端载荷拼成<strong>一个</strong> <strong>UDP</strong> 数据报，示例使用 <strong><code>sendmsg</code></strong>（分散写）。若应答总长度超过路径 <strong>MTU</strong>，可能返回 <strong><code>EMSGSIZE</code></strong>，生产环境需控制单报长度或路径 <strong>MTU</strong> 发现。</p>
-<h2 id="2-C-客户端-udp-echo-client-c"><a href="#2-C-客户端-udp-echo-client-c" class="headerlink" title="2. C 客户端 udp_echo_client.c"></a>2. <strong>C</strong> 客户端 <code>udp_echo_client.c</code></h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;arpa/inet.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;netinet/in.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/socket.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> PORT 9001</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> BUF 2048</span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">void</span>)</span> &#123;</span><br><span class="line">  <span class="type">int</span> fd = socket(AF_INET, SOCK_DGRAM, <span class="number">0</span>);</span><br><span class="line">  <span class="keyword">if</span> (fd &lt; <span class="number">0</span>) &#123;</span><br><span class="line">    perror(<span class="string">&quot;socket&quot;</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_in</span> <span class="title">dst</span>;</span></span><br><span class="line">  <span class="built_in">memset</span>(&amp;dst, <span class="number">0</span>, <span class="keyword">sizeof</span>(dst));</span><br><span class="line">  dst.sin_family = AF_INET;</span><br><span class="line">  dst.sin_port = htons(PORT);</span><br><span class="line">  <span class="keyword">if</span> (inet_pton(AF_INET, <span class="string">&quot;127.0.0.1&quot;</span>, &amp;dst.sin_addr) != <span class="number">1</span>) &#123;</span><br><span class="line">    <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">&quot;inet_pton failed\n&quot;</span>);</span><br><span class="line">    close(fd);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="type">const</span> <span class="type">char</span> msg[] = <span class="string">&quot;hello UDP\n&quot;</span>;</span><br><span class="line">  <span class="keyword">if</span> (sendto(fd, msg, <span class="keyword">sizeof</span>(msg) - <span class="number">1</span>, <span class="number">0</span>, (<span class="keyword">struct</span> sockaddr *)&amp;dst, <span class="keyword">sizeof</span>(dst)) &lt; <span class="number">0</span>) &#123;</span><br><span class="line">    perror(<span class="string">&quot;sendto&quot;</span>);</span><br><span class="line">    close(fd);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="type">char</span> buf[BUF];</span><br><span class="line">  <span class="type">ssize_t</span> n = recvfrom(fd, buf, <span class="keyword">sizeof</span>(buf) - <span class="number">1</span>, <span class="number">0</span>, <span class="literal">NULL</span>, <span class="literal">NULL</span>);</span><br><span class="line">  <span class="keyword">if</span> (n &lt; <span class="number">0</span>) &#123;</span><br><span class="line">    perror(<span class="string">&quot;recvfrom&quot;</span>);</span><br><span class="line">    close(fd);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span> (n &gt; <span class="number">0</span>) &#123;</span><br><span class="line">    buf[n] = <span class="string">&#x27;\0&#x27;</span>;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%s&quot;</span>, buf);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  close(fd);</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">gcc -Wall -Wextra -O2 -o udp_echo_server udp_echo_server.c</span><br><span class="line">gcc -Wall -Wextra -O2 -o udp_echo_client udp_echo_client.c</span><br><span class="line">./udp_echo_server &amp;</span><br><span class="line">./udp_echo_client</span><br></pre></td></tr></table></figure>
-
-<p>要点：<strong><code>recvfrom</code> 一次对应一个数据报</strong>（缓冲足够时）；<strong><code>sendto</code>&#x2F;<code>sendmsg</code></strong> 一次尽力发送<strong>一个</strong>逻辑报文。与 <a href="/2026/05/01/Protocol/TCP/" title="TCP 协议详解：连接、可靠传输与编程示例">TCP</a> 不同，一般<strong>不必</strong>为单次应答写「凑满 <code>send</code>」的循环（除非处理 <strong><code>EINTR</code></strong> 等重试语义）。</p>
-<h2 id="3-Python-服务端-udp-echo-py"><a href="#3-Python-服务端-udp-echo-py" class="headerlink" title="3. Python 服务端 udp_echo.py"></a>3. <strong>Python</strong> 服务端 <code>udp_echo.py</code></h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> socket</span><br><span class="line"></span><br><span class="line">HOST = <span class="string">&quot;127.0.0.1&quot;</span></span><br><span class="line">PORT = <span class="number">9001</span></span><br><span class="line"></span><br><span class="line">sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)</span><br><span class="line">sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, <span class="number">1</span>)</span><br><span class="line">sock.bind((HOST, PORT))</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;UDP echo on&quot;</span>, PORT)</span><br><span class="line"><span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">    data, addr = sock.recvfrom(<span class="number">2048</span>)</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> data:</span><br><span class="line">        <span class="keyword">continue</span></span><br><span class="line">    sock.sendto(<span class="string">b&quot;echo: &quot;</span> + data, addr)</span><br></pre></td></tr></table></figure>
-
-<h2 id="4-客户端-udp-client-py"><a href="#4-客户端-udp-client-py" class="headerlink" title="4. 客户端 udp_client.py"></a>4. 客户端 <code>udp_client.py</code></h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> socket</span><br><span class="line"></span><br><span class="line">HOST = <span class="string">&quot;127.0.0.1&quot;</span></span><br><span class="line">PORT = <span class="number">9001</span></span><br><span class="line"></span><br><span class="line">sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)</span><br><span class="line">sock.sendto(<span class="string">b&quot;hello UDP\n&quot;</span>, (HOST, PORT))</span><br><span class="line"><span class="built_in">print</span>(sock.recvfrom(<span class="number">2048</span>)[<span class="number">0</span>].decode(), end=<span class="string">&quot;&quot;</span>)</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">python udp_echo.py &amp;</span><br><span class="line">python udp_client.py</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h1 id="九、小结"><a href="#九、小结" class="headerlink" title="九、小结"></a>九、小结</h1><table>
-<thead>
-<tr>
-<th>项</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>原理</td>
-<td>无连接；<strong>校验和</strong>；<strong>数据报边界</strong>；无协议层会话结束信号</td>
-</tr>
-<tr>
-<td>作用</td>
-<td>低延迟、实现简单；与 <strong>IP</strong> 分片策略强相关</td>
-</tr>
-<tr>
-<td>依赖</td>
-<td><a href="/2026/05/01/Protocol/IP/" title="IP 协议详解：原理、编址与排障示例">IP</a></td>
-</tr>
-<tr>
-<td>示例</td>
-<td><strong><code>ping -M do</code></strong>、<strong><code>tcpdump</code> <code>udp port</code></strong>、<strong>C <code>recvfrom</code>&#x2F;<code>sendto</code>&#x2F;<code>sendmsg</code></strong>、<strong>Python <code>SOCK_DGRAM</code></strong></td>
-</tr>
-<tr>
-<td>延伸</td>
-<td><a href="/2026/05/01/Protocol/DNS/" title="DNS 详解：解析原理、记录类型与命令&#x2F;代码示例">DNS</a> · <a href="/2026/05/01/Protocol/QUIC/" title="QUIC 详解：基于 UDP 的可靠传输、TLS 集成与 HTTP&#x2F;3">QUIC</a> · <a href="/2026/05/01/Protocol/TCP/" title="TCP 协议详解：连接、可靠传输与编程示例">TCP</a></td>
-</tr>
-</tbody></table>
-<p>公网服务须防 <strong>UDP 反射放大</strong> 与滥用；配合 <strong>ACL</strong>、<strong>速率限制</strong> 与合法来源校验。</p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/Protocol/HTTPS/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="miracle">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="my">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | my">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/05/01/Protocol/HTTPS/" class="post-title-link" itemprop="url">HTTPS 详解：TLS 握手、证书与 openssl/curl 示例</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2026-05-01 12:47:22" itemprop="dateCreated datePublished" datetime="2026-05-01T12:47:22+08:00">2026-05-01</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-31 23:47:21" itemprop="dateModified" datetime="2026-05-31T23:47:21+08:00">2026-05-31</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Protocol/" itemprop="url" rel="index"><span itemprop="name">Protocol</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>681</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>2 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p><strong>HTTPS</strong> &#x3D; <a href="/2026/05/01/Protocol/HTTP/" title="HTTP 详解：报文、方法、版本与 curl&#x2F;nc 示例">HTTP</a> + <strong>TLS</strong>（<strong>Transport Layer Security</strong>）：在 <strong>TCP</strong> 连接建立后先做 <strong>TLS</strong> 握手，再在加密记录层上传输 <strong>HTTP</strong> 语义。默认端口 <strong>443</strong>。下面从「<strong>作用与威胁模型</strong> → <strong>TLS 握手与密钥派生（原理）</strong> → <strong>证书链与主机名校验</strong> → <strong>ALPN 与 HTTP&#x2F;2、HTTP&#x2F;3</strong> → <strong>openssl &#x2F; curl 示例</strong>」顺序写清楚；<strong>HTTP&#x2F;3</strong> 传输见 <a href="/2026/05/01/Protocol/QUIC/" title="QUIC 详解：基于 UDP 的可靠传输、TLS 集成与 HTTP&#x2F;3">QUIC</a>。</p>
-<h1 id="TLS-握手（简化）"><a href="#TLS-握手（简化）" class="headerlink" title="TLS 握手（简化）"></a>TLS 握手（简化）</h1><pre>
-<code class="mermaid">
-
-sequenceDiagram
-  participant C as Client
-  participant S as Server
-
-  C-&gt;&gt;S: ClientHello
-  S-&gt;&gt;C: ServerHello + 证书
-  C-&gt;&gt;C: 校验证书链
-  C-&gt;&gt;S: 密钥交换 Finished
-  Note over C,S: 对称密钥加密 HTTP
-</code>
-</pre>
-
-<hr>
-<h1 id="一、作用与威胁模型"><a href="#一、作用与威胁模型" class="headerlink" title="一、作用与威胁模型"></a>一、作用与威胁模型</h1><h2 id="1-TLS-提供什么"><a href="#1-TLS-提供什么" class="headerlink" title="1. TLS 提供什么"></a>1. <strong>TLS</strong> 提供什么</h2><ul>
-<li><strong>机密性</strong>：对称加密载荷，防窃听。  </li>
-<li><strong>完整性</strong>：<strong>MAC</strong> &#x2F; <strong>AEAD</strong> 防篡改。  </li>
-<li><strong>身份认证</strong>：服务端（可选客户端）<strong>X.509</strong> 证书链。</li>
-</ul>
-<h2 id="2-不解决什么"><a href="#2-不解决什么" class="headerlink" title="2. 不解决什么"></a>2. 不解决什么</h2><p><strong>TLS</strong> 不能替代应用层鉴权与输入校验；<strong><code>https://</code></strong> 也不等于站点无 <strong>XSS&#x2F;CSRF</strong> 等业务漏洞。</p>
-<hr>
-<h1 id="二、TLS-1-2-1-3-握手（原理简述）"><a href="#二、TLS-1-2-1-3-握手（原理简述）" class="headerlink" title="二、TLS 1.2 &#x2F; 1.3 握手（原理简述）"></a>二、TLS 1.2 &#x2F; 1.3 握手（原理简述）</h1><h2 id="1-共同目标"><a href="#1-共同目标" class="headerlink" title="1. 共同目标"></a>1. 共同目标</h2><p>客户端与服务端协商出<strong>对称会话密钥</strong>，后续 <strong>HTTP</strong> 记录用对称算法加密以获得性能。</p>
-<h2 id="2-TLS-1-3-特点（相对-1-2）"><a href="#2-TLS-1-3-特点（相对-1-2）" class="headerlink" title="2. TLS 1.3 特点（相对 1.2）"></a>2. <strong>TLS 1.3</strong> 特点（相对 1.2）</h2><ul>
-<li>常 <strong>1-RTT</strong> 完成握手（<strong>0-RTT</strong> 可选，有<strong>重放</strong>风险，敏感操作应禁用或二次校验）。  </li>
-<li>废弃一批不安全算法；<strong>Hello</strong> 中即携带密钥共享材料。</li>
-</ul>
-<hr>
-<h1 id="三、证书链与主机名（作用）"><a href="#三、证书链与主机名（作用）" class="headerlink" title="三、证书链与主机名（作用）"></a>三、证书链与主机名（作用）</h1><p>浏览器&#x2F;客户端会校验：</p>
-<ol>
-<li>证书是否由受信任 <strong>CA</strong> 签发，链是否完整。  </li>
-<li><strong>Subject Alternative Name（SAN）</strong> 或兼容字段是否覆盖当前访问主机名。  </li>
-<li>有效期、吊销信息（<strong>OCSP Stapling</strong> 等）。</li>
-</ol>
-<p>自签名证书仅适合内网或开发，公网须使用可信 <strong>CA</strong> 或组织内 <strong>PKI</strong>。</p>
-<hr>
-<h1 id="四、ALPN"><a href="#四、ALPN" class="headerlink" title="四、ALPN"></a>四、ALPN</h1><p>在 <strong>TLS</strong> 握手中通过 <strong>ALPN</strong> 协商应用层协议：<strong><code>h2</code></strong> 表示后续走 <strong>HTTP&#x2F;2</strong> 帧；<strong><code>h3</code></strong> 与 <a href="/2026/05/01/Protocol/QUIC/" title="QUIC 详解：基于 UDP 的可靠传输、TLS 集成与 HTTP&#x2F;3">QUIC</a> &#x2F; <strong>HTTP&#x2F;3</strong> 相关（<strong>QUIC</strong> 内含 <strong>TLS 1.3</strong> 集成握手）。</p>
-<hr>
-<h1 id="五、命令示例：openssl-s-client"><a href="#五、命令示例：openssl-s-client" class="headerlink" title="五、命令示例：openssl s_client"></a>五、命令示例：<code>openssl s_client</code></h1><p>查看证书链与协商结果：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl s_client -connect example.com:443 -servername example.com &lt;/dev/null 2&gt;/dev/null | openssl x509 -noout -dates -subject -issuer</span><br></pre></td></tr></table></figure>
-
-<p>交互式观察握手（输入 <strong><code>Q</code></strong> 退出）：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl s_client -connect example.com:443 -servername example.com</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h1 id="六、命令示例：curl-与-TLS-版本"><a href="#六、命令示例：curl-与-TLS-版本" class="headerlink" title="六、命令示例：curl 与 TLS 版本"></a>六、命令示例：<code>curl</code> 与 <strong>TLS</strong> 版本</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -v --tlsv1.3 https://example.com/ -o /dev/null</span><br></pre></td></tr></table></figure>
-
-<p>指定 <strong>cipher</strong>（调试用）：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -v https://example.com/ --tls-max 1.2 -o /dev/null</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h1 id="七、示例：Python-发起-HTTPS-并校验证书（默认校验）"><a href="#七、示例：Python-发起-HTTPS-并校验证书（默认校验）" class="headerlink" title="七、示例：Python 发起 HTTPS 并校验证书（默认校验）"></a>七、示例：<strong>Python</strong> 发起 <strong>HTTPS</strong> 并校验证书（默认校验）</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> ssl</span><br><span class="line"><span class="keyword">import</span> urllib.request</span><br><span class="line"></span><br><span class="line">ctx = ssl.create_default_context()</span><br><span class="line">req = urllib.request.Request(<span class="string">&quot;https://example.com/&quot;</span>)</span><br><span class="line"><span class="keyword">with</span> urllib.request.urlopen(req, context=ctx, timeout=<span class="number">10</span>) <span class="keyword">as</span> r:</span><br><span class="line">    <span class="built_in">print</span>(r.status, r.getpeercert()[<span class="string">&quot;subject&quot;</span>])</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h1 id="八、小结"><a href="#八、小结" class="headerlink" title="八、小结"></a>八、小结</h1><table>
-<thead>
-<tr>
-<th>项</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>原理</td>
-<td><strong>TLS</strong> 握手 → 对称加密传输 <a href="/2026/05/01/Protocol/HTTP/" title="HTTP 详解：报文、方法、版本与 curl&#x2F;nc 示例">HTTP</a></td>
-</tr>
-<tr>
-<td>作用</td>
-<td>机密性、完整性、服务端身份</td>
-</tr>
-<tr>
-<td>工具</td>
-<td><strong><code>openssl s_client</code></strong>、<strong><code>curl -v</code></strong></td>
-</tr>
-<tr>
-<td>延伸</td>
-<td><strong>HSTS</strong>、<strong>OCSP</strong>、<a href="/2026/05/01/Protocol/QUIC/" title="QUIC 详解：基于 UDP 的可靠传输、TLS 集成与 HTTP&#x2F;3">QUIC</a> <strong>HTTP&#x2F;3</strong></td>
-</tr>
-</tbody></table>
-<p>生产部署关注：<strong>证书续期</strong>、<strong>链完整性</strong>、<strong>中间件 SNI</strong>、<strong>TLS 终止位置</strong>（网关 vs 应用）。</p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/Protocol/HTTP/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="miracle">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="my">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | my">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/05/01/Protocol/HTTP/" class="post-title-link" itemprop="url">HTTP 详解：报文、方法、版本与 curl/nc 示例</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2026-05-01 12:46:50" itemprop="dateCreated datePublished" datetime="2026-05-01T12:46:50+08:00">2026-05-01</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-31 23:47:21" itemprop="dateModified" datetime="2026-05-31T23:47:21+08:00">2026-05-31</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Protocol/" itemprop="url" rel="index"><span itemprop="name">Protocol</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>729</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>2 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p><strong>HTTP</strong>（<strong>Hypertext Transfer Protocol</strong>）是 <strong>Web</strong> 的应用层协议：基于<strong>请求 &#x2F; 响应</strong>模型，在语义层使用<strong>方法、URI、首部与可选正文</strong>表达操作。下面从「<strong>无状态与资源模型</strong> → <strong>报文结构原理</strong> → <strong>方法与幂等</strong> → <strong>状态码</strong> → <strong>HTTP&#x2F;1.1 与 HTTP&#x2F;2</strong> → <strong>curl 与原始报文示例</strong>」顺序写清楚；传输层默认依赖 <a href="/2026/05/01/Protocol/TCP/" title="TCP 协议详解：连接、可靠传输与编程示例">TCP</a>，安全传输见 <a href="/2026/05/01/Protocol/HTTPS/" title="HTTPS 详解：TLS 握手、证书与 openssl&#x2F;curl 示例">HTTPS</a>，全双工见 <a href="/2026/05/01/Protocol/WebSocket/" title="WebSocket 详解：握手、帧与 Python 示例">WebSocket</a>，<strong>HTTP&#x2F;3</strong> 见 <a href="/2026/05/01/Protocol/QUIC/" title="QUIC 详解：基于 UDP 的可靠传输、TLS 集成与 HTTP&#x2F;3">QUIC</a>。</p>
-<h1 id="请求响应模型"><a href="#请求响应模型" class="headerlink" title="请求响应模型"></a>请求响应模型</h1><pre>
-<code class="mermaid">
-
-sequenceDiagram
-  participant C as Client
-  participant S as Server TCP :80&#x2F;443
-
-  C-&gt;&gt;S: HTTP Request 方法 URI 首部
-  S-&gt;&gt;S: 路由 &#x2F; 业务处理
-  S--&gt;&gt;C: HTTP Response 状态码 首部 Body
-</code>
-</pre>
-
-<hr>
-<h1 id="一、无状态与资源模型（原理）"><a href="#一、无状态与资源模型（原理）" class="headerlink" title="一、无状态与资源模型（原理）"></a>一、无状态与资源模型（原理）</h1><p><strong>HTTP</strong> 本身<strong>无状态</strong>：服务器默认不记住「上一次请求」；会话常靠 <strong>Cookie</strong>、<strong>Token</strong>、服务端会话存储实现。<strong>REST</strong> 风格强调用 <strong>URI</strong> 表示<strong>资源</strong>，用 <strong>HTTP 方法</strong>表达操作（与 <a href="/2026/05/01/Protocol/RPC/" title="RPC 概念详解：原理、形态与 JSON-RPC &#x2F; curl 示例">RPC</a> 风格对照）。</p>
-<hr>
-<h1 id="二、报文结构（作用）"><a href="#二、报文结构（作用）" class="headerlink" title="二、报文结构（作用）"></a>二、报文结构（作用）</h1><h2 id="1-请求"><a href="#1-请求" class="headerlink" title="1. 请求"></a>1. 请求</h2><figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">GET</span> <span class="string">/path</span> <span class="meta">HTTP/1.1</span></span><br><span class="line"><span class="attribute">Host</span><span class="punctuation">: </span>example.com</span><br><span class="line"><span class="attribute">User-Agent</span><span class="punctuation">: </span>demo</span><br><span class="line"><span class="attribute">Accept</span><span class="punctuation">: </span>*/*</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><strong>请求行</strong>：方法、<strong>请求目标</strong>（路径或绝对 <strong>URI</strong>）、版本。  </li>
-<li><strong>首部</strong>：<strong><code>Host</code></strong> 在 <strong>HTTP&#x2F;1.1</strong> 中语义必填；<strong><code>Content-Length</code></strong> &#x2F; <strong><code>Transfer-Encoding: chunked</code></strong> 控制正文边界。</li>
-</ul>
-<h2 id="2-响应"><a href="#2-响应" class="headerlink" title="2. 响应"></a>2. 响应</h2><figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">HTTP/1.1</span> <span class="number">200</span> OK</span><br><span class="line"><span class="attribute">Content-Type</span><span class="punctuation">: </span>text/plain; charset=utf-8</span><br><span class="line"><span class="attribute">Content-Length</span><span class="punctuation">: </span>5</span><br><span class="line"></span><br><span class="line"><span class="language-ebnf"><span class="attribute">hello</span></span></span><br></pre></td></tr></table></figure>
-
-<hr>
-<h1 id="三、常用方法与幂等（原理）"><a href="#三、常用方法与幂等（原理）" class="headerlink" title="三、常用方法与幂等（原理）"></a>三、常用方法与幂等（原理）</h1><table>
-<thead>
-<tr>
-<th>方法</th>
-<th>典型语义</th>
-<th>幂等</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>GET</strong></td>
-<td>读取资源</td>
-<td>是</td>
-</tr>
-<tr>
-<td><strong>POST</strong></td>
-<td>创建 &#x2F; 提交</td>
-<td>否</td>
-</tr>
-<tr>
-<td><strong>PUT</strong></td>
-<td>整体替换</td>
-<td>是</td>
-</tr>
-<tr>
-<td><strong>PATCH</strong></td>
-<td>部分更新</td>
-<td>视实现</td>
-</tr>
-<tr>
-<td><strong>DELETE</strong></td>
-<td>删除</td>
-<td>是</td>
-</tr>
-<tr>
-<td><strong>HEAD</strong></td>
-<td>同 <strong>GET</strong> 无正文</td>
-<td>是</td>
-</tr>
-<tr>
-<td><strong>OPTIONS</strong></td>
-<td>探测支持的方法</td>
-<td>是</td>
-</tr>
-</tbody></table>
-<p><strong>幂等</strong>：多次执行相同请求<strong>不应</strong>带来额外副作用（仍可能每次返回相同结果）。</p>
-<hr>
-<h1 id="四、状态码（分类）"><a href="#四、状态码（分类）" class="headerlink" title="四、状态码（分类）"></a>四、状态码（分类）</h1><table>
-<thead>
-<tr>
-<th>范围</th>
-<th>含义</th>
-<th>例</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>2xx</strong></td>
-<td>成功</td>
-<td><strong>200</strong>、<strong>201</strong>、<strong>204</strong></td>
-</tr>
-<tr>
-<td><strong>3xx</strong></td>
-<td>重定向</td>
-<td><strong>301</strong>、<strong>302</strong>、<strong>304</strong></td>
-</tr>
-<tr>
-<td><strong>4xx</strong></td>
-<td>客户端错误</td>
-<td><strong>400</strong>、<strong>401</strong>、<strong>403</strong>、<strong>404</strong></td>
-</tr>
-<tr>
-<td><strong>5xx</strong></td>
-<td>服务器错误</td>
-<td><strong>500</strong>、<strong>502</strong>、<strong>503</strong></td>
-</tr>
-</tbody></table>
-<hr>
-<h1 id="五、HTTP-1-1-与-HTTP-2（演进）"><a href="#五、HTTP-1-1-与-HTTP-2（演进）" class="headerlink" title="五、HTTP&#x2F;1.1 与 HTTP&#x2F;2（演进）"></a>五、HTTP&#x2F;1.1 与 HTTP&#x2F;2（演进）</h1><ul>
-<li><strong>HTTP&#x2F;1.1</strong>（<strong>RFC 9112</strong>）：文本形态；<strong>Keep-Alive</strong> 复用连接；<strong>队头阻塞</strong>限制并发效率。  </li>
-<li><strong>HTTP&#x2F;2</strong>（<strong>RFC 9113</strong>）：二进制<strong>帧</strong>；<strong>单连接多路复用</strong>；<strong>HPACK</strong> 压缩首部；浏览器场景几乎总与 <strong>TLS</strong> 同用。  </li>
-<li><strong>HTTP&#x2F;3</strong>（<strong>RFC 9114</strong>）：基于 <a href="/2026/05/01/Protocol/QUIC/" title="QUIC 详解：基于 UDP 的可靠传输、TLS 集成与 HTTP&#x2F;3">QUIC</a>（<a href="/2026/05/01/Protocol/UDP/" title="UDP 协议详解：数据报语义、MTU 与示例代码">UDP</a>）。</li>
-</ul>
-<hr>
-<h1 id="六、示例：curl-观察报文"><a href="#六、示例：curl-观察报文" class="headerlink" title="六、示例：curl 观察报文"></a>六、示例：<code>curl</code> 观察报文</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -v --http1.1 https://example.com/ -o /dev/null</span><br></pre></td></tr></table></figure>
-
-<p>查看 <strong>TLS</strong> 与 <strong>HTTP&#x2F;2</strong>：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -v --http2 https://example.com/ -o /dev/null</span><br></pre></td></tr></table></figure>
-
-<p>仅看响应头：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -sI https://example.com/</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h1 id="七、示例：用-nc-发送最小-HTTP-1-1-请求（明文）"><a href="#七、示例：用-nc-发送最小-HTTP-1-1-请求（明文）" class="headerlink" title="七、示例：用 nc 发送最小 HTTP&#x2F;1.1 请求（明文）"></a>七、示例：用 <strong>nc</strong> 发送最小 <strong>HTTP&#x2F;1.1</strong> 请求（明文）</h1><p><strong>仅用于本地实验</strong>（对端须是明文 <strong>HTTP</strong>）：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">printf</span> <span class="string">&#x27;GET / HTTP/1.1\r\nHost: example.com\r\nConnection: close\r\n\r\n&#x27;</span> | nc example.com 80 | <span class="built_in">head</span></span><br></pre></td></tr></table></figure>
-
-<hr>
-<h1 id="八、示例：Python-3-最小-HTTP-客户端（标准库）"><a href="#八、示例：Python-3-最小-HTTP-客户端（标准库）" class="headerlink" title="八、示例：Python 3 最小 HTTP 客户端（标准库）"></a>八、示例：<strong>Python 3</strong> 最小 <strong>HTTP</strong> 客户端（标准库）</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> urllib.request</span><br><span class="line"></span><br><span class="line">req = urllib.request.Request(<span class="string">&quot;https://example.com/&quot;</span>, headers=&#123;<span class="string">&quot;User-Agent&quot;</span>: <span class="string">&quot;demo&quot;</span>&#125;)</span><br><span class="line"><span class="keyword">with</span> urllib.request.urlopen(req, timeout=<span class="number">10</span>) <span class="keyword">as</span> resp:</span><br><span class="line">    <span class="built_in">print</span>(resp.status, resp.getheader(<span class="string">&quot;Content-Type&quot;</span>))</span><br><span class="line">    <span class="built_in">print</span>(resp.read(<span class="number">200</span>))</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h1 id="九、小结"><a href="#九、小结" class="headerlink" title="九、小结"></a>九、小结</h1><table>
-<thead>
-<tr>
-<th>项</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>原理</td>
-<td><strong>请求&#x2F;响应</strong>、<strong>无状态</strong>、<strong>URI + 方法</strong></td>
-</tr>
-<tr>
-<td>作用</td>
-<td><strong>Web</strong> 与 <strong>API</strong> 的基础语义层</td>
-</tr>
-<tr>
-<td>工具</td>
-<td><strong><code>curl -v</code></strong>、<strong><code>nc</code></strong>、<strong><code>urllib</code></strong></td>
-</tr>
-<tr>
-<td>延伸</td>
-<td><a href="/2026/05/01/Protocol/HTTPS/" title="HTTPS 详解：TLS 握手、证书与 openssl&#x2F;curl 示例">HTTPS</a> · <a href="/2026/05/01/Protocol/WebSocket/" title="WebSocket 详解：握手、帧与 Python 示例">WebSocket</a> · <a href="/2026/05/01/Protocol/QUIC/" title="QUIC 详解：基于 UDP 的可靠传输、TLS 集成与 HTTP&#x2F;3">QUIC</a></td>
-</tr>
-</tbody></table>
-<p>缓存与条件请求（<strong><code>ETag</code></strong>、<strong><code>If-None-Match</code></strong>）见 <strong>RFC 9110</strong> 缓存章节。</p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/Protocol/HTTP3/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="miracle">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="my">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | my">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/05/01/Protocol/HTTP3/" class="post-title-link" itemprop="url">HTTP3 详解：报文、方法、版本与 curl/nc 示例</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2026-05-01 12:46:50" itemprop="dateCreated datePublished" datetime="2026-05-01T12:46:50+08:00">2026-05-01</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-31 23:47:21" itemprop="dateModified" datetime="2026-05-31T23:47:21+08:00">2026-05-31</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Protocol/" itemprop="url" rel="index"><span itemprop="name">Protocol</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>630</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>2 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p><strong>HTTP&#x2F;3</strong>（<strong>RFC 9114</strong>）将 <a href="/2026/05/01/Protocol/HTTP/" title="HTTP 详解：报文、方法、版本与 curl&#x2F;nc 示例">HTTP</a> 语义映射到 <a href="/2026/05/01/Protocol/QUIC/" title="QUIC 详解：基于 UDP 的可靠传输、TLS 集成与 HTTP&#x2F;3">QUIC</a> 传输上。传输层细节见 <a href="/2026/05/01/Protocol/QUIC/" title="QUIC 详解：基于 UDP 的可靠传输、TLS 集成与 HTTP&#x2F;3">QUIC 详解</a>；自签名与 Python 实践见 <a href="/2026/05/04/Protocol/QUIC-code/" title="QUIC 实践：自签名证书与 HTTP&#x2F;3 服务端、客户端（Python）">QUIC 实践</a>。</p>
-<h1 id="协议栈对比"><a href="#协议栈对比" class="headerlink" title="协议栈对比"></a>协议栈对比</h1><pre>
-<code class="mermaid">
-
-flowchart TB
-  subgraph h2 [HTTP&#x2F;2]
-    H2[HTTP&#x2F;2] --&gt; TLS[TLS]
-    TLS --&gt; TCP[TCP]
-  end
-  subgraph h3 [HTTP&#x2F;3]
-    H3[HTTP&#x2F;3] --&gt; QUIC[QUIC over UDP]
-  end
-</code>
-</pre>
-
-<hr>
-<h1 id="一、版本对照"><a href="#一、版本对照" class="headerlink" title="一、版本对照"></a>一、版本对照</h1><table>
-<thead>
-<tr>
-<th>版本</th>
-<th>传输</th>
-<th>多路复用</th>
-<th>典型端口</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>HTTP&#x2F;1.1</strong></td>
-<td><a href="/2026/05/01/Protocol/TCP/" title="TCP 协议详解：连接、可靠传输与编程示例">TCP</a></td>
-<td>多连接或流水线（受限）</td>
-<td>80 &#x2F; 443</td>
-</tr>
-<tr>
-<td><strong>HTTP&#x2F;2</strong></td>
-<td><strong>TCP + TLS</strong></td>
-<td>单连接上帧多路复用</td>
-<td>443</td>
-</tr>
-<tr>
-<td><strong>HTTP&#x2F;3</strong></td>
-<td><a href="/2026/05/01/Protocol/QUIC/" title="QUIC 详解：基于 UDP 的可靠传输、TLS 集成与 HTTP&#x2F;3">QUIC</a>（<a href="/2026/05/01/Protocol/UDP/" title="UDP 协议详解：数据报语义、MTU 与示例代码">UDP</a>）</td>
-<td><strong>QUIC Stream</strong> 级隔离</td>
-<td><strong>UDP&#x2F;443</strong></td>
-</tr>
-</tbody></table>
-<p><strong>HTTP&#x2F;3</strong> 不重新定义 <strong>GET&#x2F;POST</strong> 等方法含义；变化主要在<strong>如何承载</strong>与<strong>连接建立</strong>（常 <strong>1-RTT</strong> + 默认 <strong>TLS 1.3</strong>）。</p>
-<hr>
-<h1 id="二、帧与流（概念）"><a href="#二、帧与流（概念）" class="headerlink" title="二、帧与流（概念）"></a>二、帧与流（概念）</h1><ul>
-<li><strong>QUIC Stream</strong>：单向或双向字节流；<strong>HTTP&#x2F;3</strong> 在特定流上交换 <strong>SETTINGS</strong>、<strong>HEADERS</strong>、<strong>DATA</strong> 等帧（类似 <strong>HTTP&#x2F;2</strong> 帧语义，编码为 <strong>QPACK</strong> 压缩首部）。  </li>
-<li><strong>QPACK</strong>：动态&#x2F;静态表压缩 <strong>Header</strong>，与 <strong>HPACK</strong> 类似但适配 <strong>QUIC</strong> 乱序交付。  </li>
-<li><strong>独立流</strong>：控制流、推送（<strong>Server Push</strong> 在 <strong>HTTP&#x2F;3</strong> 中已废弃，以各实现为准）。</li>
-</ul>
-<p>应用开发者通常通过 <strong>HTTP 客户端库</strong> 使用，而非手写帧。</p>
-<hr>
-<h1 id="三、服务发现与-Alt-Svc"><a href="#三、服务发现与-Alt-Svc" class="headerlink" title="三、服务发现与 Alt-Svc"></a>三、服务发现与 Alt-Svc</h1><p>服务器可在 <strong>HTTP&#x2F;1.1</strong> 或 <strong>HTTP&#x2F;2</strong> 响应中返回 <strong><code>Alt-Svc</code></strong>，告知客户端同一主机可用 <strong>HTTP&#x2F;3</strong>：</p>
-<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">HTTP/2</span> <span class="number">200</span></span><br><span class="line"><span class="attribute">alt-svc</span><span class="punctuation">: </span>h3=&quot;:443&quot;; ma=86400</span><br></pre></td></tr></table></figure>
-
-<p>浏览器与 <strong>curl</strong> 在支持时会缓存该提示，后续优先尝试 <strong>UDP&#x2F;443</strong> 上的 <strong>HTTP&#x2F;3</strong>。</p>
-<hr>
-<h1 id="四、curl-验证"><a href="#四、curl-验证" class="headerlink" title="四、curl 验证"></a>四、curl 验证</h1><p>需 <strong>curl 7.66+</strong> 且编译链接 <strong>ngtcp2&#x2F;nghttp3</strong>（或 <strong>quiche</strong> 等，依发行版）：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">curl -I --http3-only https://cloudflare-quic.com/</span><br><span class="line">curl -v --http3-only https://www.google.com/</span><br></pre></td></tr></table></figure>
-
-<p>若本机 <strong>curl</strong> 无 <strong>HTTP&#x2F;3</strong> 支持，会报协议不可用；可换用带 <strong>HTTP&#x2F;3</strong> 的容器或新版 <strong>curl</strong>。</p>
-<p>对比 <strong>HTTP&#x2F;2</strong>：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -I --http2 https://example.com/</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h1 id="五、抓包与排障"><a href="#五、抓包与排障" class="headerlink" title="五、抓包与排障"></a>五、抓包与排障</h1><ul>
-<li><strong>Wireshark</strong> 较新版本可解析 <strong>QUIC</strong> &#x2F; <strong>HTTP&#x2F;3</strong>（常需 <strong>SSLKEYLOGFILE</strong> 解密 TLS 1.3 流量）。  </li>
-<li><strong>企业网</strong>：需放行 <strong>UDP&#x2F;443</strong>；仅允许 <strong>TCP&#x2F;443</strong> 时 <strong>HTTP&#x2F;3</strong> 会回退 <strong>HTTP&#x2F;2</strong>（若服务端与客户端支持）。  </li>
-<li><strong>负载均衡</strong>：<strong>L4</strong> 需会话保持或 <strong>Connection ID</strong> 感知；<strong>L7</strong> 网关（Nginx、Envoy、CDN）需显式开启 <strong>HTTP&#x2F;3</strong> 监听。</li>
-</ul>
-<hr>
-<h1 id="六、与-HTTPS、WebSocket"><a href="#六、与-HTTPS、WebSocket" class="headerlink" title="六、与 HTTPS、WebSocket"></a>六、与 HTTPS、WebSocket</h1><ul>
-<li>安全 Web 仍见 <a href="/2026/05/01/Protocol/HTTPS/" title="HTTPS 详解：TLS 握手、证书与 openssl&#x2F;curl 示例">HTTPS</a> 总览；<strong>HTTP&#x2F;3</strong> 上加密由 <strong>QUIC</strong> 内置 <strong>TLS 1.3</strong> 承担。  </li>
-<li><strong>WebSocket</strong> 仍主要跑在 <strong>TCP</strong> 上；实时场景另有 <strong>WebTransport</strong>（基于 <strong>QUIC</strong>）等，与经典 <strong>WebSocket</strong> 并存。</li>
-</ul>
-<hr>
-<h1 id="七、小结"><a href="#七、小结" class="headerlink" title="七、小结"></a>七、小结</h1><p><strong>HTTP&#x2F;3</strong> &#x3D; <strong>HTTP 语义</strong> + <strong>QUIC 传输</strong>；选型时评估 <strong>UDP 可达性</strong>、<strong>CDN&#x2F;网关支持</strong>与<strong>客户端覆盖率</strong>。深入握手、<strong>Connection ID</strong>、拥塞控制见 <a href="/2026/05/01/Protocol/QUIC/" title="QUIC 详解：基于 UDP 的可靠传输、TLS 集成与 HTTP&#x2F;3">QUIC 详解</a>。</p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
   <nav class="pagination">
-    <a class="extend prev" rel="prev" title="上一页" aria-label="上一页" href="/page/10/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/10/">10</a><span class="page-number current">11</span><a class="page-number" href="/page/12/">12</a><span class="space">&hellip;</span><a class="page-number" href="/page/19/">19</a><a class="extend next" rel="next" title="下一页" aria-label="下一页" href="/page/12/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" title="上一页" aria-label="上一页" href="/page/10/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/10/">10</a><span class="page-number current">11</span><a class="page-number" href="/page/12/">12</a><span class="space">&hellip;</span><a class="page-number" href="/page/20/">20</a><a class="extend next" rel="next" title="下一页" aria-label="下一页" href="/page/12/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 </div>
@@ -2210,13 +2206,13 @@ flowchart TB
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">186k</span>
+    <span title="站点总字数">195k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">10:18</span>
+    <span title="站点阅读时长">10:49</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动
