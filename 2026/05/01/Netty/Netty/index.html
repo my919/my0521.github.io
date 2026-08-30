@@ -18,29 +18,29 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
 
-<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
+<script class="next-config" data-name="main" type="application/json">{"hostname":"my919.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
 
-    <meta name="description" content="Netty 是 Java 异步事件驱动网络框架，封装 NIO &#x2F; Epoll，提供 Channel、EventLoop、Pipeline 等抽象，用于高并发 TCP&#x2F;UDP、HTTP、WebSocket 服务端与客户端。下面从「定位 → 核心组件 → Pipeline 与 Handler → 启动流程 → 与多路复用专题的关系」顺序写清楚。  一、定位 Reactor 模型：少">
+    <meta name="description" content="第一章：Netty 网络编程框架入门概念基础：Netty 是什么&#x2F;为什么 Netty 是基于 Java NIO 的异步事件驱动网络应用框架：帮你快速开发高性能、高可维护性的协议服务器与客户端，而不必直面原生 NIO 的复杂 API。 为什么不用原生 NIO：Selector 空轮询、缓冲区切换、线程模型搭建等细节繁琐易错；Netty 把这些封装成事件驱动的组件，开发者只写 Handler">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Netty">
-<meta property="og:url" content="http://example.com/2026/05/01/Netty/Netty/index.html">
+<meta property="og:title" content="第一章：Netty 网络编程框架入门">
+<meta property="og:url" content="https://my919.github.io/2026/05/01/Netty/Netty/index.html">
 <meta property="og:site_name" content="my">
-<meta property="og:description" content="Netty 是 Java 异步事件驱动网络框架，封装 NIO &#x2F; Epoll，提供 Channel、EventLoop、Pipeline 等抽象，用于高并发 TCP&#x2F;UDP、HTTP、WebSocket 服务端与客户端。下面从「定位 → 核心组件 → Pipeline 与 Handler → 启动流程 → 与多路复用专题的关系」顺序写清楚。  一、定位 Reactor 模型：少">
+<meta property="og:description" content="第一章：Netty 网络编程框架入门概念基础：Netty 是什么&#x2F;为什么 Netty 是基于 Java NIO 的异步事件驱动网络应用框架：帮你快速开发高性能、高可维护性的协议服务器与客户端，而不必直面原生 NIO 的复杂 API。 为什么不用原生 NIO：Selector 空轮询、缓冲区切换、线程模型搭建等细节繁琐易错；Netty 把这些封装成事件驱动的组件，开发者只写 Handler">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-05-01T04:33:20.000Z">
-<meta property="article:modified_time" content="2026-05-31T15:47:21.952Z">
+<meta property="article:modified_time" content="2026-08-30T07:21:57.826Z">
 <meta property="article:author" content="miracle">
 <meta property="article:tag" content="Netty">
 <meta name="twitter:card" content="summary">
 
 
-<link rel="canonical" href="http://example.com/2026/05/01/Netty/Netty/">
+<link rel="canonical" href="https://my919.github.io/2026/05/01/Netty/Netty/">
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2026/05/01/Netty/Netty/","path":"2026/05/01/Netty/Netty/","title":"Netty"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://my919.github.io/2026/05/01/Netty/Netty/","path":"2026/05/01/Netty/Netty/","title":"第一章：Netty 网络编程框架入门"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>Netty | my</title>
+<title>第一章：Netty 网络编程框架入门 | my</title>
   
 
 
@@ -68,12 +68,6 @@
   
 
 
-
-
-  
-
-  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
-<script src="/js/third-party/math/mathjax.js" defer></script>
 
 
 
@@ -167,7 +161,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E5%AE%9A%E4%BD%8D"><span class="nav-number">1.</span> <span class="nav-text">一、定位</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Reactor-%E7%BA%BF%E7%A8%8B%E6%A8%A1%E5%9E%8B"><span class="nav-number">2.</span> <span class="nav-text">Reactor 线程模型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E6%A0%B8%E5%BF%83%E7%BB%84%E4%BB%B6"><span class="nav-number">3.</span> <span class="nav-text">二、核心组件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81Pipeline-%E7%A4%BA%E4%BE%8B%EF%BC%88%E6%A6%82%E5%BF%B5%EF%BC%89"><span class="nav-number">4.</span> <span class="nav-text">三、Pipeline 示例（概念）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E6%9C%8D%E5%8A%A1%E7%AB%AF%E5%90%AF%E5%8A%A8%EF%BC%88%E9%AA%A8%E6%9E%B6%EF%BC%89"><span class="nav-number">5.</span> <span class="nav-text">四、服务端启动（骨架）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E4%BE%9D%E8%B5%96%E4%B8%8E%E5%BB%B6%E4%BC%B8%E9%98%85%E8%AF%BB"><span class="nav-number">6.</span> <span class="nav-text">五、依赖与延伸阅读</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E7%AB%A0%EF%BC%9ANetty-%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B%E6%A1%86%E6%9E%B6%E5%85%A5%E9%97%A8"><span class="nav-number">1.</span> <span class="nav-text">第一章：Netty 网络编程框架入门</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80%EF%BC%9ANetty-%E6%98%AF%E4%BB%80%E4%B9%88-%E4%B8%BA%E4%BB%80%E4%B9%88"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础：Netty 是什么&#x2F;为什么</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Reactor-%E7%BA%BF%E7%A8%8B%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.2.</span> <span class="nav-text">Reactor 线程模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A0%B8%E5%BF%83%E7%BB%84%E4%BB%B6"><span class="nav-number">1.3.</span> <span class="nav-text">核心组件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Pipeline-%E7%A4%BA%E4%BE%8B%EF%BC%88%E6%A6%82%E5%BF%B5%EF%BC%89"><span class="nav-number">1.4.</span> <span class="nav-text">Pipeline 示例（概念）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%8D%E5%8A%A1%E7%AB%AF%E5%90%AF%E5%8A%A8%EF%BC%88%E9%AA%A8%E6%9E%B6%EF%BC%89"><span class="nav-number">1.5.</span> <span class="nav-text">服务端启动（骨架）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BE%9D%E8%B5%96%E4%B8%8E%E5%BB%B6%E4%BC%B8%E9%98%85%E8%AF%BB"><span class="nav-number">1.6.</span> <span class="nav-text">依赖与延伸阅读</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.7.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -180,18 +174,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">192</span>
+          <span class="site-state-item-count">194</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">39</span>
+        <span class="site-state-item-count">33</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">108</span>
+        <span class="site-state-item-count">114</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -229,7 +223,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/Netty/Netty/">
+    <link itemprop="mainEntityOfPage" href="https://my919.github.io/2026/05/01/Netty/Netty/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -242,12 +236,12 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="Netty | my">
+      <meta itemprop="name" content="第一章：Netty 网络编程框架入门 | my">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          Netty
+          第一章：Netty 网络编程框架入门
         </h1>
 
         <div class="post-meta-container">
@@ -265,7 +259,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-31 23:47:21" itemprop="dateModified" datetime="2026-05-31T23:47:21+08:00">2026-05-31</time>
+      <time title="修改时间：2026-08-30 15:21:57" itemprop="dateModified" datetime="2026-08-30T15:21:57+08:00">2026-08-30</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -284,14 +278,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>452</span>
+      <span>756</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>2 分钟</span>
+      <span>3 分钟</span>
     </span>
 </div>
 
@@ -301,15 +295,15 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><p><strong>Netty</strong> 是 <strong>Java</strong> 异步事件驱动网络框架，封装 <strong>NIO &#x2F; Epoll</strong>，提供 <strong>Channel、EventLoop、Pipeline</strong> 等抽象，用于高并发 <strong>TCP&#x2F;UDP</strong>、<strong>HTTP</strong>、<strong>WebSocket</strong> 服务端与客户端。下面从「<strong>定位</strong> → <strong>核心组件</strong> → <strong>Pipeline 与 Handler</strong> → <strong>启动流程</strong> → <strong>与多路复用专题的关系</strong>」顺序写清楚。</p>
-<hr>
-<h1 id="一、定位"><a href="#一、定位" class="headerlink" title="一、定位"></a>一、定位</h1><ul>
-<li><strong>Reactor 模型</strong>：少量 <strong>EventLoop</strong> 线程通过 <strong>Selector</strong> 监视大量 <strong>Channel</strong>。  </li>
-<li><strong>零拷贝与缓冲</strong>：<strong>ByteBuf</strong> 池化、<strong>CompositeByteBuf</strong> 等减少拷贝（具体依版本与平台）。  </li>
-<li><strong>协议栈</strong>：内置或社区 <strong>Codec</strong>（HTTP、Redis、MQTT 等），也可自定义帧解码。</li>
-</ul>
-<p>典型用户：<strong>Dubbo</strong>、<strong>gRPC-Java</strong>（部分）、<strong>Elasticsearch</strong>、游戏网关、物联网接入。</p>
-<h1 id="Reactor-线程模型"><a href="#Reactor-线程模型" class="headerlink" title="Reactor 线程模型"></a>Reactor 线程模型</h1><pre>
+    <div class="post-body" itemprop="articleBody"><h1 id="第一章：Netty-网络编程框架入门"><a href="#第一章：Netty-网络编程框架入门" class="headerlink" title="第一章：Netty 网络编程框架入门"></a>第一章：Netty 网络编程框架入门</h1><h2 id="概念基础：Netty-是什么-为什么"><a href="#概念基础：Netty-是什么-为什么" class="headerlink" title="概念基础：Netty 是什么&#x2F;为什么"></a>概念基础：Netty 是什么&#x2F;为什么</h2><ol>
+<li><strong>Netty</strong> 是基于 <strong>Java NIO</strong> 的<strong>异步事件驱动</strong>网络应用框架：帮你快速开发<strong>高性能、高可维护性</strong>的协议服务器与客户端，而不必直面原生 NIO 的复杂 API。</li>
+<li><strong>为什么不用原生 NIO</strong>：<strong>Selector</strong> 空轮询、缓冲区切换、线程模型搭建等细节繁琐易错；<strong>Netty</strong> 把这些封装成<strong>事件驱动</strong>的组件，开发者只写 <strong>Handler</strong>。</li>
+<li><strong>Reactor 模型</strong>：少量 <strong>EventLoop</strong> 线程通过 <strong>Selector</strong> 监视大量 <strong>Channel</strong>，以<strong>事件驱动</strong>取代「一条连接一条线程」，是高并发服务器的经典模型。</li>
+<li><strong>零拷贝与缓冲</strong>：<strong>ByteBuf</strong> 池化、<strong>CompositeByteBuf</strong> 等减少拷贝（具体依版本与平台），降低 GC 与内存开销。</li>
+<li><strong>协议栈与生态</strong>：内置或社区 <strong>Codec</strong>（HTTP、Redis、MQTT 等），也可自定义帧解码；典型用户：<strong>Dubbo</strong>、<strong>gRPC-Java</strong>（部分）、<strong>Elasticsearch</strong>、游戏网关、物联网接入。</li>
+</ol>
+<p>从最核心的线程模型看起：</p>
+<h2 id="Reactor-线程模型"><a href="#Reactor-线程模型" class="headerlink" title="Reactor 线程模型"></a>Reactor 线程模型</h2><pre>
 <code class="mermaid">
 
 flowchart TB
@@ -327,8 +321,7 @@ flowchart TB
 </code>
 </pre>
 
-<hr>
-<h1 id="二、核心组件"><a href="#二、核心组件" class="headerlink" title="二、核心组件"></a>二、核心组件</h1><table>
+<h2 id="核心组件"><a href="#核心组件" class="headerlink" title="核心组件"></a>核心组件</h2><table>
 <thead>
 <tr>
 <th>组件</th>
@@ -356,26 +349,52 @@ flowchart TB
 <td>客户端&#x2F;服务端启动辅助类</td>
 </tr>
 </tbody></table>
-<hr>
-<h1 id="三、Pipeline-示例（概念）"><a href="#三、Pipeline-示例（概念）" class="headerlink" title="三、Pipeline 示例（概念）"></a>三、Pipeline 示例（概念）</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">pipeline.addLast(<span class="keyword">new</span> <span class="title class_">LengthFieldBasedFrameDecoder</span>(<span class="number">65535</span>, <span class="number">0</span>, <span class="number">4</span>, <span class="number">0</span>, <span class="number">4</span>));</span><br><span class="line">pipeline.addLast(<span class="keyword">new</span> <span class="title class_">StringDecoder</span>(CharsetUtil.UTF_8));</span><br><span class="line">pipeline.addLast(<span class="keyword">new</span> <span class="title class_">StringEncoder</span>(CharsetUtil.UTF_8));</span><br><span class="line">pipeline.addLast(<span class="keyword">new</span> <span class="title class_">SimpleChannelInboundHandler</span>&lt;String&gt;() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">channelRead0</span><span class="params">(ChannelHandlerContext ctx, String msg)</span> &#123;</span><br><span class="line">        ctx.writeAndFlush(<span class="string">&quot;echo: &quot;</span> + msg);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h2 id="Pipeline-示例（概念）"><a href="#Pipeline-示例（概念）" class="headerlink" title="Pipeline 示例（概念）"></a>Pipeline 示例（概念）</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">pipeline.addLast(<span class="keyword">new</span> <span class="title class_">LengthFieldBasedFrameDecoder</span>(<span class="number">65535</span>, <span class="number">0</span>, <span class="number">4</span>, <span class="number">0</span>, <span class="number">4</span>));</span><br><span class="line">pipeline.addLast(<span class="keyword">new</span> <span class="title class_">StringDecoder</span>(CharsetUtil.UTF_8));</span><br><span class="line">pipeline.addLast(<span class="keyword">new</span> <span class="title class_">StringEncoder</span>(CharsetUtil.UTF_8));</span><br><span class="line">pipeline.addLast(<span class="keyword">new</span> <span class="title class_">SimpleChannelInboundHandler</span>&lt;String&gt;() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">channelRead0</span><span class="params">(ChannelHandlerContext ctx, String msg)</span> &#123;</span><br><span class="line">        ctx.writeAndFlush(<span class="string">&quot;echo: &quot;</span> + msg);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
 
 <ul>
 <li><strong>入站</strong>：socket 读 → 解码 → 业务 <strong>Handler</strong>。  </li>
 <li><strong>出站</strong>：业务写 → 编码 → socket 写。  </li>
 <li><strong>共享 Handler</strong>：注意 <strong>@Sharable</strong> 与线程安全。</li>
 </ul>
-<hr>
-<h1 id="四、服务端启动（骨架）"><a href="#四、服务端启动（骨架）" class="headerlink" title="四、服务端启动（骨架）"></a>四、服务端启动（骨架）</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">EventLoopGroup</span> <span class="variable">boss</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">NioEventLoopGroup</span>(<span class="number">1</span>);</span><br><span class="line"><span class="type">EventLoopGroup</span> <span class="variable">worker</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">NioEventLoopGroup</span>();</span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="type">ServerBootstrap</span> <span class="variable">b</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ServerBootstrap</span>();</span><br><span class="line">    b.group(boss, worker)</span><br><span class="line">     .channel(NioServerSocketChannel.class)</span><br><span class="line">     .childHandler(<span class="keyword">new</span> <span class="title class_">ChannelInitializer</span>&lt;SocketChannel&gt;() &#123;</span><br><span class="line">         <span class="meta">@Override</span></span><br><span class="line">         <span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">initChannel</span><span class="params">(SocketChannel ch)</span> &#123;</span><br><span class="line">             ch.pipeline().addLast(<span class="comment">/* handlers */</span>);</span><br><span class="line">         &#125;</span><br><span class="line">     &#125;);</span><br><span class="line">    <span class="type">ChannelFuture</span> <span class="variable">f</span> <span class="operator">=</span> b.bind(<span class="number">8080</span>).sync();</span><br><span class="line">    f.channel().closeFuture().sync();</span><br><span class="line">&#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">    boss.shutdownGracefully();</span><br><span class="line">    worker.shutdownGracefully();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="服务端启动（骨架）"><a href="#服务端启动（骨架）" class="headerlink" title="服务端启动（骨架）"></a>服务端启动（骨架）</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">EventLoopGroup</span> <span class="variable">boss</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">NioEventLoopGroup</span>(<span class="number">1</span>);</span><br><span class="line"><span class="type">EventLoopGroup</span> <span class="variable">worker</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">NioEventLoopGroup</span>();</span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="type">ServerBootstrap</span> <span class="variable">b</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ServerBootstrap</span>();</span><br><span class="line">    b.group(boss, worker)</span><br><span class="line">     .channel(NioServerSocketChannel.class)</span><br><span class="line">     .childHandler(<span class="keyword">new</span> <span class="title class_">ChannelInitializer</span>&lt;SocketChannel&gt;() &#123;</span><br><span class="line">         <span class="meta">@Override</span></span><br><span class="line">         <span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">initChannel</span><span class="params">(SocketChannel ch)</span> &#123;</span><br><span class="line">             ch.pipeline().addLast(<span class="comment">/* handlers */</span>);</span><br><span class="line">         &#125;</span><br><span class="line">     &#125;);</span><br><span class="line">    <span class="type">ChannelFuture</span> <span class="variable">f</span> <span class="operator">=</span> b.bind(<span class="number">8080</span>).sync();</span><br><span class="line">    f.channel().closeFuture().sync();</span><br><span class="line">&#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">    boss.shutdownGracefully();</span><br><span class="line">    worker.shutdownGracefully();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<hr>
-<h1 id="五、依赖与延伸阅读"><a href="#五、依赖与延伸阅读" class="headerlink" title="五、依赖与延伸阅读"></a>五、依赖与延伸阅读</h1><p><strong>Maven</strong>：</p>
+<h2 id="依赖与延伸阅读"><a href="#依赖与延伸阅读" class="headerlink" title="依赖与延伸阅读"></a>依赖与延伸阅读</h2><p><strong>Maven</strong>：</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>io.netty<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>netty-all<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">version</span>&gt;</span>4.1.115.Final<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
 <ul>
-<li><strong>I&#x2F;O 多路复用原理与 Echo 完整示例</strong>：见 <a href="/2026/05/01/Netty/Netty%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8/" title="Netty 多路复用">Netty 多路复用</a>  </li>
-<li><strong>协议层</strong>：<a href="/2026/05/01/Protocol/TCP/" title="TCP 协议详解：连接、可靠传输与编程示例">TCP</a>、<a href="/2026/05/01/Protocol/WebSocket/" title="WebSocket 详解：握手、帧与 Python 示例">WebSocket</a>、<a href="/2026/05/01/Protocol/HTTP/" title="HTTP 详解：报文、方法、版本与 curl&#x2F;nc 示例">HTTP</a></li>
+<li><strong>I&#x2F;O 多路复用原理与 Echo 完整示例</strong>：见 <a href="/2026/05/01/Netty/Netty%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8/" title="第二章：IO 多路复用与 Netty 线程模型">第二章：IO 多路复用与 Netty 线程模型</a>  </li>
+<li><strong>协议层</strong>：<a href="/2026/05/01/Protocol/TCP/" title="第一章：TCP 协议详解：连接、可靠传输与编程示例">第一章：TCP 协议详解：连接、可靠传输与编程示例</a>、<a href="/2026/05/01/Protocol/WebSocket/" title="第十一章：WebSocket 详解：握手、帧与 Python 示例">第十一章：WebSocket 详解：握手、帧与 Python 示例</a>、<a href="/2026/05/01/Protocol/HTTP/" title="第二章：HTTP 详解：报文、方法、版本与 curl&#x2F;nc 示例">第二章：HTTP 详解：报文、方法、版本与 curl&#x2F;nc 示例</a></li>
 </ul>
 <p>官网：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://netty.io/">https://netty.io/</a></p>
+<h2 id="本章小结"><a href="#本章小结" class="headerlink" title="本章小结"></a>本章小结</h2><table>
+<thead>
+<tr>
+<th>要点</th>
+<th>结论</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>定位</td>
+<td><strong>异步事件驱动</strong>的网络框架，封装原生 <strong>NIO</strong> 的复杂细节</td>
+</tr>
+<tr>
+<td>线程模型</td>
+<td><strong>Reactor</strong>：少量 <strong>EventLoop</strong> 借 <strong>Selector</strong> 管大量 <strong>Channel</strong></td>
+</tr>
+<tr>
+<td>核心组件</td>
+<td><strong>EventLoopGroup &#x2F; Channel &#x2F; Pipeline &#x2F; Handler &#x2F; Bootstrap</strong> 五件套</td>
+</tr>
+<tr>
+<td>编排方式</td>
+<td>入站解码、出站编码，业务逻辑写成 <strong>Handler</strong> 挂进 <strong>Pipeline</strong></td>
+</tr>
+<tr>
+<td>上手路径</td>
+<td>先跑通 <strong>ServerBootstrap</strong> 骨架，再深入多路复用与线程模型</td>
+</tr>
+</tbody></table>
+<p>下一步：深入 IO 多路复用与线程模型，并跑通完整 Echo 示例——<a href="/2026/05/01/Netty/Netty%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8/" title="第二章：IO 多路复用与 Netty 线程模型">第二章：IO 多路复用与 Netty 线程模型</a> →</p>
 
     </div>
 
@@ -392,8 +411,8 @@ flowchart TB
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2026/05/01/Netty/Netty%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8/" rel="prev" title="Netty 多路复用">
-                  <i class="fa fa-angle-left"></i> Netty 多路复用
+                <a href="/2026/05/01/Netty/Netty%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8/" rel="prev" title="第二章：IO 多路复用与 Netty 线程模型">
+                  <i class="fa fa-angle-left"></i> 第二章：IO 多路复用与 Netty 线程模型
                 </a>
             </div>
             <div class="post-nav-item">
@@ -430,13 +449,13 @@ flowchart TB
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">195k</span>
+    <span title="站点总字数">253k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">10:49</span>
+    <span title="站点阅读时长">14:03</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

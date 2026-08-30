@@ -18,29 +18,29 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
 
-<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
+<script class="next-config" data-name="main" type="application/json">{"hostname":"my919.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
 
-    <meta name="description" content="RS-232 是经典的串行物理层标准：单端信号、±3~15V 电平（相对信号地），定义 DTE&#x2F;DCE 引脚（TXD&#x2F;RXD&#x2F;RTS&#x2F;CTS 等）。下面从「电平与距离 → 与 TTL UART 转换 → 三线制通信 → 流控 → 与现代接口的关系」顺序写清楚。 DTE-DCE 连接   flowchart LR   PC[DTE PC] --&gt;|TXD">
+    <meta name="description" content="第五章：RS232概念基础：RS232 是什么&#x2F;为什么 RS232 是 EIA 定义的串行物理层标准，规定电气电平、信号线与连接器（DB9）——「PC 老式 COM 口」背后的标准。 负逻辑电平：逻辑 1 是负电压（-5V~-15V），逻辑 0 是正电压（+5V~+15V），与 MCU 的 TTL UART（0&#x2F;3.3V）完全不同，必须经 MAX232 等芯片做电平转换。 点对">
 <meta property="og:type" content="article">
-<meta property="og:title" content="RS232">
-<meta property="og:url" content="http://example.com/2026/05/01/Embedded/RS232/index.html">
+<meta property="og:title" content="第五章：RS232">
+<meta property="og:url" content="https://my919.github.io/2026/05/01/Embedded/RS232/index.html">
 <meta property="og:site_name" content="my">
-<meta property="og:description" content="RS-232 是经典的串行物理层标准：单端信号、±3~15V 电平（相对信号地），定义 DTE&#x2F;DCE 引脚（TXD&#x2F;RXD&#x2F;RTS&#x2F;CTS 等）。下面从「电平与距离 → 与 TTL UART 转换 → 三线制通信 → 流控 → 与现代接口的关系」顺序写清楚。 DTE-DCE 连接   flowchart LR   PC[DTE PC] --&gt;|TXD">
+<meta property="og:description" content="第五章：RS232概念基础：RS232 是什么&#x2F;为什么 RS232 是 EIA 定义的串行物理层标准，规定电气电平、信号线与连接器（DB9）——「PC 老式 COM 口」背后的标准。 负逻辑电平：逻辑 1 是负电压（-5V~-15V），逻辑 0 是正电压（+5V~+15V），与 MCU 的 TTL UART（0&#x2F;3.3V）完全不同，必须经 MAX232 等芯片做电平转换。 点对">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-05-01T05:10:04.000Z">
-<meta property="article:modified_time" content="2026-05-31T15:47:21.962Z">
+<meta property="article:modified_time" content="2026-08-30T07:30:47.517Z">
 <meta property="article:author" content="miracle">
 <meta property="article:tag" content="Embedded">
 <meta name="twitter:card" content="summary">
 
 
-<link rel="canonical" href="http://example.com/2026/05/01/Embedded/RS232/">
+<link rel="canonical" href="https://my919.github.io/2026/05/01/Embedded/RS232/">
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2026/05/01/Embedded/RS232/","path":"2026/05/01/Embedded/RS232/","title":"RS232"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://my919.github.io/2026/05/01/Embedded/RS232/","path":"2026/05/01/Embedded/RS232/","title":"第五章：RS232"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>RS232 | my</title>
+<title>第五章：RS232 | my</title>
   
 
 
@@ -68,12 +68,6 @@
   
 
 
-
-
-  
-
-  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
-<script src="/js/third-party/math/mathjax.js" defer></script>
 
 
 
@@ -167,7 +161,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#DTE-DCE-%E8%BF%9E%E6%8E%A5"><span class="nav-number">1.</span> <span class="nav-text">DTE-DCE 连接</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E7%94%B5%E5%B9%B3%E4%B8%8E%E7%89%B9%E7%82%B9"><span class="nav-number">2.</span> <span class="nav-text">一、电平与特点</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E6%9C%80%E5%B0%8F%E4%B8%89%E7%BA%BF%E8%BF%9E%E6%8E%A5"><span class="nav-number">3.</span> <span class="nav-text">二、最小三线连接</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E6%B5%81%E6%8E%A7%EF%BC%88%E5%8F%AF%E9%80%89%EF%BC%89"><span class="nav-number">4.</span> <span class="nav-text">三、流控（可选）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-number">5.</span> <span class="nav-text">四、应用场景</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%BA%94%E7%AB%A0%EF%BC%9ARS232"><span class="nav-number">1.</span> <span class="nav-text">第五章：RS232</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80%EF%BC%9ARS232-%E6%98%AF%E4%BB%80%E4%B9%88-%E4%B8%BA%E4%BB%80%E4%B9%88"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础：RS232 是什么&#x2F;为什么</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DTE-DCE-%E8%BF%9E%E6%8E%A5"><span class="nav-number">1.2.</span> <span class="nav-text">DTE-DCE 连接</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E7%94%B5%E5%B9%B3%E4%B8%8E%E7%89%B9%E7%82%B9"><span class="nav-number">1.3.</span> <span class="nav-text">一、电平与特点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E6%9C%80%E5%B0%8F%E4%B8%89%E7%BA%BF%E8%BF%9E%E6%8E%A5"><span class="nav-number">1.4.</span> <span class="nav-text">二、最小三线连接</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E6%B5%81%E6%8E%A7%EF%BC%88%E5%8F%AF%E9%80%89%EF%BC%89"><span class="nav-number">1.5.</span> <span class="nav-text">三、流控（可选）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-number">1.6.</span> <span class="nav-text">四、应用场景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.7.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -180,18 +174,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">192</span>
+          <span class="site-state-item-count">194</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">39</span>
+        <span class="site-state-item-count">33</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">108</span>
+        <span class="site-state-item-count">114</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -229,7 +223,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/Embedded/RS232/">
+    <link itemprop="mainEntityOfPage" href="https://my919.github.io/2026/05/01/Embedded/RS232/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -242,12 +236,12 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="RS232 | my">
+      <meta itemprop="name" content="第五章：RS232 | my">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          RS232
+          第五章：RS232
         </h1>
 
         <div class="post-meta-container">
@@ -265,7 +259,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-31 23:47:21" itemprop="dateModified" datetime="2026-05-31T23:47:21+08:00">2026-05-31</time>
+      <time title="修改时间：2026-08-30 15:30:47" itemprop="dateModified" datetime="2026-08-30T15:30:47+08:00">2026-08-30</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -284,14 +278,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>344</span>
+      <span>626</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>1 分钟</span>
+      <span>2 分钟</span>
     </span>
 </div>
 
@@ -301,8 +295,15 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><p><strong>RS-232</strong> 是经典的<strong>串行物理层</strong>标准：单端信号、<strong>±3~15V</strong> 电平（相对信号地），定义 <strong>DTE&#x2F;DCE</strong> 引脚（<strong>TXD&#x2F;RXD&#x2F;RTS&#x2F;CTS</strong> 等）。下面从「<strong>电平与距离</strong> → <strong>与 TTL UART 转换</strong> → <strong>三线制通信</strong> → <strong>流控</strong> → <strong>与现代接口的关系</strong>」顺序写清楚。</p>
-<h1 id="DTE-DCE-连接"><a href="#DTE-DCE-连接" class="headerlink" title="DTE-DCE 连接"></a>DTE-DCE 连接</h1><pre>
+    <div class="post-body" itemprop="articleBody"><h1 id="第五章：RS232"><a href="#第五章：RS232" class="headerlink" title="第五章：RS232"></a>第五章：RS232</h1><h2 id="概念基础：RS232-是什么-为什么"><a href="#概念基础：RS232-是什么-为什么" class="headerlink" title="概念基础：RS232 是什么&#x2F;为什么"></a>概念基础：RS232 是什么&#x2F;为什么</h2><ol>
+<li><strong>RS232</strong> 是 <strong>EIA 定义的串行物理层标准</strong>，规定<strong>电气电平、信号线与连接器（DB9）</strong>——「PC 老式 COM 口」背后的标准。</li>
+<li><strong>负逻辑电平</strong>：逻辑 1 是<strong>负电压（-5V~-15V）</strong>，逻辑 0 是<strong>正电压（+5V~+15V）</strong>，与 MCU 的 <strong>TTL UART（0&#x2F;3.3V）完全不同</strong>，必须经 <strong>MAX232</strong> 等芯片做电平转换。</li>
+<li><strong>点对点、单端</strong>：一收一发加共地，<strong>抗干扰弱、典型距离 &lt; 15m</strong>，速率与距离反相关。</li>
+<li><strong>为什么仍要学</strong>：工业仪器、老式 PLC、条码枪仍大量保留 <strong>DB9</strong> 口；PC 侧 <strong>USB 转 RS232</strong> 线依然是常用调试手段。</li>
+<li><strong>与 UART 的关系</strong>：UART 是<strong>控制器逻辑</strong>，RS232 是<strong>物理层电气标准</strong>；其上仍可跑 <strong>Modbus RTU</strong> 或自定义帧协议。</li>
+</ol>
+<p>先看典型的 DTE-DCE 连接：</p>
+<h2 id="DTE-DCE-连接"><a href="#DTE-DCE-连接" class="headerlink" title="DTE-DCE 连接"></a>DTE-DCE 连接</h2><pre>
 <code class="mermaid">
 
 flowchart LR
@@ -312,19 +313,19 @@ flowchart LR
 </pre>
 
 <hr>
-<h1 id="一、电平与特点"><a href="#一、电平与特点" class="headerlink" title="一、电平与特点"></a>一、电平与特点</h1><ul>
+<h2 id="一、电平与特点"><a href="#一、电平与特点" class="headerlink" title="一、电平与特点"></a>一、电平与特点</h2><ul>
 <li><strong>逻辑 1</strong>：负电压（如 <strong>-5V ~ -15V</strong>）  </li>
 <li><strong>逻辑 0</strong>：正电压（如 <strong>+5V ~ +15V</strong>）  </li>
-<li><strong>单端</strong>：抗干扰弱于 <a href="/2026/05/01/Embedded/RS485/" title="RS485">RS485</a> 差分；距离通常 <strong>&lt; 15m</strong>（与波特率反相关）。  </li>
+<li><strong>单端</strong>：抗干扰弱于 <a href="/2026/05/01/Embedded/RS485/" title="第六章：RS485">第六章：RS485</a> 差分；距离通常 <strong>&lt; 15m</strong>（与波特率反相关）。  </li>
 <li><strong>点对点</strong>：多机需额外切换，不像 RS485 总线型。</li>
 </ul>
-<p>MCU 侧为 <strong>TTL <a href="/2026/05/01/Embedded/UART/" title="UART">UART</a></strong>（0&#x2F;3.3V），需 <strong>MAX232</strong>、<strong>SP3232</strong> 等芯片做电平转换。</p>
+<p>MCU 侧为 <strong>TTL <a href="/2026/05/01/Embedded/UART/" title="第四章：UART">第四章：UART</a></strong>（0&#x2F;3.3V），需 <strong>MAX232</strong>、<strong>SP3232</strong> 等芯片做电平转换。</p>
 <hr>
-<h1 id="二、最小三线连接"><a href="#二、最小三线连接" class="headerlink" title="二、最小三线连接"></a>二、最小三线连接</h1><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">设备 A TXD ──→ 设备 B RXD</span><br><span class="line">设备 A RXD ←── 设备 B TXD</span><br><span class="line">GND ───────── GND</span><br></pre></td></tr></table></figure>
+<h2 id="二、最小三线连接"><a href="#二、最小三线连接" class="headerlink" title="二、最小三线连接"></a>二、最小三线连接</h2><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">设备 A TXD ──→ 设备 B RXD</span><br><span class="line">设备 A RXD ←── 设备 B TXD</span><br><span class="line">GND ───────── GND</span><br></pre></td></tr></table></figure>
 
 <p><strong>交叉连接</strong> TX&#x2F;RX；<strong>不要</strong>把 RS232 口直接接 MCU UART 引脚。</p>
 <hr>
-<h1 id="三、流控（可选）"><a href="#三、流控（可选）" class="headerlink" title="三、流控（可选）"></a>三、流控（可选）</h1><table>
+<h2 id="三、流控（可选）"><a href="#三、流控（可选）" class="headerlink" title="三、流控（可选）"></a>三、流控（可选）</h2><table>
 <thead>
 <tr>
 <th>信号</th>
@@ -346,12 +347,41 @@ flowchart LR
 </tbody></table>
 <p>嵌入式调试常 <strong>115200 8N1 无流控</strong>。</p>
 <hr>
-<h1 id="四、应用场景"><a href="#四、应用场景" class="headerlink" title="四、应用场景"></a>四、应用场景</h1><ul>
+<h2 id="四、应用场景"><a href="#四、应用场景" class="headerlink" title="四、应用场景"></a>四、应用场景</h2><ul>
 <li>工业仪器、老式 PLC、条码枪 <strong>DB9</strong> 口。  </li>
 <li><strong>USB 转 RS232</strong>  dongle 在 PC 上模拟 <strong>COM</strong> 口。  </li>
-<li>长距离、多机、抗干扰场景优先 <strong>RS485</strong> 或 <strong>以太网</strong>（<a href="/2026/05/01/Embedded/ModbusTCP/" title="Modbus TCP">Modbus TCP</a>）。</li>
+<li>长距离、多机、抗干扰场景优先 <strong>RS485</strong> 或 <strong>以太网</strong>（<a href="/2026/05/01/Embedded/ModbusTCP/" title="第二章：Modbus TCP">第二章：Modbus TCP</a>）。</li>
 </ul>
-<p>协议层仍可能是 <a href="/2026/05/01/Embedded/ModbusRTU/" title="Modbus RTU">Modbus RTU</a> 或自定义 ASCII 帧。</p>
+<p>协议层仍可能是 <a href="/2026/05/01/Embedded/ModbusRTU/" title="第一章：Modbus RTU">第一章：Modbus RTU</a> 或自定义 ASCII 帧。</p>
+<h2 id="本章小结"><a href="#本章小结" class="headerlink" title="本章小结"></a>本章小结</h2><table>
+<thead>
+<tr>
+<th>要点</th>
+<th>结论</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>电平</td>
+<td><strong>负逻辑</strong>：1 &#x3D; -5V<del>-15V，0 &#x3D; +5V</del>+15V，与 TTL 不兼容</td>
+</tr>
+<tr>
+<td>拓扑</td>
+<td><strong>点对点、单端</strong>，典型距离 &lt; 15m，多机换 RS485</td>
+</tr>
+<tr>
+<td>连接</td>
+<td>最小三线 TXD&#x2F;RXD&#x2F;GND，<strong>TX&#x2F;RX 交叉</strong>；禁止直连 MCU 引脚</td>
+</tr>
+<tr>
+<td>电平转换</td>
+<td>MCU TTL UART 经 <strong>MAX232&#x2F;SP3232</strong> 接入</td>
+</tr>
+<tr>
+<td>定位</td>
+<td>老设备&#x2F;仪器调试口；新设计长距离优先 RS485 或以太网</td>
+</tr>
+</tbody></table>
+<p>下一步：同样的字节流换成差分信号，走向工业多机总线 → <a href="/2026/05/01/Embedded/RS485/" title="第六章：RS485">第六章：RS485</a></p>
 
     </div>
 
@@ -368,13 +398,13 @@ flowchart LR
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2026/05/01/Embedded/UART/" rel="prev" title="UART">
-                  <i class="fa fa-angle-left"></i> UART
+                <a href="/2026/05/01/Embedded/UART/" rel="prev" title="第四章：UART">
+                  <i class="fa fa-angle-left"></i> 第四章：UART
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2026/05/01/Embedded/RS485/" rel="next" title="RS485">
-                  RS485 <i class="fa fa-angle-right"></i>
+                <a href="/2026/05/01/Embedded/RS485/" rel="next" title="第六章：RS485">
+                  第六章：RS485 <i class="fa fa-angle-right"></i>
                 </a>
             </div>
           </div>
@@ -406,13 +436,13 @@ flowchart LR
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">195k</span>
+    <span title="站点总字数">253k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">10:49</span>
+    <span title="站点阅读时长">14:03</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

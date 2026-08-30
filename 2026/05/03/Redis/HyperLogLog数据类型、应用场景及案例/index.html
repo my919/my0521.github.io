@@ -18,17 +18,17 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
 
-<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
+<script class="next-config" data-name="main" type="application/json">{"hostname":"my919.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
 
-    <meta name="description" content="HyperLogLog（HLL） 是 Redis 2.8.9+ 提供的概率型数据结构：用固定约 12KB（标准实现）内存估算集合基数（不重复元素个数），结果有误差（标准误差约 0.81%），换极低内存统计 UV。部署见 Redis-Docker.md。  一、HyperLogLog 是什么 不是存明细，只支持 PFADD 添加元素、PFCOUNT 估算基数、PFMERGE 合并多个 HLL。">
+    <meta name="description" content="第九章：Redis HyperLogLog：概念、命令与案例概念基础：HyperLogLog 是什么HyperLogLog（HLL） 是一种基数（去重计数）估算算法的数据结构——用极小的固定内存回答「这批元素大约有多少个不同的」：  不是存明细，只支持 PFADD 添加元素、PFCOUNT 估算基数、PFMERGE 合并多个 HLL。   内存奇迹：无论存 1 万还是 1 亿个元素，每个 HLL">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Redis HyperLogLog 数据类型、应用场景及案例">
-<meta property="og:url" content="http://example.com/2026/05/03/Redis/HyperLogLog%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E3%80%81%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%E5%8F%8A%E6%A1%88%E4%BE%8B/index.html">
+<meta property="og:title" content="第九章：Redis HyperLogLog：概念、命令与案例">
+<meta property="og:url" content="https://my919.github.io/2026/05/03/Redis/HyperLogLog%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E3%80%81%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%E5%8F%8A%E6%A1%88%E4%BE%8B/index.html">
 <meta property="og:site_name" content="my">
-<meta property="og:description" content="HyperLogLog（HLL） 是 Redis 2.8.9+ 提供的概率型数据结构：用固定约 12KB（标准实现）内存估算集合基数（不重复元素个数），结果有误差（标准误差约 0.81%），换极低内存统计 UV。部署见 Redis-Docker.md。  一、HyperLogLog 是什么 不是存明细，只支持 PFADD 添加元素、PFCOUNT 估算基数、PFMERGE 合并多个 HLL。">
+<meta property="og:description" content="第九章：Redis HyperLogLog：概念、命令与案例概念基础：HyperLogLog 是什么HyperLogLog（HLL） 是一种基数（去重计数）估算算法的数据结构——用极小的固定内存回答「这批元素大约有多少个不同的」：  不是存明细，只支持 PFADD 添加元素、PFCOUNT 估算基数、PFMERGE 合并多个 HLL。   内存奇迹：无论存 1 万还是 1 亿个元素，每个 HLL">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-05-03T09:31:20.000Z">
-<meta property="article:modified_time" content="2026-05-03T09:43:34.221Z">
+<meta property="article:modified_time" content="2026-08-30T06:30:09.135Z">
 <meta property="article:author" content="miracle">
 <meta property="article:tag" content="HyperLogLog">
 <meta property="article:tag" content="Redis">
@@ -36,13 +36,13 @@
 <meta name="twitter:card" content="summary">
 
 
-<link rel="canonical" href="http://example.com/2026/05/03/Redis/HyperLogLog%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E3%80%81%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%E5%8F%8A%E6%A1%88%E4%BE%8B/">
+<link rel="canonical" href="https://my919.github.io/2026/05/03/Redis/HyperLogLog%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E3%80%81%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%E5%8F%8A%E6%A1%88%E4%BE%8B/">
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2026/05/03/Redis/HyperLogLog%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E3%80%81%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%E5%8F%8A%E6%A1%88%E4%BE%8B/","path":"2026/05/03/Redis/HyperLogLog数据类型、应用场景及案例/","title":"Redis HyperLogLog 数据类型、应用场景及案例"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://my919.github.io/2026/05/03/Redis/HyperLogLog%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E3%80%81%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%E5%8F%8A%E6%A1%88%E4%BE%8B/","path":"2026/05/03/Redis/HyperLogLog数据类型、应用场景及案例/","title":"第九章：Redis HyperLogLog：概念、命令与案例"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>Redis HyperLogLog 数据类型、应用场景及案例 | my</title>
+<title>第九章：Redis HyperLogLog：概念、命令与案例 | my</title>
   
 
 
@@ -70,12 +70,6 @@
   
 
 
-
-
-  
-
-  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
-<script src="/js/third-party/math/mathjax.js" defer></script>
 
 
 
@@ -169,7 +163,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81HyperLogLog-%E6%98%AF%E4%BB%80%E4%B9%88"><span class="nav-number">1.</span> <span class="nav-text">一、HyperLogLog 是什么</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4"><span class="nav-number">2.</span> <span class="nav-text">二、常用命令</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E5%85%B8%E5%9E%8B%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-number">3.</span> <span class="nav-text">三、典型应用场景</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E7%BB%BC%E5%90%88%E6%A1%88%E4%BE%8B%EF%BC%88redis-cli%EF%BC%89"><span class="nav-number">4.</span> <span class="nav-text">四、综合案例（redis-cli）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="nav-number">5.</span> <span class="nav-text">五、注意事项</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E5%BB%B6%E4%BC%B8%E9%98%85%E8%AF%BB"><span class="nav-number">6.</span> <span class="nav-text">六、延伸阅读</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%B9%9D%E7%AB%A0%EF%BC%9ARedis-HyperLogLog%EF%BC%9A%E6%A6%82%E5%BF%B5%E3%80%81%E5%91%BD%E4%BB%A4%E4%B8%8E%E6%A1%88%E4%BE%8B"><span class="nav-number">1.</span> <span class="nav-text">第九章：Redis HyperLogLog：概念、命令与案例</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80%EF%BC%9AHyperLogLog-%E6%98%AF%E4%BB%80%E4%B9%88"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础：HyperLogLog 是什么</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A0%B8%E5%BF%83%E5%8E%9F%E7%90%86%EF%BC%9A%E7%9B%B4%E8%A7%89%E7%90%86%E8%A7%A3"><span class="nav-number">1.2.</span> <span class="nav-text">核心原理：直觉理解</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4"><span class="nav-number">1.3.</span> <span class="nav-text">常用命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B8%E5%9E%8B%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-number">1.4.</span> <span class="nav-text">典型应用场景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%BC%E5%90%88%E6%A1%88%E4%BE%8B%EF%BC%88redis-cli%EF%BC%89"><span class="nav-number">1.5.</span> <span class="nav-text">综合案例（redis-cli）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="nav-number">1.6.</span> <span class="nav-text">注意事项</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.7.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -182,18 +176,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">192</span>
+          <span class="site-state-item-count">194</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">39</span>
+        <span class="site-state-item-count">33</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">108</span>
+        <span class="site-state-item-count">114</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -231,7 +225,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/03/Redis/HyperLogLog%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E3%80%81%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%E5%8F%8A%E6%A1%88%E4%BE%8B/">
+    <link itemprop="mainEntityOfPage" href="https://my919.github.io/2026/05/03/Redis/HyperLogLog%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E3%80%81%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%E5%8F%8A%E6%A1%88%E4%BE%8B/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -244,12 +238,12 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="Redis HyperLogLog 数据类型、应用场景及案例 | my">
+      <meta itemprop="name" content="第九章：Redis HyperLogLog：概念、命令与案例 | my">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          Redis HyperLogLog 数据类型、应用场景及案例
+          第九章：Redis HyperLogLog：概念、命令与案例
         </h1>
 
         <div class="post-meta-container">
@@ -259,9 +253,15 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
-      
 
-      <time title="创建时间：2026-05-03 17:31:20 / 修改时间：17:43:34" itemprop="dateCreated datePublished" datetime="2026-05-03T17:31:20+08:00">2026-05-03</time>
+      <time title="创建时间：2026-05-03 17:31:20" itemprop="dateCreated datePublished" datetime="2026-05-03T17:31:20+08:00">2026-05-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-08-30 14:30:09" itemprop="dateModified" datetime="2026-08-30T14:30:09+08:00">2026-08-30</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -280,14 +280,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>396</span>
+      <span>804</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>1 分钟</span>
+      <span>3 分钟</span>
     </span>
 </div>
 
@@ -297,15 +297,22 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><p><strong>HyperLogLog（HLL）</strong> 是 <strong>Redis 2.8.9+</strong> 提供的<strong>概率型数据结构</strong>：用<strong>固定约 12KB</strong>（标准实现）内存估算<strong>集合基数</strong>（<strong>不重复元素个数</strong>），结果<strong>有误差</strong>（标准误差约 <strong>0.81%</strong>），换<strong>极低内存</strong>统计 <strong>UV</strong>。部署见 <strong><code>Redis-Docker.md</code></strong>。</p>
-<hr>
-<h1 id="一、HyperLogLog-是什么"><a href="#一、HyperLogLog-是什么" class="headerlink" title="一、HyperLogLog 是什么"></a>一、HyperLogLog 是什么</h1><ol>
+    <div class="post-body" itemprop="articleBody"><h1 id="第九章：Redis-HyperLogLog：概念、命令与案例"><a href="#第九章：Redis-HyperLogLog：概念、命令与案例" class="headerlink" title="第九章：Redis HyperLogLog：概念、命令与案例"></a>第九章：Redis HyperLogLog：概念、命令与案例</h1><h2 id="概念基础：HyperLogLog-是什么"><a href="#概念基础：HyperLogLog-是什么" class="headerlink" title="概念基础：HyperLogLog 是什么"></a>概念基础：HyperLogLog 是什么</h2><p><strong>HyperLogLog（HLL）</strong> 是一种<strong>基数（去重计数）估算</strong>算法的数据结构——用<strong>极小的固定内存</strong>回答「这批元素<strong>大约</strong>有多少个不同的」：</p>
+<ol>
 <li>不是存明细，只支持 <strong><code>PFADD</code> 添加元素</strong>、<strong><code>PFCOUNT</code> 估算基数</strong>、<strong><code>PFMERGE</code> 合并多个 HLL</strong>。  </li>
+<li><strong>内存奇迹</strong>：无论存 1 万还是 1 亿个元素，每个 HLL <strong>固定约 12 KB</strong>——对比 Set 存 1 亿个 ID 要数 GB，差距是数量级的。  </li>
+<li><strong>代价是近似</strong>：标准误差约 <strong>0.81%</strong>（1 亿 UV 估出 99.2M±80 万属正常）。  </li>
 <li><strong>适合</strong>：海量 <strong>UV</strong>、<strong>IP 去重计数</strong>等<strong>允许近似</strong>的报表。  </li>
 <li><strong>不适合</strong>：必须<strong>精确</strong>计数、需要<strong>枚举</strong>曾出现过的元素。</li>
 </ol>
-<hr>
-<h1 id="二、常用命令"><a href="#二、常用命令" class="headerlink" title="二、常用命令"></a>二、常用命令</h1><table>
+<h2 id="核心原理：直觉理解"><a href="#核心原理：直觉理解" class="headerlink" title="核心原理：直觉理解"></a>核心原理：直觉理解</h2><ol>
+<li><strong>伯努利试验直觉</strong>：把每个元素哈希成比特串，观察<strong>末尾连续 0 的个数</strong>。连续 0 越长越罕见；记录见过的<strong>最大连续 0 数 k</strong>，就用 <strong>2^k 粗估基数</strong>——「见过 5 个连续 0」说明大约掷过 2^5 量级的硬币。</li>
+<li><strong>分桶降方差</strong>：单一估计抖动太大，HLL 把哈希值<strong>前若干位作桶号</strong>，分成 <strong>2^14 &#x3D; 16384 个桶</strong>，每桶各自记录最大连续 0 数，最后对全部桶取<strong>调和平均</strong>再修正——误差稳定在 <strong>0.81%</strong> 左右。</li>
+<li><strong>内存去向</strong>：16384 桶 × 每桶 6 bit ≈ <strong>12 KB</strong>，与数据量无关；这就是「固定内存估算海量基数」的全部秘密。</li>
+<li><strong>合并即并集</strong>：两桶取<strong>最大值</strong>就是 PFMERGE——所以「按天分 key、周报 PFMERGE」天然正确，且合并结果仍是近似误差，不会叠加放大。</li>
+<li><strong>边界</strong>：<strong>拿不回成员</strong>（哈希不可逆），PFCOUNT 大 key 的多 key 形式可能触发临时合并开销（高版本有缓存优化）。</li>
+</ol>
+<h2 id="常用命令"><a href="#常用命令" class="headerlink" title="常用命令"></a>常用命令</h2><table>
 <thead>
 <tr>
 <th>命令</th>
@@ -325,22 +332,47 @@
 <td>合并到 <strong>dest</strong></td>
 </tr>
 </tbody></table>
-<hr>
-<h1 id="三、典型应用场景"><a href="#三、典型应用场景" class="headerlink" title="三、典型应用场景"></a>三、典型应用场景</h1><ol>
+<h2 id="典型应用场景"><a href="#典型应用场景" class="headerlink" title="典型应用场景"></a>典型应用场景</h2><ol>
 <li><strong>页面 &#x2F; 活动 UV</strong>：<strong><code>PFADD uv:2026-05-03:page1 &lt;userId 或 sessionId&gt;</code></strong>，定时 <strong><code>PFCOUNT</code></strong>。  </li>
 <li><strong>多维度合并</strong>：按天分 <strong>key</strong>，日报用 <strong><code>PFMERGE</code></strong> 聚合成周 <strong>UV</strong>。</li>
 </ol>
-<hr>
-<h1 id="四、综合案例（redis-cli）"><a href="#四、综合案例（redis-cli）" class="headerlink" title="四、综合案例（redis-cli）"></a>四、综合案例（<code>redis-cli</code>）</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">redis-cli PFADD uv:demo u1 u2 u3 u2 u1</span><br><span class="line">redis-cli PFCOUNT uv:demo</span><br><span class="line"></span><br><span class="line">redis-cli PFADD uv:day1 a b c</span><br><span class="line">redis-cli PFADD uv:day2 c d e</span><br><span class="line">redis-cli PFMERGE uv:week uv:day1 uv:day2</span><br><span class="line">redis-cli PFCOUNT uv:week</span><br></pre></td></tr></table></figure>
+<h2 id="综合案例（redis-cli）"><a href="#综合案例（redis-cli）" class="headerlink" title="综合案例（redis-cli）"></a>综合案例（redis-cli）</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">redis-cli PFADD uv:demo u1 u2 u3 u2 u1</span><br><span class="line">redis-cli PFCOUNT uv:demo</span><br><span class="line"></span><br><span class="line">redis-cli PFADD uv:day1 a b c</span><br><span class="line">redis-cli PFADD uv:day2 c d e</span><br><span class="line">redis-cli PFMERGE uv:week uv:day1 uv:day2</span><br><span class="line">redis-cli PFCOUNT uv:week</span><br></pre></td></tr></table></figure>
 
-<hr>
-<h1 id="五、注意事项"><a href="#五、注意事项" class="headerlink" title="五、注意事项"></a>五、注意事项</h1><ol>
+<h2 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h2><ol>
 <li><strong>误差</strong>：报表若要求<strong>精确 UV</strong>，需 <strong>Set</strong>（内存大）或<strong>离线数仓</strong>。  </li>
 <li><strong>元素语义</strong>：<strong><code>PFADD</code></strong> 把参数当<strong>字节串</strong>；业务上应用<strong>统一 ID</strong>（如用户 <strong>ID</strong>），勿混多种粒度。  </li>
 <li><strong>无法查询成员</strong>：不能问「谁访问过」，只能问「大约多少人」。</li>
 </ol>
-<hr>
-<h1 id="六、延伸阅读"><a href="#六、延伸阅读" class="headerlink" title="六、延伸阅读"></a>六、延伸阅读</h1><table>
+<h2 id="本章小结"><a href="#本章小结" class="headerlink" title="本章小结"></a>本章小结</h2><table>
+<thead>
+<tr>
+<th>要点</th>
+<th>结论</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>定位</td>
+<td><strong>固定 ~12 KB 估算基数</strong>，误差 ~0.81%</td>
+</tr>
+<tr>
+<td>三个命令</td>
+<td><strong>PFADD &#x2F; PFCOUNT &#x2F; PFMERGE</strong>，无成员查询</td>
+</tr>
+<tr>
+<td>原理直觉</td>
+<td>哈希尾 0 长度 + <strong>16384 桶调和平均</strong></td>
+</tr>
+<tr>
+<td>与 Set</td>
+<td>精确去重 → Set（内存换准确）；近似报表 → HLL</td>
+</tr>
+<tr>
+<td>与 Bitmap</td>
+<td>位图答「<strong>谁</strong>来过」；HLL 答「<strong>多少人</strong>」</td>
+</tr>
+</tbody></table>
+<p><strong>延伸阅读</strong>：</p>
+<table>
 <thead>
 <tr>
 <th>文档</th>
@@ -374,13 +406,13 @@
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2026/05/03/Redis/ZSet%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E3%80%81%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%E5%8F%8A%E6%A1%88%E4%BE%8B/" rel="prev" title="Redis ZSet（Sorted Set）数据类型、应用场景及案例">
-                  <i class="fa fa-angle-left"></i> Redis ZSet（Sorted Set）数据类型、应用场景及案例
+                <a href="/2026/05/03/Redis/ZSet%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E3%80%81%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%E5%8F%8A%E6%A1%88%E4%BE%8B/" rel="prev" title="第七章：Redis ZSet 数据类型：概念、命令与案例">
+                  <i class="fa fa-angle-left"></i> 第七章：Redis ZSet 数据类型：概念、命令与案例
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2026/05/03/Redis/Bitmap%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E3%80%81%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%E5%8F%8A%E6%A1%88%E4%BE%8B/" rel="next" title="Redis Bitmap 数据类型、应用场景及案例">
-                  Redis Bitmap 数据类型、应用场景及案例 <i class="fa fa-angle-right"></i>
+                <a href="/2026/05/03/Redis/Bitmap%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E3%80%81%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%E5%8F%8A%E6%A1%88%E4%BE%8B/" rel="next" title="第八章：Redis Bitmap 数据类型：概念、命令与案例">
+                  第八章：Redis Bitmap 数据类型：概念、命令与案例 <i class="fa fa-angle-right"></i>
                 </a>
             </div>
           </div>
@@ -412,13 +444,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">195k</span>
+    <span title="站点总字数">253k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">10:49</span>
+    <span title="站点阅读时长">14:03</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

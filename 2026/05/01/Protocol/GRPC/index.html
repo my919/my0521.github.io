@@ -18,30 +18,30 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
 
-<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
+<script class="next-config" data-name="main" type="application/json">{"hostname":"my919.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
 
-    <meta name="description" content="gRPC 是跨语言 RPC 框架：接口用 Protocol Buffers（protobuf） 描述，默认基于 HTTP&#x2F;2 帧传输二进制消息，支持一元与多种流式调用。下面从「与泛型 RPC 的关系 → .proto 与代码生成原理 → 传输与安全 → grpcurl 无代码调用 → Python 最小客户端思路」顺序写清楚；磁盘文件名为 GRPC.md，正文统一使用官方拼写 gRPC。">
+    <meta name="description" content="第十三章：gRPC 详解：Protobuf、HTTP&#x2F;2 与 grpcurl &#x2F; Python 示例概念基础：gRPC 是什么&#x2F;为什么gRPC 是构建在 HTTP&#x2F;2 与 protobuf 之上的高性能 RPC 框架，用「强类型契约」生成多语言调用代码：  解决什么问题：手写 HTTP+JSON 接口缺契约、字段易错、序列化慢；gRPC 的 .proto 文">
 <meta property="og:type" content="article">
-<meta property="og:title" content="GRPC 详解：Protobuf、HTTP&#x2F;2 与 grpcurl &#x2F; Python 示例">
-<meta property="og:url" content="http://example.com/2026/05/01/Protocol/GRPC/index.html">
+<meta property="og:title" content="第十三章：gRPC 详解：Protobuf、HTTP&#x2F;2 与 grpcurl &#x2F; Python 示例">
+<meta property="og:url" content="https://my919.github.io/2026/05/01/Protocol/GRPC/index.html">
 <meta property="og:site_name" content="my">
-<meta property="og:description" content="gRPC 是跨语言 RPC 框架：接口用 Protocol Buffers（protobuf） 描述，默认基于 HTTP&#x2F;2 帧传输二进制消息，支持一元与多种流式调用。下面从「与泛型 RPC 的关系 → .proto 与代码生成原理 → 传输与安全 → grpcurl 无代码调用 → Python 最小客户端思路」顺序写清楚；磁盘文件名为 GRPC.md，正文统一使用官方拼写 gRPC。">
+<meta property="og:description" content="第十三章：gRPC 详解：Protobuf、HTTP&#x2F;2 与 grpcurl &#x2F; Python 示例概念基础：gRPC 是什么&#x2F;为什么gRPC 是构建在 HTTP&#x2F;2 与 protobuf 之上的高性能 RPC 框架，用「强类型契约」生成多语言调用代码：  解决什么问题：手写 HTTP+JSON 接口缺契约、字段易错、序列化慢；gRPC 的 .proto 文">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-05-01T04:50:35.000Z">
-<meta property="article:modified_time" content="2026-05-31T15:47:21.955Z">
+<meta property="article:modified_time" content="2026-08-30T08:02:53.492Z">
 <meta property="article:author" content="miracle">
 <meta property="article:tag" content="GRPC">
 <meta property="article:tag" content="Protocol">
 <meta name="twitter:card" content="summary">
 
 
-<link rel="canonical" href="http://example.com/2026/05/01/Protocol/GRPC/">
+<link rel="canonical" href="https://my919.github.io/2026/05/01/Protocol/GRPC/">
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2026/05/01/Protocol/GRPC/","path":"2026/05/01/Protocol/GRPC/","title":"GRPC 详解：Protobuf、HTTP/2 与 grpcurl / Python 示例"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://my919.github.io/2026/05/01/Protocol/GRPC/","path":"2026/05/01/Protocol/GRPC/","title":"第十三章：gRPC 详解：Protobuf、HTTP/2 与 grpcurl / Python 示例"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>GRPC 详解：Protobuf、HTTP/2 与 grpcurl / Python 示例 | my</title>
+<title>第十三章：gRPC 详解：Protobuf、HTTP/2 与 grpcurl / Python 示例 | my</title>
   
 
 
@@ -69,12 +69,6 @@
   
 
 
-
-
-  
-
-  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
-<script src="/js/third-party/math/mathjax.js" defer></script>
 
 
 
@@ -168,7 +162,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E5%9C%A8%E5%8D%8F%E8%AE%AE%E6%A0%88%E4%B8%AD%E7%9A%84%E4%BD%8D%E7%BD%AE%EF%BC%88%E4%BD%9C%E7%94%A8%EF%BC%89"><span class="nav-number">1.</span> <span class="nav-text">一、在协议栈中的位置（作用）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81-proto-%E4%B8%8E%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90%EF%BC%88%E5%8E%9F%E7%90%86%EF%BC%89"><span class="nav-number">2.</span> <span class="nav-text">二、.proto 与代码生成（原理）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E5%9B%9B%E7%A7%8D%E8%B0%83%E7%94%A8%E7%B1%BB%E5%9E%8B%EF%BC%88%E4%BD%9C%E7%94%A8%EF%BC%89"><span class="nav-number">3.</span> <span class="nav-text">三、四种调用类型（作用）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E5%AE%89%E5%85%A8%EF%BC%9ATLS-%E4%B8%8E%E5%85%83%E6%95%B0%E6%8D%AE"><span class="nav-number">4.</span> <span class="nav-text">四、安全：TLS 与元数据</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%94%E3%80%81grpcurl-%E7%A4%BA%E4%BE%8B%EF%BC%88%E9%9C%80%E5%8D%95%E7%8B%AC%E5%AE%89%E8%A3%85%EF%BC%89"><span class="nav-number">5.</span> <span class="nav-text">五、grpcurl 示例（需单独安装）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%AD%E3%80%81Python-%E8%B0%83%E7%94%A8%E9%AA%A8%E6%9E%B6%EF%BC%88protoc-%E7%94%9F%E6%88%90-helloworld-pb2-py-%E4%B9%8B%E5%90%8E%EF%BC%89"><span class="nav-number">6.</span> <span class="nav-text">六、Python 调用骨架（protoc 生成 helloworld_pb2*.py 之后）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%83%E3%80%81%E4%B8%8E-%E9%A3%8E%E6%A0%BC-HTTP-JSON-%E5%AF%B9%E6%AF%94"><span class="nav-number">7.</span> <span class="nav-text">七、与 REST 风格 HTTP+JSON 对比</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%AB%E3%80%81%E5%B0%8F%E7%BB%93"><span class="nav-number">8.</span> <span class="nav-text">八、小结</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E5%8D%81%E4%B8%89%E7%AB%A0%EF%BC%9AgRPC-%E8%AF%A6%E8%A7%A3%EF%BC%9AProtobuf%E3%80%81HTTP-2-%E4%B8%8E-grpcurl-Python-%E7%A4%BA%E4%BE%8B"><span class="nav-number">1.</span> <span class="nav-text">第十三章：gRPC 详解：Protobuf、HTTP&#x2F;2 与 grpcurl &#x2F; Python 示例</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80%EF%BC%9AgRPC-%E6%98%AF%E4%BB%80%E4%B9%88-%E4%B8%BA%E4%BB%80%E4%B9%88"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础：gRPC 是什么&#x2F;为什么</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E5%9C%A8%E5%8D%8F%E8%AE%AE%E6%A0%88%E4%B8%AD%E7%9A%84%E4%BD%8D%E7%BD%AE%EF%BC%88%E4%BD%9C%E7%94%A8%EF%BC%89"><span class="nav-number">1.2.</span> <span class="nav-text">一、在协议栈中的位置（作用）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81-proto-%E4%B8%8E%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90%EF%BC%88%E5%8E%9F%E7%90%86%EF%BC%89"><span class="nav-number">1.3.</span> <span class="nav-text">二、.proto 与代码生成（原理）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E5%9B%9B%E7%A7%8D%E8%B0%83%E7%94%A8%E7%B1%BB%E5%9E%8B%EF%BC%88%E4%BD%9C%E7%94%A8%EF%BC%89"><span class="nav-number">1.4.</span> <span class="nav-text">三、四种调用类型（作用）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E5%AE%89%E5%85%A8%EF%BC%9ATLS-%E4%B8%8E%E5%85%83%E6%95%B0%E6%8D%AE"><span class="nav-number">1.5.</span> <span class="nav-text">四、安全：TLS 与元数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81grpcurl-%E7%A4%BA%E4%BE%8B%EF%BC%88%E9%9C%80%E5%8D%95%E7%8B%AC%E5%AE%89%E8%A3%85%EF%BC%89"><span class="nav-number">1.6.</span> <span class="nav-text">五、grpcurl 示例（需单独安装）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AD%E3%80%81Python-%E8%B0%83%E7%94%A8%E9%AA%A8%E6%9E%B6%EF%BC%88protoc-%E7%94%9F%E6%88%90-helloworld-pb2-py-%E4%B9%8B%E5%90%8E%EF%BC%89"><span class="nav-number">1.7.</span> <span class="nav-text">六、Python 调用骨架（protoc 生成 helloworld_pb2*.py 之后）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%83%E3%80%81%E4%B8%8E-%E9%A3%8E%E6%A0%BC-HTTP-JSON-%E5%AF%B9%E6%AF%94"><span class="nav-number">1.8.</span> <span class="nav-text">七、与 第二章：HTTP 详解：报文、方法、版本与 curl&#x2F;nc 示例 风格 HTTP+JSON 对比</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.9.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -181,18 +175,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">192</span>
+          <span class="site-state-item-count">194</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">39</span>
+        <span class="site-state-item-count">33</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">108</span>
+        <span class="site-state-item-count">114</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -230,7 +224,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/Protocol/GRPC/">
+    <link itemprop="mainEntityOfPage" href="https://my919.github.io/2026/05/01/Protocol/GRPC/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -243,12 +237,12 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="GRPC 详解：Protobuf、HTTP&#x2F;2 与 grpcurl &#x2F; Python 示例 | my">
+      <meta itemprop="name" content="第十三章：gRPC 详解：Protobuf、HTTP&#x2F;2 与 grpcurl &#x2F; Python 示例 | my">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          GRPC 详解：Protobuf、HTTP/2 与 grpcurl / Python 示例
+          第十三章：gRPC 详解：Protobuf、HTTP/2 与 grpcurl / Python 示例
         </h1>
 
         <div class="post-meta-container">
@@ -266,7 +260,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-31 23:47:21" itemprop="dateModified" datetime="2026-05-31T23:47:21+08:00">2026-05-31</time>
+      <time title="修改时间：2026-08-30 16:02:53" itemprop="dateModified" datetime="2026-08-30T16:02:53+08:00">2026-08-30</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -285,14 +279,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>562</span>
+      <span>797</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>2 分钟</span>
+      <span>3 分钟</span>
     </span>
 </div>
 
@@ -302,19 +296,25 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><p><strong>gRPC</strong> 是跨语言 <strong>RPC</strong> 框架：接口用 <strong>Protocol Buffers（protobuf）</strong> 描述，默认基于 <a href="/2026/05/01/Protocol/HTTP/" title="HTTP 详解：报文、方法、版本与 curl&#x2F;nc 示例">HTTP&#x2F;2</a> 帧传输二进制消息，支持一元与多种流式调用。下面从「<strong>与泛型 <a href="/2026/05/01/Protocol/RPC/" title="RPC 概念详解：原理、形态与 JSON-RPC &#x2F; curl 示例">RPC</a> 的关系</strong> → <strong><code>.proto</code> 与代码生成原理</strong> → <strong>传输与安全</strong> → <strong><code>grpcurl</code> 无代码调用</strong> → <strong>Python 最小客户端思路</strong>」顺序写清楚；磁盘文件名为 <strong><code>GRPC.md</code></strong>，正文统一使用官方拼写 <strong>gRPC</strong>。</p>
-<hr>
-<h1 id="一、在协议栈中的位置（作用）"><a href="#一、在协议栈中的位置（作用）" class="headerlink" title="一、在协议栈中的位置（作用）"></a>一、在协议栈中的位置（作用）</h1><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[ 应用：gRPC 生成的 Stub / Server 接口 ]</span><br><span class="line">            ↓</span><br><span class="line">[ gRPC：HTTP/2 帧 + protobuf 消息体 ]</span><br><span class="line">            ↓</span><br><span class="line">[ TLS（生产推荐）]</span><br><span class="line">            ↓</span><br><span class="line">[ TCP → IP ]</span><br></pre></td></tr></table></figure>
+    <div class="post-body" itemprop="articleBody"><h1 id="第十三章：gRPC-详解：Protobuf、HTTP-2-与-grpcurl-Python-示例"><a href="#第十三章：gRPC-详解：Protobuf、HTTP-2-与-grpcurl-Python-示例" class="headerlink" title="第十三章：gRPC 详解：Protobuf、HTTP&#x2F;2 与 grpcurl &#x2F; Python 示例"></a>第十三章：gRPC 详解：Protobuf、HTTP&#x2F;2 与 grpcurl &#x2F; Python 示例</h1><h2 id="概念基础：gRPC-是什么-为什么"><a href="#概念基础：gRPC-是什么-为什么" class="headerlink" title="概念基础：gRPC 是什么&#x2F;为什么"></a>概念基础：gRPC 是什么&#x2F;为什么</h2><p><strong>gRPC</strong> 是构建在 <strong>HTTP&#x2F;2</strong> 与 <strong>protobuf</strong> 之上的高性能 <strong>RPC</strong> 框架，用「<strong>强类型契约</strong>」生成多语言调用代码：</p>
+<ol>
+<li><strong>解决什么问题</strong>：手写 <strong>HTTP+JSON</strong> 接口缺契约、字段易错、序列化慢；<strong>gRPC</strong> 的 <strong><code>.proto</code></strong> 文件即契约，<strong>protoc</strong> 生成 stub，序列化体积小、编解码快。</li>
+<li><strong>为什么基于 HTTP&#x2F;2</strong>：<strong>二进制分帧</strong> + <strong>单连接多路复用</strong>，一条连接并发多个调用，且天然支持<strong>流式</strong>。</li>
+<li><strong>四种调用类型</strong>：<strong>Unary</strong> 一问一答、<strong>Server streaming</strong>、<strong>Client streaming</strong>、<strong>Bidirectional streaming</strong>——流式是一等公民。</li>
+<li><strong>典型场景</strong>：微服务内部<strong>低延迟、强类型</strong>调用（同族范式见 <a href="/2026/05/01/Protocol/RPC/" title="第十四章：RPC 概念详解：原理、形态与 JSON-RPC &#x2F; curl 示例">第十四章：RPC 概念详解：原理、形态与 JSON-RPC &#x2F; curl 示例</a>）；浏览器直连受限，对外常配 <strong>gRPC-Web</strong> 或网关。</li>
+</ol>
+<p>先看它在协议栈中的位置：</p>
+<h2 id="一、在协议栈中的位置（作用）"><a href="#一、在协议栈中的位置（作用）" class="headerlink" title="一、在协议栈中的位置（作用）"></a>一、在协议栈中的位置（作用）</h2><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[ 应用：gRPC 生成的 Stub / Server 接口 ]</span><br><span class="line">            ↓</span><br><span class="line">[ gRPC：HTTP/2 帧 + protobuf 消息体 ]</span><br><span class="line">            ↓</span><br><span class="line">[ TLS（生产推荐）]</span><br><span class="line">            ↓</span><br><span class="line">[ TCP → IP ]</span><br></pre></td></tr></table></figure>
 
 <hr>
-<h1 id="二、-proto-与代码生成（原理）"><a href="#二、-proto-与代码生成（原理）" class="headerlink" title="二、.proto 与代码生成（原理）"></a>二、<code>.proto</code> 与代码生成（原理）</h1><p><strong><code>helloworld.proto</code></strong>（节选）：</p>
+<h2 id="二、-proto-与代码生成（原理）"><a href="#二、-proto-与代码生成（原理）" class="headerlink" title="二、.proto 与代码生成（原理）"></a>二、<code>.proto</code> 与代码生成（原理）</h2><p><strong><code>helloworld.proto</code></strong>（节选）：</p>
 <figure class="highlight protobuf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">syntax = <span class="string">&quot;proto3&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">package</span> demo;</span><br><span class="line"></span><br><span class="line"><span class="keyword">service </span><span class="title class_">Greeter</span> &#123;</span><br><span class="line">  <span class="function"><span class="keyword">rpc</span> SayHello (HelloRequest) <span class="keyword">returns</span> (HelloReply)</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">message </span><span class="title class_">HelloRequest</span> &#123; <span class="type">string</span> name = <span class="number">1</span>; &#125;</span><br><span class="line"><span class="keyword">message </span><span class="title class_">HelloReply</span> &#123; <span class="type">string</span> message = <span class="number">1</span>; &#125;</span><br></pre></td></tr></table></figure>
 
 <p>使用 <strong><code>protoc</code></strong> 与 <strong>Go&#x2F;Java&#x2F;Python</strong> 等插件生成 <strong>stub</strong> 与 <strong>service</strong> 骨架；<strong><code>protoc</code></strong> 将 <strong><code>.proto</code></strong> 编译为各语言类型与序列化&#x2F;反序列化代码。</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">python -m pip install grpcio grpcio-tools</span><br><span class="line">python -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. helloworld.proto</span><br></pre></td></tr></table></figure>
 
 <hr>
-<h1 id="三、四种调用类型（作用）"><a href="#三、四种调用类型（作用）" class="headerlink" title="三、四种调用类型（作用）"></a>三、四种调用类型（作用）</h1><table>
+<h2 id="三、四种调用类型（作用）"><a href="#三、四种调用类型（作用）" class="headerlink" title="三、四种调用类型（作用）"></a>三、四种调用类型（作用）</h2><table>
 <thead>
 <tr>
 <th>类型</th>
@@ -339,9 +339,9 @@
 </tr>
 </tbody></table>
 <hr>
-<h1 id="四、安全：TLS-与元数据"><a href="#四、安全：TLS-与元数据" class="headerlink" title="四、安全：TLS 与元数据"></a>四、安全：TLS 与元数据</h1><p>生产应对外 <strong><code>grpcs://</code></strong> 或等价 <strong>TLS</strong> 配置；<strong>Metadata</strong> 类似 <a href="/2026/05/01/Protocol/HTTP/" title="HTTP 详解：报文、方法、版本与 curl&#x2F;nc 示例">HTTP</a> 首部，用于传递 <strong>Token</strong>、<strong>trace id</strong> 等（注意大小写规则以文档为准）。</p>
+<h2 id="四、安全：TLS-与元数据"><a href="#四、安全：TLS-与元数据" class="headerlink" title="四、安全：TLS 与元数据"></a>四、安全：TLS 与元数据</h2><p>生产应对外 <strong><code>grpcs://</code></strong> 或等价 <strong>TLS</strong> 配置；<strong>Metadata</strong> 类似 <a href="/2026/05/01/Protocol/HTTP/" title="第二章：HTTP 详解：报文、方法、版本与 curl&#x2F;nc 示例">第二章：HTTP 详解：报文、方法、版本与 curl&#x2F;nc 示例</a> 首部，用于传递 <strong>Token</strong>、<strong>trace id</strong> 等（注意大小写规则以文档为准）。</p>
 <hr>
-<h1 id="五、grpcurl-示例（需单独安装）"><a href="#五、grpcurl-示例（需单独安装）" class="headerlink" title="五、grpcurl 示例（需单独安装）"></a>五、<code>grpcurl</code> 示例（需单独安装）</h1><p>列出服务（反射开启时）：</p>
+<h2 id="五、grpcurl-示例（需单独安装）"><a href="#五、grpcurl-示例（需单独安装）" class="headerlink" title="五、grpcurl 示例（需单独安装）"></a>五、<code>grpcurl</code> 示例（需单独安装）</h2><p>列出服务（反射开启时）：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">grpcurl -plaintext localhost:50051 list</span><br></pre></td></tr></table></figure>
 
 <p><strong>Unary</strong> 调用（示例服务名与方法名按你的 <strong>proto</strong> 替换）：</p>
@@ -349,12 +349,12 @@
 
 <p><strong><code>-plaintext</code></strong> 表示不使用 <strong>TLS</strong>，仅本地调试。</p>
 <hr>
-<h1 id="六、Python-调用骨架（protoc-生成-helloworld-pb2-py-之后）"><a href="#六、Python-调用骨架（protoc-生成-helloworld-pb2-py-之后）" class="headerlink" title="六、Python 调用骨架（protoc 生成 helloworld_pb2*.py 之后）"></a>六、Python 调用骨架（<strong><code>protoc</code> 生成 <code>helloworld_pb2*.py</code> 之后</strong>）</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python -m pip install grpcio grpcio-tools</span><br></pre></td></tr></table></figure>
+<h2 id="六、Python-调用骨架（protoc-生成-helloworld-pb2-py-之后）"><a href="#六、Python-调用骨架（protoc-生成-helloworld-pb2-py-之后）" class="headerlink" title="六、Python 调用骨架（protoc 生成 helloworld_pb2*.py 之后）"></a>六、Python 调用骨架（<strong><code>protoc</code> 生成 <code>helloworld_pb2*.py</code> 之后</strong>）</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python -m pip install grpcio grpcio-tools</span><br></pre></td></tr></table></figure>
 
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> grpc</span><br><span class="line"><span class="keyword">import</span> helloworld_pb2 <span class="keyword">as</span> pb</span><br><span class="line"><span class="keyword">import</span> helloworld_pb2_grpc <span class="keyword">as</span> pbg</span><br><span class="line"></span><br><span class="line"><span class="keyword">with</span> grpc.insecure_channel(<span class="string">&quot;127.0.0.1:50051&quot;</span>) <span class="keyword">as</span> ch:</span><br><span class="line">    stub = pbg.GreeterStub(ch)</span><br><span class="line">    resp = stub.SayHello(pb.HelloRequest(name=<span class="string">&quot;world&quot;</span>))</span><br><span class="line">    <span class="built_in">print</span>(resp.message)</span><br></pre></td></tr></table></figure>
 
 <hr>
-<h1 id="七、与-风格-HTTP-JSON-对比"><a href="#七、与-风格-HTTP-JSON-对比" class="headerlink" title="七、与  风格 HTTP+JSON 对比"></a>七、与 <a href="/2026/05/01/Protocol/HTTP/" title="HTTP 详解：报文、方法、版本与 curl&#x2F;nc 示例">REST</a> 风格 <strong>HTTP+JSON</strong> 对比</h1><table>
+<h2 id="七、与-风格-HTTP-JSON-对比"><a href="#七、与-风格-HTTP-JSON-对比" class="headerlink" title="七、与  风格 HTTP+JSON 对比"></a>七、与 <a href="/2026/05/01/Protocol/HTTP/" title="第二章：HTTP 详解：报文、方法、版本与 curl&#x2F;nc 示例">第二章：HTTP 详解：报文、方法、版本与 curl&#x2F;nc 示例</a> 风格 <strong>HTTP+JSON</strong> 对比</h2><table>
 <thead>
 <tr>
 <th></th>
@@ -379,11 +379,11 @@
 </tr>
 </tbody></table>
 <hr>
-<h1 id="八、小结"><a href="#八、小结" class="headerlink" title="八、小结"></a>八、小结</h1><table>
+<h2 id="本章小结"><a href="#本章小结" class="headerlink" title="本章小结"></a>本章小结</h2><table>
 <thead>
 <tr>
-<th>项</th>
-<th>说明</th>
+<th>要点</th>
+<th>结论</th>
 </tr>
 </thead>
 <tbody><tr>
@@ -400,10 +400,11 @@
 </tr>
 <tr>
 <td>范式</td>
-<td><a href="/2026/05/01/Protocol/RPC/" title="RPC 概念详解：原理、形态与 JSON-RPC &#x2F; curl 示例">RPC</a> 的一种实现；同类见 <a href="/2026/05/17/SpringCloud/Dubbo/" title="Dubbo">Dubbo</a></td>
+<td><a href="/2026/05/01/Protocol/RPC/" title="第十四章：RPC 概念详解：原理、形态与 JSON-RPC &#x2F; curl 示例">第十四章：RPC 概念详解：原理、形态与 JSON-RPC &#x2F; curl 示例</a> 的一种实现；同类见 <a href="/2026/05/17/SpringCloud/Dubbo/" title="第十章：Dubbo：RPC 与服务治理扩展">第十章：Dubbo：RPC 与服务治理扩展</a></td>
 </tr>
 </tbody></table>
 <p>版本兼容与 <strong>Breaking Change</strong> 管理以 <strong>protobuf</strong> 字段编号与 <strong>API 版本</strong>策略为准。</p>
+<p>下一步：往上抽一层——RPC 范式本身的原理与形态 → <a href="/2026/05/01/Protocol/RPC/" title="第十四章：RPC 概念详解：原理、形态与 JSON-RPC &#x2F; curl 示例">第十四章：RPC 概念详解：原理、形态与 JSON-RPC &#x2F; curl 示例</a>。</p>
 
     </div>
 
@@ -421,13 +422,13 @@
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2026/05/01/Protocol/MQTT/" rel="prev" title="MQTT 详解：发布订阅、QoS 与 mosquitto &#x2F; Python 示例">
-                  <i class="fa fa-angle-left"></i> MQTT 详解：发布订阅、QoS 与 mosquitto / Python 示例
+                <a href="/2026/05/01/Protocol/MQTT/" rel="prev" title="第十二章：MQTT 详解：发布订阅、QoS 与 mosquitto &#x2F; Python 示例">
+                  <i class="fa fa-angle-left"></i> 第十二章：MQTT 详解：发布订阅、QoS 与 mosquitto / Python 示例
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2026/05/01/Protocol/RPC/" rel="next" title="RPC 概念详解：原理、形态与 JSON-RPC &#x2F; curl 示例">
-                  RPC 概念详解：原理、形态与 JSON-RPC / curl 示例 <i class="fa fa-angle-right"></i>
+                <a href="/2026/05/01/Protocol/RPC/" rel="next" title="第十四章：RPC 概念详解：原理、形态与 JSON-RPC &#x2F; curl 示例">
+                  第十四章：RPC 概念详解：原理、形态与 JSON-RPC / curl 示例 <i class="fa fa-angle-right"></i>
                 </a>
             </div>
           </div>
@@ -459,13 +460,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">195k</span>
+    <span title="站点总字数">253k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">10:49</span>
+    <span title="站点阅读时长">14:03</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

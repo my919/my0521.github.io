@@ -18,17 +18,17 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
 
-<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
+<script class="next-config" data-name="main" type="application/json">{"hostname":"my919.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
 
-    <meta name="description" content="在 Docker 中运行 MySQL，适合本地开发、与 Compose 编排其它服务、或在 Kubernetes 中单实例部署。下文给出镜像选型、一条命令起容器、Compose 一键起栈与一份多文档 K8s 清单；密码与数据卷请按环境自行替换，勿把生产密钥提交进仓库。多行命令：Linux &#x2F; macOS &#x2F; Git Bash 用行末 \** 续行；**Windows CMD**">
+    <meta name="description" content="第二章：Docker 部署 MySQL 实践概念基础：为什么用 Docker 部署 MySQL容器化是「把 MySQL 实例连同版本、配置、账号一次性描述清楚」的部署方式：  环境一致、随起随删：一条命令拉起带指定版本、字符集、账号密码的实例，不污染宿主机；卸载即删容器，重装零成本——这正是第一章建好表结构之后最需要的环境。 数据与容器分离：容器可随时销毁，数据必须落在卷（volume）；命名卷">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Docker 部署 MySQL">
-<meta property="og:url" content="http://example.com/2026/05/01/MySQL/MySQL-Docker/index.html">
+<meta property="og:title" content="第二章：Docker 部署 MySQL 实践">
+<meta property="og:url" content="https://my919.github.io/2026/05/01/MySQL/MySQL-Docker/index.html">
 <meta property="og:site_name" content="my">
-<meta property="og:description" content="在 Docker 中运行 MySQL，适合本地开发、与 Compose 编排其它服务、或在 Kubernetes 中单实例部署。下文给出镜像选型、一条命令起容器、Compose 一键起栈与一份多文档 K8s 清单；密码与数据卷请按环境自行替换，勿把生产密钥提交进仓库。多行命令：Linux &#x2F; macOS &#x2F; Git Bash 用行末 \** 续行；**Windows CMD**">
+<meta property="og:description" content="第二章：Docker 部署 MySQL 实践概念基础：为什么用 Docker 部署 MySQL容器化是「把 MySQL 实例连同版本、配置、账号一次性描述清楚」的部署方式：  环境一致、随起随删：一条命令拉起带指定版本、字符集、账号密码的实例，不污染宿主机；卸载即删容器，重装零成本——这正是第一章建好表结构之后最需要的环境。 数据与容器分离：容器可随时销毁，数据必须落在卷（volume）；命名卷">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-05-01T12:35:17.000Z">
-<meta property="article:modified_time" content="2026-05-03T03:02:46.574Z">
+<meta property="article:modified_time" content="2026-08-30T06:58:25.066Z">
 <meta property="article:author" content="miracle">
 <meta property="article:tag" content="Docker">
 <meta property="article:tag" content="Docker Compose">
@@ -37,13 +37,13 @@
 <meta name="twitter:card" content="summary">
 
 
-<link rel="canonical" href="http://example.com/2026/05/01/MySQL/MySQL-Docker/">
+<link rel="canonical" href="https://my919.github.io/2026/05/01/MySQL/MySQL-Docker/">
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2026/05/01/MySQL/MySQL-Docker/","path":"2026/05/01/MySQL/MySQL-Docker/","title":"Docker 部署 MySQL"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://my919.github.io/2026/05/01/MySQL/MySQL-Docker/","path":"2026/05/01/MySQL/MySQL-Docker/","title":"第二章：Docker 部署 MySQL 实践"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>Docker 部署 MySQL | my</title>
+<title>第二章：Docker 部署 MySQL 实践 | my</title>
   
 
 
@@ -71,12 +71,6 @@
   
 
 
-
-
-  
-
-  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
-<script src="/js/third-party/math/mathjax.js" defer></script>
 
 
 
@@ -170,7 +164,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E5%89%8D%E7%BD%AE%E6%9D%A1%E4%BB%B6"><span class="nav-number">1.</span> <span class="nav-text">一、前置条件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81MySQL-%E9%95%9C%E5%83%8F%E9%80%89%E6%8B%A9"><span class="nav-number">2.</span> <span class="nav-text">二、MySQL 镜像选择</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E5%AE%98%E6%96%B9%E9%95%9C%E5%83%8F%EF%BC%88%E6%8E%A8%E8%8D%90%EF%BC%89"><span class="nav-number">2.1.</span> <span class="nav-text">1. 官方镜像（推荐）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E5%8F%98%E4%BD%93%E8%AF%B4%E6%98%8E"><span class="nav-number">2.2.</span> <span class="nav-text">2. 变体说明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E5%AD%97%E7%AC%A6%E9%9B%86%E4%B8%8E%E6%8E%92%E5%BA%8F%E8%A7%84%E5%88%99"><span class="nav-number">2.3.</span> <span class="nav-text">3. 字符集与排序规则</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E5%8D%95%E5%AE%B9%E5%99%A8%E4%B8%80%E9%94%AE%E9%83%A8%E7%BD%B2%EF%BC%88docker-run%EF%BC%89"><span class="nav-number">3.</span> <span class="nav-text">三、单容器一键部署（docker run）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Linux-macOS-Git-Bash%EF%BC%88-%E7%BB%AD%E8%A1%8C%EF%BC%89"><span class="nav-number">3.1.</span> <span class="nav-text">Linux &#x2F; macOS &#x2F; Git Bash（\ 续行）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Windows-CMD%EF%BC%88-%E7%BB%AD%E8%A1%8C%EF%BC%89"><span class="nav-number">3.2.</span> <span class="nav-text">Windows CMD（^ 续行）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E3%80%81Docker-Compose-%E4%B8%80%E9%94%AE%E9%83%A8%E7%BD%B2"><span class="nav-number">4.</span> <span class="nav-text">四、Docker Compose 一键部署</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%94%E3%80%81Kubernetes-%E4%B8%80%E9%94%AE%E9%83%A8%E7%BD%B2%EF%BC%88%E5%8D%95%E6%96%87%E4%BB%B6%E5%AE%8C%E6%95%B4%E6%B8%85%E5%8D%95%EF%BC%89"><span class="nav-number">5.</span> <span class="nav-text">五、Kubernetes 一键部署（单文件完整清单）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E5%B0%8F%E7%BB%93"><span class="nav-number">6.</span> <span class="nav-text">六、小结</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%9ADocker-%E9%83%A8%E7%BD%B2-MySQL-%E5%AE%9E%E8%B7%B5"><span class="nav-number">1.</span> <span class="nav-text">第二章：Docker 部署 MySQL 实践</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%B8%BA%E4%BB%80%E4%B9%88%E7%94%A8-Docker-%E9%83%A8%E7%BD%B2-MySQL"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础：为什么用 Docker 部署 MySQL</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E5%89%8D%E7%BD%AE%E6%9D%A1%E4%BB%B6"><span class="nav-number">1.2.</span> <span class="nav-text">一、前置条件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81MySQL-%E9%95%9C%E5%83%8F%E9%80%89%E6%8B%A9"><span class="nav-number">1.3.</span> <span class="nav-text">二、MySQL 镜像选择</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%AE%98%E6%96%B9%E9%95%9C%E5%83%8F%EF%BC%88%E6%8E%A8%E8%8D%90%EF%BC%89"><span class="nav-number">1.3.1.</span> <span class="nav-text">1. 官方镜像（推荐）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E5%8F%98%E4%BD%93%E8%AF%B4%E6%98%8E"><span class="nav-number">1.3.2.</span> <span class="nav-text">2. 变体说明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E5%AD%97%E7%AC%A6%E9%9B%86%E4%B8%8E%E6%8E%92%E5%BA%8F%E8%A7%84%E5%88%99"><span class="nav-number">1.3.3.</span> <span class="nav-text">3. 字符集与排序规则</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E5%8D%95%E5%AE%B9%E5%99%A8%E4%B8%80%E9%94%AE%E9%83%A8%E7%BD%B2%EF%BC%88docker-run%EF%BC%89"><span class="nav-number">1.4.</span> <span class="nav-text">三、单容器一键部署（docker run）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Linux-macOS-Git-Bash%EF%BC%88-%E7%BB%AD%E8%A1%8C%EF%BC%89"><span class="nav-number">1.4.1.</span> <span class="nav-text">Linux &#x2F; macOS &#x2F; Git Bash（\ 续行）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Windows-CMD%EF%BC%88-%E7%BB%AD%E8%A1%8C%EF%BC%89"><span class="nav-number">1.4.2.</span> <span class="nav-text">Windows CMD（^ 续行）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81Docker-Compose-%E4%B8%80%E9%94%AE%E9%83%A8%E7%BD%B2"><span class="nav-number">1.5.</span> <span class="nav-text">四、Docker Compose 一键部署</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81Kubernetes-%E4%B8%80%E9%94%AE%E9%83%A8%E7%BD%B2%EF%BC%88%E5%8D%95%E6%96%87%E4%BB%B6%E5%AE%8C%E6%95%B4%E6%B8%85%E5%8D%95%EF%BC%89"><span class="nav-number">1.6.</span> <span class="nav-text">五、Kubernetes 一键部署（单文件完整清单）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E5%B0%8F%E7%BB%93"><span class="nav-number">1.7.</span> <span class="nav-text">六、小结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.8.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -183,18 +177,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">192</span>
+          <span class="site-state-item-count">194</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">39</span>
+        <span class="site-state-item-count">33</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">108</span>
+        <span class="site-state-item-count">114</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -232,7 +226,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/MySQL/MySQL-Docker/">
+    <link itemprop="mainEntityOfPage" href="https://my919.github.io/2026/05/01/MySQL/MySQL-Docker/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -245,12 +239,12 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="Docker 部署 MySQL | my">
+      <meta itemprop="name" content="第二章：Docker 部署 MySQL 实践 | my">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          Docker 部署 MySQL
+          第二章：Docker 部署 MySQL 实践
         </h1>
 
         <div class="post-meta-container">
@@ -268,7 +262,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-03 11:02:46" itemprop="dateModified" datetime="2026-05-03T11:02:46+08:00">2026-05-03</time>
+      <time title="修改时间：2026-08-30 14:58:25" itemprop="dateModified" datetime="2026-08-30T14:58:25+08:00">2026-08-30</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -287,14 +281,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>1.9k</span>
+      <span>2.2k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>6 分钟</span>
+      <span>7 分钟</span>
     </span>
 </div>
 
@@ -304,15 +298,22 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><p>在 <strong>Docker</strong> 中运行 <strong>MySQL</strong>，适合本地开发、与 <strong>Compose</strong> 编排其它服务、或在 <strong>Kubernetes</strong> 中单实例部署。下文给出<strong>镜像选型</strong>、<strong>一条命令起容器</strong>、<strong>Compose 一键起栈</strong>与<strong>一份多文档 K8s 清单</strong>；密码与数据卷请按环境自行替换，勿把生产密钥提交进仓库。多行命令：<strong>Linux &#x2F; macOS &#x2F; Git Bash</strong> 用行末 <strong><code>\</code>** 续行；**Windows CMD** 用行末 **<code>^</code>** 续行（**<code>^</code> 后不能有空格</strong>）。</p>
-<hr>
-<h1 id="一、前置条件"><a href="#一、前置条件" class="headerlink" title="一、前置条件"></a>一、前置条件</h1><p>本机已安装 <strong><code>docker</code></strong>，并能使用 <strong><code>docker compose</code></strong>（<strong>Compose V2</strong> 插件，命令为 <strong><code>docker compose</code></strong>；若仍使用旧版独立程序，则将下文中的 <strong><code>docker compose</code></strong> 换成 <strong><code>docker-compose</code></strong>）。</p>
+    <div class="post-body" itemprop="articleBody"><h1 id="第二章：Docker-部署-MySQL-实践"><a href="#第二章：Docker-部署-MySQL-实践" class="headerlink" title="第二章：Docker 部署 MySQL 实践"></a>第二章：Docker 部署 MySQL 实践</h1><h2 id="概念基础：为什么用-Docker-部署-MySQL"><a href="#概念基础：为什么用-Docker-部署-MySQL" class="headerlink" title="概念基础：为什么用 Docker 部署 MySQL"></a>概念基础：为什么用 Docker 部署 MySQL</h2><p><strong>容器化</strong>是「把 MySQL 实例连同版本、配置、账号一次性描述清楚」的部署方式：</p>
+<ol>
+<li><strong>环境一致、随起随删</strong>：一条命令拉起带指定<strong>版本、字符集、账号密码</strong>的实例，不污染宿主机；卸载即删容器，重装零成本——这正是第一章建好表结构之后最需要的环境。</li>
+<li><strong>数据与容器分离</strong>：容器可随时销毁，<strong>数据必须落在卷（volume）</strong>；命名卷 <strong><code>mysql-data</code></strong> 持久化 <strong><code>/var/lib/mysql</code></strong>，删容器不丢数据，但<strong>删卷等于删库</strong>，这是容器数据库的第一铁律。</li>
+<li><strong>镜像即版本契约</strong>：优先官方 <strong><code>mysql</code></strong> 镜像并<strong>固定小版本标签</strong>（如 <strong><code>mysql:8.0.40</code></strong>）或 <strong>digest</strong>，避免 <strong><code>latest</code></strong> 漂移；<strong>8.0</strong> 起默认认证插件 <strong><code>caching_sha2_password</code></strong>，老客户端需升级或调整参数。</li>
+<li><strong>初始化只发生一次</strong>：<strong><code>/docker-entrypoint-initdb.d</code></strong> 下的 <strong><code>.sql</code> &#x2F; <code>.sh</code></strong> 仅在<strong>首次空数据目录</strong>时执行；之后的表结构变更要走 SQL 迁移，不会自动重放。</li>
+<li><strong>部署形态递进</strong>：单容器（<strong><code>docker run</code></strong>）→ 编排（<strong>Docker Compose</strong>）→ 集群（<strong>Kubernetes</strong>）；开发环境用前者即可，生产还要叠加<strong>备份、监控、网络策略、TLS 与 Secret 管控</strong>。</li>
+</ol>
+<p>按部署形态由简到繁依次展开：</p>
+<h2 id="一、前置条件"><a href="#一、前置条件" class="headerlink" title="一、前置条件"></a>一、前置条件</h2><p>本机已安装 <strong><code>docker</code></strong>，并能使用 <strong><code>docker compose</code></strong>（<strong>Compose V2</strong> 插件，命令为 <strong><code>docker compose</code></strong>；若仍使用旧版独立程序，则将下文中的 <strong><code>docker compose</code></strong> 换成 <strong><code>docker-compose</code></strong>）。</p>
 <p>验证：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker version</span><br><span class="line">docker compose version</span><br></pre></td></tr></table></figure>
 
 <p>满足即可，与宿主机操作系统无关。</p>
 <hr>
-<h1 id="二、MySQL-镜像选择"><a href="#二、MySQL-镜像选择" class="headerlink" title="二、MySQL 镜像选择"></a>二、MySQL 镜像选择</h1><h2 id="1-官方镜像（推荐）"><a href="#1-官方镜像（推荐）" class="headerlink" title="1. 官方镜像（推荐）"></a>1. 官方镜像（推荐）</h2><ul>
+<h2 id="二、MySQL-镜像选择"><a href="#二、MySQL-镜像选择" class="headerlink" title="二、MySQL 镜像选择"></a>二、MySQL 镜像选择</h2><h3 id="1-官方镜像（推荐）"><a href="#1-官方镜像（推荐）" class="headerlink" title="1. 官方镜像（推荐）"></a>1. 官方镜像（推荐）</h3><ul>
 <li><strong>仓库</strong>：<strong><code>mysql</code></strong>（Docker Hub 官方库，由 <strong>Oracle</strong> &#x2F; <strong>MySQL</strong> 团队维护）。  </li>
 <li><strong>常用标签</strong>：  <ul>
 <li><strong><code>mysql:8.0</code></strong>：<strong>8.0</strong> 长期维护线，生态兼容面广（<strong>WordPress</strong>、旧驱动等多以 <strong>8.0</strong> 为基准）。  </li>
@@ -321,7 +322,7 @@
 </li>
 <li><strong>生产建议</strong>：固定小版本标签（如 <strong><code>mysql:8.0.40</code></strong>）或记录 <strong>digest</strong>，避免 <strong><code>latest</code></strong> 漂移导致行为变化。</li>
 </ul>
-<h2 id="2-变体说明"><a href="#2-变体说明" class="headerlink" title="2. 变体说明"></a>2. 变体说明</h2><table>
+<h3 id="2-变体说明"><a href="#2-变体说明" class="headerlink" title="2. 变体说明"></a>2. 变体说明</h3><table>
 <thead>
 <tr>
 <th>需求</th>
@@ -341,17 +342,17 @@
 <td>社区有 <strong><code>bitnami/mysql</code></strong> 等，参数与路径与官方不同，切换镜像时需对照该镜像文档。</td>
 </tr>
 </tbody></table>
-<h2 id="3-字符集与排序规则"><a href="#3-字符集与排序规则" class="headerlink" title="3. 字符集与排序规则"></a>3. 字符集与排序规则</h2><p>容器内建议在 <strong><code>command</code></strong> 或 <strong><code>my.cnf</code></strong> 中显式指定 <strong><code>utf8mb4</code></strong>，与业务库一致，避免默认与连接串不一致。</p>
+<h3 id="3-字符集与排序规则"><a href="#3-字符集与排序规则" class="headerlink" title="3. 字符集与排序规则"></a>3. 字符集与排序规则</h3><p>容器内建议在 <strong><code>command</code></strong> 或 <strong><code>my.cnf</code></strong> 中显式指定 <strong><code>utf8mb4</code></strong>，与业务库一致，避免默认与连接串不一致。</p>
 <hr>
 <p><strong>1Panel（推荐）</strong>：在 <strong>Linux</strong> 宿主机上若希望少手写命令、仍以容器方式运行 <strong>MySQL</strong>，可先安装 <a target="_blank" rel="noopener external nofollow noreferrer" href="https://1panel.cn/"><strong>1Panel</strong></a>（开源 <strong>Linux</strong> 运维面板），在 <strong>「应用商店」</strong> 中选择 <strong>MySQL</strong> 一键部署：由面板负责镜像版本、数据持久化、端口映射与（可选）计划备份，启停与日志可在界面查看。与下文 <strong><code>docker run</code> &#x2F; Compose &#x2F; K8s</strong> 中的环境变量、卷与字符集语义对齐或排障时，自 <strong># 三</strong> 起各节仍可作对照。适合单台 <strong>VPS</strong>、家庭服务器等「一台机子上稳态跑库」的场景。</p>
 <hr>
-<h1 id="三、单容器一键部署（docker-run）"><a href="#三、单容器一键部署（docker-run）" class="headerlink" title="三、单容器一键部署（docker run）"></a>三、单容器一键部署（<code>docker run</code>）</h1><p><strong>一条命令</strong>启动（与下述参数一致；<strong>命名卷</strong> <strong><code>mysql-data</code></strong>、<strong><code>mysql-init</code></strong> 在首次运行时会由 <strong>Docker</strong> 自动创建，无需在宿主机 <strong><code>mkdir</code></strong>）：</p>
+<h2 id="三、单容器一键部署（docker-run）"><a href="#三、单容器一键部署（docker-run）" class="headerlink" title="三、单容器一键部署（docker run）"></a>三、单容器一键部署（<code>docker run</code>）</h2><p><strong>一条命令</strong>启动（与下述参数一致；<strong>命名卷</strong> <strong><code>mysql-data</code></strong>、<strong><code>mysql-init</code></strong> 在首次运行时会由 <strong>Docker</strong> 自动创建，无需在宿主机 <strong><code>mkdir</code></strong>）：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -d   --name mysql-dev   -e MYSQL_ROOT_PASSWORD=<span class="string">&quot;pi=3.1415&quot;</span>   -e MYSQL_DATABASE=<span class="string">&quot;app&quot;</span>   -e MYSQL_USER=<span class="string">&quot;admin&quot;</span>   -e MYSQL_PASSWORD=<span class="string">&quot;pi=3.1415&quot;</span>   -p 3306:3306   -v mysql-data:/var/lib/mysql   -v mysql-init:/docker-entrypoint-initdb.d:ro   mysql:8.0   --character-set-server=utf8mb4   --collation-server=utf8mb4_unicode_ci</span><br></pre></td></tr></table></figure>
 
 <p>多行可读（与上条等价；按终端选一种）：</p>
-<h2 id="Linux-macOS-Git-Bash（-续行）"><a href="#Linux-macOS-Git-Bash（-续行）" class="headerlink" title="Linux &#x2F; macOS &#x2F; Git Bash（\ 续行）"></a>Linux &#x2F; macOS &#x2F; Git Bash（<code>\</code> 续行）</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">docker run -d\</span><br><span class="line">  --name mysql-dev\</span><br><span class="line">  -e MYSQL_ROOT_PASSWORD=<span class="string">&quot;pi=3.1415&quot;</span>\</span><br><span class="line">  -e MYSQL_DATABASE=<span class="string">&quot;app&quot;</span>\</span><br><span class="line">  -e MYSQL_USER=<span class="string">&quot;admin&quot;</span>\</span><br><span class="line">  -e MYSQL_PASSWORD=<span class="string">&quot;pi=3.1415&quot;</span>\</span><br><span class="line">  -p 3306:3306\</span><br><span class="line">  -v mysql-data:/var/lib/mysql\</span><br><span class="line">  -v mysql-init:/docker-entrypoint-initdb.d:ro\</span><br><span class="line">  mysql:8.0\</span><br><span class="line">  --character-set-server=utf8mb4\</span><br><span class="line">  --collation-server=utf8mb4_unicode_ci</span><br></pre></td></tr></table></figure>
+<h3 id="Linux-macOS-Git-Bash（-续行）"><a href="#Linux-macOS-Git-Bash（-续行）" class="headerlink" title="Linux &#x2F; macOS &#x2F; Git Bash（\ 续行）"></a>Linux &#x2F; macOS &#x2F; Git Bash（<code>\</code> 续行）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">docker run -d\</span><br><span class="line">  --name mysql-dev\</span><br><span class="line">  -e MYSQL_ROOT_PASSWORD=<span class="string">&quot;pi=3.1415&quot;</span>\</span><br><span class="line">  -e MYSQL_DATABASE=<span class="string">&quot;app&quot;</span>\</span><br><span class="line">  -e MYSQL_USER=<span class="string">&quot;admin&quot;</span>\</span><br><span class="line">  -e MYSQL_PASSWORD=<span class="string">&quot;pi=3.1415&quot;</span>\</span><br><span class="line">  -p 3306:3306\</span><br><span class="line">  -v mysql-data:/var/lib/mysql\</span><br><span class="line">  -v mysql-init:/docker-entrypoint-initdb.d:ro\</span><br><span class="line">  mysql:8.0\</span><br><span class="line">  --character-set-server=utf8mb4\</span><br><span class="line">  --collation-server=utf8mb4_unicode_ci</span><br></pre></td></tr></table></figure>
 
-<h2 id="Windows-CMD（-续行）"><a href="#Windows-CMD（-续行）" class="headerlink" title="Windows CMD（^ 续行）"></a>Windows CMD（<code>^</code> 续行）</h2><figure class="highlight bat"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">docker run -d^</span><br><span class="line">  --name mysql-dev^</span><br><span class="line">  -e MYSQL_ROOT_PASSWORD=&quot;pi=<span class="number">3</span>.<span class="number">1415</span>&quot;^</span><br><span class="line">  -e MYSQL_DATABASE=&quot;app&quot;^</span><br><span class="line">  -e MYSQL_USER=&quot;admin&quot;^</span><br><span class="line">  -e MYSQL_PASSWORD=&quot;pi=<span class="number">3</span>.<span class="number">1415</span>&quot;^</span><br><span class="line">  -p <span class="number">3306</span>:<span class="number">3306</span>^</span><br><span class="line">  -v mysql-data:/var/lib/mysql^</span><br><span class="line">  -v mysql-init:/docker-entrypoint-initdb.d:ro^</span><br><span class="line"><span class="function">  mysql:8.0^</span></span><br><span class="line"><span class="function">  --<span class="title">character</span>-<span class="title">set</span>-<span class="title">server</span>=<span class="title">utf8mb4</span>^</span></span><br><span class="line"><span class="function">  --<span class="title">collation</span>-<span class="title">server</span>=<span class="title">utf8mb4_unicode_ci</span></span></span><br></pre></td></tr></table></figure>
+<h3 id="Windows-CMD（-续行）"><a href="#Windows-CMD（-续行）" class="headerlink" title="Windows CMD（^ 续行）"></a>Windows CMD（<code>^</code> 续行）</h3><figure class="highlight bat"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">docker run -d^</span><br><span class="line">  --name mysql-dev^</span><br><span class="line">  -e MYSQL_ROOT_PASSWORD=&quot;pi=<span class="number">3</span>.<span class="number">1415</span>&quot;^</span><br><span class="line">  -e MYSQL_DATABASE=&quot;app&quot;^</span><br><span class="line">  -e MYSQL_USER=&quot;admin&quot;^</span><br><span class="line">  -e MYSQL_PASSWORD=&quot;pi=<span class="number">3</span>.<span class="number">1415</span>&quot;^</span><br><span class="line">  -p <span class="number">3306</span>:<span class="number">3306</span>^</span><br><span class="line">  -v mysql-data:/var/lib/mysql^</span><br><span class="line">  -v mysql-init:/docker-entrypoint-initdb.d:ro^</span><br><span class="line"><span class="function">  mysql:8.0^</span></span><br><span class="line"><span class="function">  --<span class="title">character</span>-<span class="title">set</span>-<span class="title">server</span>=<span class="title">utf8mb4</span>^</span></span><br><span class="line"><span class="function">  --<span class="title">collation</span>-<span class="title">server</span>=<span class="title">utf8mb4_unicode_ci</span></span></span><br></pre></td></tr></table></figure>
 
 <p><strong>Windows 说明</strong>：<strong>Docker Desktop</strong> 下命名卷写法与 <strong>Linux</strong> 一致；若在 <strong>CMD</strong> 中路径或引号报错，可改用 <strong>PowerShell</strong>（行末续行符为 <strong><code>`</code></strong>）或仍用<strong>一条命令</strong>单行复制。</p>
 <table>
@@ -384,14 +385,14 @@
 
 <p>已有数据卷时<strong>不会</strong>再次执行 <strong><code>docker-entrypoint-initdb.d</code></strong> 内脚本；清空数据需删卷：<strong><code>docker volume rm mysql-data</code></strong>（<strong>会删库</strong>，且须先删容器）。</p>
 <hr>
-<h1 id="四、Docker-Compose-一键部署"><a href="#四、Docker-Compose-一键部署" class="headerlink" title="四、Docker Compose 一键部署"></a>四、Docker Compose 一键部署</h1><p>将下面内容保存为 <strong><code>docker-compose.mysql.yml</code></strong>（与 <strong><code># 一</code></strong> 要求一致：已能执行 <strong><code>docker compose</code></strong>）。敏感项建议放在同目录 <strong><code>.env</code></strong>（加入 <strong><code>.gitignore</code></strong>），勿长期写死在仓库。</p>
+<h2 id="四、Docker-Compose-一键部署"><a href="#四、Docker-Compose-一键部署" class="headerlink" title="四、Docker Compose 一键部署"></a>四、Docker Compose 一键部署</h2><p>将下面内容保存为 <strong><code>docker-compose.mysql.yml</code></strong>（与 <strong># 一</strong> 要求一致：已能执行 <strong><code>docker compose</code></strong>）。敏感项建议放在同目录 <strong><code>.env</code></strong>（加入 <strong><code>.gitignore</code></strong>），勿长期写死在仓库。</p>
 <p><strong>一条命令</strong>启动全栈（在 <strong><code>docker-compose.mysql.yml</code></strong> 所在目录执行）：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker compose -f docker-compose.mysql.yml up -d</span><br></pre></td></tr></table></figure>
 
 <p>以下为 <strong><code>docker-compose.mysql.yml</code></strong> 全文：<strong><code>version</code></strong>、<strong><code>name</code></strong>、<strong>命名卷</strong>、<strong>健康检查</strong>、<strong>字符集参数</strong>。</p>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">version:</span> <span class="string">&quot;3.8&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="attr">name:</span> <span class="string">mysql-stack</span></span><br><span class="line"></span><br><span class="line"><span class="attr">services:</span></span><br><span class="line">  <span class="attr">mysql:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">mysql:8.0</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">mysql-dev</span></span><br><span class="line">    <span class="attr">restart:</span> <span class="string">unless-stopped</span></span><br><span class="line">    <span class="attr">environment:</span></span><br><span class="line">      <span class="attr">MYSQL_ROOT_PASSWORD:</span> <span class="string">$&#123;MYSQL_ROOT_PASSWORD:-pi=3.1415&#125;</span></span><br><span class="line">      <span class="attr">MYSQL_DATABASE:</span> <span class="string">$&#123;MYSQL_DATABASE:-app&#125;</span></span><br><span class="line">      <span class="attr">MYSQL_USER:</span> <span class="string">$&#123;MYSQL_USER:-admin&#125;</span></span><br><span class="line">      <span class="attr">MYSQL_PASSWORD:</span> <span class="string">$&#123;MYSQL_PASSWORD:-pi=3.1415&#125;</span></span><br><span class="line">      <span class="attr">TZ:</span> <span class="string">Asia/Shanghai</span></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;3306:3306&quot;</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">mysql-data:/var/lib/mysql</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">mysql-init:/docker-entrypoint-initdb.d:ro</span></span><br><span class="line">    <span class="attr">command:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;--character-set-server=utf8mb4&quot;</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;--collation-server=utf8mb4_unicode_ci&quot;</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;--default-authentication-plugin=caching_sha2_password&quot;</span></span><br><span class="line">    <span class="attr">healthcheck:</span></span><br><span class="line">      <span class="attr">test:</span> [<span class="string">&quot;CMD-SHELL&quot;</span>, <span class="string">&quot;mysqladmin ping -h 127.0.0.1 -uroot -p\&quot;$$MYSQL_ROOT_PASSWORD\&quot; || exit 1&quot;</span>]</span><br><span class="line">      <span class="attr">interval:</span> <span class="string">5s</span></span><br><span class="line">      <span class="attr">timeout:</span> <span class="string">5s</span></span><br><span class="line">      <span class="attr">retries:</span> <span class="number">30</span></span><br><span class="line">      <span class="attr">start_period:</span> <span class="string">40s</span></span><br><span class="line"></span><br><span class="line"><span class="attr">volumes:</span></span><br><span class="line">  <span class="attr">mysql-data:</span></span><br><span class="line">    <span class="attr">driver:</span> <span class="string">local</span></span><br><span class="line">  <span class="attr">mysql-init:</span></span><br><span class="line">    <span class="attr">driver:</span> <span class="string">local</span></span><br></pre></td></tr></table></figure>
 
-<p>同目录可选 <strong><code>.env</code></strong>（勿提交；与 <strong><code># 三</code></strong> 一条 <strong><code>docker run</code></strong> 对齐）：</p>
+<p>同目录可选 <strong><code>.env</code></strong>（勿提交；与 <strong># 三</strong> 一条 <strong><code>docker run</code></strong> 对齐）：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">MYSQL_ROOT_PASSWORD=pi=3.1415</span><br><span class="line">MYSQL_DATABASE=app</span><br><span class="line">MYSQL_USER=admin</span><br><span class="line">MYSQL_PASSWORD=pi=3.1415</span><br></pre></td></tr></table></figure>
 
 <p>查看状态、日志、停止并删除容器（保留数据卷）：</p>
@@ -399,7 +400,7 @@
 
 <p><strong><code>down</code></strong> 默认保留命名卷 <strong><code>mysql-data</code></strong>、<strong><code>mysql-init</code></strong>；若需清空数据加 <strong><code>docker compose ... down -v</code></strong>（<strong>会删库</strong>）。</p>
 <hr>
-<h1 id="五、Kubernetes-一键部署（单文件完整清单）"><a href="#五、Kubernetes-一键部署（单文件完整清单）" class="headerlink" title="五、Kubernetes 一键部署（单文件完整清单）"></a>五、Kubernetes 一键部署（单文件完整清单）</h1><p>将下面内容保存为 <strong><code>mysql-k8s.yaml</code></strong> 后，<strong>一条命令</strong>应用：</p>
+<h2 id="五、Kubernetes-一键部署（单文件完整清单）"><a href="#五、Kubernetes-一键部署（单文件完整清单）" class="headerlink" title="五、Kubernetes 一键部署（单文件完整清单）"></a>五、Kubernetes 一键部署（单文件完整清单）</h2><p>将下面内容保存为 <strong><code>mysql-k8s.yaml</code></strong> 后，<strong>一条命令</strong>应用：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl apply -f mysql-k8s.yaml</span><br></pre></td></tr></table></figure>
 
 <p>清单含 <strong>Secret</strong>（<strong>root</strong> 与应用账号）、<strong>PVC</strong>、<strong>Deployment</strong>、<strong>ClusterIP Service</strong>。未写 <strong><code>storageClassName</code></strong> 时使用集群默认 <strong>StorageClass</strong>；无默认 <strong>SC</strong> 时请在 <strong>PVC</strong> 中补上 <strong><code>storageClassName</code></strong>。命名空间为 <strong><code>default</code></strong>，可按需修改 <strong><code>metadata.namespace</code></strong>。</p>
@@ -411,7 +412,7 @@
 <p>集群内连接串示例（按 <strong>namespace</strong> 调整）：<strong><code>admin:pi=3.1415@tcp(mysql.default.svc.cluster.local:3306)/app?parseTime=true&amp;charset=utf8mb4</code></strong>（密码含 <strong><code>=</code></strong> 时 <strong>URL</strong> 内需 <strong><code>encodeURIComponent</code></strong> 或改用 <strong>Secret</strong> 挂载 <strong><code>my.cnf</code></strong>，勿裸贴生产密钥）。</p>
 <p><strong>说明</strong>：<strong><code>strategy: Recreate</code></strong> 避免 <strong>RWO</strong> 卷被多副本 <strong>RollingUpdate</strong> 同时挂载；<strong>MySQL</strong> 主从、读写分离请用 <strong>Operator</strong> 或 <strong>StatefulSet</strong> 方案，勿直接水平扩展上述 <strong>Deployment</strong>。</p>
 <hr>
-<h1 id="六、小结"><a href="#六、小结" class="headerlink" title="六、小结"></a>六、小结</h1><table>
+<h2 id="六、小结"><a href="#六、小结" class="headerlink" title="六、小结"></a>六、小结</h2><table>
 <thead>
 <tr>
 <th>项</th>
@@ -440,6 +441,36 @@
 </tr>
 </tbody></table>
 <p>生产环境请配合备份、监控、网络策略与 <strong>TLS</strong>；<strong>Secret</strong> 建议对接 <strong>External Secrets</strong> &#x2F; <strong>Sealed Secrets</strong> 等管控流程。</p>
+<h2 id="本章小结"><a href="#本章小结" class="headerlink" title="本章小结"></a>本章小结</h2><table>
+<thead>
+<tr>
+<th>要点</th>
+<th>结论</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>镜像</td>
+<td>官方 <strong><code>mysql:8.0</code></strong> 起步，<strong>固定小版本标签&#x2F;digest</strong> 防 <strong><code>latest</code></strong> 漂移</td>
+</tr>
+<tr>
+<td>数据持久化</td>
+<td>命名卷 <strong><code>mysql-data</code></strong> 对应 <strong><code>/var/lib/mysql</code></strong>；<strong>删卷 &#x3D; 删库</strong></td>
+</tr>
+<tr>
+<td>初始化脚本</td>
+<td><strong><code>/docker-entrypoint-initdb.d</code></strong> 仅<strong>首次空数据目录</strong>执行一次</td>
+</tr>
+<tr>
+<td>Compose</td>
+<td><strong><code>docker compose -f ... up -d</code></strong>；敏感项走 <strong><code>.env</code></strong> 且不提交仓库</td>
+</tr>
+<tr>
+<td>Kubernetes</td>
+<td><strong>Secret + PVC + Deployment（Recreate）+ Service</strong>；主从用 <strong>Operator &#x2F; StatefulSet</strong></td>
+</tr>
+</tbody></table>
+<p>数据库已经稳稳跑起来了，接下来深入它的并发控制核心——锁。</p>
+<p>下一步：并发控制 → <a href="/2026/05/03/MySQL/MySQL%E9%94%81%E8%AF%A6%E8%A7%A3/" title="第三章：MySQL 锁详解">第三章：MySQL 锁详解</a></p>
 
     </div>
 
@@ -459,13 +490,13 @@
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2026/05/01/Redis/Redis-Docker/" rel="prev" title="Docker 部署 Redis">
-                  <i class="fa fa-angle-left"></i> Docker 部署 Redis
+                <a href="/2026/05/01/Redis/Redis-Docker/" rel="prev" title="第二章：Docker 部署 Redis 实践">
+                  <i class="fa fa-angle-left"></i> 第二章：Docker 部署 Redis 实践
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2026/05/01/MongoDB/MongoDB-Docker/" rel="next" title="Docker 部署 MongoDB">
-                  Docker 部署 MongoDB <i class="fa fa-angle-right"></i>
+                <a href="/2026/05/01/MongoDB/MongoDB-Docker/" rel="next" title="第二章：Docker 部署 MongoDB 实践">
+                  第二章：Docker 部署 MongoDB 实践 <i class="fa fa-angle-right"></i>
                 </a>
             </div>
           </div>
@@ -497,13 +528,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">195k</span>
+    <span title="站点总字数">253k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">10:49</span>
+    <span title="站点阅读时长">14:03</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

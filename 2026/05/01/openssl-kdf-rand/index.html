@@ -18,29 +18,29 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
 
-<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
+<script class="next-config" data-name="main" type="application/json">{"hostname":"my919.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
 
-    <meta name="description" content="从弱熵源（用户口令）安全得到加密密钥，或生成不可预测随机数，是对称加密与 TLS 的基础。OpenSSL 提供 openssl rand、enc -pbkdf2、kdf 等。对称加密见 对称加密。 推荐实践   需求 推荐 避免    生成 AES 密钥 &#x2F; IV &#x2F; salt openssl rand -hex 32 &#x2F;dev&#x2F;urandom 手写拼接错误   口令 → 密钥">
+    <meta name="description" content="第七章：OpenSSL 密钥派生与随机数：PBKDF2、rand 与推荐用法概念基础：密钥从哪来、为什么是根基 随机数是密码学之根：密钥、IV&#x2F;nonce、salt、session token、HMAC secret 全部来自 CSPRNG（openssl rand 内部即此）——随机性不足，再强的算法也是空谈。 口令 ≠ 密钥：人类口令熵低、可猜测、常重复，直接当 AES 密钥会被暴力">
 <meta property="og:type" content="article">
-<meta property="og:title" content="OpenSSL 密钥派生与随机数：PBKDF2、rand 与推荐用法">
-<meta property="og:url" content="http://example.com/2026/05/01/openssl-kdf-rand/index.html">
+<meta property="og:title" content="第七章：OpenSSL 密钥派生与随机数：PBKDF2、rand 与推荐用法">
+<meta property="og:url" content="https://my919.github.io/2026/05/01/openssl-kdf-rand/index.html">
 <meta property="og:site_name" content="my">
-<meta property="og:description" content="从弱熵源（用户口令）安全得到加密密钥，或生成不可预测随机数，是对称加密与 TLS 的基础。OpenSSL 提供 openssl rand、enc -pbkdf2、kdf 等。对称加密见 对称加密。 推荐实践   需求 推荐 避免    生成 AES 密钥 &#x2F; IV &#x2F; salt openssl rand -hex 32 &#x2F;dev&#x2F;urandom 手写拼接错误   口令 → 密钥">
+<meta property="og:description" content="第七章：OpenSSL 密钥派生与随机数：PBKDF2、rand 与推荐用法概念基础：密钥从哪来、为什么是根基 随机数是密码学之根：密钥、IV&#x2F;nonce、salt、session token、HMAC secret 全部来自 CSPRNG（openssl rand 内部即此）——随机性不足，再强的算法也是空谈。 口令 ≠ 密钥：人类口令熵低、可猜测、常重复，直接当 AES 密钥会被暴力">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-05-01T06:20:00.000Z">
-<meta property="article:modified_time" content="2026-06-03T12:57:22.054Z">
+<meta property="article:modified_time" content="2026-08-30T07:17:30.487Z">
 <meta property="article:author" content="miracle">
 <meta property="article:tag" content="OpenSSL">
 <meta name="twitter:card" content="summary">
 
 
-<link rel="canonical" href="http://example.com/2026/05/01/openssl-kdf-rand/">
+<link rel="canonical" href="https://my919.github.io/2026/05/01/openssl-kdf-rand/">
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2026/05/01/openssl-kdf-rand/","path":"/2026/05/01/openssl-kdf-rand/","title":"OpenSSL 密钥派生与随机数：PBKDF2、rand 与推荐用法"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://my919.github.io/2026/05/01/openssl-kdf-rand/","path":"/2026/05/01/openssl-kdf-rand/","title":"第七章：OpenSSL 密钥派生与随机数：PBKDF2、rand 与推荐用法"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>OpenSSL 密钥派生与随机数：PBKDF2、rand 与推荐用法 | my</title>
+<title>第七章：OpenSSL 密钥派生与随机数：PBKDF2、rand 与推荐用法 | my</title>
   
 
 
@@ -68,12 +68,6 @@
   
 
 
-
-
-  
-
-  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
-<script src="/js/third-party/math/mathjax.js" defer></script>
 
 
 
@@ -167,7 +161,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8E%A8%E8%8D%90%E5%AE%9E%E8%B7%B5"><span class="nav-number">1.</span> <span class="nav-text">推荐实践</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E5%AE%89%E5%85%A8%E9%9A%8F%E6%9C%BA%E6%95%B0-openssl-rand"><span class="nav-number">2.</span> <span class="nav-text">一、安全随机数 openssl rand</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81PBKDF2%EF%BC%88%E5%8F%A3%E4%BB%A4%E6%B4%BE%E7%94%9F%EF%BC%89"><span class="nav-number">3.</span> <span class="nav-text">二、PBKDF2（口令派生）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%89%B9%E7%82%B9"><span class="nav-number">3.1.</span> <span class="nav-text">特点</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81HKDF%EF%BC%88%E5%8D%8F%E8%AE%AE%E5%B1%82%E4%BA%86%E8%A7%A3%EF%BC%89"><span class="nav-number">4.</span> <span class="nav-text">三、HKDF（协议层了解）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E3%80%81scrypt%EF%BC%88%E8%8B%A5%E7%BC%96%E8%AF%91%E6%94%AF%E6%8C%81%EF%BC%89"><span class="nav-number">5.</span> <span class="nav-text">四、scrypt（若编译支持）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E6%A3%80%E6%9F%A5%E6%9C%AC%E6%9C%BA%E8%83%BD%E5%8A%9B"><span class="nav-number">6.</span> <span class="nav-text">五、检查本机能力</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E4%B8%8E-enc-TLS-%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="nav-number">7.</span> <span class="nav-text">六、与 enc &#x2F; TLS 的关系</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BB%B6%E4%BC%B8%E9%98%85%E8%AF%BB"><span class="nav-number">8.</span> <span class="nav-text">延伸阅读</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%B8%83%E7%AB%A0%EF%BC%9AOpenSSL-%E5%AF%86%E9%92%A5%E6%B4%BE%E7%94%9F%E4%B8%8E%E9%9A%8F%E6%9C%BA%E6%95%B0%EF%BC%9APBKDF2%E3%80%81rand-%E4%B8%8E%E6%8E%A8%E8%8D%90%E7%94%A8%E6%B3%95"><span class="nav-number">1.</span> <span class="nav-text">第七章：OpenSSL 密钥派生与随机数：PBKDF2、rand 与推荐用法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80%EF%BC%9A%E5%AF%86%E9%92%A5%E4%BB%8E%E5%93%AA%E6%9D%A5%E3%80%81%E4%B8%BA%E4%BB%80%E4%B9%88%E6%98%AF%E6%A0%B9%E5%9F%BA"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础：密钥从哪来、为什么是根基</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8E%A8%E8%8D%90%E5%AE%9E%E8%B7%B5"><span class="nav-number">1.2.</span> <span class="nav-text">推荐实践</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E5%AE%89%E5%85%A8%E9%9A%8F%E6%9C%BA%E6%95%B0-openssl-rand"><span class="nav-number">1.3.</span> <span class="nav-text">一、安全随机数 openssl rand</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81PBKDF2%EF%BC%88%E5%8F%A3%E4%BB%A4%E6%B4%BE%E7%94%9F%EF%BC%89"><span class="nav-number">1.4.</span> <span class="nav-text">二、PBKDF2（口令派生）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%89%B9%E7%82%B9"><span class="nav-number">1.4.1.</span> <span class="nav-text">特点</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81HKDF%EF%BC%88%E5%8D%8F%E8%AE%AE%E5%B1%82%E4%BA%86%E8%A7%A3%EF%BC%89"><span class="nav-number">1.5.</span> <span class="nav-text">三、HKDF（协议层了解）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81scrypt%EF%BC%88%E8%8B%A5%E7%BC%96%E8%AF%91%E6%94%AF%E6%8C%81%EF%BC%89"><span class="nav-number">1.6.</span> <span class="nav-text">四、scrypt（若编译支持）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E6%A3%80%E6%9F%A5%E6%9C%AC%E6%9C%BA%E8%83%BD%E5%8A%9B"><span class="nav-number">1.7.</span> <span class="nav-text">五、检查本机能力</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E4%B8%8E-enc-TLS-%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="nav-number">1.8.</span> <span class="nav-text">六、与 enc &#x2F; TLS 的关系</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BB%B6%E4%BC%B8%E9%98%85%E8%AF%BB"><span class="nav-number">1.9.</span> <span class="nav-text">延伸阅读</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.10.</span> <span class="nav-text">本章小结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%93%E8%AF%AD"><span class="nav-number">1.11.</span> <span class="nav-text">结语</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -180,18 +174,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">192</span>
+          <span class="site-state-item-count">194</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">39</span>
+        <span class="site-state-item-count">33</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">108</span>
+        <span class="site-state-item-count">114</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -229,7 +223,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/openssl-kdf-rand/">
+    <link itemprop="mainEntityOfPage" href="https://my919.github.io/2026/05/01/openssl-kdf-rand/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -242,12 +236,12 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="OpenSSL 密钥派生与随机数：PBKDF2、rand 与推荐用法 | my">
+      <meta itemprop="name" content="第七章：OpenSSL 密钥派生与随机数：PBKDF2、rand 与推荐用法 | my">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          OpenSSL 密钥派生与随机数：PBKDF2、rand 与推荐用法
+          第七章：OpenSSL 密钥派生与随机数：PBKDF2、rand 与推荐用法
         </h1>
 
         <div class="post-meta-container">
@@ -265,7 +259,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-06-03 20:57:22" itemprop="dateModified" datetime="2026-06-03T20:57:22+08:00">2026-06-03</time>
+      <time title="修改时间：2026-08-30 15:17:30" itemprop="dateModified" datetime="2026-08-30T15:17:30+08:00">2026-08-30</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -284,14 +278,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>554</span>
+      <span>994</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>2 分钟</span>
+      <span>3 分钟</span>
     </span>
 </div>
 
@@ -301,8 +295,14 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><p>从<strong>弱熵源</strong>（用户口令）安全得到<strong>加密密钥</strong>，或生成<strong>不可预测随机数</strong>，是对称加密与 TLS 的基础。OpenSSL 提供 <strong><code>openssl rand</code></strong>、<strong><code>enc -pbkdf2</code></strong>、<strong><code>kdf</code></strong> 等。对称加密见 <a href="/2026/05/01/openssl-symmetric/" title="OpenSSL 对称加密：AES-GCM、ChaCha20 与推荐用法">对称加密</a>。</p>
-<h1 id="推荐实践"><a href="#推荐实践" class="headerlink" title="推荐实践"></a>推荐实践</h1><table>
+    <div class="post-body" itemprop="articleBody"><h1 id="第七章：OpenSSL-密钥派生与随机数：PBKDF2、rand-与推荐用法"><a href="#第七章：OpenSSL-密钥派生与随机数：PBKDF2、rand-与推荐用法" class="headerlink" title="第七章：OpenSSL 密钥派生与随机数：PBKDF2、rand 与推荐用法"></a>第七章：OpenSSL 密钥派生与随机数：PBKDF2、rand 与推荐用法</h1><h2 id="概念基础：密钥从哪来、为什么是根基"><a href="#概念基础：密钥从哪来、为什么是根基" class="headerlink" title="概念基础：密钥从哪来、为什么是根基"></a>概念基础：密钥从哪来、为什么是根基</h2><ol>
+<li><strong>随机数是密码学之根</strong>：<strong>密钥、IV&#x2F;nonce、salt、session token、HMAC secret</strong> 全部来自 <strong>CSPRNG</strong>（<code>openssl rand</code> 内部即此）——随机性不足，再强的算法也是空谈。</li>
+<li><strong>口令 ≠ 密钥</strong>：人类口令<strong>熵低、可猜测、常重复</strong>，直接当 AES 密钥会被暴力破解；必须经 <strong>KDF（密钥派生函数）</strong> 处理。</li>
+<li><strong>KDF 的两大武器</strong>：<strong>salt</strong>（防彩虹表与预计算）+ <strong>高迭代次数</strong>（把每次猜测的成本拉高千万倍），PBKDF2 建议迭代 <strong>≥ 600000</strong>。</li>
+<li><strong>场景分流</strong>：文件加密口令 → <strong>PBKDF2</strong>（<code>enc -pbkdf2</code> 已内置，见第四章）；协议密钥 → <strong>HKDF</strong>（TLS 1.3 内部自动完成）；口令存储 → <strong>Argon2id</strong>（应用层专用库）。</li>
+<li><strong>本章定位</strong>：作为<strong>末章收束全书</strong>——把前几章密钥的「来源」讲透：第四章的 AES 密钥、第六章的 HMAC secret，都在这里生成与派生。</li>
+</ol>
+<h2 id="推荐实践"><a href="#推荐实践" class="headerlink" title="推荐实践"></a>推荐实践</h2><table>
 <thead>
 <tr>
 <th>需求</th>
@@ -343,11 +343,11 @@ flowchart LR
 </pre>
 
 <hr>
-<h1 id="一、安全随机数-openssl-rand"><a href="#一、安全随机数-openssl-rand" class="headerlink" title="一、安全随机数 openssl rand"></a>一、安全随机数 <code>openssl rand</code></h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 32 字节 = AES-256 密钥</span></span><br><span class="line">openssl rand -hex 32</span><br><span class="line"></span><br><span class="line"><span class="comment"># Base64 形式</span></span><br><span class="line">openssl rand -<span class="built_in">base64</span> 32</span><br><span class="line"></span><br><span class="line"><span class="comment"># 写入文件</span></span><br><span class="line">openssl rand 32 &gt; aes.key</span><br></pre></td></tr></table></figure>
+<h2 id="一、安全随机数-openssl-rand"><a href="#一、安全随机数-openssl-rand" class="headerlink" title="一、安全随机数 openssl rand"></a>一、安全随机数 <code>openssl rand</code></h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 32 字节 = AES-256 密钥</span></span><br><span class="line">openssl rand -hex 32</span><br><span class="line"></span><br><span class="line"><span class="comment"># Base64 形式</span></span><br><span class="line">openssl rand -<span class="built_in">base64</span> 32</span><br><span class="line"></span><br><span class="line"><span class="comment"># 写入文件</span></span><br><span class="line">openssl rand 32 &gt; aes.key</span><br></pre></td></tr></table></figure>
 
 <p><strong>用途</strong>：AES 密钥、IV&#x2F;nonce（GCM 须唯一）、session token、HMAC secret。</p>
 <hr>
-<h1 id="二、PBKDF2（口令派生）"><a href="#二、PBKDF2（口令派生）" class="headerlink" title="二、PBKDF2（口令派生）"></a>二、PBKDF2（口令派生）</h1><h2 id="特点"><a href="#特点" class="headerlink" title="特点"></a>特点</h2><ul>
+<h2 id="二、PBKDF2（口令派生）"><a href="#二、PBKDF2（口令派生）" class="headerlink" title="二、PBKDF2（口令派生）"></a>二、PBKDF2（口令派生）</h2><h3 id="特点"><a href="#特点" class="headerlink" title="特点"></a>特点</h3><ul>
 <li><strong>salt</strong> 防彩虹表；<strong>迭代次数</strong> 拉高暴力破解成本。  </li>
 <li>OpenSSL <strong><code>enc -pbkdf2</code></strong> 已集成；迭代建议 <strong>≥ 600000</strong>（随硬件调整）。</li>
 </ul>
@@ -357,19 +357,19 @@ flowchart LR
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">openssl kdf -keylen 32 -kdfopt digest:SHA256 -kdfopt salt:$(openssl rand -hex 16) \</span><br><span class="line">  -kdfopt iter:600000 PBKDF2</span><br></pre></td></tr></table></figure>
 
 <hr>
-<h1 id="三、HKDF（协议层了解）"><a href="#三、HKDF（协议层了解）" class="headerlink" title="三、HKDF（协议层了解）"></a>三、HKDF（协议层了解）</h1><p>TLS 1.3 用 <strong>HKDF-SHA256</strong> 从握手秘密派生<strong>流量密钥</strong>；一般<strong>不需</strong>命令行手工调用， <strong><code>s_client</code> &#x2F; 应用库</strong> 内部完成。</p>
+<h2 id="三、HKDF（协议层了解）"><a href="#三、HKDF（协议层了解）" class="headerlink" title="三、HKDF（协议层了解）"></a>三、HKDF（协议层了解）</h2><p>TLS 1.3 用 <strong>HKDF-SHA256</strong> 从握手秘密派生<strong>流量密钥</strong>；一般<strong>不需</strong>命令行手工调用， <strong><code>s_client</code> &#x2F; 应用库</strong> 内部完成。</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 仅演示 API 存在（实际参数依 RFC 5869）</span></span><br><span class="line">openssl kdf -keylen 32 HKDF -kdfopt digest:SHA256 -kdfopt key:0123... -kdfopt salt: -kdfopt info:tls13</span><br></pre></td></tr></table></figure>
 
 <hr>
-<h1 id="四、scrypt（若编译支持）"><a href="#四、scrypt（若编译支持）" class="headerlink" title="四、scrypt（若编译支持）"></a>四、scrypt（若编译支持）</h1><p>部分 OpenSSL 3.x 构建含 <strong>scrypt</strong>，内存硬函数，适合口令 KDF：</p>
+<h2 id="四、scrypt（若编译支持）"><a href="#四、scrypt（若编译支持）" class="headerlink" title="四、scrypt（若编译支持）"></a>四、scrypt（若编译支持）</h2><p>部分 OpenSSL 3.x 构建含 <strong>scrypt</strong>，内存硬函数，适合口令 KDF：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl kdf -keylen 32 scrypt -kdfopt pass:password -kdfopt salt:... -kdfopt N:16384 -kdfopt r:8 -kdfopt p:1</span><br></pre></td></tr></table></figure>
 
 <p>新应用口令存储仍优先 <strong>Argon2</strong>（libsodium &#x2F; 专用库）。</p>
 <hr>
-<h1 id="五、检查本机能力"><a href="#五、检查本机能力" class="headerlink" title="五、检查本机能力"></a>五、检查本机能力</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">openssl list -kdf-algorithms</span><br><span class="line">openssl list -random-generators</span><br></pre></td></tr></table></figure>
+<h2 id="五、检查本机能力"><a href="#五、检查本机能力" class="headerlink" title="五、检查本机能力"></a>五、检查本机能力</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">openssl list -kdf-algorithms</span><br><span class="line">openssl list -random-generators</span><br></pre></td></tr></table></figure>
 
 <hr>
-<h1 id="六、与-enc-TLS-的关系"><a href="#六、与-enc-TLS-的关系" class="headerlink" title="六、与 enc &#x2F; TLS 的关系"></a>六、与 enc &#x2F; TLS 的关系</h1><table>
+<h2 id="六、与-enc-TLS-的关系"><a href="#六、与-enc-TLS-的关系" class="headerlink" title="六、与 enc &#x2F; TLS 的关系"></a>六、与 enc &#x2F; TLS 的关系</h2><table>
 <thead>
 <tr>
 <th>组件</th>
@@ -390,7 +390,7 @@ flowchart LR
 </tr>
 </tbody></table>
 <hr>
-<h1 id="延伸阅读"><a href="#延伸阅读" class="headerlink" title="延伸阅读"></a>延伸阅读</h1><table>
+<h2 id="延伸阅读"><a href="#延伸阅读" class="headerlink" title="延伸阅读"></a>延伸阅读</h2><table>
 <thead>
 <tr>
 <th>文档</th>
@@ -398,18 +398,45 @@ flowchart LR
 </tr>
 </thead>
 <tbody><tr>
-<td><a href="/2026/05/01/openssl-symmetric/" title="OpenSSL 对称加密：AES-GCM、ChaCha20 与推荐用法">对称加密</a></td>
+<td><a href="/2026/05/01/openssl-symmetric/" title="第四章：OpenSSL 对称加密：AES-GCM、ChaCha20 与推荐用法">第四章：OpenSSL 对称加密：AES-GCM、ChaCha20 与推荐用法</a></td>
 <td>使用派生出的密钥</td>
 </tr>
 <tr>
-<td><a href="/2026/05/01/openssl-hash/" title="OpenSSL 哈希算法：SHA-256、SHA-3 与推荐用法">哈希</a></td>
+<td><a href="/2026/05/01/openssl-hash/" title="第三章：OpenSSL 哈希算法：SHA-256、SHA-3 与推荐用法">第三章：OpenSSL 哈希算法：SHA-256、SHA-3 与推荐用法</a></td>
 <td>PBKDF2 基于 HMAC-SHA</td>
 </tr>
 <tr>
-<td><a href="/2026/05/01/OpenSSL/OpenSSL/" title="OpenSSL">OpenSSL 常用操作</a></td>
+<td><a href="/2026/05/01/OpenSSL/OpenSSL/" title="第一章：OpenSSL 命令行入门与常用操作总览">第一章：OpenSSL 命令行入门与常用操作总览</a></td>
 <td>完整命令示例</td>
 </tr>
 </tbody></table>
+<hr>
+<h2 id="本章小结"><a href="#本章小结" class="headerlink" title="本章小结"></a>本章小结</h2><table>
+<thead>
+<tr>
+<th>要点</th>
+<th>结论</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>随机数</td>
+<td><strong><code>openssl rand -hex 32</code></strong> 生成密钥 &#x2F; IV &#x2F; salt；勿手搓 <code>/dev/urandom</code> 拼接</td>
+</tr>
+<tr>
+<td>口令派生</td>
+<td><strong>PBKDF2-HMAC-SHA256</strong> + <strong>salt</strong> + <strong>iter ≥ 600000</strong>；<code>enc -pbkdf2</code> 已内置</td>
+</tr>
+<tr>
+<td>口令存储</td>
+<td>应用层用 <strong>Argon2id</strong>，禁用裸哈希</td>
+</tr>
+<tr>
+<td>协议层</td>
+<td>TLS 1.3 用 <strong>HKDF</strong> 派生流量密钥，由 <code>s_client</code> &#x2F; 应用库内部自动完成</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h2><p>至此，OpenSSL 系列七章完结：从<strong>第一章</strong>的命令行总览、<strong>第二章</strong>的功能全景与自建 CA 起步，历经<strong>哈希（第三章）→ 对称加密（第四章）→ 非对称与密钥交换（第五章）→ 签名与 HMAC（第六章）</strong>，最终落到<strong>密钥派生与随机数</strong>这一密码学根基。回头再看，全书只反复强调两件事：<strong>私钥绝不泄露，随机数绝不让步</strong>——守住这两条，其余交给正确的命令与算法即可。</p>
 
     </div>
 
@@ -426,13 +453,13 @@ flowchart LR
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2026/05/01/openssl-sign-hmac/" rel="prev" title="OpenSSL 数字签名与 HMAC：完整性、身份与推荐用法">
-                  <i class="fa fa-angle-left"></i> OpenSSL 数字签名与 HMAC：完整性、身份与推荐用法
+                <a href="/2026/05/01/openssl-sign-hmac/" rel="prev" title="第六章：OpenSSL 数字签名与 HMAC：完整性、身份与推荐用法">
+                  <i class="fa fa-angle-left"></i> 第六章：OpenSSL 数字签名与 HMAC：完整性、身份与推荐用法
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2026/05/01/Redis/Redis-Docker/" rel="next" title="Docker 部署 Redis">
-                  Docker 部署 Redis <i class="fa fa-angle-right"></i>
+                <a href="/2026/05/01/Redis/Redis-Docker/" rel="next" title="第二章：Docker 部署 Redis 实践">
+                  第二章：Docker 部署 Redis 实践 <i class="fa fa-angle-right"></i>
                 </a>
             </div>
           </div>
@@ -464,13 +491,13 @@ flowchart LR
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">195k</span>
+    <span title="站点总字数">253k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">10:49</span>
+    <span title="站点阅读时长">14:03</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

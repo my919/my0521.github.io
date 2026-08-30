@@ -18,29 +18,29 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
 
-<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
+<script class="next-config" data-name="main" type="application/json">{"hostname":"my919.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
 
-    <meta name="description" content="Modbus TCP 将 Modbus PDU 封装在 TCP&#x2F;IP 上：默认端口 502，增加 MBAP（Modbus Application Protocol Header），无 CRC（由 TCP 保证）。下面从「MBAP 头 → 与 RTU 的 PDU 关系 → 连接模型 → 与网关 → 安全」顺序写清楚。 TCP 连接模型   flowchart LR   SCADA[SCAD">
+    <meta name="description" content="第二章：Modbus TCP概念基础：Modbus TCP 是什么&#x2F;为什么 Modbus TCP 把 Modbus 的主从语义搬到以太网&#x2F;TCP：报文仍是「功能码 + 数据」，但帧定界交给 TCP、校验交给 TCP 校验和，因此没有 CRC、没有静默时序。 MBAP 头（7 字节）取代 RTU 的「从站地址 + 静默界定」：Transaction ID 让一条连接可区分多个并发">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Modbus TCP">
-<meta property="og:url" content="http://example.com/2026/05/01/Embedded/ModbusTCP/index.html">
+<meta property="og:title" content="第二章：Modbus TCP">
+<meta property="og:url" content="https://my919.github.io/2026/05/01/Embedded/ModbusTCP/index.html">
 <meta property="og:site_name" content="my">
-<meta property="og:description" content="Modbus TCP 将 Modbus PDU 封装在 TCP&#x2F;IP 上：默认端口 502，增加 MBAP（Modbus Application Protocol Header），无 CRC（由 TCP 保证）。下面从「MBAP 头 → 与 RTU 的 PDU 关系 → 连接模型 → 与网关 → 安全」顺序写清楚。 TCP 连接模型   flowchart LR   SCADA[SCAD">
+<meta property="og:description" content="第二章：Modbus TCP概念基础：Modbus TCP 是什么&#x2F;为什么 Modbus TCP 把 Modbus 的主从语义搬到以太网&#x2F;TCP：报文仍是「功能码 + 数据」，但帧定界交给 TCP、校验交给 TCP 校验和，因此没有 CRC、没有静默时序。 MBAP 头（7 字节）取代 RTU 的「从站地址 + 静默界定」：Transaction ID 让一条连接可区分多个并发">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-05-01T05:08:20.000Z">
-<meta property="article:modified_time" content="2026-05-31T15:47:21.961Z">
+<meta property="article:modified_time" content="2026-08-30T07:30:00.380Z">
 <meta property="article:author" content="miracle">
 <meta property="article:tag" content="Modbus">
 <meta name="twitter:card" content="summary">
 
 
-<link rel="canonical" href="http://example.com/2026/05/01/Embedded/ModbusTCP/">
+<link rel="canonical" href="https://my919.github.io/2026/05/01/Embedded/ModbusTCP/">
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2026/05/01/Embedded/ModbusTCP/","path":"2026/05/01/Embedded/ModbusTCP/","title":"Modbus TCP"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://my919.github.io/2026/05/01/Embedded/ModbusTCP/","path":"2026/05/01/Embedded/ModbusTCP/","title":"第二章：Modbus TCP"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>Modbus TCP | my</title>
+<title>第二章：Modbus TCP | my</title>
   
 
 
@@ -68,12 +68,6 @@
   
 
 
-
-
-  
-
-  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
-<script src="/js/third-party/math/mathjax.js" defer></script>
 
 
 
@@ -167,7 +161,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#TCP-%E8%BF%9E%E6%8E%A5%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.</span> <span class="nav-text">TCP 连接模型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81MBAP-%E5%A4%B4%EF%BC%887-%E5%AD%97%E8%8A%82%EF%BC%89"><span class="nav-number">2.</span> <span class="nav-text">一、MBAP 头（7 字节）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E7%A4%BA%E4%BE%8B%EF%BC%88%E8%AF%BB%E4%BF%9D%E6%8C%81%E5%AF%84%E5%AD%98%E5%99%A8%EF%BC%89"><span class="nav-number">3.</span> <span class="nav-text">二、示例（读保持寄存器）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E8%BF%9E%E6%8E%A5%E6%A8%A1%E5%9E%8B"><span class="nav-number">4.</span> <span class="nav-text">三、连接模型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E4%B8%B2%E5%8F%A3%E7%BD%91%E5%85%B3"><span class="nav-number">5.</span> <span class="nav-text">四、串口网关</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E5%AE%89%E5%85%A8"><span class="nav-number">6.</span> <span class="nav-text">五、安全</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%9AModbus-TCP"><span class="nav-number">1.</span> <span class="nav-text">第二章：Modbus TCP</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80%EF%BC%9AModbus-TCP-%E6%98%AF%E4%BB%80%E4%B9%88-%E4%B8%BA%E4%BB%80%E4%B9%88"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础：Modbus TCP 是什么&#x2F;为什么</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TCP-%E8%BF%9E%E6%8E%A5%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.2.</span> <span class="nav-text">TCP 连接模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81MBAP-%E5%A4%B4%EF%BC%887-%E5%AD%97%E8%8A%82%EF%BC%89"><span class="nav-number">1.3.</span> <span class="nav-text">一、MBAP 头（7 字节）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E7%A4%BA%E4%BE%8B%EF%BC%88%E8%AF%BB%E4%BF%9D%E6%8C%81%E5%AF%84%E5%AD%98%E5%99%A8%EF%BC%89"><span class="nav-number">1.4.</span> <span class="nav-text">二、示例（读保持寄存器）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E8%BF%9E%E6%8E%A5%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.5.</span> <span class="nav-text">三、连接模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E4%B8%B2%E5%8F%A3%E7%BD%91%E5%85%B3"><span class="nav-number">1.6.</span> <span class="nav-text">四、串口网关</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E5%AE%89%E5%85%A8"><span class="nav-number">1.7.</span> <span class="nav-text">五、安全</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.8.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -180,18 +174,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">192</span>
+          <span class="site-state-item-count">194</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">39</span>
+        <span class="site-state-item-count">33</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">108</span>
+        <span class="site-state-item-count">114</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -229,7 +223,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/Embedded/ModbusTCP/">
+    <link itemprop="mainEntityOfPage" href="https://my919.github.io/2026/05/01/Embedded/ModbusTCP/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -242,12 +236,12 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="Modbus TCP | my">
+      <meta itemprop="name" content="第二章：Modbus TCP | my">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          Modbus TCP
+          第二章：Modbus TCP
         </h1>
 
         <div class="post-meta-container">
@@ -265,7 +259,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-31 23:47:21" itemprop="dateModified" datetime="2026-05-31T23:47:21+08:00">2026-05-31</time>
+      <time title="修改时间：2026-08-30 15:30:00" itemprop="dateModified" datetime="2026-08-30T15:30:00+08:00">2026-08-30</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -273,7 +267,7 @@
       </span>
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Modbus/" itemprop="url" rel="index"><span itemprop="name">Modbus</span></a>
+          <a href="/categories/Embedded/" itemprop="url" rel="index"><span itemprop="name">Embedded</span></a>
         </span>
     </span>
 
@@ -284,14 +278,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>352</span>
+      <span>688</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>1 分钟</span>
+      <span>2 分钟</span>
     </span>
 </div>
 
@@ -301,8 +295,15 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><p><strong>Modbus TCP</strong> 将 <strong>Modbus PDU</strong> 封装在 <strong>TCP&#x2F;IP</strong> 上：默认端口 <strong>502</strong>，增加 <strong>MBAP</strong>（Modbus Application Protocol Header），<strong>无 CRC</strong>（由 <a href="/2026/05/01/Protocol/TCP/" title="TCP 协议详解：连接、可靠传输与编程示例">TCP</a> 保证）。下面从「<strong>MBAP 头</strong> → <strong>与 RTU 的 PDU 关系</strong> → <strong>连接模型</strong> → <strong>与网关</strong> → <strong>安全</strong>」顺序写清楚。</p>
-<h1 id="TCP-连接模型"><a href="#TCP-连接模型" class="headerlink" title="TCP 连接模型"></a>TCP 连接模型</h1><pre>
+    <div class="post-body" itemprop="articleBody"><h1 id="第二章：Modbus-TCP"><a href="#第二章：Modbus-TCP" class="headerlink" title="第二章：Modbus TCP"></a>第二章：Modbus TCP</h1><h2 id="概念基础：Modbus-TCP-是什么-为什么"><a href="#概念基础：Modbus-TCP-是什么-为什么" class="headerlink" title="概念基础：Modbus TCP 是什么&#x2F;为什么"></a>概念基础：Modbus TCP 是什么&#x2F;为什么</h2><ol>
+<li><strong>Modbus TCP</strong> 把 <strong>Modbus</strong> 的主从语义搬到<strong>以太网&#x2F;TCP</strong>：报文仍是「<strong>功能码 + 数据</strong>」，但帧定界交给 TCP、校验交给 TCP 校验和，因此<strong>没有 CRC、没有静默时序</strong>。</li>
+<li><strong>MBAP 头</strong>（7 字节）取代 RTU 的「从站地址 + 静默界定」：<strong>Transaction ID</strong> 让<strong>一条连接可区分多个并发事务</strong>，<strong>Unit ID</strong> 负责映射网关后的串口从站。</li>
+<li><strong>默认端口 502</strong>：约定俗成；接入即用，可<strong>跨交换机、跨网段</strong>访问远程设备，无需 485 布线与收发方向切换。</li>
+<li><strong>网关共存</strong>：大量存量设备仍是 RTU 串口设备，<strong>TCP ↔ RTU 网关</strong>完成两者转换，是工业现场新旧系统融合的典型形态。</li>
+<li><strong>边界</strong>：<strong>明文、无认证</strong>，安全只能靠<strong>工控内网隔离、VPN、TLS 隧道</strong>，绝不能直接暴露公网。</li>
+</ol>
+<p>先看典型的连接模型：</p>
+<h2 id="TCP-连接模型"><a href="#TCP-连接模型" class="headerlink" title="TCP 连接模型"></a>TCP 连接模型</h2><pre>
 <code class="mermaid">
 
 flowchart LR
@@ -312,7 +313,7 @@ flowchart LR
 </pre>
 
 <hr>
-<h1 id="一、MBAP-头（7-字节）"><a href="#一、MBAP-头（7-字节）" class="headerlink" title="一、MBAP 头（7 字节）"></a>一、MBAP 头（7 字节）</h1><table>
+<h2 id="一、MBAP-头（7-字节）"><a href="#一、MBAP-头（7-字节）" class="headerlink" title="一、MBAP 头（7 字节）"></a>一、MBAP 头（7 字节）</h2><table>
 <thead>
 <tr>
 <th>字段</th>
@@ -341,25 +342,54 @@ flowchart LR
 <td>设备地址（经网关映射 RTU 从站）</td>
 </tr>
 </tbody></table>
-<p>其后为与 <a href="/2026/05/01/Embedded/ModbusRTU/" title="Modbus RTU">Modbus RTU</a> 相同的 <strong>功能码 + 数据</strong>（<strong>无 CRC</strong>）。</p>
+<p>其后为与 <a href="/2026/05/01/Embedded/ModbusRTU/" title="第一章：Modbus RTU">第一章：Modbus RTU</a> 相同的 <strong>功能码 + 数据</strong>（<strong>无 CRC</strong>）。</p>
 <hr>
-<h1 id="二、示例（读保持寄存器）"><a href="#二、示例（读保持寄存器）" class="headerlink" title="二、示例（读保持寄存器）"></a>二、示例（读保持寄存器）</h1><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">MBAP: Trans=0x0001 Proto=0 Len=0x0006 Unit=0x01</span><br><span class="line">PDU:  Func=0x03 Addr=0x0000 Qty=0x000A</span><br></pre></td></tr></table></figure>
+<h2 id="二、示例（读保持寄存器）"><a href="#二、示例（读保持寄存器）" class="headerlink" title="二、示例（读保持寄存器）"></a>二、示例（读保持寄存器）</h2><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">MBAP: Trans=0x0001 Proto=0 Len=0x0006 Unit=0x01</span><br><span class="line">PDU:  Func=0x03 Addr=0x0000 Qty=0x000A</span><br></pre></td></tr></table></figure>
 
 <p>响应 MBAP 中 <strong>Length</strong> 与 <strong>Transaction ID</strong> 与请求对应。</p>
 <hr>
-<h1 id="三、连接模型"><a href="#三、连接模型" class="headerlink" title="三、连接模型"></a>三、连接模型</h1><ul>
+<h2 id="三、连接模型"><a href="#三、连接模型" class="headerlink" title="三、连接模型"></a>三、连接模型</h2><ul>
 <li><strong>单连接多事务</strong>：常见一客户端对一 PLC 长连接 <strong>502</strong>。  </li>
 <li><strong>并发</strong>：多客户端连同一设备需注意 PLC 连接数限制。  </li>
-<li><strong>与 <a href="/2026/05/01/Protocol/HTTP/" title="HTTP 详解：报文、方法、版本与 curl&#x2F;nc 示例">HTTP</a></strong>：不同协议；工业网关可能同时提供 <strong>Modbus TCP</strong> 与 <strong>OPC UA</strong>。</li>
+<li><strong>与 <a href="/2026/05/01/Protocol/HTTP/" title="第二章：HTTP 详解：报文、方法、版本与 curl&#x2F;nc 示例">第二章：HTTP 详解：报文、方法、版本与 curl&#x2F;nc 示例</a></strong>：不同协议；工业网关可能同时提供 <strong>Modbus TCP</strong> 与 <strong>OPC UA</strong>。</li>
 </ul>
 <hr>
-<h1 id="四、串口网关"><a href="#四、串口网关" class="headerlink" title="四、串口网关"></a>四、串口网关</h1><p><strong>Modbus TCP ↔ RTU</strong> 网关：<br><strong>Unit ID</strong> 映射 RS485 从站地址；网关内维护 <a href="/2026/05/01/Embedded/RS485/" title="RS485">RS485</a> 轮询时序。</p>
+<h2 id="四、串口网关"><a href="#四、串口网关" class="headerlink" title="四、串口网关"></a>四、串口网关</h2><p><strong>Modbus TCP ↔ RTU</strong> 网关：<br><strong>Unit ID</strong> 映射 RS485 从站地址；网关内维护 <a href="/2026/05/01/Embedded/RS485/" title="第六章：RS485">第六章：RS485</a> 轮询时序。</p>
 <hr>
-<h1 id="五、安全"><a href="#五、安全" class="headerlink" title="五、安全"></a>五、安全</h1><ul>
+<h2 id="五、安全"><a href="#五、安全" class="headerlink" title="五、安全"></a>五、安全</h2><ul>
 <li><strong>502</strong> 明文、无认证 → 仅放<strong>工控内网</strong>或 <strong>VPN</strong>；勿暴露公网。  </li>
 <li>现代方案：<strong>TLS</strong> 隧道、<strong>VPN</strong>、专用安全网关。  </li>
-<li>与 <a href="/2026/05/01/Embedded/ModbusASCII/" title="Modbus ASCII">Modbus ASCII</a> 比：<strong>TCP</strong> 适合跨交换机、远程 SCADA。</li>
+<li>与 <a href="/2026/05/01/Embedded/ModbusASCII/" title="第三章：Modbus ASCII">第三章：Modbus ASCII</a> 比：<strong>TCP</strong> 适合跨交换机、远程 SCADA。</li>
 </ul>
+<h2 id="本章小结"><a href="#本章小结" class="headerlink" title="本章小结"></a>本章小结</h2><table>
+<thead>
+<tr>
+<th>要点</th>
+<th>结论</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>帧变化</td>
+<td>无 CRC、无静默界定；<strong>MBAP 头</strong>（7 字节）+ PDU</td>
+</tr>
+<tr>
+<td>并发</td>
+<td><strong>Transaction ID</strong> 支持单连接多事务；留意 PLC 连接数上限</td>
+</tr>
+<tr>
+<td>网关</td>
+<td>TCP ↔ RTU 网关：Unit ID 映射 485 从站地址与轮询时序</td>
+</tr>
+<tr>
+<td>安全</td>
+<td>502 明文无认证，仅限工控内网 &#x2F; VPN &#x2F; TLS 隧道</td>
+</tr>
+<tr>
+<td>选型</td>
+<td>跨网段、远程 SCADA 选 TCP；现场总线仍是 RTU 主流</td>
+</tr>
+</tbody></table>
+<p>下一步：回到串行链路，看文本编码的 Modbus 变体 → <a href="/2026/05/01/Embedded/ModbusASCII/" title="第三章：Modbus ASCII">第三章：Modbus ASCII</a></p>
 
     </div>
 
@@ -376,13 +406,13 @@ flowchart LR
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2026/05/01/Embedded/ModbusRTU/" rel="prev" title="Modbus RTU">
-                  <i class="fa fa-angle-left"></i> Modbus RTU
+                <a href="/2026/05/01/Embedded/ModbusRTU/" rel="prev" title="第一章：Modbus RTU">
+                  <i class="fa fa-angle-left"></i> 第一章：Modbus RTU
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2026/05/01/Embedded/ModbusASCII/" rel="next" title="Modbus ASCII">
-                  Modbus ASCII <i class="fa fa-angle-right"></i>
+                <a href="/2026/05/01/Embedded/ModbusASCII/" rel="next" title="第三章：Modbus ASCII">
+                  第三章：Modbus ASCII <i class="fa fa-angle-right"></i>
                 </a>
             </div>
           </div>
@@ -414,13 +444,13 @@ flowchart LR
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">195k</span>
+    <span title="站点总字数">253k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">10:49</span>
+    <span title="站点阅读时长">14:03</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

@@ -18,17 +18,17 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
 
-<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
+<script class="next-config" data-name="main" type="application/json">{"hostname":"my919.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
 
-    <meta name="description" content="在 Docker 中运行 Redis，适合本地缓存、会话与消息流式处理、或在 Kubernetes 中单实例部署。下文给出镜像选型、一条命令起容器、Compose 一键起栈与一份多文档 K8s 清单；requirepass 与数据卷请按环境自行替换，勿把生产密钥提交进仓库。  一、前置条件本机已安装 docker，并能使用 docker compose（Compose V2 插件，命令为 dock">
+    <meta name="description" content="第二章：Docker 部署 Redis 实践概念基础：为什么用容器部署 Redis 镜像即环境：官方 redis 镜像内置匹配版本的 redis-server &#x2F; redis-cli，一条命令即可获得与生产一致的运行时，避免「本机装不上 &#x2F; 版本不对」。 数据目录即卷：容器内数据目录为 &#x2F;data（AOF &#x2F; RDB 文件所在），挂载卷后数据独立于容器生命周期，doc">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Docker 部署 Redis">
-<meta property="og:url" content="http://example.com/2026/05/01/Redis/Redis-Docker/index.html">
+<meta property="og:title" content="第二章：Docker 部署 Redis 实践">
+<meta property="og:url" content="https://my919.github.io/2026/05/01/Redis/Redis-Docker/index.html">
 <meta property="og:site_name" content="my">
-<meta property="og:description" content="在 Docker 中运行 Redis，适合本地缓存、会话与消息流式处理、或在 Kubernetes 中单实例部署。下文给出镜像选型、一条命令起容器、Compose 一键起栈与一份多文档 K8s 清单；requirepass 与数据卷请按环境自行替换，勿把生产密钥提交进仓库。  一、前置条件本机已安装 docker，并能使用 docker compose（Compose V2 插件，命令为 dock">
+<meta property="og:description" content="第二章：Docker 部署 Redis 实践概念基础：为什么用容器部署 Redis 镜像即环境：官方 redis 镜像内置匹配版本的 redis-server &#x2F; redis-cli，一条命令即可获得与生产一致的运行时，避免「本机装不上 &#x2F; 版本不对」。 数据目录即卷：容器内数据目录为 &#x2F;data（AOF &#x2F; RDB 文件所在），挂载卷后数据独立于容器生命周期，doc">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-05-01T12:35:17.000Z">
-<meta property="article:modified_time" content="2026-05-03T09:22:23.470Z">
+<meta property="article:modified_time" content="2026-08-30T08:35:03.388Z">
 <meta property="article:author" content="miracle">
 <meta property="article:tag" content="Docker">
 <meta property="article:tag" content="Docker Compose">
@@ -37,13 +37,13 @@
 <meta name="twitter:card" content="summary">
 
 
-<link rel="canonical" href="http://example.com/2026/05/01/Redis/Redis-Docker/">
+<link rel="canonical" href="https://my919.github.io/2026/05/01/Redis/Redis-Docker/">
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2026/05/01/Redis/Redis-Docker/","path":"2026/05/01/Redis/Redis-Docker/","title":"Docker 部署 Redis"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://my919.github.io/2026/05/01/Redis/Redis-Docker/","path":"2026/05/01/Redis/Redis-Docker/","title":"第二章：Docker 部署 Redis 实践"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>Docker 部署 Redis | my</title>
+<title>第二章：Docker 部署 Redis 实践 | my</title>
   
 
 
@@ -71,12 +71,6 @@
   
 
 
-
-
-  
-
-  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
-<script src="/js/third-party/math/mathjax.js" defer></script>
 
 
 
@@ -170,7 +164,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E5%89%8D%E7%BD%AE%E6%9D%A1%E4%BB%B6"><span class="nav-number">1.</span> <span class="nav-text">一、前置条件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81Redis-%E9%95%9C%E5%83%8F%E9%80%89%E6%8B%A9"><span class="nav-number">2.</span> <span class="nav-text">二、Redis 镜像选择</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E5%AE%98%E6%96%B9%E9%95%9C%E5%83%8F%EF%BC%88%E6%8E%A8%E8%8D%90%EF%BC%89"><span class="nav-number">2.1.</span> <span class="nav-text">1. 官方镜像（推荐）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E5%8F%98%E4%BD%93%E8%AF%B4%E6%98%8E"><span class="nav-number">2.2.</span> <span class="nav-text">2. 变体说明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E6%95%B0%E6%8D%AE%E7%9B%AE%E5%BD%95"><span class="nav-number">2.3.</span> <span class="nav-text">3. 数据目录</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E5%8D%95%E5%AE%B9%E5%99%A8%E4%B8%80%E9%94%AE%E9%83%A8%E7%BD%B2%EF%BC%88docker-run%EF%BC%89"><span class="nav-number">3.</span> <span class="nav-text">三、单容器一键部署（docker run）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E3%80%81Docker-Compose-%E4%B8%80%E9%94%AE%E9%83%A8%E7%BD%B2"><span class="nav-number">4.</span> <span class="nav-text">四、Docker Compose 一键部署</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%94%E3%80%81Kubernetes-%E4%B8%80%E9%94%AE%E9%83%A8%E7%BD%B2%EF%BC%88%E5%8D%95%E6%96%87%E4%BB%B6%E5%AE%8C%E6%95%B4%E6%B8%85%E5%8D%95%EF%BC%89"><span class="nav-number">5.</span> <span class="nav-text">五、Kubernetes 一键部署（单文件完整清单）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E5%B0%8F%E7%BB%93"><span class="nav-number">6.</span> <span class="nav-text">六、小结</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%9ADocker-%E9%83%A8%E7%BD%B2-Redis-%E5%AE%9E%E8%B7%B5"><span class="nav-number">1.</span> <span class="nav-text">第二章：Docker 部署 Redis 实践</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%B8%BA%E4%BB%80%E4%B9%88%E7%94%A8%E5%AE%B9%E5%99%A8%E9%83%A8%E7%BD%B2-Redis"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础：为什么用容器部署 Redis</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E7%BD%AE%E6%9D%A1%E4%BB%B6"><span class="nav-number">1.2.</span> <span class="nav-text">前置条件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis-%E9%95%9C%E5%83%8F%E9%80%89%E6%8B%A9"><span class="nav-number">1.3.</span> <span class="nav-text">Redis 镜像选择</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%AE%98%E6%96%B9%E9%95%9C%E5%83%8F%EF%BC%88%E6%8E%A8%E8%8D%90%EF%BC%89"><span class="nav-number">1.3.1.</span> <span class="nav-text">1. 官方镜像（推荐）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E5%8F%98%E4%BD%93%E8%AF%B4%E6%98%8E"><span class="nav-number">1.3.2.</span> <span class="nav-text">2. 变体说明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E6%95%B0%E6%8D%AE%E7%9B%AE%E5%BD%95"><span class="nav-number">1.3.3.</span> <span class="nav-text">3. 数据目录</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%95%E5%AE%B9%E5%99%A8%E4%B8%80%E9%94%AE%E9%83%A8%E7%BD%B2%EF%BC%88docker-run%EF%BC%89"><span class="nav-number">1.4.</span> <span class="nav-text">单容器一键部署（docker run）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Docker-Compose-%E4%B8%80%E9%94%AE%E9%83%A8%E7%BD%B2"><span class="nav-number">1.5.</span> <span class="nav-text">Docker Compose 一键部署</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Kubernetes-%E4%B8%80%E9%94%AE%E9%83%A8%E7%BD%B2%EF%BC%88%E5%8D%95%E6%96%87%E4%BB%B6%E5%AE%8C%E6%95%B4%E6%B8%85%E5%8D%95%EF%BC%89"><span class="nav-number">1.6.</span> <span class="nav-text">Kubernetes 一键部署（单文件完整清单）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.7.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -183,18 +177,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">192</span>
+          <span class="site-state-item-count">194</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">39</span>
+        <span class="site-state-item-count">33</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">108</span>
+        <span class="site-state-item-count">114</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -232,7 +226,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/Redis/Redis-Docker/">
+    <link itemprop="mainEntityOfPage" href="https://my919.github.io/2026/05/01/Redis/Redis-Docker/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -245,12 +239,12 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="Docker 部署 Redis | my">
+      <meta itemprop="name" content="第二章：Docker 部署 Redis 实践 | my">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          Docker 部署 Redis
+          第二章：Docker 部署 Redis 实践
         </h1>
 
         <div class="post-meta-container">
@@ -268,7 +262,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-03 17:22:23" itemprop="dateModified" datetime="2026-05-03T17:22:23+08:00">2026-05-03</time>
+      <time title="修改时间：2026-08-30 16:35:03" itemprop="dateModified" datetime="2026-08-30T16:35:03+08:00">2026-08-30</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -287,7 +281,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>1.4k</span>
+      <span>1.6k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -304,15 +298,19 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><p>在 <strong>Docker</strong> 中运行 <strong>Redis</strong>，适合本地缓存、会话与消息流式处理、或在 <strong>Kubernetes</strong> 中单实例部署。下文给出<strong>镜像选型</strong>、<strong>一条命令起容器</strong>、<strong>Compose 一键起栈</strong>与<strong>一份多文档 K8s 清单</strong>；<strong><code>requirepass</code></strong> 与数据卷请按环境自行替换，勿把生产密钥提交进仓库。</p>
-<hr>
-<h1 id="一、前置条件"><a href="#一、前置条件" class="headerlink" title="一、前置条件"></a>一、前置条件</h1><p>本机已安装 <strong><code>docker</code></strong>，并能使用 <strong><code>docker compose</code></strong>（<strong>Compose V2</strong> 插件，命令为 <strong><code>docker compose</code></strong>；若仍使用旧版独立程序，则将下文中的 <strong><code>docker compose</code></strong> 换成 <strong><code>docker-compose</code></strong>）。</p>
+    <div class="post-body" itemprop="articleBody"><h1 id="第二章：Docker-部署-Redis-实践"><a href="#第二章：Docker-部署-Redis-实践" class="headerlink" title="第二章：Docker 部署 Redis 实践"></a>第二章：Docker 部署 Redis 实践</h1><h2 id="概念基础：为什么用容器部署-Redis"><a href="#概念基础：为什么用容器部署-Redis" class="headerlink" title="概念基础：为什么用容器部署 Redis"></a>概念基础：为什么用容器部署 Redis</h2><ol>
+<li><strong>镜像即环境</strong>：官方 <strong><code>redis</code></strong> 镜像内置匹配版本的 <strong><code>redis-server</code> &#x2F; <code>redis-cli</code></strong>，一条命令即可获得与生产一致的运行时，避免「本机装不上 &#x2F; 版本不对」。</li>
+<li><strong>数据目录即卷</strong>：容器内数据目录为 <strong><code>/data</code></strong>（<strong>AOF &#x2F; RDB</strong> 文件所在），挂载卷后数据独立于容器生命周期，<code>docker rm</code> 不丢数据。</li>
+<li><strong>配置即参数</strong>：容器化部署一般不挂 <strong><code>redis.conf</code></strong>，而是通过 <strong><code>redis-server</code> 启动参数</strong>（如 <strong><code>--appendonly yes</code></strong>、<strong><code>--requirepass</code></strong>）声明配置，便于在 Compose &#x2F; K8s 中版本化。</li>
+<li><strong>边界要清楚</strong>：本章的单实例部署面向<strong>开发 &#x2F; 小型自托管</strong>场景；<strong>主从、哨兵、集群</strong>等高可用形态应使用 <strong>StatefulSet &#x2F; Operator &#x2F; Helm Chart</strong>，不要把单实例 Deployment 直接水平扩展当集群用。</li>
+</ol>
+<p>带着这四点，依次看三种部署形态（单容器 → Compose → K8s）。</p>
+<h2 id="前置条件"><a href="#前置条件" class="headerlink" title="前置条件"></a>前置条件</h2><p>本机已安装 <strong><code>docker</code></strong>，并能使用 <strong><code>docker compose</code></strong>（<strong>Compose V2</strong> 插件，命令为 <strong><code>docker compose</code></strong>；若仍使用旧版独立程序，则将下文中的 <strong><code>docker compose</code></strong> 换成 <strong><code>docker-compose</code></strong>）。</p>
 <p>验证：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker version</span><br><span class="line">docker compose version</span><br></pre></td></tr></table></figure>
 
 <p>满足即可，与宿主机操作系统无关。</p>
-<hr>
-<h1 id="二、Redis-镜像选择"><a href="#二、Redis-镜像选择" class="headerlink" title="二、Redis 镜像选择"></a>二、Redis 镜像选择</h1><h2 id="1-官方镜像（推荐）"><a href="#1-官方镜像（推荐）" class="headerlink" title="1. 官方镜像（推荐）"></a>1. 官方镜像（推荐）</h2><ul>
+<h2 id="Redis-镜像选择"><a href="#Redis-镜像选择" class="headerlink" title="Redis 镜像选择"></a>Redis 镜像选择</h2><h3 id="1-官方镜像（推荐）"><a href="#1-官方镜像（推荐）" class="headerlink" title="1. 官方镜像（推荐）"></a>1. 官方镜像（推荐）</h3><ul>
 <li><strong>仓库</strong>：<strong><code>redis</code></strong>（Docker Hub 官方库：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://hub.docker.com/_/redis/tags">https://hub.docker.com/_/redis/tags</a>）。  </li>
 <li><strong>常用标签</strong>：  <ul>
 <li><strong><code>redis:7.2</code></strong>：<strong>7.2.x</strong> 线，生态与客户端兼容面广。  </li>
@@ -321,7 +319,7 @@
 </li>
 <li><strong>生产建议</strong>：固定小版本标签（如 <strong><code>redis:7.2.5</code></strong>）或记录 <strong>digest</strong>，避免 <strong><code>latest</code></strong> 漂移导致行为变化。</li>
 </ul>
-<h2 id="2-变体说明"><a href="#2-变体说明" class="headerlink" title="2. 变体说明"></a>2. 变体说明</h2><table>
+<h3 id="2-变体说明"><a href="#2-变体说明" class="headerlink" title="2. 变体说明"></a>2. 变体说明</h3><table>
 <thead>
 <tr>
 <th>需求</th>
@@ -345,11 +343,9 @@
 <td>社区有 <strong><code>bitnami/redis</code></strong> 等，环境变量名与默认配置与官方不同，切换镜像时需对照该镜像文档。</td>
 </tr>
 </tbody></table>
-<h2 id="3-数据目录"><a href="#3-数据目录" class="headerlink" title="3. 数据目录"></a>3. 数据目录</h2><p>默认数据目录 <strong><code>/data</code></strong>（<strong>AOF</strong> &#x2F; <strong>RDB</strong> 文件所在）；挂载卷后便于备份与 <strong><code>docker compose down -v</code></strong> 时区分是否保留数据。</p>
-<hr>
-<p><strong>1Panel（推荐）</strong>：在 <strong>Linux</strong> 宿主机上若希望少手写命令、仍以容器方式跑 <strong>Redis</strong>，可先安装 <a target="_blank" rel="noopener external nofollow noreferrer" href="https://1panel.cn/"><strong>1Panel</strong></a>（开源 <strong>Linux</strong> 运维面板），在 <strong>「应用商店」</strong> 中选择 <strong>Redis</strong> 一键部署：由面板管理镜像版本、数据卷、端口、<strong><code>requirepass</code></strong> 与（可选）持久化策略及备份。与下文 <strong><code>docker run</code> &#x2F; Compose &#x2F; K8s<code>** 的卷路径、密码与 **</code>redis-server&#96; 参数</strong>对齐或排障时，自 <strong># 三</strong> 起各节仍可作对照。适合单台 <strong>VPS</strong>、家庭服务器等「快速起缓存 &#x2F; 会话存储」的场景。</p>
-<hr>
-<h1 id="三、单容器一键部署（docker-run）"><a href="#三、单容器一键部署（docker-run）" class="headerlink" title="三、单容器一键部署（docker run）"></a>三、单容器一键部署（<code>docker run</code>）</h1><p>在<strong>当前目录</strong>建数据目录（仅首次，可选）：</p>
+<h3 id="3-数据目录"><a href="#3-数据目录" class="headerlink" title="3. 数据目录"></a>3. 数据目录</h3><p>默认数据目录 <strong><code>/data</code></strong>（<strong>AOF</strong> &#x2F; <strong>RDB</strong> 文件所在）；挂载卷后便于备份与 <strong><code>docker compose down -v</code></strong> 时区分是否保留数据。</p>
+<p><strong>1Panel（推荐）</strong>：在 <strong>Linux</strong> 宿主机上若希望少手写命令、仍以容器方式跑 <strong>Redis</strong>，可先安装 <a target="_blank" rel="noopener external nofollow noreferrer" href="https://1panel.cn/"><strong>1Panel</strong></a>（开源 <strong>Linux</strong> 运维面板），在 <strong>「应用商店」</strong> 中选择 <strong>Redis</strong> 一键部署：由面板管理镜像版本、数据卷、端口、<strong><code>requirepass</code></strong> 与（可选）持久化策略及备份。与下文 <strong><code>docker run</code> &#x2F; Compose &#x2F; K8s<code>** 的卷路径、密码与 **</code>redis-server&#96; 参数</strong>对齐或排障时，自「单容器一键部署」起各节仍可作对照。适合单台 <strong>VPS</strong>、家庭服务器等「快速起缓存 &#x2F; 会话存储」的场景。</p>
+<h2 id="单容器一键部署（docker-run）"><a href="#单容器一键部署（docker-run）" class="headerlink" title="单容器一键部署（docker run）"></a>单容器一键部署（docker run）</h2><p>在<strong>当前目录</strong>建数据目录（仅首次，可选）：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">mkdir</span> -p ./redis-data</span><br></pre></td></tr></table></figure>
 
 <p><strong>一条命令</strong>启动（<strong>AOF</strong> + <strong>密码</strong>；示例仅供本地，请替换密码）：</p>
@@ -361,8 +357,7 @@
 <p>本机探测：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">redis-cli -h 127.0.0.1 -p 6379 -a dev-change-me ping</span><br></pre></td></tr></table></figure>
 
-<hr>
-<h1 id="四、Docker-Compose-一键部署"><a href="#四、Docker-Compose-一键部署" class="headerlink" title="四、Docker Compose 一键部署"></a>四、Docker Compose 一键部署</h1><p>将下面内容保存为 <strong><code>docker-compose.redis.yml</code></strong>（与 <strong><code># 一</code></strong> 要求一致：已能执行 <strong><code>docker compose</code></strong>）。敏感项建议放在同目录 <strong><code>.env</code></strong>（加入 <strong><code>.gitignore</code></strong>），勿长期写死在仓库。</p>
+<h2 id="Docker-Compose-一键部署"><a href="#Docker-Compose-一键部署" class="headerlink" title="Docker Compose 一键部署"></a>Docker Compose 一键部署</h2><p>将下面内容保存为 <strong><code>docker-compose.redis.yml</code></strong>（与「前置条件」要求一致：已能执行 <strong><code>docker compose</code></strong>）。敏感项建议放在同目录 <strong><code>.env</code></strong>（加入 <strong><code>.gitignore</code></strong>），勿长期写死在仓库。</p>
 <p><strong>一条命令</strong>启动：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker compose -f docker-compose.redis.yml up -d</span><br></pre></td></tr></table></figure>
 
@@ -376,8 +371,7 @@
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">docker compose -f docker-compose.redis.yml ps</span><br><span class="line">docker compose -f docker-compose.redis.yml logs -f redis</span><br><span class="line">docker compose -f docker-compose.redis.yml down</span><br></pre></td></tr></table></figure>
 
 <p><strong><code>down</code></strong> 默认保留 <strong><code>redis_data</code></strong>；若需清空数据加 <strong><code>docker compose -f docker-compose.redis.yml down -v</code></strong>（<strong>会删库</strong>）。</p>
-<hr>
-<h1 id="五、Kubernetes-一键部署（单文件完整清单）"><a href="#五、Kubernetes-一键部署（单文件完整清单）" class="headerlink" title="五、Kubernetes 一键部署（单文件完整清单）"></a>五、Kubernetes 一键部署（单文件完整清单）</h1><p>将下面内容保存为 <strong><code>redis-k8s.yaml</code></strong> 后，<strong>一条命令</strong>应用：</p>
+<h2 id="Kubernetes-一键部署（单文件完整清单）"><a href="#Kubernetes-一键部署（单文件完整清单）" class="headerlink" title="Kubernetes 一键部署（单文件完整清单）"></a>Kubernetes 一键部署（单文件完整清单）</h2><p>将下面内容保存为 <strong><code>redis-k8s.yaml</code></strong> 后，<strong>一条命令</strong>应用：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl apply -f redis-k8s.yaml</span><br></pre></td></tr></table></figure>
 
 <p>清单含 <strong>Secret</strong>（密码）、<strong>PVC</strong>、<strong>Deployment</strong>、<strong>ClusterIP Service（6379）</strong>。未写 <strong><code>storageClassName</code></strong> 时使用集群默认 <strong>StorageClass</strong>；无默认 <strong>SC</strong> 时请在 <strong>PVC</strong> 中补上 <strong><code>storageClassName</code></strong>。命名空间为 <strong><code>default</code></strong>，可按需修改 <strong><code>metadata.namespace</code></strong>。</p>
@@ -388,8 +382,7 @@
 
 <p>集群内连接示例（按 <strong>namespace</strong> 与 <strong>Secret</strong> 替换密码）：<strong><code>redis://:请替换@redis.default.svc.cluster.local:6379/0</code></strong>（客户端库参数名可能为 <strong><code>password</code></strong> &#x2F; <strong><code>username</code></strong>，以所用驱动为准）。</p>
 <p><strong>说明</strong>：<strong><code>strategy: Recreate</code></strong> 避免 <strong>RWO</strong> 卷被多副本 <strong>RollingUpdate</strong> 同时挂载；<strong>主从、哨兵、集群</strong> 请使用 <strong>Redis Operator</strong>、<strong>Helm Chart</strong> 或 <strong>StatefulSet</strong> 方案，勿直接水平扩展上述 <strong>Deployment</strong> 当作分片集群使用。</p>
-<hr>
-<h1 id="六、小结"><a href="#六、小结" class="headerlink" title="六、小结"></a>六、小结</h1><table>
+<h2 id="本章小结"><a href="#本章小结" class="headerlink" title="本章小结"></a>本章小结</h2><table>
 <thead>
 <tr>
 <th>项</th>
@@ -418,6 +411,7 @@
 </tr>
 </tbody></table>
 <p>生产环境请启用 <strong>TLS</strong>、<strong>ACL</strong>、持久化策略与监控；<strong>Secret</strong> 建议对接 <strong>External Secrets</strong> &#x2F; <strong>Sealed Secrets</strong> 等管控流程。</p>
+<p>环境就绪后，进入 <a href="/2026/05/03/Redis/String%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E3%80%81%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%E5%8F%8A%E6%A1%88%E4%BE%8B/" title="第三章：Redis String 数据类型：概念、命令与案例">第三章：Redis String 数据类型：概念、命令与案例</a>，开始逐个学习核心数据类型。</p>
 
     </div>
 
@@ -437,13 +431,13 @@
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2026/05/01/openssl-kdf-rand/" rel="prev" title="OpenSSL 密钥派生与随机数：PBKDF2、rand 与推荐用法">
-                  <i class="fa fa-angle-left"></i> OpenSSL 密钥派生与随机数：PBKDF2、rand 与推荐用法
+                <a href="/2026/05/01/openssl-kdf-rand/" rel="prev" title="第七章：OpenSSL 密钥派生与随机数：PBKDF2、rand 与推荐用法">
+                  <i class="fa fa-angle-left"></i> 第七章：OpenSSL 密钥派生与随机数：PBKDF2、rand 与推荐用法
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2026/05/01/MySQL/MySQL-Docker/" rel="next" title="Docker 部署 MySQL">
-                  Docker 部署 MySQL <i class="fa fa-angle-right"></i>
+                <a href="/2026/05/01/MySQL/MySQL-Docker/" rel="next" title="第二章：Docker 部署 MySQL 实践">
+                  第二章：Docker 部署 MySQL 实践 <i class="fa fa-angle-right"></i>
                 </a>
             </div>
           </div>
@@ -475,13 +469,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">195k</span>
+    <span title="站点总字数">253k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">10:49</span>
+    <span title="站点阅读时长">14:03</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

@@ -18,17 +18,17 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
 
-<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
+<script class="next-config" data-name="main" type="application/json">{"hostname":"my919.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
 
-    <meta name="description" content="在 Docker 中运行 ClickHouse，适合本地开发、与 Compose 编排其它服务、或在 Kubernetes 中单节点部署。下文给出镜像选型、一条命令起容器、Compose 一键起栈与一份多文档 K8s 清单；密码与数据卷请按环境自行替换，勿把生产密钥提交进仓库。  一、前置条件本机已安装 docker，并能使用 docker compose（Compose V2 插件，命令为 do">
+    <meta name="description" content="第二章：Docker 部署 ClickHouse 实践概念基础：容器化部署 ClickHouse 是什么&#x2F;为什么 为什么用容器跑 ClickHouse：一条命令拉起、版本随标签固定、环境与宿主机解耦——本地分析环境与生产部署的基础单元。 数据持久化是底线：必须把数据目录 &#x2F;var&#x2F;lib&#x2F;clickhouse 挂载到命名卷或宿主机目录，否则容器删除即数据清零。 初始化语义：.sql &amp;#">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Docker 部署 ClickHouse">
-<meta property="og:url" content="http://example.com/2026/05/01/ClickHouse/ClickHouse-Docker/index.html">
+<meta property="og:title" content="第二章：Docker 部署 ClickHouse 实践">
+<meta property="og:url" content="https://my919.github.io/2026/05/01/ClickHouse/ClickHouse-Docker/index.html">
 <meta property="og:site_name" content="my">
-<meta property="og:description" content="在 Docker 中运行 ClickHouse，适合本地开发、与 Compose 编排其它服务、或在 Kubernetes 中单节点部署。下文给出镜像选型、一条命令起容器、Compose 一键起栈与一份多文档 K8s 清单；密码与数据卷请按环境自行替换，勿把生产密钥提交进仓库。  一、前置条件本机已安装 docker，并能使用 docker compose（Compose V2 插件，命令为 do">
+<meta property="og:description" content="第二章：Docker 部署 ClickHouse 实践概念基础：容器化部署 ClickHouse 是什么&#x2F;为什么 为什么用容器跑 ClickHouse：一条命令拉起、版本随标签固定、环境与宿主机解耦——本地分析环境与生产部署的基础单元。 数据持久化是底线：必须把数据目录 &#x2F;var&#x2F;lib&#x2F;clickhouse 挂载到命名卷或宿主机目录，否则容器删除即数据清零。 初始化语义：.sql &amp;#">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-05-01T13:57:13.000Z">
-<meta property="article:modified_time" content="2026-05-01T13:58:42.656Z">
+<meta property="article:modified_time" content="2026-08-30T07:14:41.183Z">
 <meta property="article:author" content="miracle">
 <meta property="article:tag" content="ClickHouse">
 <meta property="article:tag" content="Docker">
@@ -37,13 +37,13 @@
 <meta name="twitter:card" content="summary">
 
 
-<link rel="canonical" href="http://example.com/2026/05/01/ClickHouse/ClickHouse-Docker/">
+<link rel="canonical" href="https://my919.github.io/2026/05/01/ClickHouse/ClickHouse-Docker/">
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2026/05/01/ClickHouse/ClickHouse-Docker/","path":"2026/05/01/ClickHouse/ClickHouse-Docker/","title":"Docker 部署 ClickHouse"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://my919.github.io/2026/05/01/ClickHouse/ClickHouse-Docker/","path":"2026/05/01/ClickHouse/ClickHouse-Docker/","title":"第二章：Docker 部署 ClickHouse 实践"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>Docker 部署 ClickHouse | my</title>
+<title>第二章：Docker 部署 ClickHouse 实践 | my</title>
   
 
 
@@ -71,12 +71,6 @@
   
 
 
-
-
-  
-
-  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
-<script src="/js/third-party/math/mathjax.js" defer></script>
 
 
 
@@ -170,7 +164,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E5%89%8D%E7%BD%AE%E6%9D%A1%E4%BB%B6"><span class="nav-number">1.</span> <span class="nav-text">一、前置条件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81ClickHouse-%E9%95%9C%E5%83%8F%E9%80%89%E6%8B%A9"><span class="nav-number">2.</span> <span class="nav-text">二、ClickHouse 镜像选择</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E5%AE%98%E6%96%B9%E9%95%9C%E5%83%8F%EF%BC%88%E6%8E%A8%E8%8D%90%EF%BC%89"><span class="nav-number">2.1.</span> <span class="nav-text">1. 官方镜像（推荐）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E5%8F%98%E4%BD%93%E8%AF%B4%E6%98%8E"><span class="nav-number">2.2.</span> <span class="nav-text">2. 变体说明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E5%88%9D%E5%A7%8B%E5%8C%96%E8%84%9A%E6%9C%AC"><span class="nav-number">2.3.</span> <span class="nav-text">3. 初始化脚本</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E5%8D%95%E5%AE%B9%E5%99%A8%E4%B8%80%E9%94%AE%E9%83%A8%E7%BD%B2%EF%BC%88docker-run%EF%BC%89"><span class="nav-number">3.</span> <span class="nav-text">三、单容器一键部署（docker run）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E3%80%81Docker-Compose-%E4%B8%80%E9%94%AE%E9%83%A8%E7%BD%B2"><span class="nav-number">4.</span> <span class="nav-text">四、Docker Compose 一键部署</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%94%E3%80%81Kubernetes-%E4%B8%80%E9%94%AE%E9%83%A8%E7%BD%B2%EF%BC%88%E5%8D%95%E6%96%87%E4%BB%B6%E5%AE%8C%E6%95%B4%E6%B8%85%E5%8D%95%EF%BC%89"><span class="nav-number">5.</span> <span class="nav-text">五、Kubernetes 一键部署（单文件完整清单）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E5%B0%8F%E7%BB%93"><span class="nav-number">6.</span> <span class="nav-text">六、小结</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%9ADocker-%E9%83%A8%E7%BD%B2-ClickHouse-%E5%AE%9E%E8%B7%B5"><span class="nav-number">1.</span> <span class="nav-text">第二章：Docker 部署 ClickHouse 实践</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80%EF%BC%9A%E5%AE%B9%E5%99%A8%E5%8C%96%E9%83%A8%E7%BD%B2-ClickHouse-%E6%98%AF%E4%BB%80%E4%B9%88-%E4%B8%BA%E4%BB%80%E4%B9%88"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础：容器化部署 ClickHouse 是什么&#x2F;为什么</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E7%BD%AE%E6%9D%A1%E4%BB%B6"><span class="nav-number">1.2.</span> <span class="nav-text">前置条件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ClickHouse-%E9%95%9C%E5%83%8F%E9%80%89%E6%8B%A9"><span class="nav-number">1.3.</span> <span class="nav-text">ClickHouse 镜像选择</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%AE%98%E6%96%B9%E9%95%9C%E5%83%8F%EF%BC%88%E6%8E%A8%E8%8D%90%EF%BC%89"><span class="nav-number">1.3.1.</span> <span class="nav-text">1. 官方镜像（推荐）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E5%8F%98%E4%BD%93%E8%AF%B4%E6%98%8E"><span class="nav-number">1.3.2.</span> <span class="nav-text">2. 变体说明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E5%88%9D%E5%A7%8B%E5%8C%96%E8%84%9A%E6%9C%AC"><span class="nav-number">1.3.3.</span> <span class="nav-text">3. 初始化脚本</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%95%E5%AE%B9%E5%99%A8%E4%B8%80%E9%94%AE%E9%83%A8%E7%BD%B2%EF%BC%88docker-run%EF%BC%89"><span class="nav-number">1.4.</span> <span class="nav-text">单容器一键部署（docker run）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Docker-Compose-%E4%B8%80%E9%94%AE%E9%83%A8%E7%BD%B2"><span class="nav-number">1.5.</span> <span class="nav-text">Docker Compose 一键部署</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Kubernetes-%E4%B8%80%E9%94%AE%E9%83%A8%E7%BD%B2%EF%BC%88%E5%8D%95%E6%96%87%E4%BB%B6%E5%AE%8C%E6%95%B4%E6%B8%85%E5%8D%95%EF%BC%89"><span class="nav-number">1.6.</span> <span class="nav-text">Kubernetes 一键部署（单文件完整清单）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%83%A8%E7%BD%B2%E6%96%B9%E5%BC%8F%E9%80%9F%E6%9F%A5"><span class="nav-number">1.7.</span> <span class="nav-text">部署方式速查</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.8.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -183,18 +177,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">192</span>
+          <span class="site-state-item-count">194</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">39</span>
+        <span class="site-state-item-count">33</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">108</span>
+        <span class="site-state-item-count">114</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -232,7 +226,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/ClickHouse/ClickHouse-Docker/">
+    <link itemprop="mainEntityOfPage" href="https://my919.github.io/2026/05/01/ClickHouse/ClickHouse-Docker/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -245,12 +239,12 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="Docker 部署 ClickHouse | my">
+      <meta itemprop="name" content="第二章：Docker 部署 ClickHouse 实践 | my">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          Docker 部署 ClickHouse
+          第二章：Docker 部署 ClickHouse 实践
         </h1>
 
         <div class="post-meta-container">
@@ -260,9 +254,15 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
-      
 
-      <time title="创建时间：2026-05-01 21:57:13 / 修改时间：21:58:42" itemprop="dateCreated datePublished" datetime="2026-05-01T21:57:13+08:00">2026-05-01</time>
+      <time title="创建时间：2026-05-01 21:57:13" itemprop="dateCreated datePublished" datetime="2026-05-01T21:57:13+08:00">2026-05-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-08-30 15:14:41" itemprop="dateModified" datetime="2026-08-30T15:14:41+08:00">2026-08-30</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -281,14 +281,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>1.4k</span>
+      <span>1.7k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>5 分钟</span>
+      <span>6 分钟</span>
     </span>
 </div>
 
@@ -298,15 +298,19 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><p>在 <strong>Docker</strong> 中运行 <strong>ClickHouse</strong>，适合本地开发、与 <strong>Compose</strong> 编排其它服务、或在 <strong>Kubernetes</strong> 中单节点部署。下文给出<strong>镜像选型</strong>、<strong>一条命令起容器</strong>、<strong>Compose 一键起栈</strong>与<strong>一份多文档 K8s 清单</strong>；密码与数据卷请按环境自行替换，勿把生产密钥提交进仓库。</p>
-<hr>
-<h1 id="一、前置条件"><a href="#一、前置条件" class="headerlink" title="一、前置条件"></a>一、前置条件</h1><p>本机已安装 <strong><code>docker</code></strong>，并能使用 <strong><code>docker compose</code></strong>（<strong>Compose V2</strong> 插件，命令为 <strong><code>docker compose</code></strong>；若仍使用旧版独立程序，则将下文中的 <strong><code>docker compose</code></strong> 换成 <strong><code>docker-compose</code></strong>）。</p>
+    <div class="post-body" itemprop="articleBody"><h1 id="第二章：Docker-部署-ClickHouse-实践"><a href="#第二章：Docker-部署-ClickHouse-实践" class="headerlink" title="第二章：Docker 部署 ClickHouse 实践"></a>第二章：Docker 部署 ClickHouse 实践</h1><h2 id="概念基础：容器化部署-ClickHouse-是什么-为什么"><a href="#概念基础：容器化部署-ClickHouse-是什么-为什么" class="headerlink" title="概念基础：容器化部署 ClickHouse 是什么&#x2F;为什么"></a>概念基础：容器化部署 ClickHouse 是什么&#x2F;为什么</h2><ol>
+<li><strong>为什么用容器跑 ClickHouse</strong>：一条命令拉起、版本随标签固定、环境与宿主机解耦——本地分析环境与生产部署的基础单元。</li>
+<li><strong>数据持久化是底线</strong>：必须把数据目录 <strong><code>/var/lib/clickhouse</code></strong> 挂载到<strong>命名卷</strong>或宿主机目录，否则容器删除即数据清零。</li>
+<li><strong>初始化语义</strong>：<strong><code>.sql</code> &#x2F; <code>.sh</code></strong> 放入 <strong><code>/docker-entrypoint-initdb.d</code></strong>（卷挂载），仅在<strong>首次初始化空数据目录</strong>时执行，已有数据卷时不会重复执行。</li>
+<li><strong>端口与账号</strong>：<strong>HTTP 8123</strong> + <strong>Native 9000</strong> 双端口对外；<strong><code>CLICKHOUSE_USER</code></strong> &#x2F; <strong><code>CLICKHOUSE_PASSWORD</code></strong> 配合 <strong><code>CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT=1</code></strong> 可用 SQL 管理用户与权限。</li>
+<li><strong>三种部署形态</strong>：<strong><code>docker run</code></strong> 单容器 → <strong>Docker Compose</strong>（声明式 + 健康检查）→ <strong>Kubernetes</strong>（Secret + PVC + 探针），按环境复杂度逐级选用；表引擎与查询用法见 <a href="/2026/05/01/ClickHouse/ClickHouse/" title="第一章：ClickHouse 列式存储入门">第一章：ClickHouse 列式存储入门</a>。</li>
+</ol>
+<h2 id="前置条件"><a href="#前置条件" class="headerlink" title="前置条件"></a>前置条件</h2><p>本机已安装 <strong><code>docker</code></strong>，并能使用 <strong><code>docker compose</code></strong>（<strong>Compose V2</strong> 插件，命令为 <strong><code>docker compose</code></strong>；若仍使用旧版独立程序，则将下文中的 <strong><code>docker compose</code></strong> 换成 <strong><code>docker-compose</code></strong>）。</p>
 <p>验证：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker version</span><br><span class="line">docker compose version</span><br></pre></td></tr></table></figure>
 
 <p>满足即可，与宿主机操作系统无关。</p>
-<hr>
-<h1 id="二、ClickHouse-镜像选择"><a href="#二、ClickHouse-镜像选择" class="headerlink" title="二、ClickHouse 镜像选择"></a>二、ClickHouse 镜像选择</h1><h2 id="1-官方镜像（推荐）"><a href="#1-官方镜像（推荐）" class="headerlink" title="1. 官方镜像（推荐）"></a>1. 官方镜像（推荐）</h2><ul>
+<h2 id="ClickHouse-镜像选择"><a href="#ClickHouse-镜像选择" class="headerlink" title="ClickHouse 镜像选择"></a>ClickHouse 镜像选择</h2><h3 id="1-官方镜像（推荐）"><a href="#1-官方镜像（推荐）" class="headerlink" title="1. 官方镜像（推荐）"></a>1. 官方镜像（推荐）</h3><ul>
 <li><strong>仓库</strong>：<strong><code>clickhouse/clickhouse-server</code></strong>（Docker Hub 官方组织镜像，与 <strong>ClickHouse</strong> 发行节奏一致）。  </li>
 <li><strong>常用标签</strong>：  <ul>
 <li><strong><code>clickhouse/clickhouse-server:24.8</code></strong>：固定次版本，便于与文档、驱动对齐。  </li>
@@ -315,7 +319,7 @@
 </li>
 <li><strong>生产建议</strong>：固定具体补丁标签或记录 <strong>digest</strong>，避免 <strong><code>latest</code></strong> 漂移导致行为变化。</li>
 </ul>
-<h2 id="2-变体说明"><a href="#2-变体说明" class="headerlink" title="2. 变体说明"></a>2. 变体说明</h2><table>
+<h3 id="2-变体说明"><a href="#2-变体说明" class="headerlink" title="2. 变体说明"></a>2. 变体说明</h3><table>
 <thead>
 <tr>
 <th>需求</th>
@@ -339,9 +343,8 @@
 <td>社区编排模板与 <strong><code>bitnami/clickhouse</code></strong> 等路径、变量不同，切换镜像时需对照该镜像文档。</td>
 </tr>
 </tbody></table>
-<h2 id="3-初始化脚本"><a href="#3-初始化脚本" class="headerlink" title="3. 初始化脚本"></a>3. 初始化脚本</h2><p>将 <strong><code>.sql</code> &#x2F; <code>.sh</code></strong> 放入 <strong><code>/docker-entrypoint-initdb.d</code></strong>（通过卷挂载），仅在<strong>首次初始化空数据目录</strong>时执行；已有数据卷时不会重复执行。</p>
-<hr>
-<h1 id="三、单容器一键部署（docker-run）"><a href="#三、单容器一键部署（docker-run）" class="headerlink" title="三、单容器一键部署（docker run）"></a>三、单容器一键部署（<code>docker run</code>）</h1><p>在<strong>当前目录</strong>先建数据与初始化目录（仅首次）：</p>
+<h3 id="3-初始化脚本"><a href="#3-初始化脚本" class="headerlink" title="3. 初始化脚本"></a>3. 初始化脚本</h3><p>将 <strong><code>.sql</code> &#x2F; <code>.sh</code></strong> 放入 <strong><code>/docker-entrypoint-initdb.d</code></strong>（通过卷挂载），仅在<strong>首次初始化空数据目录</strong>时执行；已有数据卷时不会重复执行。</p>
+<h2 id="单容器一键部署（docker-run）"><a href="#单容器一键部署（docker-run）" class="headerlink" title="单容器一键部署（docker run）"></a>单容器一键部署（<code>docker run</code>）</h2><p>在<strong>当前目录</strong>先建数据与初始化目录（仅首次）：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">mkdir</span> -p ./ch-data ./ch-init</span><br></pre></td></tr></table></figure>
 
 <p><strong>一条命令</strong>启动（请按需改账号、密码、库名、端口、卷路径；示例仅供本地）：</p>
@@ -356,8 +359,7 @@
 <p><strong>Native</strong> 客户端示例（与镜像内 <strong><code>clickhouse-client</code></strong> 主版本一致即可）：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker <span class="built_in">exec</span> -it clickhouse-dev clickhouse-client -u app --password dev-change-me --query <span class="string">&quot;SELECT version()&quot;</span></span><br></pre></td></tr></table></figure>
 
-<hr>
-<h1 id="四、Docker-Compose-一键部署"><a href="#四、Docker-Compose-一键部署" class="headerlink" title="四、Docker Compose 一键部署"></a>四、Docker Compose 一键部署</h1><p>将下面内容保存为 <strong><code>docker-compose.clickhouse.yml</code></strong>（与 <strong><code># 一</code></strong> 要求一致：已能执行 <strong><code>docker compose</code></strong>）。敏感项建议放在同目录 <strong><code>.env</code></strong>（加入 <strong><code>.gitignore</code></strong>），勿长期写死在仓库。</p>
+<h2 id="Docker-Compose-一键部署"><a href="#Docker-Compose-一键部署" class="headerlink" title="Docker Compose 一键部署"></a>Docker Compose 一键部署</h2><p>将下面内容保存为 <strong><code>docker-compose.clickhouse.yml</code></strong>（与前文<strong>前置条件</strong>要求一致：已能执行 <strong><code>docker compose</code></strong>）。敏感项建议放在同目录 <strong><code>.env</code></strong>（加入 <strong><code>.gitignore</code></strong>），勿长期写死在仓库。</p>
 <p><strong>一条命令</strong>启动全栈（在 <strong><code>docker-compose.clickhouse.yml</code></strong> 所在目录执行）：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker compose -f docker-compose.clickhouse.yml up -d</span><br></pre></td></tr></table></figure>
 
@@ -371,8 +373,7 @@
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">docker compose -f docker-compose.clickhouse.yml ps</span><br><span class="line">docker compose -f docker-compose.clickhouse.yml logs -f clickhouse</span><br><span class="line">docker compose -f docker-compose.clickhouse.yml down</span><br></pre></td></tr></table></figure>
 
 <p><strong><code>down</code></strong> 默认保留命名卷 <strong><code>ch_data</code></strong>；若需清空数据加 <strong><code>docker compose ... down -v</code></strong>（<strong>会删库</strong>）。</p>
-<hr>
-<h1 id="五、Kubernetes-一键部署（单文件完整清单）"><a href="#五、Kubernetes-一键部署（单文件完整清单）" class="headerlink" title="五、Kubernetes 一键部署（单文件完整清单）"></a>五、Kubernetes 一键部署（单文件完整清单）</h1><p>将下面内容保存为 <strong><code>clickhouse-k8s.yaml</code></strong> 后，<strong>一条命令</strong>应用：</p>
+<h2 id="Kubernetes-一键部署（单文件完整清单）"><a href="#Kubernetes-一键部署（单文件完整清单）" class="headerlink" title="Kubernetes 一键部署（单文件完整清单）"></a>Kubernetes 一键部署（单文件完整清单）</h2><p>将下面内容保存为 <strong><code>clickhouse-k8s.yaml</code></strong> 后，<strong>一条命令</strong>应用：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl apply -f clickhouse-k8s.yaml</span><br></pre></td></tr></table></figure>
 
 <p>清单含 <strong>Secret</strong>（业务用户与库名）、<strong>PVC</strong>、<strong>Deployment</strong>、<strong>ClusterIP Service</strong>（<strong>8123</strong>、<strong>9000</strong>）。未写 <strong><code>storageClassName</code></strong> 时使用集群默认 <strong>StorageClass</strong>；无默认 <strong>SC</strong> 时请在 <strong>PVC</strong> 中补上 <strong><code>storageClassName</code></strong>。命名空间为 <strong><code>default</code></strong>，可按需修改 <strong><code>metadata.namespace</code></strong>。</p>
@@ -383,8 +384,7 @@
 
 <p>集群内 <strong>HTTP</strong> 示例：<strong><code>http://clickhouse.default.svc.cluster.local:8123/</code></strong>（带鉴权的查询需在 <strong>URL</strong> 或 <strong>Header</strong> 中按官方 <strong>HTTP</strong> 接口说明传用户与密码）。</p>
 <p><strong>说明</strong>：<strong><code>strategy: Recreate</code></strong> 避免 <strong>RWO</strong> 卷被多副本 <strong>RollingUpdate</strong> 同时挂载；<strong>Keeper</strong>、分片、副本与高可用请使用 <strong>ClickHouse Operator</strong> 或专用编排方案，勿直接水平扩展上述 <strong>Deployment</strong>。</p>
-<hr>
-<h1 id="六、小结"><a href="#六、小结" class="headerlink" title="六、小结"></a>六、小结</h1><table>
+<h2 id="部署方式速查"><a href="#部署方式速查" class="headerlink" title="部署方式速查"></a>部署方式速查</h2><table>
 <thead>
 <tr>
 <th>项</th>
@@ -413,6 +413,36 @@
 </tr>
 </tbody></table>
 <p>生产环境请配合备份、监控、网络策略与 <strong>TLS</strong>（<strong>8123</strong> 对外时务必加固）；<strong>Secret</strong> 建议对接 <strong>External Secrets</strong> &#x2F; <strong>Sealed Secrets</strong> 等管控流程。</p>
+<h2 id="本章小结"><a href="#本章小结" class="headerlink" title="本章小结"></a>本章小结</h2><table>
+<thead>
+<tr>
+<th>要点</th>
+<th>结论</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>镜像选择</td>
+<td>官方 <code>clickhouse/clickhouse-server:24.8</code> 起步，生产固定补丁标签或 digest</td>
+</tr>
+<tr>
+<td>单容器</td>
+<td><code>mkdir</code> 建卷目录后一条 <code>docker run</code>，暴露 8123 &#x2F; 9000 双端口</td>
+</tr>
+<tr>
+<td>Compose</td>
+<td><code>docker-compose.clickhouse.yml</code> + <code>.env</code> 管理敏感项，healthcheck 走 HTTP &#x2F;ping</td>
+</tr>
+<tr>
+<td>Kubernetes</td>
+<td>Secret + PVC + Deployment（Recreate）+ HTTP 探针，一条 <code>kubectl apply</code></td>
+</tr>
+<tr>
+<td>生产提醒</td>
+<td>数据卷 + 备份 + 认证 + TLS（8123 对外务必加固）；Keeper&#x2F;分片交给 Operator</td>
+</tr>
+</tbody></table>
+<hr>
+<p>至此 ClickHouse 章节完结：第一章理解了列存与 MergeTree 的分析之道，本章用 Docker &#x2F; Compose &#x2F; Kubernetes 三种形态把引擎跑起来。后续可按需深入 Keeper、副本分片与 Operator 集群运维。</p>
 
     </div>
 
@@ -432,13 +462,13 @@
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2026/05/01/PostgreSQL/PostgreSQL-Docker/" rel="prev" title="Docker 部署 PostgreSQL">
-                  <i class="fa fa-angle-left"></i> Docker 部署 PostgreSQL
+                <a href="/2026/05/01/PostgreSQL/PostgreSQL-Docker/" rel="prev" title="第二章：Docker 部署 PostgreSQL 实践">
+                  <i class="fa fa-angle-left"></i> 第二章：Docker 部署 PostgreSQL 实践
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2026/05/01/MQ/RocketMQ-Docker/" rel="next" title="Docker 部署 RocketMQ">
-                  Docker 部署 RocketMQ <i class="fa fa-angle-right"></i>
+                <a href="/2026/05/01/MQ/RocketMQ-Docker/" rel="next" title="第五章：Docker 部署 RocketMQ 实践">
+                  第五章：Docker 部署 RocketMQ 实践 <i class="fa fa-angle-right"></i>
                 </a>
             </div>
           </div>
@@ -470,13 +500,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">195k</span>
+    <span title="站点总字数">253k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">10:49</span>
+    <span title="站点阅读时长">14:03</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

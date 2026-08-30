@@ -18,29 +18,29 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
 
-<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
+<script class="next-config" data-name="main" type="application/json">{"hostname":"my919.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
 
-    <meta name="description" content="Apache RocketMQ 是阿里开源后捐赠的分布式消息中间件：支持顺序消息、延迟消息、事务消息、死信队列，在国内电商与微服务场景广泛使用。本文侧重 MQ 通用概念；Spring Cloud Stream 集成见 Spring Cloud 集成 RocketMQ。 架构   flowchart TB   P[Producer] --&gt; B[Broker Master]   B --&amp;gt">
+    <meta name="description" content="第四章：RocketMQ 核心概念与架构概念基础：RocketMQ 是什么Apache RocketMQ 是源自阿里巴巴电商场景的分布式消息中间件：低延迟、高并发、业务消息能力开箱即用。本文侧重 MQ &#x2F; 微服务视角。  本质是「Topic + Queue」：消息按 Topic 分类，每个 Topic 切成多个 Message Queue（读写队列），Queue 是并行与顺序的基本单位—">
 <meta property="og:type" content="article">
-<meta property="og:title" content="RocketMQ 消息中间件入门">
-<meta property="og:url" content="http://example.com/2026/05/01/rocketmq-mq/index.html">
+<meta property="og:title" content="第四章：RocketMQ 核心概念与架构">
+<meta property="og:url" content="https://my919.github.io/2026/05/01/rocketmq-mq/index.html">
 <meta property="og:site_name" content="my">
-<meta property="og:description" content="Apache RocketMQ 是阿里开源后捐赠的分布式消息中间件：支持顺序消息、延迟消息、事务消息、死信队列，在国内电商与微服务场景广泛使用。本文侧重 MQ 通用概念；Spring Cloud Stream 集成见 Spring Cloud 集成 RocketMQ。 架构   flowchart TB   P[Producer] --&gt; B[Broker Master]   B --&amp;gt">
+<meta property="og:description" content="第四章：RocketMQ 核心概念与架构概念基础：RocketMQ 是什么Apache RocketMQ 是源自阿里巴巴电商场景的分布式消息中间件：低延迟、高并发、业务消息能力开箱即用。本文侧重 MQ &#x2F; 微服务视角。  本质是「Topic + Queue」：消息按 Topic 分类，每个 Topic 切成多个 Message Queue（读写队列），Queue 是并行与顺序的基本单位—">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-05-01T05:35:45.000Z">
-<meta property="article:modified_time" content="2026-05-31T15:47:21.968Z">
+<meta property="article:modified_time" content="2026-08-30T08:04:39.770Z">
 <meta property="article:author" content="miracle">
 <meta property="article:tag" content="RocketMQ">
 <meta name="twitter:card" content="summary">
 
 
-<link rel="canonical" href="http://example.com/2026/05/01/rocketmq-mq/">
+<link rel="canonical" href="https://my919.github.io/2026/05/01/rocketmq-mq/">
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2026/05/01/rocketmq-mq/","path":"/2026/05/01/rocketmq-mq/","title":"RocketMQ 消息中间件入门"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://my919.github.io/2026/05/01/rocketmq-mq/","path":"/2026/05/01/rocketmq-mq/","title":"第四章：RocketMQ 核心概念与架构"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>RocketMQ 消息中间件入门 | my</title>
+<title>第四章：RocketMQ 核心概念与架构 | my</title>
   
 
 
@@ -68,12 +68,6 @@
   
 
 
-
-
-  
-
-  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
-<script src="/js/third-party/math/mathjax.js" defer></script>
 
 
 
@@ -167,7 +161,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9E%B6%E6%9E%84"><span class="nav-number">1.</span> <span class="nav-text">架构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E6%9E%B6%E6%9E%84%E7%BB%84%E4%BB%B6"><span class="nav-number">2.</span> <span class="nav-text">一、架构组件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81Topic-%E4%B8%8E-Queue"><span class="nav-number">3.</span> <span class="nav-text">二、Topic 与 Queue</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E6%B6%88%E8%B4%B9%E6%A8%A1%E5%9E%8B"><span class="nav-number">4.</span> <span class="nav-text">三、消费模型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E9%A1%BA%E5%BA%8F%E3%80%81%E5%BB%B6%E8%BF%9F%E4%B8%8E%E4%BA%8B%E5%8A%A1"><span class="nav-number">5.</span> <span class="nav-text">四、顺序、延迟与事务</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E9%A1%BA%E5%BA%8F%E6%B6%88%E6%81%AF"><span class="nav-number">5.1.</span> <span class="nav-text">1. 顺序消息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E5%BB%B6%E8%BF%9F%E6%B6%88%E6%81%AF"><span class="nav-number">5.2.</span> <span class="nav-text">2. 延迟消息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E4%BA%8B%E5%8A%A1%E6%B6%88%E6%81%AF"><span class="nav-number">5.3.</span> <span class="nav-text">3. 事务消息</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E4%B8%8E-Kafka-%E7%9A%84%E5%AF%B9%E7%85%A7"><span class="nav-number">6.</span> <span class="nav-text">五、与 Kafka 的对照</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E9%83%A8%E7%BD%B2%E4%B8%8E%E8%BF%90%E7%BB%B4"><span class="nav-number">7.</span> <span class="nav-text">六、部署与运维</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%9ARocketMQ-%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5%E4%B8%8E%E6%9E%B6%E6%9E%84"><span class="nav-number">1.</span> <span class="nav-text">第四章：RocketMQ 核心概念与架构</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80%EF%BC%9ARocketMQ-%E6%98%AF%E4%BB%80%E4%B9%88"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础：RocketMQ 是什么</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9E%B6%E6%9E%84%E7%BB%84%E4%BB%B6"><span class="nav-number">1.2.</span> <span class="nav-text">架构组件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Topic-%E4%B8%8E-Queue"><span class="nav-number">1.3.</span> <span class="nav-text">Topic 与 Queue</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B6%88%E8%B4%B9%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.4.</span> <span class="nav-text">消费模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B6%88%E6%81%AF%E5%8F%AF%E9%9D%A0%E6%80%A7%EF%BC%9A%E5%88%B7%E7%9B%98%E4%B8%8E%E5%A4%8D%E5%88%B6"><span class="nav-number">1.5.</span> <span class="nav-text">消息可靠性：刷盘与复制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A1%BA%E5%BA%8F%E3%80%81%E5%BB%B6%E8%BF%9F%E4%B8%8E%E4%BA%8B%E5%8A%A1"><span class="nav-number">1.6.</span> <span class="nav-text">顺序、延迟与事务</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E9%A1%BA%E5%BA%8F%E6%B6%88%E6%81%AF"><span class="nav-number">1.6.1.</span> <span class="nav-text">1. 顺序消息</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E5%BB%B6%E8%BF%9F%E6%B6%88%E6%81%AF"><span class="nav-number">1.6.2.</span> <span class="nav-text">2. 延迟消息</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E4%BA%8B%E5%8A%A1%E6%B6%88%E6%81%AF"><span class="nav-number">1.6.3.</span> <span class="nav-text">3. 事务消息</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8E-Kafka-%E7%9A%84%E5%AF%B9%E7%85%A7"><span class="nav-number">1.7.</span> <span class="nav-text">与 Kafka 的对照</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%83%A8%E7%BD%B2%E4%B8%8E%E8%BF%90%E7%BB%B4"><span class="nav-number">1.8.</span> <span class="nav-text">部署与运维</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%94%9F%E4%BA%A7%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="nav-number">1.9.</span> <span class="nav-text">生产注意事项</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.10.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -180,18 +174,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">192</span>
+          <span class="site-state-item-count">194</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">39</span>
+        <span class="site-state-item-count">33</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">108</span>
+        <span class="site-state-item-count">114</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -229,7 +223,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/rocketmq-mq/">
+    <link itemprop="mainEntityOfPage" href="https://my919.github.io/2026/05/01/rocketmq-mq/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -242,12 +236,12 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="RocketMQ 消息中间件入门 | my">
+      <meta itemprop="name" content="第四章：RocketMQ 核心概念与架构 | my">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          RocketMQ 消息中间件入门
+          第四章：RocketMQ 核心概念与架构
         </h1>
 
         <div class="post-meta-container">
@@ -265,7 +259,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-31 23:47:21" itemprop="dateModified" datetime="2026-05-31T23:47:21+08:00">2026-05-31</time>
+      <time title="修改时间：2026-08-30 16:04:39" itemprop="dateModified" datetime="2026-08-30T16:04:39+08:00">2026-08-30</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -284,14 +278,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>469</span>
+      <span>1.5k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>2 分钟</span>
+      <span>5 分钟</span>
     </span>
 </div>
 
@@ -301,8 +295,15 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><p><strong>Apache RocketMQ</strong> 是阿里开源后捐赠的分布式消息中间件：支持<strong>顺序消息、延迟消息、事务消息、死信队列</strong>，在国内电商与微服务场景广泛使用。本文侧重 <strong>MQ 通用概念</strong>；Spring Cloud Stream 集成见 <a href="/2026/05/17/springcloud-rocketmq/" title="Spring Cloud 集成 RocketMQ">Spring Cloud 集成 RocketMQ</a>。</p>
-<h1 id="架构"><a href="#架构" class="headerlink" title="架构"></a>架构</h1><pre>
+    <div class="post-body" itemprop="articleBody"><h1 id="第四章：RocketMQ-核心概念与架构"><a href="#第四章：RocketMQ-核心概念与架构" class="headerlink" title="第四章：RocketMQ 核心概念与架构"></a>第四章：RocketMQ 核心概念与架构</h1><h2 id="概念基础：RocketMQ-是什么"><a href="#概念基础：RocketMQ-是什么" class="headerlink" title="概念基础：RocketMQ 是什么"></a>概念基础：RocketMQ 是什么</h2><p><strong>Apache RocketMQ</strong> 是源自阿里巴巴电商场景的分布式消息中间件：低延迟、高并发、<strong>业务消息能力开箱即用</strong>。本文侧重 <strong>MQ &#x2F; 微服务</strong>视角。</p>
+<ol>
+<li><strong>本质是「Topic + Queue」</strong>：消息按 Topic 分类，每个 Topic 切成多个 <strong>Message Queue</strong>（读写队列），Queue 是并行与顺序的基本单位——角色类似 Kafka 的 Partition，但围绕它的<strong>消费语义更「业务」</strong>。</li>
+<li><strong>为什么业务系统选它</strong>：<strong>延迟消息、事务消息、顺序消息、消费重试与死信队列</strong>都是内置能力，不必像 Kafka 那样自建重试 Topic &#x2F; 延迟调度器。</li>
+<li><strong>三大角色</strong>：<strong>NameServer</strong>（无状态路由中心）、<strong>Broker</strong>（存储与转发）、<strong>Producer &#x2F; Consumer</strong>。客户端先问 NameServer 拿路由，再<strong>直连 Broker</strong> 收发。</li>
+<li><strong>权衡</strong>：流式生态（Streams &#x2F; Connect 类）不如 Kafka；但 Java 技术栈、国内云厂商与 <strong>Spring Cloud Alibaba</strong> 集成更顺。对照见本章「与 Kafka 的对照」小节。</li>
+</ol>
+<p>先看整体架构：</p>
+<h2 id="架构组件"><a href="#架构组件" class="headerlink" title="架构组件"></a>架构组件</h2><pre>
 <code class="mermaid">
 
 flowchart TB
@@ -314,42 +315,45 @@ flowchart TB
 </code>
 </pre>
 
-<hr>
-<h1 id="一、架构组件"><a href="#一、架构组件" class="headerlink" title="一、架构组件"></a>一、架构组件</h1><table>
+<table>
 <thead>
 <tr>
 <th>组件</th>
 <th>作用</th>
+<th>要点</th>
 </tr>
 </thead>
 <tbody><tr>
 <td><strong>NameServer</strong></td>
 <td>路由注册中心，轻量、无状态</td>
+<td>节点间互不通信，客户端轮询任一节点；几乎没有运维成本</td>
 </tr>
 <tr>
 <td><strong>Broker</strong></td>
 <td>存储与转发，分 <strong>Master &#x2F; Slave</strong></td>
+<td>所有消息写入 <strong>CommitLog</strong>（单一文件顺序写），再异步分发到各 Queue 的索引</td>
 </tr>
 <tr>
 <td><strong>Producer</strong></td>
 <td>发送消息</td>
+<td>与 Broker 直连发送；NameServer 只用于找地址</td>
 </tr>
 <tr>
 <td><strong>Consumer</strong></td>
-<td>拉取消息，Push 底层为长轮询</td>
+<td>拉取消息</td>
+<td><strong>Push 模式底层是长轮询拉取</strong>，并非服务端真推送</td>
 </tr>
 </tbody></table>
-<p>客户端通过 <strong>NameServer</strong> 发现 <strong>Broker</strong> 地址。</p>
-<hr>
-<h1 id="二、Topic-与-Queue"><a href="#二、Topic-与-Queue" class="headerlink" title="二、Topic 与 Queue"></a>二、Topic 与 Queue</h1><ul>
+<p>客户端通过 <strong>NameServer</strong> 发现 <strong>Broker</strong> 地址；Broker 每 30s 向 NameServer 上报路由，客户端在本地缓存路由表。</p>
+<h2 id="Topic-与-Queue"><a href="#Topic-与-Queue" class="headerlink" title="Topic 与 Queue"></a>Topic 与 Queue</h2><ul>
 <li><strong>Topic</strong>：逻辑分类。  </li>
-<li><strong>Message Queue</strong>：Topic 下分片（类似 Kafka 分区，语义不同）。  </li>
-<li><strong>Tag &#x2F; Key</strong>：二级过滤与索引。</li>
+<li><strong>Message Queue</strong>：Topic 下分片（类似 Kafka 分区，语义略有不同）；<strong>Queue 数 &#x3D; 消费并行度上限</strong>。  </li>
+<li><strong>Tag &#x2F; Key</strong>：Tag 用于消费端二级过滤；Key 建立哈希索引，供控制台按业务键查询。</li>
 </ul>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">Message</span> <span class="variable">msg</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Message</span>(<span class="string">&quot;OrderTopic&quot;</span>, <span class="string">&quot;create&quot;</span>, orderId.getBytes(), body.getBytes());</span><br><span class="line">producer.send(msg);</span><br></pre></td></tr></table></figure>
 
-<hr>
-<h1 id="三、消费模型"><a href="#三、消费模型" class="headerlink" title="三、消费模型"></a>三、消费模型</h1><table>
+<p><strong>理解要点</strong>：与 Kafka「分区数决定并行度」同理，<strong>Consumer 实例数超过 Queue 数时多出的实例空闲</strong>；规划 Topic 时先估消费并行度再定 Queue 数。</p>
+<h2 id="消费模型"><a href="#消费模型" class="headerlink" title="消费模型"></a>消费模型</h2><table>
 <thead>
 <tr>
 <th>模式</th>
@@ -366,15 +370,34 @@ flowchart TB
 </tr>
 <tr>
 <td><strong>重试 &#x2F; DLQ</strong></td>
-<td>消费失败进入重试队列，超限进死信</td>
+<td>消费失败进入重试队列（<strong><code>%RETRY%组名</code></strong>）延时重投，默认 <strong>16 次</strong>，超限进死信（<strong><code>%DLQ%组名</code></strong>）</td>
 </tr>
 </tbody></table>
-<hr>
-<h1 id="四、顺序、延迟与事务"><a href="#四、顺序、延迟与事务" class="headerlink" title="四、顺序、延迟与事务"></a>四、顺序、延迟与事务</h1><h2 id="1-顺序消息"><a href="#1-顺序消息" class="headerlink" title="1. 顺序消息"></a>1. 顺序消息</h2><p>同一 <strong>MessageQueue</strong> 内 FIFO；发送端按 <strong>orderId</strong> 等 sharding key 固定路由。</p>
-<h2 id="2-延迟消息"><a href="#2-延迟消息" class="headerlink" title="2. 延迟消息"></a>2. 延迟消息</h2><p>内置延迟级别（1s、5s、1m…），适合订单超时关闭。</p>
-<h2 id="3-事务消息"><a href="#3-事务消息" class="headerlink" title="3. 事务消息"></a>3. 事务消息</h2><p><strong>Half 消息</strong> + 本地事务 + 回查；与 <strong>Seata</strong> 同步事务可对照选型（见 <a href="/2026/05/17/SpringCloud/cloud/" title="cloud">cloud</a> 当前 <strong>Feign + Seata</strong> 链路）。</p>
-<hr>
-<h1 id="五、与-Kafka-的对照"><a href="#五、与-Kafka-的对照" class="headerlink" title="五、与 Kafka 的对照"></a>五、与 Kafka 的对照</h1><table>
+<p><strong>理解要点</strong>：重试 + 死信是 RocketMQ 相对 Kafka 最大的「开箱能力差」——消费失败自动按递增间隔重试，业务只需监听死信 Topic 做人工兜底，不需要自建重试机制。</p>
+<h2 id="消息可靠性：刷盘与复制"><a href="#消息可靠性：刷盘与复制" class="headerlink" title="消息可靠性：刷盘与复制"></a>消息可靠性：刷盘与复制</h2><table>
+<thead>
+<tr>
+<th>维度</th>
+<th>同步</th>
+<th>异步</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>刷盘</strong></td>
+<td><strong>SYNC_FLUSH</strong>：落盘才返回成功，不丢但延迟高</td>
+<td><strong>ASYNC_FLUSH</strong>：写入 page cache 即返回，宕机可能丢少量</td>
+</tr>
+<tr>
+<td><strong>复制</strong></td>
+<td><strong>SYNC_MASTER</strong>：Slave 同步完成后返回</td>
+<td><strong>ASYNC_MASTER</strong>：默认，性能优先</td>
+</tr>
+</tbody></table>
+<p>生产常见组合：<strong>ASYNC_FLUSH + SYNC_MASTER</strong>（或 <strong>DLedger</strong> 自动主从切换）；金融级再上同步刷盘。这与 Kafka 的 <strong><code>acks=all</code> + ISR</strong> 解决的是同一件事——「写成功」的定义。</p>
+<h2 id="顺序、延迟与事务"><a href="#顺序、延迟与事务" class="headerlink" title="顺序、延迟与事务"></a>顺序、延迟与事务</h2><h3 id="1-顺序消息"><a href="#1-顺序消息" class="headerlink" title="1. 顺序消息"></a>1. 顺序消息</h3><p>同一 <strong>MessageQueue</strong> 内 FIFO；发送端按 <strong>orderId</strong> 等 sharding key 用 <strong>MessageQueueSelector</strong> 固定路由，消费端用 <strong>Orderly</strong> 监听器串行处理。代价：该 Queue 所在实例故障期间，对应分片的顺序消费会短暂阻塞。</p>
+<h3 id="2-延迟消息"><a href="#2-延迟消息" class="headerlink" title="2. 延迟消息"></a>2. 延迟消息</h3><p>内置延迟级别（1s、5s、1m…2h 共 18 级），适合订单超时关闭、失败退避重试；<strong>5.x 起支持任意时间精度</strong>（基于时间轮）。</p>
+<h3 id="3-事务消息"><a href="#3-事务消息" class="headerlink" title="3. 事务消息"></a>3. 事务消息</h3><p><strong>Half 消息</strong> + 本地事务 + 回查：先发半消息（对消费者不可见）→ 执行本地事务 → 提交 &#x2F; 回滚；Broker 对未决事务定时<strong>回查</strong>生产者。与 <strong>Seata</strong> 同步事务可对照选型（见 <a href="/2026/05/17/SpringCloud/cloud/" title="第一章：cloud 微服务工程架构总览与生产落地">第一章：cloud 微服务工程架构总览与生产落地</a> 当前 <strong>Feign + Seata</strong> 链路）。</p>
+<h2 id="与-Kafka-的对照"><a href="#与-Kafka-的对照" class="headerlink" title="与 Kafka 的对照"></a>与 Kafka 的对照</h2><table>
 <thead>
 <tr>
 <th>场景</th>
@@ -383,7 +406,7 @@ flowchart TB
 </thead>
 <tbody><tr>
 <td>日志、CDC、流计算生态</td>
-<td><a href="/2026/05/01/kafka-mq/" title="Kafka 消息中间件入门">Kafka 消息中间件入门</a></td>
+<td><a href="/2026/05/01/kafka-mq/" title="第一章：Kafka 消息中间件入门：核心概念与架构">第一章：Kafka 消息中间件入门：核心概念与架构</a></td>
 </tr>
 <tr>
 <td>电商订单、定时、事务消息</td>
@@ -391,11 +414,45 @@ flowchart TB
 </tr>
 <tr>
 <td>Spring Cloud Alibaba</td>
-<td><a href="/2026/05/17/springcloud-rocketmq/" title="Spring Cloud 集成 RocketMQ">Spring Cloud 集成 RocketMQ</a></td>
+<td><a href="/2026/05/17/springcloud-rocketmq/" title="第十一章：Spring Cloud 集成 RocketMQ：异步消息与事件驱动扩展">第十一章：Spring Cloud 集成 RocketMQ：异步消息与事件驱动扩展</a></td>
+</tr>
+<tr>
+<td>Java 原生客户端示例</td>
+<td><a href="/2026/07/25/rocketmq-java/" title="第六章：RocketMQ Java 发布与消费实战">第六章：RocketMQ Java 发布与消费实战</a></td>
 </tr>
 </tbody></table>
-<hr>
-<h1 id="六、部署与运维"><a href="#六、部署与运维" class="headerlink" title="六、部署与运维"></a>六、部署与运维</h1><p>Docker：<a href="/2026/05/01/MQ/RocketMQ-Docker/" title="Docker 部署 RocketMQ">RocketMQ-Docker</a>。局域网见 <a href="/service/">服务</a>（NameServer <strong><code>:30876</code></strong>、Dashboard <strong><code>:30877</code></strong>）。</p>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th><strong>Kafka</strong></th>
+<th><strong>RocketMQ</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>模型</td>
+<td>分区日志、流式优先</td>
+<td>Topic + Queue、业务消息优先</td>
+</tr>
+<tr>
+<td>重试 &#x2F; 死信</td>
+<td>自建</td>
+<td>内置（<code>%RETRY%</code> &#x2F; <code>%DLQ%</code>）</td>
+</tr>
+<tr>
+<td>延迟 &#x2F; 事务消息</td>
+<td>无内置 &#x2F; 偏流式事务</td>
+<td>内置 18 级延迟（5.x 任意精度）&#x2F; Half 消息</td>
+</tr>
+<tr>
+<td>生态</td>
+<td>Connect、Streams、Flink&#x2F;Spark</td>
+<td>国内电商、SCA 集成</td>
+</tr>
+</tbody></table>
+<h2 id="部署与运维"><a href="#部署与运维" class="headerlink" title="部署与运维"></a>部署与运维</h2><p>Docker 部署：<a href="/2026/05/01/MQ/RocketMQ-Docker/" title="第五章：Docker 部署 RocketMQ 实践">第五章：Docker 部署 RocketMQ 实践</a>。局域网见 <a href="/service/">服务</a>（NameServer <strong><code>:30876</code></strong>、Dashboard <strong><code>:30877</code></strong>）。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建 Topic</span></span><br><span class="line">sh mqadmin updateTopic -n localhost:9876 -t demo-topic -c DefaultCluster</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看消费进度（lag）</span></span><br><span class="line">sh mqadmin consumerProgress -n localhost:9876 -g demo-consumer-group</span><br></pre></td></tr></table></figure>
+
 <table>
 <thead>
 <tr>
@@ -416,7 +473,56 @@ flowchart TB
 <td>客户端与 Broker 主版本对齐</td>
 </tr>
 </tbody></table>
+<h2 id="生产注意事项"><a href="#生产注意事项" class="headerlink" title="生产注意事项"></a>生产注意事项</h2><table>
+<thead>
+<tr>
+<th>项</th>
+<th>建议</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Queue 数</strong></td>
+<td>预估消费并行度后固定；频繁扩缩 Queue 影响顺序路由</td>
+</tr>
+<tr>
+<td><strong>重试风暴</strong></td>
+<td>下游故障时重试 + 延时队列会放大流量，需限流 &#x2F; 熔断配合</td>
+</tr>
+<tr>
+<td><strong>消息堆积</strong></td>
+<td>写不怕（顺序写），怕「读旧消息」；堆积告警盯消费 lag</td>
+</tr>
+<tr>
+<td><strong>安全</strong></td>
+<td>开启 <strong>ACL</strong>；勿将 <strong><code>9876</code></strong> 裸奔公网</td>
+</tr>
+</tbody></table>
 <p>官方文档：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://rocketmq.apache.org/docs/">https://rocketmq.apache.org/docs/</a></p>
+<h2 id="本章小结"><a href="#本章小结" class="headerlink" title="本章小结"></a>本章小结</h2><table>
+<thead>
+<tr>
+<th>要点</th>
+<th>结论</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>架构</td>
+<td><strong>NameServer 找路、Broker 干活</strong>；Push 底层是长轮询</td>
+</tr>
+<tr>
+<td>存储</td>
+<td>单一 <strong>CommitLog</strong> 顺序写 + Queue 索引；可靠性由<strong>刷盘 + 复制</strong>组合决定</td>
+</tr>
+<tr>
+<td>业务能力</td>
+<td><strong>顺序 &#x2F; 延迟 &#x2F; 事务 &#x2F; 重试死信</strong>开箱即用，这是相对 Kafka 的核心优势</td>
+</tr>
+<tr>
+<td>消费模型</td>
+<td><strong>CLUSTERING</strong> 默认负载均衡；失败自动重试 16 次，超限进死信</td>
+</tr>
+</tbody></table>
+<p>下一步：容器化部署一套最小栈 → <a href="/2026/05/01/MQ/RocketMQ-Docker/" title="第五章：Docker 部署 RocketMQ 实践">第五章：Docker 部署 RocketMQ 实践</a>；概念落地为代码 → <a href="/2026/07/25/rocketmq-java/" title="第六章：RocketMQ Java 发布与消费实战">第六章：RocketMQ Java 发布与消费实战</a>。</p>
 
     </div>
 
@@ -433,8 +539,8 @@ flowchart TB
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2026/05/01/kafka-mq/" rel="prev" title="Kafka 消息中间件入门">
-                  <i class="fa fa-angle-left"></i> Kafka 消息中间件入门
+                <a href="/2026/05/01/kafka-mq/" rel="prev" title="第一章：Kafka 消息中间件入门：核心概念与架构">
+                  <i class="fa fa-angle-left"></i> 第一章：Kafka 消息中间件入门：核心概念与架构
                 </a>
             </div>
             <div class="post-nav-item">
@@ -471,13 +577,13 @@ flowchart TB
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">195k</span>
+    <span title="站点总字数">253k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">10:49</span>
+    <span title="站点阅读时长">14:03</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

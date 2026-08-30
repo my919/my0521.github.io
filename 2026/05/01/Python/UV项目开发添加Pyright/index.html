@@ -18,17 +18,17 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
 
-<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
+<script class="next-config" data-name="main" type="application/json">{"hostname":"my919.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
 
-    <meta name="description" content="Pyright 是微软开源的 Python 静态类型检查器，与 VS Code &#x2F; Cursor 的 Pylance 同源，适合在提交前发现类型错误。官方 CLI 多通过 Node.js 分发；在纯 uv + PyPI 工作流里，常用与 Pyright 配置兼容的 BasedPyright（维护活跃、一条 uv add 即可）。本文假定你已有 uv 项目；初始化步骤见《UV从0到1创建项">
+    <meta name="description" content="第四章：UV 项目开发添加 Pyright：静态类型检查概念基础：Pyright 是什么Pyright 是微软推出的 Python 静态类型检查器，BasedPyright 是其社区增强分支：  运行前抓 Bug：在代码执行之前发现类型不匹配、None 误用、属性不存在、漏处理返回值等问题，比跑测试更早暴露隐患。 双发行版：Pyright 基于 Node（常经 npm &#x2F; VS Code">
 <meta property="og:type" content="article">
-<meta property="og:title" content="UV项目开发添加Pyright">
-<meta property="og:url" content="http://example.com/2026/05/01/Python/UV%E9%A1%B9%E7%9B%AE%E5%BC%80%E5%8F%91%E6%B7%BB%E5%8A%A0Pyright/index.html">
+<meta property="og:title" content="第四章：UV 项目开发添加 Pyright：静态类型检查">
+<meta property="og:url" content="https://my919.github.io/2026/05/01/Python/UV%E9%A1%B9%E7%9B%AE%E5%BC%80%E5%8F%91%E6%B7%BB%E5%8A%A0Pyright/index.html">
 <meta property="og:site_name" content="my">
-<meta property="og:description" content="Pyright 是微软开源的 Python 静态类型检查器，与 VS Code &#x2F; Cursor 的 Pylance 同源，适合在提交前发现类型错误。官方 CLI 多通过 Node.js 分发；在纯 uv + PyPI 工作流里，常用与 Pyright 配置兼容的 BasedPyright（维护活跃、一条 uv add 即可）。本文假定你已有 uv 项目；初始化步骤见《UV从0到1创建项">
+<meta property="og:description" content="第四章：UV 项目开发添加 Pyright：静态类型检查概念基础：Pyright 是什么Pyright 是微软推出的 Python 静态类型检查器，BasedPyright 是其社区增强分支：  运行前抓 Bug：在代码执行之前发现类型不匹配、None 误用、属性不存在、漏处理返回值等问题，比跑测试更早暴露隐患。 双发行版：Pyright 基于 Node（常经 npm &#x2F; VS Code">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-05-01T03:00:00.000Z">
-<meta property="article:modified_time" content="2026-05-05T05:12:30.720Z">
+<meta property="article:modified_time" content="2026-08-30T07:28:39.492Z">
 <meta property="article:author" content="miracle">
 <meta property="article:tag" content="Pyright">
 <meta property="article:tag" content="Python">
@@ -37,13 +37,13 @@
 <meta name="twitter:card" content="summary">
 
 
-<link rel="canonical" href="http://example.com/2026/05/01/Python/UV%E9%A1%B9%E7%9B%AE%E5%BC%80%E5%8F%91%E6%B7%BB%E5%8A%A0Pyright/">
+<link rel="canonical" href="https://my919.github.io/2026/05/01/Python/UV%E9%A1%B9%E7%9B%AE%E5%BC%80%E5%8F%91%E6%B7%BB%E5%8A%A0Pyright/">
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2026/05/01/Python/UV%E9%A1%B9%E7%9B%AE%E5%BC%80%E5%8F%91%E6%B7%BB%E5%8A%A0Pyright/","path":"2026/05/01/Python/UV项目开发添加Pyright/","title":"UV项目开发添加Pyright"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://my919.github.io/2026/05/01/Python/UV%E9%A1%B9%E7%9B%AE%E5%BC%80%E5%8F%91%E6%B7%BB%E5%8A%A0Pyright/","path":"2026/05/01/Python/UV项目开发添加Pyright/","title":"第四章：UV 项目开发添加 Pyright：静态类型检查"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>UV项目开发添加Pyright | my</title>
+<title>第四章：UV 项目开发添加 Pyright：静态类型检查 | my</title>
   
 
 
@@ -71,12 +71,6 @@
   
 
 
-
-
-  
-
-  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
-<script src="/js/third-party/math/mathjax.js" defer></script>
 
 
 
@@ -170,7 +164,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E5%AE%89%E8%A3%85%E7%B1%BB%E5%9E%8B%E6%A3%80%E6%9F%A5-CLI"><span class="nav-number">1.</span> <span class="nav-text">一、安装类型检查 CLI</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E6%8E%A8%E8%8D%90%EF%BC%9ABasedPyright%EF%BC%88%E4%B8%8E-Pyright-%E9%85%8D%E7%BD%AE%E5%85%BC%E5%AE%B9%EF%BC%89"><span class="nav-number">1.1.</span> <span class="nav-text">1. 推荐：BasedPyright（与 Pyright 配置兼容）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E9%AA%8C%E8%AF%81"><span class="nav-number">1.2.</span> <span class="nav-text">2. 验证</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E5%8F%AF%E9%80%89%EF%BC%9A%E4%BD%BF%E7%94%A8%E5%BE%AE%E8%BD%AF%E5%8E%9F%E7%89%88-Pyright%EF%BC%88Node%EF%BC%89"><span class="nav-number">1.3.</span> <span class="nav-text">3. 可选：使用微软原版 Pyright（Node）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E5%9C%A8-pyproject-toml-%E4%B8%AD%E9%85%8D%E7%BD%AE"><span class="nav-number">2.</span> <span class="nav-text">二、在 pyproject.toml 中配置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E8%BF%90%E8%A1%8C%E6%A3%80%E6%9F%A5"><span class="nav-number">3.</span> <span class="nav-text">三、运行检查</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E5%85%A8%E9%A1%B9%E7%9B%AE%E6%89%AB%E6%8F%8F"><span class="nav-number">3.1.</span> <span class="nav-text">1. 全项目扫描</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E6%8C%87%E5%AE%9A%E7%9B%AE%E5%BD%95%E6%88%96%E6%96%87%E4%BB%B6"><span class="nav-number">3.2.</span> <span class="nav-text">2. 指定目录或文件</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E4%B8%BA%E7%B1%BB%E5%9E%8B%E6%A3%80%E6%9F%A5%E8%A1%A5%E5%85%A8%E6%B3%A8%E8%A7%A3%EF%BC%88%E7%AE%80%E8%A6%81%EF%BC%89"><span class="nav-number">4.</span> <span class="nav-text">四、为类型检查补全注解（简要）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E4%B8%8E%E7%BC%96%E8%BE%91%E5%99%A8%E3%80%81Ruff-%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="nav-number">5.</span> <span class="nav-text">五、与编辑器、Ruff 的关系</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-VS-Code-Cursor"><span class="nav-number">5.1.</span> <span class="nav-text">1. VS Code &#x2F; Cursor</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E4%B8%8E-Ruff-%E5%88%86%E5%B7%A5"><span class="nav-number">5.2.</span> <span class="nav-text">2. 与 Ruff 分工</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%E9%80%9F%E6%9F%A5"><span class="nav-number">6.</span> <span class="nav-text">六、常用命令速查</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%9AUV-%E9%A1%B9%E7%9B%AE%E5%BC%80%E5%8F%91%E6%B7%BB%E5%8A%A0-Pyright%EF%BC%9A%E9%9D%99%E6%80%81%E7%B1%BB%E5%9E%8B%E6%A3%80%E6%9F%A5"><span class="nav-number">1.</span> <span class="nav-text">第四章：UV 项目开发添加 Pyright：静态类型检查</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80%EF%BC%9APyright-%E6%98%AF%E4%BB%80%E4%B9%88"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础：Pyright 是什么</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E5%AE%89%E8%A3%85%E7%B1%BB%E5%9E%8B%E6%A3%80%E6%9F%A5-CLI"><span class="nav-number">1.2.</span> <span class="nav-text">一、安装类型检查 CLI</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E6%8E%A8%E8%8D%90%EF%BC%9ABasedPyright%EF%BC%88%E4%B8%8E-Pyright-%E9%85%8D%E7%BD%AE%E5%85%BC%E5%AE%B9%EF%BC%89"><span class="nav-number">1.2.1.</span> <span class="nav-text">1. 推荐：BasedPyright（与 Pyright 配置兼容）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E9%AA%8C%E8%AF%81"><span class="nav-number">1.2.2.</span> <span class="nav-text">2. 验证</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E5%8F%AF%E9%80%89%EF%BC%9A%E4%BD%BF%E7%94%A8%E5%BE%AE%E8%BD%AF%E5%8E%9F%E7%89%88-Pyright%EF%BC%88Node%EF%BC%89"><span class="nav-number">1.2.3.</span> <span class="nav-text">3. 可选：使用微软原版 Pyright（Node）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E5%9C%A8-pyproject-toml-%E4%B8%AD%E9%85%8D%E7%BD%AE"><span class="nav-number">1.3.</span> <span class="nav-text">二、在 pyproject.toml 中配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E8%BF%90%E8%A1%8C%E6%A3%80%E6%9F%A5"><span class="nav-number">1.4.</span> <span class="nav-text">三、运行检查</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%85%A8%E9%A1%B9%E7%9B%AE%E6%89%AB%E6%8F%8F"><span class="nav-number">1.4.1.</span> <span class="nav-text">1. 全项目扫描</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E6%8C%87%E5%AE%9A%E7%9B%AE%E5%BD%95%E6%88%96%E6%96%87%E4%BB%B6"><span class="nav-number">1.4.2.</span> <span class="nav-text">2. 指定目录或文件</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E4%B8%BA%E7%B1%BB%E5%9E%8B%E6%A3%80%E6%9F%A5%E8%A1%A5%E5%85%A8%E6%B3%A8%E8%A7%A3%EF%BC%88%E7%AE%80%E8%A6%81%EF%BC%89"><span class="nav-number">1.5.</span> <span class="nav-text">四、为类型检查补全注解（简要）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E4%B8%8E%E7%BC%96%E8%BE%91%E5%99%A8%E3%80%81Ruff-%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="nav-number">1.6.</span> <span class="nav-text">五、与编辑器、Ruff 的关系</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-VS-Code-Cursor"><span class="nav-number">1.6.1.</span> <span class="nav-text">1. VS Code &#x2F; Cursor</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E4%B8%8E-Ruff-%E5%88%86%E5%B7%A5"><span class="nav-number">1.6.2.</span> <span class="nav-text">2. 与 Ruff 分工</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%E9%80%9F%E6%9F%A5"><span class="nav-number">1.7.</span> <span class="nav-text">六、常用命令速查</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.8.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -183,18 +177,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">192</span>
+          <span class="site-state-item-count">194</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">39</span>
+        <span class="site-state-item-count">33</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">108</span>
+        <span class="site-state-item-count">114</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -232,7 +226,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/Python/UV%E9%A1%B9%E7%9B%AE%E5%BC%80%E5%8F%91%E6%B7%BB%E5%8A%A0Pyright/">
+    <link itemprop="mainEntityOfPage" href="https://my919.github.io/2026/05/01/Python/UV%E9%A1%B9%E7%9B%AE%E5%BC%80%E5%8F%91%E6%B7%BB%E5%8A%A0Pyright/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -245,12 +239,12 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="UV项目开发添加Pyright | my">
+      <meta itemprop="name" content="第四章：UV 项目开发添加 Pyright：静态类型检查 | my">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          UV项目开发添加Pyright
+          第四章：UV 项目开发添加 Pyright：静态类型检查
         </h1>
 
         <div class="post-meta-container">
@@ -268,7 +262,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-05 13:12:30" itemprop="dateModified" datetime="2026-05-05T13:12:30+08:00">2026-05-05</time>
+      <time title="修改时间：2026-08-30 15:28:39" itemprop="dateModified" datetime="2026-08-30T15:28:39+08:00">2026-08-30</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -287,14 +281,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>614</span>
+      <span>902</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>2 分钟</span>
+      <span>3 分钟</span>
     </span>
 </div>
 
@@ -304,15 +298,22 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><p><strong>Pyright</strong> 是微软开源的 <strong>Python 静态类型检查器</strong>，与 VS Code &#x2F; Cursor 的 <strong>Pylance</strong> 同源，适合在提交前发现类型错误。官方 CLI 多通过 <strong>Node.js</strong> 分发；在纯 <strong>uv + PyPI</strong> 工作流里，常用与 Pyright 配置兼容的 <strong>BasedPyright</strong>（维护活跃、一条 <code>uv add</code> 即可）。本文假定你已有 <strong>uv 项目</strong>；初始化步骤见《UV从0到1创建项目》。命令默认在<strong>项目根目录</strong>执行。</p>
+    <div class="post-body" itemprop="articleBody"><h1 id="第四章：UV-项目开发添加-Pyright：静态类型检查"><a href="#第四章：UV-项目开发添加-Pyright：静态类型检查" class="headerlink" title="第四章：UV 项目开发添加 Pyright：静态类型检查"></a>第四章：UV 项目开发添加 Pyright：静态类型检查</h1><h2 id="概念基础：Pyright-是什么"><a href="#概念基础：Pyright-是什么" class="headerlink" title="概念基础：Pyright 是什么"></a>概念基础：Pyright 是什么</h2><p><strong>Pyright</strong> 是微软推出的 <strong>Python 静态类型检查器</strong>，<strong>BasedPyright</strong> 是其社区增强分支：</p>
+<ol>
+<li><strong>运行前抓 Bug</strong>：在<strong>代码执行之前</strong>发现类型不匹配、<strong>None 误用</strong>、属性不存在、漏处理返回值等问题，比跑测试更早暴露隐患。</li>
+<li><strong>双发行版</strong>：<strong>Pyright</strong> 基于 <strong>Node</strong>（常经 npm &#x2F; VS Code Pylance 使用）；<strong>BasedPyright</strong> 可用 <strong>PyPI</strong> 直接安装（<code>uv add --dev basedpyright</code>），配置与 Pyright <strong>完全兼容</strong>。</li>
+<li><strong>配置集中</strong>：检查范围（<code>include</code>）、Python 版本（<code>pythonVersion</code>）、严格程度（<code>typeCheckingMode</code>）统一写在 <strong><code>pyproject.toml</code></strong> 的 <strong><code>[tool.pyright]</code></strong>，CLI 与编辑器共享同一份配置。</li>
+<li><strong>与 Ruff 分工</strong>：Ruff 管<strong>风格与格式</strong>（见第三章），Pyright 管<strong>类型语义</strong>；二者互补而非替代，注意避免规则重复。</li>
+</ol>
+<p>下面从安装、配置到运行检查逐步实操：</p>
 <hr>
-<h1 id="一、安装类型检查-CLI"><a href="#一、安装类型检查-CLI" class="headerlink" title="一、安装类型检查 CLI"></a>一、安装类型检查 CLI</h1><h2 id="1-推荐：BasedPyright（与-Pyright-配置兼容）"><a href="#1-推荐：BasedPyright（与-Pyright-配置兼容）" class="headerlink" title="1. 推荐：BasedPyright（与 Pyright 配置兼容）"></a>1. 推荐：BasedPyright（与 Pyright 配置兼容）</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uv add --dev basedpyright</span><br></pre></td></tr></table></figure>
+<h2 id="一、安装类型检查-CLI"><a href="#一、安装类型检查-CLI" class="headerlink" title="一、安装类型检查 CLI"></a>一、安装类型检查 CLI</h2><h3 id="1-推荐：BasedPyright（与-Pyright-配置兼容）"><a href="#1-推荐：BasedPyright（与-Pyright-配置兼容）" class="headerlink" title="1. 推荐：BasedPyright（与 Pyright 配置兼容）"></a>1. 推荐：BasedPyright（与 Pyright 配置兼容）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uv add --dev basedpyright</span><br></pre></td></tr></table></figure>
 
-<h2 id="2-验证"><a href="#2-验证" class="headerlink" title="2. 验证"></a>2. 验证</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uv run basedpyright --version</span><br></pre></td></tr></table></figure>
+<h3 id="2-验证"><a href="#2-验证" class="headerlink" title="2. 验证"></a>2. 验证</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uv run basedpyright --version</span><br></pre></td></tr></table></figure>
 
-<h2 id="3-可选：使用微软原版-Pyright（Node）"><a href="#3-可选：使用微软原版-Pyright（Node）" class="headerlink" title="3. 可选：使用微软原版 Pyright（Node）"></a>3. 可选：使用微软原版 Pyright（Node）</h2><p>若团队统一使用 <strong>npm</strong> 安装的 Pyright，可在项目外加装 Node 后使用 <code>npx pyright</code>，或在 CI 里 <code>npm install -g pyright</code> 后调用 <strong><code>pyright</code></strong>；配置与下文 <strong><code>[tool.pyright]</code></strong> 键名一致（写在 <strong><code>pyproject.toml</code></strong> 即可）。</p>
+<h3 id="3-可选：使用微软原版-Pyright（Node）"><a href="#3-可选：使用微软原版-Pyright（Node）" class="headerlink" title="3. 可选：使用微软原版 Pyright（Node）"></a>3. 可选：使用微软原版 Pyright（Node）</h3><p>若团队统一使用 <strong>npm</strong> 安装的 Pyright，可在项目外加装 Node 后使用 <code>npx pyright</code>，或在 CI 里 <code>npm install -g pyright</code> 后调用 <strong><code>pyright</code></strong>；配置与下文 <strong><code>[tool.pyright]</code></strong> 键名一致（写在 <strong><code>pyproject.toml</code></strong> 即可）。</p>
 <hr>
-<h1 id="二、在-pyproject-toml-中配置"><a href="#二、在-pyproject-toml-中配置" class="headerlink" title="二、在 pyproject.toml 中配置"></a>二、在 <code>pyproject.toml</code> 中配置</h1><p>在 <strong><code>pyproject.toml</code></strong> 中增加 <strong><code>[tool.pyright]</code></strong>（<strong>BasedPyright</strong> 与 <strong>Pyright</strong> &#x2F; <strong>Pylance</strong> 均会读取，勿再单独维护 <strong><code>pyrightconfig.json</code></strong>，避免两处不一致）：</p>
+<h2 id="二、在-pyproject-toml-中配置"><a href="#二、在-pyproject-toml-中配置" class="headerlink" title="二、在 pyproject.toml 中配置"></a>二、在 <code>pyproject.toml</code> 中配置</h2><p>在 <strong><code>pyproject.toml</code></strong> 中增加 <strong><code>[tool.pyright]</code></strong>（<strong>BasedPyright</strong> 与 <strong>Pyright</strong> &#x2F; <strong>Pylance</strong> 均会读取，勿再单独维护 <strong><code>pyrightconfig.json</code></strong>，避免两处不一致）：</p>
 <figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[tool.pyright]</span></span><br><span class="line"><span class="attr">include</span> = [<span class="string">&quot;src&quot;</span>]</span><br><span class="line"><span class="attr">exclude</span> = [<span class="string">&quot;.venv&quot;</span>, <span class="string">&quot;**/__pycache__&quot;</span>]</span><br><span class="line"><span class="attr">pythonVersion</span> = <span class="string">&quot;3.14&quot;</span></span><br><span class="line"><span class="attr">typeCheckingMode</span> = <span class="string">&quot;standard&quot;</span></span><br></pre></td></tr></table></figure>
 
 <ul>
@@ -322,26 +323,26 @@
 </ul>
 <p>更多键名与语义见：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://microsoft.github.io/pyright/#/configuration">Pyright Configuration</a>。</p>
 <hr>
-<h1 id="三、运行检查"><a href="#三、运行检查" class="headerlink" title="三、运行检查"></a>三、运行检查</h1><h2 id="1-全项目扫描"><a href="#1-全项目扫描" class="headerlink" title="1. 全项目扫描"></a>1. 全项目扫描</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uv run basedpyright</span><br></pre></td></tr></table></figure>
+<h2 id="三、运行检查"><a href="#三、运行检查" class="headerlink" title="三、运行检查"></a>三、运行检查</h2><h3 id="1-全项目扫描"><a href="#1-全项目扫描" class="headerlink" title="1. 全项目扫描"></a>1. 全项目扫描</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uv run basedpyright</span><br></pre></td></tr></table></figure>
 
 <p>未指定路径时，会按 <strong><code>pyproject.toml</code></strong> 里 <strong><code>[tool.pyright]</code></strong> 的 <strong><code>include</code></strong> 等项解析工程。</p>
-<h2 id="2-指定目录或文件"><a href="#2-指定目录或文件" class="headerlink" title="2. 指定目录或文件"></a>2. 指定目录或文件</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uv run basedpyright src/hello_uv</span><br></pre></td></tr></table></figure>
+<h3 id="2-指定目录或文件"><a href="#2-指定目录或文件" class="headerlink" title="2. 指定目录或文件"></a>2. 指定目录或文件</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uv run basedpyright src/hello_uv</span><br></pre></td></tr></table></figure>
 
 <hr>
-<h1 id="四、为类型检查补全注解（简要）"><a href="#四、为类型检查补全注解（简要）" class="headerlink" title="四、为类型检查补全注解（简要）"></a>四、为类型检查补全注解（简要）</h1><p>Pyright 依赖 <strong><code>py.typed</code></strong> 标记与类型存根：</p>
+<h2 id="四、为类型检查补全注解（简要）"><a href="#四、为类型检查补全注解（简要）" class="headerlink" title="四、为类型检查补全注解（简要）"></a>四、为类型检查补全注解（简要）</h2><p>Pyright 依赖 <strong><code>py.typed</code></strong> 标记与类型存根：</p>
 <ul>
 <li>若你发布<strong>库</strong>，在包根放置空文件 <strong><code>py.typed</code></strong>（PEP 561），并对公共 API 逐步补类型。  </li>
 <li>应用项目可在入口与关键模块为函数参数、返回值写上 <strong><code>str</code></strong>、<strong><code>list[str]</code></strong> 等，复杂结构用 <strong><code>TypedDict</code></strong>、<strong><code>Protocol</code></strong>。</li>
 </ul>
 <p>详细规则见官方文档：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://microsoft.github.io/pyright/#/configuration">Pyright Configuration</a>。</p>
 <hr>
-<h1 id="五、与编辑器、Ruff-的关系"><a href="#五、与编辑器、Ruff-的关系" class="headerlink" title="五、与编辑器、Ruff 的关系"></a>五、与编辑器、Ruff 的关系</h1><h2 id="1-VS-Code-Cursor"><a href="#1-VS-Code-Cursor" class="headerlink" title="1. VS Code &#x2F; Cursor"></a>1. VS Code &#x2F; Cursor</h2><p>安装 <strong>Pylance</strong>（或内置语言服务）后，会在编辑时读取 <strong><code>pyproject.toml</code></strong> 中的 <strong><code>[tool.pyright]</code></strong>；终端里 <strong><code>uv run basedpyright</code></strong> 与编辑器诊断应共用同一 <strong><code>pyproject.toml</code></strong>，避免两套配置。</p>
-<h2 id="2-与-Ruff-分工"><a href="#2-与-Ruff-分工" class="headerlink" title="2. 与 Ruff 分工"></a>2. 与 Ruff 分工</h2><ul>
-<li><strong>Ruff</strong>：风格、部分 lint、格式化（见《UV项目开发添加Ruff》）。  </li>
+<h2 id="五、与编辑器、Ruff-的关系"><a href="#五、与编辑器、Ruff-的关系" class="headerlink" title="五、与编辑器、Ruff 的关系"></a>五、与编辑器、Ruff 的关系</h2><h3 id="1-VS-Code-Cursor"><a href="#1-VS-Code-Cursor" class="headerlink" title="1. VS Code &#x2F; Cursor"></a>1. VS Code &#x2F; Cursor</h3><p>安装 <strong>Pylance</strong>（或内置语言服务）后，会在编辑时读取 <strong><code>pyproject.toml</code></strong> 中的 <strong><code>[tool.pyright]</code></strong>；终端里 <strong><code>uv run basedpyright</code></strong> 与编辑器诊断应共用同一 <strong><code>pyproject.toml</code></strong>，避免两套配置。</p>
+<h3 id="2-与-Ruff-分工"><a href="#2-与-Ruff-分工" class="headerlink" title="2. 与 Ruff 分工"></a>2. 与 Ruff 分工</h3><ul>
+<li><strong>Ruff</strong>：风格、部分 lint、格式化（见《第三章：UV 项目开发添加 Ruff：代码检查与格式化》）。  </li>
 <li><strong>Pyright &#x2F; BasedPyright</strong>：类型与导入解析等静态语义。二者可同时启用；避免用 Ruff 的 <strong><code>ANN</code></strong> 等与 Pyright 重复的规则集，减少噪音。</li>
 </ul>
 <hr>
-<h1 id="六、常用命令速查"><a href="#六、常用命令速查" class="headerlink" title="六、常用命令速查"></a>六、常用命令速查</h1><table>
+<h2 id="六、常用命令速查"><a href="#六、常用命令速查" class="headerlink" title="六、常用命令速查"></a>六、常用命令速查</h2><table>
 <thead>
 <tr>
 <th>目的</th>
@@ -366,6 +367,36 @@
 </tr>
 </tbody></table>
 <p>更多说明：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://docs.basedpyright.com/">BasedPyright</a> · <a target="_blank" rel="noopener" href="https://github.com/microsoft/pyright">Pyright</a>。</p>
+<h2 id="本章小结"><a href="#本章小结" class="headerlink" title="本章小结"></a>本章小结</h2><table>
+<thead>
+<tr>
+<th>要点</th>
+<th>结论</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>工具选型</td>
+<td><strong>BasedPyright</strong>（PyPI 安装、配置兼容）或微软原版 <strong>Pyright</strong>（Node），二选一</td>
+</tr>
+<tr>
+<td>核心价值</td>
+<td><strong>运行前</strong>发现类型错误、None 误用等问题，配合类型注解提升代码质量</td>
+</tr>
+<tr>
+<td>核心配置</td>
+<td><strong><code>[tool.pyright]</code></strong> 写在 <code>pyproject.toml</code>：<code>include</code>、<code>pythonVersion</code>、<code>typeCheckingMode</code></td>
+</tr>
+<tr>
+<td>注解配套</td>
+<td>库发布需 <strong><code>py.typed</code></strong>（PEP 561）；应用项目逐步补参数&#x2F;返回值注解</td>
+</tr>
+<tr>
+<td>工具分工</td>
+<td>Ruff 管风格格式、Pyright 管类型语义，避免 <code>ANN</code> 等重复规则</td>
+</tr>
+</tbody></table>
+<hr>
+<p>下一步：为项目接入 Git 提交钩子 → <a href="/2026/05/01/Python/UV%E9%A1%B9%E7%9B%AE%E5%BC%80%E5%8F%91%E6%B7%BB%E5%8A%A0pre-commit/" title="第五章：UV 项目开发添加 pre-commit：Git 提交钩子">第五章：UV 项目开发添加 pre-commit：Git 提交钩子</a></p>
 
     </div>
 
@@ -385,13 +416,13 @@
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2026/05/01/Python/UV%E9%A1%B9%E7%9B%AE%E5%BC%80%E5%8F%91%E6%B7%BB%E5%8A%A0Ruff/" rel="prev" title="UV项目开发添加Ruff">
-                  <i class="fa fa-angle-left"></i> UV项目开发添加Ruff
+                <a href="/2026/05/01/Python/UV%E9%A1%B9%E7%9B%AE%E5%BC%80%E5%8F%91%E6%B7%BB%E5%8A%A0Ruff/" rel="prev" title="第三章：UV 项目开发添加 Ruff：代码检查与格式化">
+                  <i class="fa fa-angle-left"></i> 第三章：UV 项目开发添加 Ruff：代码检查与格式化
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2026/05/01/Python/UV%E9%A1%B9%E7%9B%AE%E5%BC%80%E5%8F%91%E6%B7%BB%E5%8A%A0pre-commit/" rel="next" title="UV项目开发添加pre-commit">
-                  UV项目开发添加pre-commit <i class="fa fa-angle-right"></i>
+                <a href="/2026/05/01/Python/UV%E9%A1%B9%E7%9B%AE%E5%BC%80%E5%8F%91%E6%B7%BB%E5%8A%A0pre-commit/" rel="next" title="第五章：UV 项目开发添加 pre-commit：Git 提交钩子">
+                  第五章：UV 项目开发添加 pre-commit：Git 提交钩子 <i class="fa fa-angle-right"></i>
                 </a>
             </div>
           </div>
@@ -423,13 +454,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">195k</span>
+    <span title="站点总字数">253k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">10:49</span>
+    <span title="站点阅读时长">14:03</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

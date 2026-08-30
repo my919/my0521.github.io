@@ -18,17 +18,17 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
 
-<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
+<script class="next-config" data-name="main" type="application/json">{"hostname":"my919.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
 
-    <meta name="description" content="Redis Set 是无序字符串集合，成员唯一（再次 SADD 同一成员不会重复插入）。适合标签、去重集合、交并差集合运算等。姊妹文：ZSet数据类型、应用场景及案例.md（需分值排序时用 ZSet）；部署 Redis-Docker.md。  一、Set 是什么 TYPE key 为 set。   不保证顺序（遍历顺序实现依赖，勿当有序结构用）。   成员即字符串；集合间可做 SINTER &amp;#x">
+    <meta name="description" content="第六章：Redis Set 数据类型：概念、命令与案例概念基础：Set 是什么Set 是无序、不重复的字符串成员集合，直接对应数学里的「集合」：  TYPE key 为 set。   不保证顺序（遍历顺序实现依赖，勿当有序结构用）。   成员即字符串；同一成员重复 SADD 只保留一份，判重是 O(1)——这是它与 List 最本质的差异。   集合间可做 SINTER &#x2F; SUNION">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Redis Set 数据类型、应用场景及案例">
-<meta property="og:url" content="http://example.com/2026/05/03/Redis/Set%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E3%80%81%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%E5%8F%8A%E6%A1%88%E4%BE%8B/index.html">
+<meta property="og:title" content="第六章：Redis Set 数据类型：概念、命令与案例">
+<meta property="og:url" content="https://my919.github.io/2026/05/03/Redis/Set%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E3%80%81%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%E5%8F%8A%E6%A1%88%E4%BE%8B/index.html">
 <meta property="og:site_name" content="my">
-<meta property="og:description" content="Redis Set 是无序字符串集合，成员唯一（再次 SADD 同一成员不会重复插入）。适合标签、去重集合、交并差集合运算等。姊妹文：ZSet数据类型、应用场景及案例.md（需分值排序时用 ZSet）；部署 Redis-Docker.md。  一、Set 是什么 TYPE key 为 set。   不保证顺序（遍历顺序实现依赖，勿当有序结构用）。   成员即字符串；集合间可做 SINTER &amp;#x">
+<meta property="og:description" content="第六章：Redis Set 数据类型：概念、命令与案例概念基础：Set 是什么Set 是无序、不重复的字符串成员集合，直接对应数学里的「集合」：  TYPE key 为 set。   不保证顺序（遍历顺序实现依赖，勿当有序结构用）。   成员即字符串；同一成员重复 SADD 只保留一份，判重是 O(1)——这是它与 List 最本质的差异。   集合间可做 SINTER &#x2F; SUNION">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-05-03T09:30:25.000Z">
-<meta property="article:modified_time" content="2026-05-03T09:44:10.209Z">
+<meta property="article:modified_time" content="2026-08-30T08:35:03.392Z">
 <meta property="article:author" content="miracle">
 <meta property="article:tag" content="Redis">
 <meta property="article:tag" content="Set">
@@ -36,13 +36,13 @@
 <meta name="twitter:card" content="summary">
 
 
-<link rel="canonical" href="http://example.com/2026/05/03/Redis/Set%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E3%80%81%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%E5%8F%8A%E6%A1%88%E4%BE%8B/">
+<link rel="canonical" href="https://my919.github.io/2026/05/03/Redis/Set%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E3%80%81%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%E5%8F%8A%E6%A1%88%E4%BE%8B/">
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2026/05/03/Redis/Set%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E3%80%81%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%E5%8F%8A%E6%A1%88%E4%BE%8B/","path":"2026/05/03/Redis/Set数据类型、应用场景及案例/","title":"Redis Set 数据类型、应用场景及案例"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://my919.github.io/2026/05/03/Redis/Set%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E3%80%81%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%E5%8F%8A%E6%A1%88%E4%BE%8B/","path":"2026/05/03/Redis/Set数据类型、应用场景及案例/","title":"第六章：Redis Set 数据类型：概念、命令与案例"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>Redis Set 数据类型、应用场景及案例 | my</title>
+<title>第六章：Redis Set 数据类型：概念、命令与案例 | my</title>
   
 
 
@@ -70,12 +70,6 @@
   
 
 
-
-
-  
-
-  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
-<script src="/js/third-party/math/mathjax.js" defer></script>
 
 
 
@@ -169,7 +163,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81Set-%E6%98%AF%E4%BB%80%E4%B9%88"><span class="nav-number">1.</span> <span class="nav-text">一、Set 是什么</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%EF%BC%88%E5%BF%85%E4%BC%9A%E5%AD%90%E9%9B%86%EF%BC%89"><span class="nav-number">2.</span> <span class="nav-text">二、常用命令（必会子集）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E5%85%B8%E5%9E%8B%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-number">3.</span> <span class="nav-text">三、典型应用场景</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E7%BB%BC%E5%90%88%E6%A1%88%E4%BE%8B%EF%BC%88redis-cli%EF%BC%89"><span class="nav-number">4.</span> <span class="nav-text">四、综合案例（redis-cli）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="nav-number">5.</span> <span class="nav-text">五、注意事项</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E5%BB%B6%E4%BC%B8%E9%98%85%E8%AF%BB"><span class="nav-number">6.</span> <span class="nav-text">六、延伸阅读</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E5%85%AD%E7%AB%A0%EF%BC%9ARedis-Set-%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%EF%BC%9A%E6%A6%82%E5%BF%B5%E3%80%81%E5%91%BD%E4%BB%A4%E4%B8%8E%E6%A1%88%E4%BE%8B"><span class="nav-number">1.</span> <span class="nav-text">第六章：Redis Set 数据类型：概念、命令与案例</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80%EF%BC%9ASet-%E6%98%AF%E4%BB%80%E4%B9%88"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础：Set 是什么</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A0%B8%E5%BF%83%E5%8E%9F%E7%90%86%EF%BC%9A%E7%BC%96%E7%A0%81%E4%B8%8E%E5%A4%8D%E6%9D%82%E5%BA%A6"><span class="nav-number">1.2.</span> <span class="nav-text">核心原理：编码与复杂度</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%EF%BC%88%E5%BF%85%E4%BC%9A%E5%AD%90%E9%9B%86%EF%BC%89"><span class="nav-number">1.3.</span> <span class="nav-text">常用命令（必会子集）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B8%E5%9E%8B%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-number">1.4.</span> <span class="nav-text">典型应用场景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%BC%E5%90%88%E6%A1%88%E4%BE%8B%EF%BC%88redis-cli%EF%BC%89"><span class="nav-number">1.5.</span> <span class="nav-text">综合案例（redis-cli）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="nav-number">1.6.</span> <span class="nav-text">注意事项</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.7.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -182,18 +176,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">192</span>
+          <span class="site-state-item-count">194</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">39</span>
+        <span class="site-state-item-count">33</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">108</span>
+        <span class="site-state-item-count">114</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -231,7 +225,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/03/Redis/Set%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E3%80%81%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%E5%8F%8A%E6%A1%88%E4%BE%8B/">
+    <link itemprop="mainEntityOfPage" href="https://my919.github.io/2026/05/03/Redis/Set%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E3%80%81%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%E5%8F%8A%E6%A1%88%E4%BE%8B/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -244,12 +238,12 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="Redis Set 数据类型、应用场景及案例 | my">
+      <meta itemprop="name" content="第六章：Redis Set 数据类型：概念、命令与案例 | my">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          Redis Set 数据类型、应用场景及案例
+          第六章：Redis Set 数据类型：概念、命令与案例
         </h1>
 
         <div class="post-meta-container">
@@ -259,9 +253,15 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
-      
 
-      <time title="创建时间：2026-05-03 17:30:25 / 修改时间：17:44:10" itemprop="dateCreated datePublished" datetime="2026-05-03T17:30:25+08:00">2026-05-03</time>
+      <time title="创建时间：2026-05-03 17:30:25" itemprop="dateCreated datePublished" datetime="2026-05-03T17:30:25+08:00">2026-05-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-08-30 16:35:03" itemprop="dateModified" datetime="2026-08-30T16:35:03+08:00">2026-08-30</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -280,14 +280,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>396</span>
+      <span>741</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>1 分钟</span>
+      <span>2 分钟</span>
     </span>
 </div>
 
@@ -297,15 +297,23 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><p><strong>Redis Set</strong> 是<strong>无序</strong>字符串<strong>集合</strong>，成员<strong>唯一</strong>（再次 <strong><code>SADD</code></strong> 同一成员不会重复插入）。适合<strong>标签、去重集合、交并差集合运算</strong>等。姊妹文：<strong><code>ZSet数据类型、应用场景及案例.md</code></strong>（需<strong>分值排序</strong>时用 <strong>ZSet</strong>）；部署 <strong><code>Redis-Docker.md</code></strong>。</p>
-<hr>
-<h1 id="一、Set-是什么"><a href="#一、Set-是什么" class="headerlink" title="一、Set 是什么"></a>一、Set 是什么</h1><ol>
+    <div class="post-body" itemprop="articleBody"><h1 id="第六章：Redis-Set-数据类型：概念、命令与案例"><a href="#第六章：Redis-Set-数据类型：概念、命令与案例" class="headerlink" title="第六章：Redis Set 数据类型：概念、命令与案例"></a>第六章：Redis Set 数据类型：概念、命令与案例</h1><h2 id="概念基础：Set-是什么"><a href="#概念基础：Set-是什么" class="headerlink" title="概念基础：Set 是什么"></a>概念基础：Set 是什么</h2><p><strong>Set</strong> 是<strong>无序、不重复</strong>的字符串成员集合，直接对应数学里的「集合」：</p>
+<ol>
 <li><strong><code>TYPE key</code></strong> 为 <strong><code>set</code></strong>。  </li>
 <li><strong>不保证顺序</strong>（遍历顺序实现依赖，勿当有序结构用）。  </li>
-<li><strong>成员即字符串</strong>；集合间可做 <strong><code>SINTER</code> &#x2F; <code>SUNION</code> &#x2F; <code>SDIFF</code></strong>。</li>
+<li><strong>成员即字符串</strong>；同一成员重复 <strong><code>SADD</code></strong> 只保留一份，<strong>判重是 O(1)</strong>——这是它与 List 最本质的差异。  </li>
+<li>集合间可做 <strong><code>SINTER</code> &#x2F; <code>SUNION</code> &#x2F; <code>SDIFF</code></strong>（交 &#x2F; 并 &#x2F; 差），把「共同关注」「可能认识的人」这类关系计算下推到 Redis 里完成。</li>
 </ol>
-<hr>
-<h1 id="二、常用命令（必会子集）"><a href="#二、常用命令（必会子集）" class="headerlink" title="二、常用命令（必会子集）"></a>二、常用命令（必会子集）</h1><table>
+<h2 id="核心原理：编码与复杂度"><a href="#核心原理：编码与复杂度" class="headerlink" title="核心原理：编码与复杂度"></a>核心原理：编码与复杂度</h2><ol>
+<li><strong>两种编码</strong>（<strong><code>OBJECT ENCODING key</code></strong> 观察）：<ul>
+<li><strong><code>intset</code></strong>：成员<strong>全部是整数</strong>且个数不超过 <strong><code>set-max-intset-entries</code></strong>（默认 <strong>512</strong>）时使用，有序整数数组 + <strong>二分查找</strong>，最省内存。</li>
+<li><strong><code>hashtable</code></strong>：一般情况使用，<strong>member 作字典的 key、value 恒为 NULL</strong>——「唯一性」由哈希表天然保证，<strong>SADD &#x2F; SISMEMBER &#x2F; SREM 均 O(1)</strong>。</li>
+</ul>
+</li>
+<li><strong>集合运算的代价</strong>：<strong><code>SINTER</code> &#x2F; <code>SUNION</code> &#x2F; <code>SDIFF</code> 最坏 O(N·M)</strong>（两个集合都大时开销显著），且是<strong>同步计算</strong>——生产上建议用 <strong><code>SINTERSTORE</code></strong> 等 STORE 系列写入新 key，再异步消费结果，避免大运算阻塞在交互命令里。</li>
+<li><strong>随机语义</strong>：<strong><code>SPOP</code></strong> 是<strong>弹出</strong>（取出并从集合删除，不放回）；<strong><code>SRANDMEMBER</code></strong> 只读不删（count 为正给不重复成员、为负允许重复）——抽奖「不放回」用 SPOP、「仅看看」用 SRANDMEMBER。</li>
+</ol>
+<h2 id="常用命令（必会子集）"><a href="#常用命令（必会子集）" class="headerlink" title="常用命令（必会子集）"></a>常用命令（必会子集）</h2><table>
 <thead>
 <tr>
 <th>命令</th>
@@ -333,23 +341,49 @@
 <td>交 &#x2F; 并 &#x2F; 差（可带 <strong><code>STORE</code></strong> 写到新 <strong>key</strong>）</td>
 </tr>
 </tbody></table>
-<hr>
-<h1 id="三、典型应用场景"><a href="#三、典型应用场景" class="headerlink" title="三、典型应用场景"></a>三、典型应用场景</h1><ol>
+<h2 id="典型应用场景"><a href="#典型应用场景" class="headerlink" title="典型应用场景"></a>典型应用场景</h2><ol>
 <li><strong>标签</strong>：<strong><code>SADD article:7:tags Java Redis</code></strong>。  </li>
 <li><strong>抽奖池 &#x2F; 去重 ID 池</strong>：<strong><code>SPOP</code></strong> 不放回抽样（需理解<strong>并发下</strong>多个客户端抢 <strong>SPOP</strong> 的语义）。  </li>
 <li><strong>共同关注</strong>：<strong><code>SINTER user:1:following user:2:following</code></strong>。</li>
 </ol>
-<hr>
-<h1 id="四、综合案例（redis-cli）"><a href="#四、综合案例（redis-cli）" class="headerlink" title="四、综合案例（redis-cli）"></a>四、综合案例（<code>redis-cli</code>）</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">redis-cli SADD skills:user:1 Java Go Redis</span><br><span class="line">redis-cli SISMEMBER skills:user:1 Java</span><br><span class="line">redis-cli SCARD skills:user:1</span><br><span class="line"></span><br><span class="line">redis-cli SADD <span class="built_in">set</span>:a 1 2 3</span><br><span class="line">redis-cli SADD <span class="built_in">set</span>:b 2 3 4</span><br><span class="line">redis-cli SINTER <span class="built_in">set</span>:a <span class="built_in">set</span>:b</span><br></pre></td></tr></table></figure>
+<h2 id="综合案例（redis-cli）"><a href="#综合案例（redis-cli）" class="headerlink" title="综合案例（redis-cli）"></a>综合案例（redis-cli）</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">redis-cli SADD skills:user:1 Java Go Redis</span><br><span class="line">redis-cli SISMEMBER skills:user:1 Java</span><br><span class="line">redis-cli SCARD skills:user:1</span><br><span class="line"></span><br><span class="line">redis-cli SADD <span class="built_in">set</span>:a 1 2 3</span><br><span class="line">redis-cli SADD <span class="built_in">set</span>:b 2 3 4</span><br><span class="line">redis-cli SINTER <span class="built_in">set</span>:a <span class="built_in">set</span>:b</span><br></pre></td></tr></table></figure>
 
-<hr>
-<h1 id="五、注意事项"><a href="#五、注意事项" class="headerlink" title="五、注意事项"></a>五、注意事项</h1><ol>
+<h2 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h2><ol>
 <li><strong>大 Set</strong>：<strong><code>SMEMBERS</code></strong> 一次性拉全量可能阻塞与占带宽，用 <strong><code>SSCAN</code></strong> 迭代。  </li>
 <li><strong>与 List</strong>：<strong>Set</strong> 无序且唯一；<strong>List</strong> 有序可重复。  </li>
 <li><strong>需要按分数排序</strong>（排行榜）→ 用 <strong>ZSet</strong>，不要用 <strong>Set</strong> 硬撑。</li>
 </ol>
-<hr>
-<h1 id="六、延伸阅读"><a href="#六、延伸阅读" class="headerlink" title="六、延伸阅读"></a>六、延伸阅读</h1><table>
+<h2 id="本章小结"><a href="#本章小结" class="headerlink" title="本章小结"></a>本章小结</h2><table>
+<thead>
+<tr>
+<th>要点</th>
+<th>结论</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>本质</td>
+<td><strong>无序、唯一</strong>，O(1) 判重</td>
+</tr>
+<tr>
+<td>编码</td>
+<td><strong>intset（全整数小集合）→ hashtable</strong></td>
+</tr>
+<tr>
+<td>集合运算</td>
+<td><strong>SINTER&#x2F;SUNION&#x2F;SDIFF</strong>，大集合用 <strong>STORE</strong> 系列异步化</td>
+</tr>
+<tr>
+<td>高频命令</td>
+<td><strong>SADD &#x2F; SISMEMBER &#x2F; SCARD &#x2F; SINTER &#x2F; SPOP</strong></td>
+</tr>
+<tr>
+<td>场景</td>
+<td>标签、去重、抽奖、共同关注</td>
+</tr>
+</tbody></table>
+<p>需要「按分值排序取 Top N」时，升级到 <a href="/2026/05/03/Redis/ZSet%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E3%80%81%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%E5%8F%8A%E6%A1%88%E4%BE%8B/" title="第七章：Redis ZSet 数据类型：概念、命令与案例">第七章：Redis ZSet 数据类型：概念、命令与案例</a>。</p>
+<p><strong>延伸阅读</strong>：</p>
+<table>
 <thead>
 <tr>
 <th>文档</th>
@@ -383,13 +417,13 @@
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2026/05/03/Redis/List%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E3%80%81%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%E5%8F%8A%E6%A1%88%E4%BE%8B/" rel="prev" title="Redis List 数据类型、应用场景及案例">
-                  <i class="fa fa-angle-left"></i> Redis List 数据类型、应用场景及案例
+                <a href="/2026/05/03/Redis/List%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E3%80%81%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%E5%8F%8A%E6%A1%88%E4%BE%8B/" rel="prev" title="第五章：Redis List 数据类型：概念、命令与案例">
+                  <i class="fa fa-angle-left"></i> 第五章：Redis List 数据类型：概念、命令与案例
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2026/05/03/Redis/Hash%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E3%80%81%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%E5%8F%8A%E6%A1%88%E4%BE%8B/" rel="next" title="Redis Hash 数据类型、应用场景及案例">
-                  Redis Hash 数据类型、应用场景及案例 <i class="fa fa-angle-right"></i>
+                <a href="/2026/05/03/Redis/Hash%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E3%80%81%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%E5%8F%8A%E6%A1%88%E4%BE%8B/" rel="next" title="第四章：Redis Hash 数据类型：概念、命令与案例">
+                  第四章：Redis Hash 数据类型：概念、命令与案例 <i class="fa fa-angle-right"></i>
                 </a>
             </div>
           </div>
@@ -421,13 +455,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">195k</span>
+    <span title="站点总字数">253k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">10:49</span>
+    <span title="站点阅读时长">14:03</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

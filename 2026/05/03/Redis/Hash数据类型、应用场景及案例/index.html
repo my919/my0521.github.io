@@ -18,17 +18,17 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
 
-<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
+<script class="next-config" data-name="main" type="application/json">{"hostname":"my919.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
 
-    <meta name="description" content="Redis Hash 是一个 field → value 的映射表，适合表示「一个对象的多属性」：可对单个字段读写，避免整颗 String JSON 反复序列化&#x2F;反序列化。下文按「命令 → 场景 → redis-cli 案例 → 注意点」组织,部署见 Redis-Docker.md。  一、Hash 是什么 一个 key 下挂多对 field &#x2F; value，field 与 v">
+    <meta name="description" content="第四章：Redis Hash 数据类型：概念、命令与案例概念基础：Hash 是什么Hash 是「key → 若干 field&#x2F;value 对」的映射，类似一张微型数据行或一个对象文档：  一个 key 下挂多对 field &#x2F; value，field 与 value 均为字符串（二进制安全）。   TYPE key 显示 hash。   与 String 存 JSON 的区别：">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Redis Hash 数据类型、应用场景及案例">
-<meta property="og:url" content="http://example.com/2026/05/03/Redis/Hash%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E3%80%81%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%E5%8F%8A%E6%A1%88%E4%BE%8B/index.html">
+<meta property="og:title" content="第四章：Redis Hash 数据类型：概念、命令与案例">
+<meta property="og:url" content="https://my919.github.io/2026/05/03/Redis/Hash%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E3%80%81%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%E5%8F%8A%E6%A1%88%E4%BE%8B/index.html">
 <meta property="og:site_name" content="my">
-<meta property="og:description" content="Redis Hash 是一个 field → value 的映射表，适合表示「一个对象的多属性」：可对单个字段读写，避免整颗 String JSON 反复序列化&#x2F;反序列化。下文按「命令 → 场景 → redis-cli 案例 → 注意点」组织,部署见 Redis-Docker.md。  一、Hash 是什么 一个 key 下挂多对 field &#x2F; value，field 与 v">
+<meta property="og:description" content="第四章：Redis Hash 数据类型：概念、命令与案例概念基础：Hash 是什么Hash 是「key → 若干 field&#x2F;value 对」的映射，类似一张微型数据行或一个对象文档：  一个 key 下挂多对 field &#x2F; value，field 与 value 均为字符串（二进制安全）。   TYPE key 显示 hash。   与 String 存 JSON 的区别：">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-05-03T09:30:39.000Z">
-<meta property="article:modified_time" content="2026-05-03T09:43:23.810Z">
+<meta property="article:modified_time" content="2026-08-30T08:35:03.391Z">
 <meta property="article:author" content="miracle">
 <meta property="article:tag" content="Hash">
 <meta property="article:tag" content="Redis">
@@ -36,13 +36,13 @@
 <meta name="twitter:card" content="summary">
 
 
-<link rel="canonical" href="http://example.com/2026/05/03/Redis/Hash%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E3%80%81%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%E5%8F%8A%E6%A1%88%E4%BE%8B/">
+<link rel="canonical" href="https://my919.github.io/2026/05/03/Redis/Hash%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E3%80%81%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%E5%8F%8A%E6%A1%88%E4%BE%8B/">
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2026/05/03/Redis/Hash%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E3%80%81%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%E5%8F%8A%E6%A1%88%E4%BE%8B/","path":"2026/05/03/Redis/Hash数据类型、应用场景及案例/","title":"Redis Hash 数据类型、应用场景及案例"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://my919.github.io/2026/05/03/Redis/Hash%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E3%80%81%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%E5%8F%8A%E6%A1%88%E4%BE%8B/","path":"2026/05/03/Redis/Hash数据类型、应用场景及案例/","title":"第四章：Redis Hash 数据类型：概念、命令与案例"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>Redis Hash 数据类型、应用场景及案例 | my</title>
+<title>第四章：Redis Hash 数据类型：概念、命令与案例 | my</title>
   
 
 
@@ -70,12 +70,6 @@
   
 
 
-
-
-  
-
-  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
-<script src="/js/third-party/math/mathjax.js" defer></script>
 
 
 
@@ -169,7 +163,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81Hash-%E6%98%AF%E4%BB%80%E4%B9%88"><span class="nav-number">1.</span> <span class="nav-text">一、Hash 是什么</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%EF%BC%88%E5%BF%85%E4%BC%9A%E5%AD%90%E9%9B%86%EF%BC%89"><span class="nav-number">2.</span> <span class="nav-text">二、常用命令（必会子集）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E5%85%B8%E5%9E%8B%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-number">3.</span> <span class="nav-text">三、典型应用场景</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E7%BB%BC%E5%90%88%E6%A1%88%E4%BE%8B%EF%BC%88redis-cli%EF%BC%89"><span class="nav-number">4.</span> <span class="nav-text">四、综合案例（redis-cli）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="nav-number">5.</span> <span class="nav-text">五、注意事项</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E5%BB%B6%E4%BC%B8%E9%98%85%E8%AF%BB"><span class="nav-number">6.</span> <span class="nav-text">六、延伸阅读</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%9ARedis-Hash-%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%EF%BC%9A%E6%A6%82%E5%BF%B5%E3%80%81%E5%91%BD%E4%BB%A4%E4%B8%8E%E6%A1%88%E4%BE%8B"><span class="nav-number">1.</span> <span class="nav-text">第四章：Redis Hash 数据类型：概念、命令与案例</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80%EF%BC%9AHash-%E6%98%AF%E4%BB%80%E4%B9%88"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础：Hash 是什么</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A0%B8%E5%BF%83%E5%8E%9F%E7%90%86%EF%BC%9A%E7%BC%96%E7%A0%81%E4%B8%8E%E5%BA%95%E5%B1%82%E7%BB%93%E6%9E%84"><span class="nav-number">1.2.</span> <span class="nav-text">核心原理：编码与底层结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%EF%BC%88%E5%BF%85%E4%BC%9A%E5%AD%90%E9%9B%86%EF%BC%89"><span class="nav-number">1.3.</span> <span class="nav-text">常用命令（必会子集）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B8%E5%9E%8B%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-number">1.4.</span> <span class="nav-text">典型应用场景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%BC%E5%90%88%E6%A1%88%E4%BE%8B%EF%BC%88redis-cli%EF%BC%89"><span class="nav-number">1.5.</span> <span class="nav-text">综合案例（redis-cli）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="nav-number">1.6.</span> <span class="nav-text">注意事项</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.7.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -182,18 +176,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">192</span>
+          <span class="site-state-item-count">194</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">39</span>
+        <span class="site-state-item-count">33</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">108</span>
+        <span class="site-state-item-count">114</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -231,7 +225,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/03/Redis/Hash%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E3%80%81%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%E5%8F%8A%E6%A1%88%E4%BE%8B/">
+    <link itemprop="mainEntityOfPage" href="https://my919.github.io/2026/05/03/Redis/Hash%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E3%80%81%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%E5%8F%8A%E6%A1%88%E4%BE%8B/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -244,12 +238,12 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="Redis Hash 数据类型、应用场景及案例 | my">
+      <meta itemprop="name" content="第四章：Redis Hash 数据类型：概念、命令与案例 | my">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          Redis Hash 数据类型、应用场景及案例
+          第四章：Redis Hash 数据类型：概念、命令与案例
         </h1>
 
         <div class="post-meta-container">
@@ -259,9 +253,15 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
-      
 
-      <time title="创建时间：2026-05-03 17:30:39 / 修改时间：17:43:23" itemprop="dateCreated datePublished" datetime="2026-05-03T17:30:39+08:00">2026-05-03</time>
+      <time title="创建时间：2026-05-03 17:30:39" itemprop="dateCreated datePublished" datetime="2026-05-03T17:30:39+08:00">2026-05-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-08-30 16:35:03" itemprop="dateModified" datetime="2026-08-30T16:35:03+08:00">2026-08-30</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -280,14 +280,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>470</span>
+      <span>863</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>2 分钟</span>
+      <span>3 分钟</span>
     </span>
 </div>
 
@@ -297,15 +297,24 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><p><strong>Redis Hash</strong> 是一个 <strong>field → value</strong> 的映射表，适合表示「一个对象的多属性」：可对<strong>单个字段</strong>读写，避免整颗 <strong>String JSON</strong> 反复序列化&#x2F;反序列化。下文按「命令 → 场景 → <strong><code>redis-cli</code></strong> 案例 → 注意点」组织,部署见 <strong><code>Redis-Docker.md</code></strong>。</p>
-<hr>
-<h1 id="一、Hash-是什么"><a href="#一、Hash-是什么" class="headerlink" title="一、Hash 是什么"></a>一、Hash 是什么</h1><ol>
+    <div class="post-body" itemprop="articleBody"><h1 id="第四章：Redis-Hash-数据类型：概念、命令与案例"><a href="#第四章：Redis-Hash-数据类型：概念、命令与案例" class="headerlink" title="第四章：Redis Hash 数据类型：概念、命令与案例"></a>第四章：Redis Hash 数据类型：概念、命令与案例</h1><h2 id="概念基础：Hash-是什么"><a href="#概念基础：Hash-是什么" class="headerlink" title="概念基础：Hash 是什么"></a>概念基础：Hash 是什么</h2><p><strong>Hash</strong> 是「<strong>key → 若干 field&#x2F;value 对</strong>」的映射，类似一张<strong>微型数据行</strong>或一个<strong>对象文档</strong>：</p>
+<ol>
 <li>一个 <strong>key</strong> 下挂多对 <strong>field &#x2F; value</strong>，<strong>field</strong> 与 <strong>value</strong> 均为字符串（二进制安全）。  </li>
 <li><strong><code>TYPE key</code></strong> 显示 <strong><code>hash</code></strong>。  </li>
+<li><strong>与 String 存 JSON 的区别</strong>：String 改一个字段要「读出 → 反序列化 → 改 → 序列化 → 写回」四步，Hash 只需 <strong><code>HSET</code> 一个 field</strong>——这就是「<strong>局部更新</strong>」的价值。  </li>
 <li>适合「用户资料、购物车行、配置项分组」等<strong>属性较多且常单独更新</strong>的场景。</li>
 </ol>
-<hr>
-<h1 id="二、常用命令（必会子集）"><a href="#二、常用命令（必会子集）" class="headerlink" title="二、常用命令（必会子集）"></a>二、常用命令（必会子集）</h1><table>
+<h2 id="核心原理：编码与底层结构"><a href="#核心原理：编码与底层结构" class="headerlink" title="核心原理：编码与底层结构"></a>核心原理：编码与底层结构</h2><ol>
+<li><strong>两种编码</strong>（<strong><code>OBJECT ENCODING key</code></strong> 可观察）：<ul>
+<li><strong><code>listpack</code></strong>（<strong>Redis 7.0</strong> 前为 <strong>ziplist</strong>）：字段少且值短的紧凑编码，所有 field&#x2F;value 连续存放，<strong>省内存</strong>但对中间元素的访问是 O(N)——靠「元素少」保证不慢。</li>
+<li><strong><code>hashtable</code></strong>：字典结构，field → value 的 O(1) 哈希访问。</li>
+</ul>
+</li>
+<li><strong>编码转换阈值</strong>：任一条件超出即从 listpack 转 hashtable（默认 <strong><code>hash-max-listpack-entries 128</code></strong>、<strong><code>hash-max-listpack-value 64</code></strong>，以 <code>CONFIG GET hash-max-*</code> 为准）；<strong>转换是单向的</strong>，转回不再发生。</li>
+<li><strong>渐进式 rehash</strong>：hashtable 扩容时 Redis 同时持有<strong>两张哈希表</strong>，把数据<strong>分批</strong>从旧表搬到新表（每次命令顺带迁一小批 + 定时任务），避免一次搬家阻塞服务——这是单线程 Redis 能平滑扩容的关键设计。</li>
+<li><strong>复杂度与注意点</strong>：<strong><code>HGET</code> &#x2F; <code>HSET</code>（单字段）为 O(1)</strong>；<strong><code>HGETALL</code> &#x2F; <code>HKEYS</code> &#x2F; <code>HVALS</code> 为 O(N)</strong>（N 为字段数），大 Hash 上应改用 <strong><code>HSCAN</code></strong> 分批遍历；<strong><code>HINCRBY</code></strong> 是<strong>原子</strong>的字段加减。</li>
+</ol>
+<h2 id="常用命令（必会子集）"><a href="#常用命令（必会子集）" class="headerlink" title="常用命令（必会子集）"></a>常用命令（必会子集）</h2><table>
 <thead>
 <tr>
 <th>命令</th>
@@ -337,23 +346,49 @@
 <td>大 <strong>Hash</strong> 迭代遍历（生产避免 <strong><code>HGETALL</code></strong> 撑爆网络）</td>
 </tr>
 </tbody></table>
-<hr>
-<h1 id="三、典型应用场景"><a href="#三、典型应用场景" class="headerlink" title="三、典型应用场景"></a>三、典型应用场景</h1><ol>
+<h2 id="典型应用场景"><a href="#典型应用场景" class="headerlink" title="典型应用场景"></a>典型应用场景</h2><ol>
 <li><strong>用户资料</strong>：<strong><code>user:1001</code></strong> 下 <strong><code>name</code> &#x2F; <code>vip</code> &#x2F; <code>city</code></strong> 等，改一项只动一个 <strong>field</strong>。  </li>
 <li><strong>购物车行</strong>：<strong><code>cart:uid:1001</code></strong> 下 <strong><code>sku:2001</code> → 数量 JSON 或纯数字</strong>。  </li>
 <li><strong>对象缓存</strong>：比整串 <strong>String</strong> 更易做<strong>局部更新</strong>；仍要注意<strong>过期策略</strong>与<strong>缓存一致性</strong>。</li>
 </ol>
-<hr>
-<h1 id="四、综合案例（redis-cli）"><a href="#四、综合案例（redis-cli）" class="headerlink" title="四、综合案例（redis-cli）"></a>四、综合案例（<code>redis-cli</code>）</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">redis-cli HSET user:1001 name Alice vip 1 city Shanghai</span><br><span class="line">redis-cli HGET user:1001 name</span><br><span class="line">redis-cli HMGET user:1001 name city</span><br><span class="line">redis-cli HINCRBY user:1001 vip 1</span><br><span class="line">redis-cli HGETALL user:1001</span><br><span class="line">redis-cli HDEL user:1001 city</span><br></pre></td></tr></table></figure>
+<h2 id="综合案例（redis-cli）"><a href="#综合案例（redis-cli）" class="headerlink" title="综合案例（redis-cli）"></a>综合案例（redis-cli）</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">redis-cli HSET user:1001 name Alice vip 1 city Shanghai</span><br><span class="line">redis-cli HGET user:1001 name</span><br><span class="line">redis-cli HMGET user:1001 name city</span><br><span class="line">redis-cli HINCRBY user:1001 vip 1</span><br><span class="line">redis-cli HGETALL user:1001</span><br><span class="line">redis-cli HDEL user:1001 city</span><br></pre></td></tr></table></figure>
 
-<hr>
-<h1 id="五、注意事项"><a href="#五、注意事项" class="headerlink" title="五、注意事项"></a>五、注意事项</h1><ol>
+<h2 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h2><ol>
 <li><strong>大 Hash</strong>：字段极多时 <strong><code>HGETALL</code></strong> 成本高，列表页用 <strong><code>HSCAN</code></strong> 或只取需要的 <strong><code>HMGET</code></strong>。  </li>
-<li><strong>小 Hash 编码</strong>：字段少且短时可能 <strong>ziplist</strong> 等紧凑编码，内存更省（<strong><code>OBJECT ENCODING</code></strong> 可观察）。  </li>
+<li><strong>小 Hash 编码</strong>：字段少且短时可能 <strong>listpack</strong> 等紧凑编码，内存更省（<strong><code>OBJECT ENCODING</code></strong> 可观察）。  </li>
 <li><strong>与 String JSON 选型</strong>：读多写少、整体替换频繁 → <strong>String</strong>；字段独立更新多 → <strong>Hash</strong>。</li>
 </ol>
-<hr>
-<h1 id="六、延伸阅读"><a href="#六、延伸阅读" class="headerlink" title="六、延伸阅读"></a>六、延伸阅读</h1><table>
+<h2 id="本章小结"><a href="#本章小结" class="headerlink" title="本章小结"></a>本章小结</h2><table>
+<thead>
+<tr>
+<th>要点</th>
+<th>结论</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>本质</td>
+<td>key → 多对 <strong>field&#x2F;value</strong>，像「数据行」</td>
+</tr>
+<tr>
+<td>编码</td>
+<td><strong>listpack（小而省）→ hashtable（O(1) + 渐进式 rehash）</strong></td>
+</tr>
+<tr>
+<td>复杂度</td>
+<td>单字段 O(1)；<strong>HGETALL O(N)</strong>，大 Hash 用 <strong>HSCAN</strong></td>
+</tr>
+<tr>
+<td>高频命令</td>
+<td><strong>HSET &#x2F; HGET &#x2F; HGETALL &#x2F; HINCRBY &#x2F; HDEL</strong></td>
+</tr>
+<tr>
+<td>选型</td>
+<td>字段常单独更新 → Hash；整体读写 → String JSON</td>
+</tr>
+</tbody></table>
+<p>下一步：需要「有序、可重复」的序列（队列、时间线）时，用 <a href="/2026/05/03/Redis/List%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E3%80%81%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%E5%8F%8A%E6%A1%88%E4%BE%8B/" title="第五章：Redis List 数据类型：概念、命令与案例">第五章：Redis List 数据类型：概念、命令与案例</a>。</p>
+<p><strong>延伸阅读</strong>：</p>
+<table>
 <thead>
 <tr>
 <th>文档</th>
@@ -387,13 +422,13 @@
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2026/05/03/Redis/Set%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E3%80%81%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%E5%8F%8A%E6%A1%88%E4%BE%8B/" rel="prev" title="Redis Set 数据类型、应用场景及案例">
-                  <i class="fa fa-angle-left"></i> Redis Set 数据类型、应用场景及案例
+                <a href="/2026/05/03/Redis/Set%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E3%80%81%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%E5%8F%8A%E6%A1%88%E4%BE%8B/" rel="prev" title="第六章：Redis Set 数据类型：概念、命令与案例">
+                  <i class="fa fa-angle-left"></i> 第六章：Redis Set 数据类型：概念、命令与案例
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2026/05/03/Redis/ZSet%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E3%80%81%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%E5%8F%8A%E6%A1%88%E4%BE%8B/" rel="next" title="Redis ZSet（Sorted Set）数据类型、应用场景及案例">
-                  Redis ZSet（Sorted Set）数据类型、应用场景及案例 <i class="fa fa-angle-right"></i>
+                <a href="/2026/05/03/Redis/ZSet%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E3%80%81%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%E5%8F%8A%E6%A1%88%E4%BE%8B/" rel="next" title="第七章：Redis ZSet 数据类型：概念、命令与案例">
+                  第七章：Redis ZSet 数据类型：概念、命令与案例 <i class="fa fa-angle-right"></i>
                 </a>
             </div>
           </div>
@@ -425,13 +460,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">195k</span>
+    <span title="站点总字数">253k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">10:49</span>
+    <span title="站点阅读时长">14:03</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

@@ -18,29 +18,29 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
 
-<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
+<script class="next-config" data-name="main" type="application/json">{"hostname":"my919.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
 
-    <meta name="description" content="Modbus RTU 是 Modbus 协议在二进制串行链路上的实现，最常见物理层为 RS485：主站轮询、从站地址、功能码、CRC16 结尾。下面从「ADU 帧 → 常用功能码 → 时序与 3.5 字符 → 与 ASCII&#x2F;TCP 对照 → 调试工具」顺序写清楚。 主从轮询   sequenceDiagram   participant M as 主站 PLC   participan">
+    <meta name="description" content="第一章：Modbus RTU概念基础：Modbus RTU 是什么&#x2F;为什么 Modbus 是 Modicon 于 1979 年为 PLC 设计的应用层主从协议，如今是工业通信最通用的事实标准之一；RTU 是其中「二进制编码 + 异步串口」的变体。 主从轮询模型：一个主站（PLC&#x2F;SCADA）按从站地址轮询，从站永不主动上报，只有被寻址才应答——模型简单、时序确定、实现成本低。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Modbus RTU">
-<meta property="og:url" content="http://example.com/2026/05/01/Embedded/ModbusRTU/index.html">
+<meta property="og:title" content="第一章：Modbus RTU">
+<meta property="og:url" content="https://my919.github.io/2026/05/01/Embedded/ModbusRTU/index.html">
 <meta property="og:site_name" content="my">
-<meta property="og:description" content="Modbus RTU 是 Modbus 协议在二进制串行链路上的实现，最常见物理层为 RS485：主站轮询、从站地址、功能码、CRC16 结尾。下面从「ADU 帧 → 常用功能码 → 时序与 3.5 字符 → 与 ASCII&#x2F;TCP 对照 → 调试工具」顺序写清楚。 主从轮询   sequenceDiagram   participant M as 主站 PLC   participan">
+<meta property="og:description" content="第一章：Modbus RTU概念基础：Modbus RTU 是什么&#x2F;为什么 Modbus 是 Modicon 于 1979 年为 PLC 设计的应用层主从协议，如今是工业通信最通用的事实标准之一；RTU 是其中「二进制编码 + 异步串口」的变体。 主从轮询模型：一个主站（PLC&#x2F;SCADA）按从站地址轮询，从站永不主动上报，只有被寻址才应答——模型简单、时序确定、实现成本低。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-05-01T05:07:53.000Z">
-<meta property="article:modified_time" content="2026-05-31T15:47:21.960Z">
+<meta property="article:modified_time" content="2026-08-30T07:29:47.979Z">
 <meta property="article:author" content="miracle">
 <meta property="article:tag" content="Modbus">
 <meta name="twitter:card" content="summary">
 
 
-<link rel="canonical" href="http://example.com/2026/05/01/Embedded/ModbusRTU/">
+<link rel="canonical" href="https://my919.github.io/2026/05/01/Embedded/ModbusRTU/">
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2026/05/01/Embedded/ModbusRTU/","path":"2026/05/01/Embedded/ModbusRTU/","title":"Modbus RTU"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://my919.github.io/2026/05/01/Embedded/ModbusRTU/","path":"2026/05/01/Embedded/ModbusRTU/","title":"第一章：Modbus RTU"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>Modbus RTU | my</title>
+<title>第一章：Modbus RTU | my</title>
   
 
 
@@ -68,12 +68,6 @@
   
 
 
-
-
-  
-
-  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
-<script src="/js/third-party/math/mathjax.js" defer></script>
 
 
 
@@ -167,7 +161,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%BB%E4%BB%8E%E8%BD%AE%E8%AF%A2"><span class="nav-number">1.</span> <span class="nav-text">主从轮询</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81RTU-%E5%B8%A7%E7%BB%93%E6%9E%84"><span class="nav-number">2.</span> <span class="nav-text">一、RTU 帧结构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E5%B8%B8%E7%94%A8%E5%8A%9F%E8%83%BD%E7%A0%81"><span class="nav-number">3.</span> <span class="nav-text">二、常用功能码</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E6%97%B6%E5%BA%8F%EF%BC%88RTU-%E7%89%B9%E6%9C%89%EF%BC%89"><span class="nav-number">4.</span> <span class="nav-text">三、时序（RTU 特有）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E4%B8%8E%E5%85%B6%E5%AE%83-Modbus"><span class="nav-number">5.</span> <span class="nav-text">四、与其它 Modbus</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E8%B0%83%E8%AF%95"><span class="nav-number">6.</span> <span class="nav-text">五、调试</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E7%AB%A0%EF%BC%9AModbus-RTU"><span class="nav-number">1.</span> <span class="nav-text">第一章：Modbus RTU</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80%EF%BC%9AModbus-RTU-%E6%98%AF%E4%BB%80%E4%B9%88-%E4%B8%BA%E4%BB%80%E4%B9%88"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础：Modbus RTU 是什么&#x2F;为什么</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BB%E4%BB%8E%E8%BD%AE%E8%AF%A2"><span class="nav-number">1.2.</span> <span class="nav-text">主从轮询</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81RTU-%E5%B8%A7%E7%BB%93%E6%9E%84"><span class="nav-number">1.3.</span> <span class="nav-text">一、RTU 帧结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E5%B8%B8%E7%94%A8%E5%8A%9F%E8%83%BD%E7%A0%81"><span class="nav-number">1.4.</span> <span class="nav-text">二、常用功能码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E6%97%B6%E5%BA%8F%EF%BC%88RTU-%E7%89%B9%E6%9C%89%EF%BC%89"><span class="nav-number">1.5.</span> <span class="nav-text">三、时序（RTU 特有）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E4%B8%8E%E5%85%B6%E5%AE%83-Modbus"><span class="nav-number">1.6.</span> <span class="nav-text">四、与其它 Modbus</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E8%B0%83%E8%AF%95"><span class="nav-number">1.7.</span> <span class="nav-text">五、调试</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.8.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -180,18 +174,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">192</span>
+          <span class="site-state-item-count">194</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">39</span>
+        <span class="site-state-item-count">33</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">108</span>
+        <span class="site-state-item-count">114</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -229,7 +223,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/Embedded/ModbusRTU/">
+    <link itemprop="mainEntityOfPage" href="https://my919.github.io/2026/05/01/Embedded/ModbusRTU/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -242,12 +236,12 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="Modbus RTU | my">
+      <meta itemprop="name" content="第一章：Modbus RTU | my">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          Modbus RTU
+          第一章：Modbus RTU
         </h1>
 
         <div class="post-meta-container">
@@ -265,7 +259,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-31 23:47:21" itemprop="dateModified" datetime="2026-05-31T23:47:21+08:00">2026-05-31</time>
+      <time title="修改时间：2026-08-30 15:29:47" itemprop="dateModified" datetime="2026-08-30T15:29:47+08:00">2026-08-30</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -273,7 +267,7 @@
       </span>
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Modbus/" itemprop="url" rel="index"><span itemprop="name">Modbus</span></a>
+          <a href="/categories/Embedded/" itemprop="url" rel="index"><span itemprop="name">Embedded</span></a>
         </span>
     </span>
 
@@ -284,14 +278,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>453</span>
+      <span>798</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>2 分钟</span>
+      <span>3 分钟</span>
     </span>
 </div>
 
@@ -301,8 +295,15 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><p><strong>Modbus RTU</strong> 是 <strong>Modbus</strong> 协议在<strong>二进制串行链路</strong>上的实现，最常见物理层为 <a href="/2026/05/01/Embedded/RS485/" title="RS485">RS485</a>：<strong>主站轮询</strong>、<strong>从站地址</strong>、<strong>功能码</strong>、<strong>CRC16</strong> 结尾。下面从「<strong>ADU 帧</strong> → <strong>常用功能码</strong> → <strong>时序与 3.5 字符</strong> → <strong>与 ASCII&#x2F;TCP 对照</strong> → <strong>调试工具</strong>」顺序写清楚。</p>
-<h1 id="主从轮询"><a href="#主从轮询" class="headerlink" title="主从轮询"></a>主从轮询</h1><pre>
+    <div class="post-body" itemprop="articleBody"><h1 id="第一章：Modbus-RTU"><a href="#第一章：Modbus-RTU" class="headerlink" title="第一章：Modbus RTU"></a>第一章：Modbus RTU</h1><h2 id="概念基础：Modbus-RTU-是什么-为什么"><a href="#概念基础：Modbus-RTU-是什么-为什么" class="headerlink" title="概念基础：Modbus RTU 是什么&#x2F;为什么"></a>概念基础：Modbus RTU 是什么&#x2F;为什么</h2><ol>
+<li><strong>Modbus</strong> 是 <strong>Modicon</strong> 于 1979 年为 <strong>PLC</strong> 设计的<strong>应用层主从协议</strong>，如今是工业通信最通用的<strong>事实标准</strong>之一；<strong>RTU</strong> 是其中「<strong>二进制编码 + 异步串口</strong>」的变体。</li>
+<li><strong>主从轮询模型</strong>：一个<strong>主站</strong>（PLC&#x2F;SCADA）按<strong>从站地址</strong>轮询，从站<strong>永不主动上报</strong>，只有被寻址才应答——模型简单、时序确定、实现成本低。</li>
+<li><strong>帧结构极简</strong>：<code>地址 + 功能码 + 数据 + CRC16</code>，一帧即一次完整的请求&#x2F;应答；统一的<strong>寄存器语义</strong>（线圈、保持寄存器等）让不同厂商设备能用同一套报文访问。</li>
+<li><strong>为什么选 RTU</strong>：跑在 <strong>RS485</strong> 差分总线上，一根双绞线可挂多设备、传数百米，<strong>抗干扰强、布线便宜</strong>，是工业现场最常见组合。</li>
+<li><strong>边界</strong>：RTU 只定义<strong>数据读写语义</strong>，不含认证加密；帧界定靠<strong>静默时间</strong>而非特殊字符，底层串口由 <strong>UART</strong> 控制器提供。</li>
+</ol>
+<p>理解了定位，先看最典型的主从轮询交互：</p>
+<h2 id="主从轮询"><a href="#主从轮询" class="headerlink" title="主从轮询"></a>主从轮询</h2><pre>
 <code class="mermaid">
 
 sequenceDiagram
@@ -316,7 +317,7 @@ sequenceDiagram
 </pre>
 
 <hr>
-<h1 id="一、RTU-帧结构"><a href="#一、RTU-帧结构" class="headerlink" title="一、RTU 帧结构"></a>一、RTU 帧结构</h1><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[从站地址 1B][功能码 1B][数据 N][CRC16 2B 低字节在前]</span><br></pre></td></tr></table></figure>
+<h2 id="一、RTU-帧结构"><a href="#一、RTU-帧结构" class="headerlink" title="一、RTU 帧结构"></a>一、RTU 帧结构</h2><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[从站地址 1B][功能码 1B][数据 N][CRC16 2B 低字节在前]</span><br></pre></td></tr></table></figure>
 
 <ul>
 <li><strong>地址 0</strong>：广播（从站不应应答）。  </li>
@@ -324,7 +325,7 @@ sequenceDiagram
 </ul>
 <p>示例（读保持寄存器 <strong>0x03</strong>）：主站发 <strong><code>01 03 00 00 00 0A C5 CD</code></strong>（含义依上下文解析）。</p>
 <hr>
-<h1 id="二、常用功能码"><a href="#二、常用功能码" class="headerlink" title="二、常用功能码"></a>二、常用功能码</h1><table>
+<h2 id="二、常用功能码"><a href="#二、常用功能码" class="headerlink" title="二、常用功能码"></a>二、常用功能码</h2><table>
 <thead>
 <tr>
 <th>码</th>
@@ -360,13 +361,13 @@ sequenceDiagram
 </tbody></table>
 <p>异常应答：功能码 <strong>+ 0x80</strong>，后跟异常码。</p>
 <hr>
-<h1 id="三、时序（RTU-特有）"><a href="#三、时序（RTU-特有）" class="headerlink" title="三、时序（RTU 特有）"></a>三、时序（RTU 特有）</h1><p>帧间静默 ≥ <strong>3.5 字符时间</strong>（与波特率相关），用于帧界定；波特率高时该间隔很短，实现需精确。</p>
+<h2 id="三、时序（RTU-特有）"><a href="#三、时序（RTU-特有）" class="headerlink" title="三、时序（RTU 特有）"></a>三、时序（RTU 特有）</h2><p>帧间静默 ≥ <strong>3.5 字符时间</strong>（与波特率相关），用于帧界定；波特率高时该间隔很短，实现需精确。</p>
 <ul>
 <li><strong>115200</strong> 下对 MCU 中断延迟更敏感。  </li>
-<li>半双工 <a href="/2026/05/01/Embedded/RS485/" title="RS485">RS485</a> 需在发送前使能 <strong>DE</strong>。</li>
+<li>半双工 <a href="/2026/05/01/Embedded/RS485/" title="第六章：RS485">第六章：RS485</a> 需在发送前使能 <strong>DE</strong>。</li>
 </ul>
 <hr>
-<h1 id="四、与其它-Modbus"><a href="#四、与其它-Modbus" class="headerlink" title="四、与其它 Modbus"></a>四、与其它 Modbus</h1><table>
+<h2 id="四、与其它-Modbus"><a href="#四、与其它-Modbus" class="headerlink" title="四、与其它 Modbus"></a>四、与其它 Modbus</h2><table>
 <thead>
 <tr>
 <th>变体</th>
@@ -380,24 +381,53 @@ sequenceDiagram
 <td>静默 + CRC</td>
 </tr>
 <tr>
-<td><strong><a href="/2026/05/01/Embedded/ModbusASCII/" title="Modbus ASCII">ASCII</a></strong></td>
+<td><strong><a href="/2026/05/01/Embedded/ModbusASCII/" title="第三章：Modbus ASCII">第三章：Modbus ASCII</a></strong></td>
 <td>串口</td>
 <td><strong><code>:</code></strong> 起 <strong>CRLF</strong> 止，LRC</td>
 </tr>
 <tr>
-<td><strong><a href="/2026/05/01/Embedded/ModbusTCP/" title="Modbus TCP">TCP</a></strong></td>
+<td><strong><a href="/2026/05/01/Embedded/ModbusTCP/" title="第二章：Modbus TCP">第二章：Modbus TCP</a></strong></td>
 <td>以太网</td>
 <td>MBAP 头 + 无 CRC</td>
 </tr>
 </tbody></table>
 <p>寄存器地址映射（<strong>40001</strong> 等）在文档与 <strong>PDU</strong> 偏移间需 <strong>减 1</strong> 转换，避免 off-by-one。</p>
 <hr>
-<h1 id="五、调试"><a href="#五、调试" class="headerlink" title="五、调试"></a>五、调试</h1><ul>
+<h2 id="五、调试"><a href="#五、调试" class="headerlink" title="五、调试"></a>五、调试</h2><ul>
 <li><strong>Modbus Poll &#x2F; Slave</strong>（Windows）、<strong>pymodbus</strong>、<strong>QModMaster</strong>（Linux）。  </li>
 <li>抓包：串口监听或 RS485 分析仪。  </li>
-<li>与 <a href="/2026/05/01/Embedded/UART/" title="UART">UART</a> 关系：RTU 是<strong>应用层协议</strong>，底下是异步串口 + 485 收发器。</li>
+<li>与 <a href="/2026/05/01/Embedded/UART/" title="第四章：UART">第四章：UART</a> 关系：RTU 是<strong>应用层协议</strong>，底下是异步串口 + 485 收发器。</li>
 </ul>
 <p>Modbus 组织：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://modbus.org/">https://modbus.org/</a></p>
+<h2 id="本章小结"><a href="#本章小结" class="headerlink" title="本章小结"></a>本章小结</h2><table>
+<thead>
+<tr>
+<th>要点</th>
+<th>结论</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>协议本质</td>
+<td>应用层<strong>主从轮询</strong>协议，从站只应答、不主动上报</td>
+</tr>
+<tr>
+<td>帧结构</td>
+<td>地址 + 功能码 + 数据 + <strong>CRC16</strong>，帧间静默 ≥ 3.5 字符时间</td>
+</tr>
+<tr>
+<td>核心功能码</td>
+<td>0x01&#x2F;0x03&#x2F;0x04 读，0x06&#x2F;0x10 写；异常应答 &#x3D; 功能码 + 0x80</td>
+</tr>
+<tr>
+<td>物理搭配</td>
+<td>半双工 RS485 总线，发送前使能 <strong>DE</strong></td>
+</tr>
+<tr>
+<td>调试</td>
+<td>Modbus Poll&#x2F;pymodbus&#x2F;QModMaster + 串口抓包</td>
+</tr>
+</tbody></table>
+<p>下一步：把同一套主从语义搬到以太网 → <a href="/2026/05/01/Embedded/ModbusTCP/" title="第二章：Modbus TCP">第二章：Modbus TCP</a></p>
 
     </div>
 
@@ -414,13 +444,13 @@ sequenceDiagram
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2026/05/01/Frontend/Vite/" rel="prev" title="Vite">
-                  <i class="fa fa-angle-left"></i> Vite
+                <a href="/2026/05/01/Frontend/Vite/" rel="prev" title="第二章：Vite 工程化构建与部署">
+                  <i class="fa fa-angle-left"></i> 第二章：Vite 工程化构建与部署
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2026/05/01/Embedded/ModbusTCP/" rel="next" title="Modbus TCP">
-                  Modbus TCP <i class="fa fa-angle-right"></i>
+                <a href="/2026/05/01/Embedded/ModbusTCP/" rel="next" title="第二章：Modbus TCP">
+                  第二章：Modbus TCP <i class="fa fa-angle-right"></i>
                 </a>
             </div>
           </div>
@@ -452,13 +482,13 @@ sequenceDiagram
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">195k</span>
+    <span title="站点总字数">253k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">10:49</span>
+    <span title="站点阅读时长">14:03</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

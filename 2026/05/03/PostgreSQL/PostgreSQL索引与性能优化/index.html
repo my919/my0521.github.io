@@ -18,17 +18,17 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
 
-<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
+<script class="next-config" data-name="main" type="application/json">{"hostname":"my919.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
 
-    <meta name="description" content="面向业务开发与日常运维：能读 EXPLAIN、理解默认隔离级别、会开慢语句日志、知道逻辑备份与 WAL &#x2F; PITR在说什么。与 PostgreSQL并发与MVCC入门.md（行锁、SKIP LOCKED、死锁与快照）互补；部署与数据卷见 PostgreSQL-Docker.md。  一、索引在干什么：B-Tree 直觉（默认）PostgreSQL 默认 CREATE INDEX 多为">
+    <meta name="description" content="第五章：PostgreSQL 索引与性能优化概念基础：索引与性能优化是什么 索引 &#x3D; 用空间换时间的检索结构：默认 B-Tree 以平衡树组织键值，把等值 &#x2F; 范围查询从全表扫描降为树查找；代价是占存储、拖慢写入。 慢的常见根源：大表 Seq Scan、统计信息过期导致选错计划、死元组堆积（表膨胀）、函数包裹列让索引失效。 优化是闭环不是玄学：慢日志 &#x2F; pg_sta">
 <meta property="og:type" content="article">
-<meta property="og:title" content="PostgreSQL 索引与性能优化">
-<meta property="og:url" content="http://example.com/2026/05/03/PostgreSQL/PostgreSQL%E7%B4%A2%E5%BC%95%E4%B8%8E%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/index.html">
+<meta property="og:title" content="第五章：PostgreSQL 索引与性能优化">
+<meta property="og:url" content="https://my919.github.io/2026/05/03/PostgreSQL/PostgreSQL%E7%B4%A2%E5%BC%95%E4%B8%8E%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/index.html">
 <meta property="og:site_name" content="my">
-<meta property="og:description" content="面向业务开发与日常运维：能读 EXPLAIN、理解默认隔离级别、会开慢语句日志、知道逻辑备份与 WAL &#x2F; PITR在说什么。与 PostgreSQL并发与MVCC入门.md（行锁、SKIP LOCKED、死锁与快照）互补；部署与数据卷见 PostgreSQL-Docker.md。  一、索引在干什么：B-Tree 直觉（默认）PostgreSQL 默认 CREATE INDEX 多为">
+<meta property="og:description" content="第五章：PostgreSQL 索引与性能优化概念基础：索引与性能优化是什么 索引 &#x3D; 用空间换时间的检索结构：默认 B-Tree 以平衡树组织键值，把等值 &#x2F; 范围查询从全表扫描降为树查找；代价是占存储、拖慢写入。 慢的常见根源：大表 Seq Scan、统计信息过期导致选错计划、死元组堆积（表膨胀）、函数包裹列让索引失效。 优化是闭环不是玄学：慢日志 &#x2F; pg_sta">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-05-03T09:05:00.000Z">
-<meta property="article:modified_time" content="2026-05-03T08:39:05.137Z">
+<meta property="article:modified_time" content="2026-08-30T07:01:20.072Z">
 <meta property="article:author" content="miracle">
 <meta property="article:tag" content="EXPLAIN">
 <meta property="article:tag" content="PostgreSQL">
@@ -38,13 +38,13 @@
 <meta name="twitter:card" content="summary">
 
 
-<link rel="canonical" href="http://example.com/2026/05/03/PostgreSQL/PostgreSQL%E7%B4%A2%E5%BC%95%E4%B8%8E%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/">
+<link rel="canonical" href="https://my919.github.io/2026/05/03/PostgreSQL/PostgreSQL%E7%B4%A2%E5%BC%95%E4%B8%8E%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/">
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2026/05/03/PostgreSQL/PostgreSQL%E7%B4%A2%E5%BC%95%E4%B8%8E%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/","path":"2026/05/03/PostgreSQL/PostgreSQL索引与性能优化/","title":"PostgreSQL 索引与性能优化"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://my919.github.io/2026/05/03/PostgreSQL/PostgreSQL%E7%B4%A2%E5%BC%95%E4%B8%8E%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/","path":"2026/05/03/PostgreSQL/PostgreSQL索引与性能优化/","title":"第五章：PostgreSQL 索引与性能优化"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>PostgreSQL 索引与性能优化 | my</title>
+<title>第五章：PostgreSQL 索引与性能优化 | my</title>
   
 
 
@@ -72,12 +72,6 @@
   
 
 
-
-
-  
-
-  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
-<script src="/js/third-party/math/mathjax.js" defer></script>
 
 
 
@@ -171,7 +165,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E7%B4%A2%E5%BC%95%E5%9C%A8%E5%B9%B2%E4%BB%80%E4%B9%88%EF%BC%9AB-Tree-%E7%9B%B4%E8%A7%89%EF%BC%88%E9%BB%98%E8%AE%A4%EF%BC%89"><span class="nav-number">1.</span> <span class="nav-text">一、索引在干什么：B-Tree 直觉（默认）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E8%81%94%E5%90%88%E7%B4%A2%E5%BC%95%E4%B8%8E%E6%9C%80%E5%B7%A6%E5%89%8D%E7%BC%80"><span class="nav-number">2.</span> <span class="nav-text">二、联合索引与最左前缀</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E4%BB%85%E7%B4%A2%E5%BC%95%E6%89%AB%E6%8F%8F%EF%BC%88Index-Only-Scan%EF%BC%89"><span class="nav-number">3.</span> <span class="nav-text">三、仅索引扫描（Index Only Scan）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E6%80%8E%E4%B9%88%E7%9C%8B%E6%89%A7%E8%A1%8C%E8%AE%A1%E5%88%92%EF%BC%9AEXPLAIN-EXPLAIN-ANALYZE"><span class="nav-number">4.</span> <span class="nav-text">四、怎么看执行计划：EXPLAIN &#x2F; EXPLAIN ANALYZE</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E4%BA%8B%E5%8A%A1%E4%B8%8E%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%EF%BC%88%E7%94%A8%E6%B3%95%E5%90%91%EF%BC%89"><span class="nav-number">5.</span> <span class="nav-text">五、事务与隔离级别（用法向）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%9F%BA%E6%9C%AC%E5%86%99%E6%B3%95"><span class="nav-number">5.1.</span> <span class="nav-text">1. 基本写法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E6%85%A2%E8%AF%AD%E5%8F%A5%E4%B8%8E%E8%A7%82%E6%B5%8B%E3%80%8C%E4%B8%89%E6%9D%BF%E6%96%A7%E3%80%8D%EF%BC%88%E7%82%B9%E5%88%B0%E4%B8%BA%E6%AD%A2%EF%BC%89"><span class="nav-number">6.</span> <span class="nav-text">六、慢语句与观测「三板斧」（点到为止）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E6%97%A5%E5%BF%97%EF%BC%9Alog-min-duration-statement"><span class="nav-number">6.1.</span> <span class="nav-text">1. 日志：log_min_duration_statement</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-pg-stat-statements%EF%BC%88%E6%89%A9%E5%B1%95%EF%BC%89"><span class="nav-number">6.2.</span> <span class="nav-text">2. pg_stat_statements（扩展）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-auto-explain%EF%BC%88%E6%89%A9%E5%B1%95%EF%BC%89"><span class="nav-number">6.3.</span> <span class="nav-text">3. auto_explain（扩展）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%83%E3%80%81VACUUM-%E4%B8%8E%E8%86%A8%E8%83%80%EF%BC%88%E5%8F%AF%E9%9D%A0%E6%80%A7%E5%B8%B8%E8%AF%86%EF%BC%89"><span class="nav-number">7.</span> <span class="nav-text">七、VACUUM 与膨胀（可靠性常识）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AB%E3%80%81%E5%A4%87%E4%BB%BD%E6%81%A2%E5%A4%8D%E4%B8%8E-PITR-%E6%A6%82%E5%BF%B5"><span class="nav-number">8.</span> <span class="nav-text">八、备份恢复与 PITR 概念</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E9%80%BB%E8%BE%91%E5%A4%87%E4%BB%BD-pg-dump-pg-restore"><span class="nav-number">8.1.</span> <span class="nav-text">1. 逻辑备份 pg_dump &#x2F; pg_restore</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E7%89%A9%E7%90%86%E4%B8%8E-WAL"><span class="nav-number">8.2.</span> <span class="nav-text">2. 物理与 WAL</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E4%B8%8E-Docker-%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="nav-number">8.3.</span> <span class="nav-text">3. 与 Docker 的关系</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B9%9D%E3%80%81%E5%A7%8A%E5%A6%B9%E6%96%87%E7%B4%A2%E5%BC%95"><span class="nav-number">9.</span> <span class="nav-text">九、姊妹文索引</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%BA%94%E7%AB%A0%EF%BC%9APostgreSQL-%E7%B4%A2%E5%BC%95%E4%B8%8E%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96"><span class="nav-number">1.</span> <span class="nav-text">第五章：PostgreSQL 索引与性能优化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80%EF%BC%9A%E7%B4%A2%E5%BC%95%E4%B8%8E%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E6%98%AF%E4%BB%80%E4%B9%88"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础：索引与性能优化是什么</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E7%B4%A2%E5%BC%95%E5%9C%A8%E5%B9%B2%E4%BB%80%E4%B9%88%EF%BC%9AB-Tree-%E7%9B%B4%E8%A7%89%EF%BC%88%E9%BB%98%E8%AE%A4%EF%BC%89"><span class="nav-number">1.2.</span> <span class="nav-text">一、索引在干什么：B-Tree 直觉（默认）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E8%81%94%E5%90%88%E7%B4%A2%E5%BC%95%E4%B8%8E%E6%9C%80%E5%B7%A6%E5%89%8D%E7%BC%80"><span class="nav-number">1.3.</span> <span class="nav-text">二、联合索引与最左前缀</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E4%BB%85%E7%B4%A2%E5%BC%95%E6%89%AB%E6%8F%8F%EF%BC%88Index-Only-Scan%EF%BC%89"><span class="nav-number">1.4.</span> <span class="nav-text">三、仅索引扫描（Index Only Scan）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E6%80%8E%E4%B9%88%E7%9C%8B%E6%89%A7%E8%A1%8C%E8%AE%A1%E5%88%92%EF%BC%9AEXPLAIN-EXPLAIN-ANALYZE"><span class="nav-number">1.5.</span> <span class="nav-text">四、怎么看执行计划：EXPLAIN &#x2F; EXPLAIN ANALYZE</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E4%BA%8B%E5%8A%A1%E4%B8%8E%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%EF%BC%88%E7%94%A8%E6%B3%95%E5%90%91%EF%BC%89"><span class="nav-number">1.6.</span> <span class="nav-text">五、事务与隔离级别（用法向）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%9F%BA%E6%9C%AC%E5%86%99%E6%B3%95"><span class="nav-number">1.6.1.</span> <span class="nav-text">1. 基本写法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E6%85%A2%E8%AF%AD%E5%8F%A5%E4%B8%8E%E8%A7%82%E6%B5%8B%E3%80%8C%E4%B8%89%E6%9D%BF%E6%96%A7%E3%80%8D%EF%BC%88%E7%82%B9%E5%88%B0%E4%B8%BA%E6%AD%A2%EF%BC%89"><span class="nav-number">1.7.</span> <span class="nav-text">六、慢语句与观测「三板斧」（点到为止）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E6%97%A5%E5%BF%97%EF%BC%9Alog-min-duration-statement"><span class="nav-number">1.7.1.</span> <span class="nav-text">1. 日志：log_min_duration_statement</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-pg-stat-statements%EF%BC%88%E6%89%A9%E5%B1%95%EF%BC%89"><span class="nav-number">1.7.2.</span> <span class="nav-text">2. pg_stat_statements（扩展）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-auto-explain%EF%BC%88%E6%89%A9%E5%B1%95%EF%BC%89"><span class="nav-number">1.7.3.</span> <span class="nav-text">3. auto_explain（扩展）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%83%E3%80%81VACUUM-%E4%B8%8E%E8%86%A8%E8%83%80%EF%BC%88%E5%8F%AF%E9%9D%A0%E6%80%A7%E5%B8%B8%E8%AF%86%EF%BC%89"><span class="nav-number">1.8.</span> <span class="nav-text">七、VACUUM 与膨胀（可靠性常识）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AB%E3%80%81%E5%A4%87%E4%BB%BD%E6%81%A2%E5%A4%8D%E4%B8%8E-PITR-%E6%A6%82%E5%BF%B5"><span class="nav-number">1.9.</span> <span class="nav-text">八、备份恢复与 PITR 概念</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E9%80%BB%E8%BE%91%E5%A4%87%E4%BB%BD-pg-dump-pg-restore"><span class="nav-number">1.9.1.</span> <span class="nav-text">1. 逻辑备份 pg_dump &#x2F; pg_restore</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E7%89%A9%E7%90%86%E4%B8%8E-WAL"><span class="nav-number">1.9.2.</span> <span class="nav-text">2. 物理与 WAL</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E4%B8%8E-Docker-%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="nav-number">1.9.3.</span> <span class="nav-text">3. 与 Docker 的关系</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B9%9D%E3%80%81%E5%A7%8A%E5%A6%B9%E6%96%87%E7%B4%A2%E5%BC%95"><span class="nav-number">1.10.</span> <span class="nav-text">九、姊妹文索引</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.11.</span> <span class="nav-text">本章小结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8B%E4%B8%80%E7%AB%A0"><span class="nav-number">1.12.</span> <span class="nav-text">下一章</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -184,18 +178,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">192</span>
+          <span class="site-state-item-count">194</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">39</span>
+        <span class="site-state-item-count">33</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">108</span>
+        <span class="site-state-item-count">114</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -233,7 +227,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/03/PostgreSQL/PostgreSQL%E7%B4%A2%E5%BC%95%E4%B8%8E%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/">
+    <link itemprop="mainEntityOfPage" href="https://my919.github.io/2026/05/03/PostgreSQL/PostgreSQL%E7%B4%A2%E5%BC%95%E4%B8%8E%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -246,12 +240,12 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="PostgreSQL 索引与性能优化 | my">
+      <meta itemprop="name" content="第五章：PostgreSQL 索引与性能优化 | my">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          PostgreSQL 索引与性能优化
+          第五章：PostgreSQL 索引与性能优化
         </h1>
 
         <div class="post-meta-container">
@@ -261,9 +255,15 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
-      
 
-      <time title="创建时间：2026-05-03 17:05:00 / 修改时间：16:39:05" itemprop="dateCreated datePublished" datetime="2026-05-03T17:05:00+08:00">2026-05-03</time>
+      <time title="创建时间：2026-05-03 17:05:00" itemprop="dateCreated datePublished" datetime="2026-05-03T17:05:00+08:00">2026-05-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-08-30 15:01:20" itemprop="dateModified" datetime="2026-08-30T15:01:20+08:00">2026-08-30</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -282,14 +282,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>1.1k</span>
+      <span>1.4k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>4 分钟</span>
+      <span>5 分钟</span>
     </span>
 </div>
 
@@ -299,8 +299,13 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><p>面向<strong>业务开发与日常运维</strong>：能读 <strong><code>EXPLAIN</code></strong>、理解<strong>默认隔离级别</strong>、会开<strong>慢语句日志</strong>、知道<strong>逻辑备份与 WAL &#x2F; PITR</strong>在说什么。与 <strong><code>PostgreSQL并发与MVCC入门.md</code></strong>（行锁、<strong><code>SKIP LOCKED</code></strong>、死锁与快照）互补；部署与数据卷见 <strong><code>PostgreSQL-Docker.md</code></strong>。</p>
-<hr>
+    <div class="post-body" itemprop="articleBody"><h1 id="第五章：PostgreSQL-索引与性能优化"><a href="#第五章：PostgreSQL-索引与性能优化" class="headerlink" title="第五章：PostgreSQL 索引与性能优化"></a>第五章：PostgreSQL 索引与性能优化</h1><h2 id="概念基础：索引与性能优化是什么"><a href="#概念基础：索引与性能优化是什么" class="headerlink" title="概念基础：索引与性能优化是什么"></a>概念基础：索引与性能优化是什么</h2><ol>
+<li><strong>索引 &#x3D; 用空间换时间的检索结构</strong>：默认 <strong>B-Tree</strong> 以<strong>平衡树</strong>组织键值，把<strong>等值 &#x2F; 范围</strong>查询从<strong>全表扫描</strong>降为<strong>树查找</strong>；代价是<strong>占存储、拖慢写入</strong>。</li>
+<li><strong>慢的常见根源</strong>：大表 <strong><code>Seq Scan</code></strong>、<strong>统计信息过期</strong>导致选错计划、<strong>死元组堆积（表膨胀）</strong>、<strong>函数包裹列</strong>让索引失效。</li>
+<li><strong>优化是闭环不是玄学</strong>：<strong>慢日志 &#x2F; <code>pg_stat_statements</code></strong> 抓 Top SQL → <strong><code>EXPLAIN (ANALYZE, BUFFERS)</code></strong> 看真实计划 → 改<strong>索引</strong>或改<strong>写法</strong> → <strong><code>VACUUM ANALYZE</code></strong> 更新统计再验证。</li>
+<li><strong>性能之外还有「稳」</strong>：<strong>事务隔离级别</strong>选型、<strong><code>VACUUM</code></strong>&#x2F;autovacuum 运维、<strong>备份恢复（<code>pg_dump</code> &#x2F; PITR）</strong> 演练，都是可靠性的一部分。</li>
+</ol>
+<p>先建立对默认索引的直觉：</p>
 <h2 id="一、索引在干什么：B-Tree-直觉（默认）"><a href="#一、索引在干什么：B-Tree-直觉（默认）" class="headerlink" title="一、索引在干什么：B-Tree 直觉（默认）"></a>一、索引在干什么：B-Tree 直觉（默认）</h2><p><strong>PostgreSQL</strong> 默认 <strong><code>CREATE INDEX</code></strong> 多为 <strong>B-Tree</strong>（<strong><code>USING btree</code></strong>，可省略）。<br>直觉与 <strong>MySQL InnoDB</strong> 二级索引类似：以<strong>平衡树</strong>组织键，<strong>等值 &#x2F; 范围</strong>查询减少随机读；<strong>主键 &#x2F; 唯一</strong>约束底层也会建索引。</p>
 <p>其他索引类型（<strong>点到为止</strong>）：<strong><code>GIN</code></strong>（全文、<strong><code>jsonb</code></strong> 含键）、<strong><code>GiST</code></strong>（地理、范围类型）、<strong><code>BRIN</code></strong>（超大顺序相关表）等，选型需读官方文档与压测。</p>
 <hr>
@@ -346,7 +351,7 @@
 <p>默认 <strong><code>READ COMMITTED</code></strong>：每条语句看到<strong>语句开始时</strong>已提交的快照（简化理解）。<br><strong><code>REPEATABLE READ</code></strong>：事务内<strong>第一条语句</strong>建立快照，读一致性更强。<br><strong><code>SERIALIZABLE</code></strong>：最强，可能出现 <strong><code>serialization_failure</code></strong>，应用需<strong>重试</strong>。</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SHOW</span> transaction_isolation;</span><br><span class="line"><span class="keyword">SET</span> SESSION CHARACTERISTICS <span class="keyword">AS</span> TRANSACTION ISOLATION LEVEL REPEATABLE READ;</span><br></pre></td></tr></table></figure>
 
-<p>与 <strong>MySQL InnoDB 默认 RR</strong> 不同：<strong>PostgreSQL 默认 RC</strong>；跨库迁移时注意语义差异。行级锁、<strong><code>FOR UPDATE</code></strong>、死锁见 <strong><code>PostgreSQL并发与MVCC入门.md</code></strong>。</p>
+<p>与 <strong>MySQL InnoDB 默认 RR</strong> 不同：<strong>PostgreSQL 默认 RC</strong>；跨库迁移时注意语义差异。行级锁、<strong><code>FOR UPDATE</code></strong>、死锁见 <a href="/2026/05/03/PostgreSQL/PostgreSQL%E5%B9%B6%E5%8F%91%E4%B8%8EMVCC%E5%85%A5%E9%97%A8/" title="第六章：PostgreSQL 并发与 MVCC 入门">第六章：PostgreSQL 并发与 MVCC 入门</a>。</p>
 <hr>
 <h2 id="六、慢语句与观测「三板斧」（点到为止）"><a href="#六、慢语句与观测「三板斧」（点到为止）" class="headerlink" title="六、慢语句与观测「三板斧」（点到为止）"></a>六、慢语句与观测「三板斧」（点到为止）</h2><h3 id="1-日志：log-min-duration-statement"><a href="#1-日志：log-min-duration-statement" class="headerlink" title="1. 日志：log_min_duration_statement"></a>1. 日志：<code>log_min_duration_statement</code></h3><p>在 <strong><code>postgresql.conf</code></strong> 或 <strong><code>ALTER SYSTEM</code></strong>（需 reload）中设置，例如记录超过 <strong>200ms</strong> 的语句（数值按环境调）。</p>
 <h3 id="2-pg-stat-statements（扩展）"><a href="#2-pg-stat-statements（扩展）" class="headerlink" title="2. pg_stat_statements（扩展）"></a>2. <strong><code>pg_stat_statements</code></strong>（扩展）</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> EXTENSION IF <span class="keyword">NOT</span> <span class="keyword">EXISTS</span> pg_stat_statements;</span><br><span class="line"><span class="keyword">SELECT</span> query, calls, mean_exec_time</span><br><span class="line"><span class="keyword">FROM</span> pg_stat_statements</span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> mean_exec_time <span class="keyword">DESC</span></span><br><span class="line">LIMIT <span class="number">10</span>;</span><br></pre></td></tr></table></figure>
@@ -361,7 +366,7 @@
 
 <p><strong><code>-Fc</code></strong> 为自定义目录格式，便于并行恢复；纯 <strong>SQL</strong> 可用 <strong><code>-Fp</code></strong>。</p>
 <h3 id="2-物理与-WAL"><a href="#2-物理与-WAL" class="headerlink" title="2. 物理与 WAL"></a>2. 物理与 <strong>WAL</strong></h3><p><strong>PITR</strong> 依赖：<strong>基础备份</strong>（文件系统级或 <strong><code>pg_basebackup</code></strong>）+ <strong>连续归档的 WAL</strong> + <strong>恢复目标时间</strong>。与 <strong>MySQL binlog</strong> 地位类似的是 <strong>PostgreSQL WAL</strong>；具体恢复命令属 <strong>DBA</strong> 手册级。</p>
-<h3 id="3-与-Docker-的关系"><a href="#3-与-Docker-的关系" class="headerlink" title="3. 与 Docker 的关系"></a>3. 与 <strong>Docker</strong> 的关系</h3><p>容器内 <strong><code>$PGDATA</code></strong> 一般在卷上（见 <strong><code>PostgreSQL-Docker.md</code></strong>）；备份策略要约定「从宿主机 <strong><code>pg_dump</code></strong> 连容器端口」还是「卷快照 + <strong>WAL</strong> 归档」，并做<strong>恢复演练</strong>。</p>
+<h3 id="3-与-Docker-的关系"><a href="#3-与-Docker-的关系" class="headerlink" title="3. 与 Docker 的关系"></a>3. 与 <strong>Docker</strong> 的关系</h3><p>容器内 <strong><code>$PGDATA</code></strong> 一般在卷上（见 <a href="/2026/05/01/PostgreSQL/PostgreSQL-Docker/" title="第二章：Docker 部署 PostgreSQL 实践">第二章：Docker 部署 PostgreSQL 实践</a>）；备份策略要约定「从宿主机 <strong><code>pg_dump</code></strong> 连容器端口」还是「卷快照 + <strong>WAL</strong> 归档」，并做<strong>恢复演练</strong>。</p>
 <hr>
 <h2 id="九、姊妹文索引"><a href="#九、姊妹文索引" class="headerlink" title="九、姊妹文索引"></a>九、姊妹文索引</h2><table>
 <thead>
@@ -371,23 +376,53 @@
 </tr>
 </thead>
 <tbody><tr>
-<td><strong><code>PostgreSQL.md</code></strong></td>
+<td><a href="/2026/05/01/PostgreSQL/PostgreSQL/" title="第一章：PostgreSQL 概述与 DDL 入门">第一章：PostgreSQL 概述与 DDL 入门</a></td>
 <td><strong>DDL</strong>、<strong><code>SCHEMA</code></strong>、约束</td>
 </tr>
 <tr>
-<td><strong><code>PostgreSQL高级查询.md</code></strong></td>
+<td><a href="/2026/05/03/PostgreSQL/PostgreSQL%E9%AB%98%E7%BA%A7%E6%9F%A5%E8%AF%A2/" title="第四章：PostgreSQL 高级查询">第四章：PostgreSQL 高级查询</a></td>
 <td><strong>CTE</strong>、窗口、<strong><code>DISTINCT ON</code></strong>、<strong><code>FILTER</code></strong></td>
 </tr>
 <tr>
-<td><strong><code>PostgreSQL并发与MVCC入门.md</code></strong></td>
+<td><a href="/2026/05/03/PostgreSQL/PostgreSQL%E5%B9%B6%E5%8F%91%E4%B8%8EMVCC%E5%85%A5%E9%97%A8/" title="第六章：PostgreSQL 并发与 MVCC 入门">第六章：PostgreSQL 并发与 MVCC 入门</a></td>
 <td><strong><code>FOR UPDATE</code></strong>、死锁、快照</td>
 </tr>
 <tr>
-<td><strong><code>PostgreSQL-Docker.md</code></strong></td>
+<td><a href="/2026/05/01/PostgreSQL/PostgreSQL-Docker/" title="第二章：Docker 部署 PostgreSQL 实践">第二章：Docker 部署 PostgreSQL 实践</a></td>
 <td><strong>Docker &#x2F; Compose &#x2F; K8s</strong> 部署</td>
 </tr>
 </tbody></table>
 <p>生产请叠加：<strong>连接池</strong>、<strong>监控</strong>、<strong>TLS</strong>、<strong>只读副本延迟</strong>与<strong>变更规范</strong>。</p>
+<hr>
+<h2 id="本章小结"><a href="#本章小结" class="headerlink" title="本章小结"></a>本章小结</h2><table>
+<thead>
+<tr>
+<th>要点</th>
+<th>结论</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>索引选型</td>
+<td>默认 <strong>B-Tree</strong>；全文&#x2F;<code>jsonb</code> 用 <strong>GIN</strong>、地理&#x2F;范围用 <strong>GiST</strong>、超大顺序表用 <strong>BRIN</strong></td>
+</tr>
+<tr>
+<td>最左前缀</td>
+<td>联合索引 <strong><code>(a,b,c)</code></strong> 从 <strong><code>a</code></strong> 起才易命中；函数包裹列需<strong>表达式索引</strong></td>
+</tr>
+<tr>
+<td>执行计划</td>
+<td><strong><code>EXPLAIN (ANALYZE, BUFFERS)</code></strong> 是唯一真相；警惕大表 <strong><code>Seq Scan</code></strong> 与行数估算偏差</td>
+</tr>
+<tr>
+<td>膨胀治理</td>
+<td><strong>MVCC 死元组</strong>靠 <strong><code>VACUUM</code></strong> &#x2F; autovacuum 回收，长期不清理必膨胀</td>
+</tr>
+<tr>
+<td>备份恢复</td>
+<td>逻辑备份 <strong><code>pg_dump -Fc</code></strong>；<strong>PITR</strong> &#x3D; 基础备份 + <strong>WAL</strong> 归档，必须做<strong>恢复演练</strong></td>
+</tr>
+</tbody></table>
+<h2 id="下一章"><a href="#下一章" class="headerlink" title="下一章"></a>下一章</h2><p>下一步：性能问题的很多根因藏在并发与多版本里 → <a href="/2026/05/03/PostgreSQL/PostgreSQL%E5%B9%B6%E5%8F%91%E4%B8%8EMVCC%E5%85%A5%E9%97%A8/" title="第六章：PostgreSQL 并发与 MVCC 入门">第六章：PostgreSQL 并发与 MVCC 入门</a></p>
 
     </div>
 
@@ -408,13 +443,13 @@
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2026/05/03/PostgreSQL/PostgreSQL%E9%AB%98%E7%BA%A7%E6%9F%A5%E8%AF%A2/" rel="prev" title="PostgreSQL 高级查询示例">
-                  <i class="fa fa-angle-left"></i> PostgreSQL 高级查询示例
+                <a href="/2026/05/03/PostgreSQL/PostgreSQL%E9%AB%98%E7%BA%A7%E6%9F%A5%E8%AF%A2/" rel="prev" title="第四章：PostgreSQL 高级查询">
+                  <i class="fa fa-angle-left"></i> 第四章：PostgreSQL 高级查询
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2026/05/03/PostgreSQL/PostgreSQL%E5%B9%B6%E5%8F%91%E4%B8%8EMVCC%E5%85%A5%E9%97%A8/" rel="next" title="PostgreSQL 并发与 MVCC 入门">
-                  PostgreSQL 并发与 MVCC 入门 <i class="fa fa-angle-right"></i>
+                <a href="/2026/05/03/PostgreSQL/PostgreSQL%E5%B9%B6%E5%8F%91%E4%B8%8EMVCC%E5%85%A5%E9%97%A8/" rel="next" title="第六章：PostgreSQL 并发与 MVCC 入门">
+                  第六章：PostgreSQL 并发与 MVCC 入门 <i class="fa fa-angle-right"></i>
                 </a>
             </div>
           </div>
@@ -446,13 +481,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">195k</span>
+    <span title="站点总字数">253k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">10:49</span>
+    <span title="站点阅读时长">14:03</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

@@ -18,29 +18,29 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
 
-<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
+<script class="next-config" data-name="main" type="application/json">{"hostname":"my919.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
 
-    <meta name="description" content="Go（常称 Golang）把并发写进语言核心：goroutine 作为轻量执行单元，channel 作为类型安全的通信原语，再配合 sync 与 context，适合网络服务、流水线与可取消任务。下面按「模型 → 通信 → 多路选择 → 锁与协作 → 取消」组织。 CSP 模型   flowchart LR   G1[goroutine A] --&gt;|send| Ch[channel]">
+    <meta name="description" content="Go 并发编程入门概念基础：Go 并发编程是什么&#x2F;为什么 并发是语言内建能力：Go 在语言层面提供 goroutine 与 channel，无需第三方库即可写出高并发程序，这是 Go 最具辨识度的特性。 CSP 模型：遵循「不要通过共享内存来通信，而要通过通信来共享内存」，用 channel 在 goroutine 之间传递数据与所有权。 M:N 调度：运行时把成千上万个轻量 gorou">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Go 并发">
-<meta property="og:url" content="http://example.com/2026/05/01/Golang/Golang/index.html">
+<meta property="og:title" content="Go 并发编程入门">
+<meta property="og:url" content="https://my919.github.io/2026/05/01/Golang/Golang/index.html">
 <meta property="og:site_name" content="my">
-<meta property="og:description" content="Go（常称 Golang）把并发写进语言核心：goroutine 作为轻量执行单元，channel 作为类型安全的通信原语，再配合 sync 与 context，适合网络服务、流水线与可取消任务。下面按「模型 → 通信 → 多路选择 → 锁与协作 → 取消」组织。 CSP 模型   flowchart LR   G1[goroutine A] --&gt;|send| Ch[channel]">
+<meta property="og:description" content="Go 并发编程入门概念基础：Go 并发编程是什么&#x2F;为什么 并发是语言内建能力：Go 在语言层面提供 goroutine 与 channel，无需第三方库即可写出高并发程序，这是 Go 最具辨识度的特性。 CSP 模型：遵循「不要通过共享内存来通信，而要通过通信来共享内存」，用 channel 在 goroutine 之间传递数据与所有权。 M:N 调度：运行时把成千上万个轻量 gorou">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-05-01T04:28:41.000Z">
-<meta property="article:modified_time" content="2026-05-31T14:49:55.740Z">
+<meta property="article:modified_time" content="2026-08-30T08:07:08.703Z">
 <meta property="article:author" content="miracle">
 <meta property="article:tag" content="Golang">
 <meta name="twitter:card" content="summary">
 
 
-<link rel="canonical" href="http://example.com/2026/05/01/Golang/Golang/">
+<link rel="canonical" href="https://my919.github.io/2026/05/01/Golang/Golang/">
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2026/05/01/Golang/Golang/","path":"2026/05/01/Golang/Golang/","title":"Go 并发"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://my919.github.io/2026/05/01/Golang/Golang/","path":"2026/05/01/Golang/Golang/","title":"Go 并发编程入门"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>Go 并发 | my</title>
+<title>Go 并发编程入门 | my</title>
   
 
 
@@ -68,12 +68,6 @@
   
 
 
-
-
-  
-
-  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
-<script src="/js/third-party/math/mathjax.js" defer></script>
 
 
 
@@ -167,7 +161,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#CSP-%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.</span> <span class="nav-text">CSP 模型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81goroutine-%E4%B8%8E%E8%B0%83%E5%BA%A6%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.1.</span> <span class="nav-text">一、goroutine 与调度模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81channel%EF%BC%9A%E9%80%9A%E4%BF%A1%E4%BC%98%E5%85%88%E4%BA%8E%E5%85%B1%E4%BA%AB%E5%86%85%E5%AD%98"><span class="nav-number">1.2.</span> <span class="nav-text">二、channel：通信优先于共享内存</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81select%EF%BC%9A%E5%A4%9A%E8%B7%AF%E7%AD%89%E5%BE%85%E4%B8%8E%E8%B6%85%E6%97%B6"><span class="nav-number">1.3.</span> <span class="nav-text">三、select：多路等待与超时</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81sync-%E5%8C%85%EF%BC%9A%E9%94%81%E4%B8%8E%E5%8D%8F%E4%BD%9C%E5%8E%9F%E8%AF%AD"><span class="nav-number">1.4.</span> <span class="nav-text">四、sync 包：锁与协作原语</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-Mutex-RWMutex"><span class="nav-number">1.4.1.</span> <span class="nav-text">4.1 Mutex &#x2F; RWMutex</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-WaitGroup"><span class="nav-number">1.4.2.</span> <span class="nav-text">4.2 WaitGroup</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-Once"><span class="nav-number">1.4.3.</span> <span class="nav-text">4.3 Once</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81context%EF%BC%9A%E5%8F%96%E6%B6%88%E3%80%81%E8%B6%85%E6%97%B6%E4%B8%8E%E4%BC%A0%E5%80%BC"><span class="nav-number">1.5.</span> <span class="nav-text">五、context：取消、超时与传值</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E5%B8%B8%E8%A7%81%E9%99%B7%E9%98%B1%E4%B8%8E%E5%AE%9E%E8%B7%B5%E5%BB%BA%E8%AE%AE"><span class="nav-number">1.6.</span> <span class="nav-text">六、常见陷阱与实践建议</span></a></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Go-%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%85%A5%E9%97%A8"><span class="nav-number">1.</span> <span class="nav-text">Go 并发编程入门</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80%EF%BC%9AGo-%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E6%98%AF%E4%BB%80%E4%B9%88-%E4%B8%BA%E4%BB%80%E4%B9%88"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础：Go 并发编程是什么&#x2F;为什么</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CSP-%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.2.</span> <span class="nav-text">CSP 模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81goroutine-%E4%B8%8E%E8%B0%83%E5%BA%A6%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.3.</span> <span class="nav-text">一、goroutine 与调度模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81channel%EF%BC%9A%E9%80%9A%E4%BF%A1%E4%BC%98%E5%85%88%E4%BA%8E%E5%85%B1%E4%BA%AB%E5%86%85%E5%AD%98"><span class="nav-number">1.4.</span> <span class="nav-text">二、channel：通信优先于共享内存</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81select%EF%BC%9A%E5%A4%9A%E8%B7%AF%E7%AD%89%E5%BE%85%E4%B8%8E%E8%B6%85%E6%97%B6"><span class="nav-number">1.5.</span> <span class="nav-text">三、select：多路等待与超时</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81sync-%E5%8C%85%EF%BC%9A%E9%94%81%E4%B8%8E%E5%8D%8F%E4%BD%9C%E5%8E%9F%E8%AF%AD"><span class="nav-number">1.6.</span> <span class="nav-text">四、sync 包：锁与协作原语</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-Mutex-RWMutex"><span class="nav-number">1.6.1.</span> <span class="nav-text">4.1 Mutex &#x2F; RWMutex</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-WaitGroup"><span class="nav-number">1.6.2.</span> <span class="nav-text">4.2 WaitGroup</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-Once"><span class="nav-number">1.6.3.</span> <span class="nav-text">4.3 Once</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81context%EF%BC%9A%E5%8F%96%E6%B6%88%E3%80%81%E8%B6%85%E6%97%B6%E4%B8%8E%E4%BC%A0%E5%80%BC"><span class="nav-number">1.7.</span> <span class="nav-text">五、context：取消、超时与传值</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E5%B8%B8%E8%A7%81%E9%99%B7%E9%98%B1%E4%B8%8E%E5%AE%9E%E8%B7%B5%E5%BB%BA%E8%AE%AE"><span class="nav-number">1.8.</span> <span class="nav-text">六、常见陷阱与实践建议</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.9.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -180,18 +174,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">192</span>
+          <span class="site-state-item-count">194</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">39</span>
+        <span class="site-state-item-count">33</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">108</span>
+        <span class="site-state-item-count">114</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -229,7 +223,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/Golang/Golang/">
+    <link itemprop="mainEntityOfPage" href="https://my919.github.io/2026/05/01/Golang/Golang/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -242,12 +236,12 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="Go 并发 | my">
+      <meta itemprop="name" content="Go 并发编程入门 | my">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          Go 并发
+          Go 并发编程入门
         </h1>
 
         <div class="post-meta-container">
@@ -265,7 +259,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-31 22:49:55" itemprop="dateModified" datetime="2026-05-31T22:49:55+08:00">2026-05-31</time>
+      <time title="修改时间：2026-08-30 16:07:08" itemprop="dateModified" datetime="2026-08-30T16:07:08+08:00">2026-08-30</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -284,14 +278,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>1.1k</span>
+      <span>1.4k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>4 分钟</span>
+      <span>5 分钟</span>
     </span>
 </div>
 
@@ -301,8 +295,14 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><p><strong>Go</strong>（常称 <strong>Golang</strong>）把并发写进语言核心：<strong>goroutine</strong> 作为轻量执行单元，<strong>channel</strong> 作为类型安全的通信原语，再配合 <strong><code>sync</code></strong> 与 <strong><code>context</code></strong>，适合网络服务、流水线与可取消任务。下面按「模型 → 通信 → 多路选择 → 锁与协作 → 取消」组织。</p>
-<h1 id="CSP-模型"><a href="#CSP-模型" class="headerlink" title="CSP 模型"></a>CSP 模型</h1><pre>
+    <div class="post-body" itemprop="articleBody"><h1 id="Go-并发编程入门"><a href="#Go-并发编程入门" class="headerlink" title="Go 并发编程入门"></a>Go 并发编程入门</h1><h2 id="概念基础：Go-并发编程是什么-为什么"><a href="#概念基础：Go-并发编程是什么-为什么" class="headerlink" title="概念基础：Go 并发编程是什么&#x2F;为什么"></a>概念基础：Go 并发编程是什么&#x2F;为什么</h2><ol>
+<li><strong>并发是语言内建能力</strong>：Go 在语言层面提供 <strong>goroutine</strong> 与 <strong>channel</strong>，无需第三方库即可写出高并发程序，这是 Go 最具辨识度的特性。</li>
+<li><strong>CSP 模型</strong>：遵循「<strong>不要通过共享内存来通信，而要通过通信来共享内存</strong>」，用 channel 在 goroutine 之间传递数据与所有权。</li>
+<li><strong>M:N 调度</strong>：运行时把成千上万个<strong>轻量 goroutine</strong> 复用到少量 <strong>OS 线程</strong>上，创建成本远低于线程，适合海量并发任务。</li>
+<li><strong>传统同步工具仍在</strong>：<strong><code>sync.Mutex</code>&#x2F;<code>WaitGroup</code>&#x2F;<code>Once</code></strong> 处理共享状态与协作，<strong><code>context</code></strong> 统一传递取消与超时。</li>
+<li><strong>工程红线清晰</strong>：goroutine 泄漏、循环变量捕获、无界并发是三大常见陷阱；开发与 CI 应常开 <strong><code>go test -race</code></strong> 竞态检测。</li>
+</ol>
+<h2 id="CSP-模型"><a href="#CSP-模型" class="headerlink" title="CSP 模型"></a>CSP 模型</h2><pre>
 <code class="mermaid">
 
 flowchart LR
@@ -359,6 +359,34 @@ flowchart LR
 <li><strong>竞态检测</strong>：开发与 CI 中开启 <strong><code>go test -race</code></strong>，能发现大量数据竞态。</li>
 </ul>
 <p>整体上，Go 鼓励用 <strong>channel 表达所有权与流水线</strong>，在热点路径或简单共享计数时用 <strong><code>Mutex</code></strong>；<strong>取消与超时</strong>交给 <strong><code>context</code></strong>，代码意图会更清晰、也更容易在团队中保持一致。</p>
+<h2 id="本章小结"><a href="#本章小结" class="headerlink" title="本章小结"></a>本章小结</h2><table>
+<thead>
+<tr>
+<th>要点</th>
+<th>结论</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>goroutine</td>
+<td><code>go f()</code> 启动轻量协程，<strong>M:N</strong> 调度，海量并发不靠海量线程</td>
+</tr>
+<tr>
+<td>channel</td>
+<td><strong>无缓冲同步交接</strong>、<strong>缓冲解耦限流</strong>；仅发送方 <code>close</code>，<code>v, ok := &lt;-ch</code> 判关闭</td>
+</tr>
+<tr>
+<td>超时与取消</td>
+<td><strong><code>select</code> + <code>time.After</code></strong> 应急，生产推荐 <strong><code>context</code></strong> 贯穿调用链</td>
+</tr>
+<tr>
+<td>共享状态</td>
+<td>热点计数用 <strong><code>Mutex</code></strong>，读多写少用 <strong>RWMutex</strong>；<strong><code>-race</code></strong> 常开测竞态</td>
+</tr>
+<tr>
+<td>三大陷阱</td>
+<td>main 退出即进程退出、goroutine 泄漏、循环变量捕获，均需汇合点与显式传参</td>
+</tr>
+</tbody></table>
 
     </div>
 
@@ -375,13 +403,13 @@ flowchart LR
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2026/05/01/ClickHouse/ClickHouse/" rel="prev" title="ClickHouse">
-                  <i class="fa fa-angle-left"></i> ClickHouse
+                <a href="/2026/05/01/ClickHouse/ClickHouse/" rel="prev" title="第一章：ClickHouse 列式存储入门">
+                  <i class="fa fa-angle-left"></i> 第一章：ClickHouse 列式存储入门
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2026/05/01/Python/Jupyter/" rel="next" title="Jupyter 入门：经典 Notebook、安装与内核">
-                  Jupyter 入门：经典 Notebook、安装与内核 <i class="fa fa-angle-right"></i>
+                <a href="/2026/05/01/Python/Jupyter/" rel="next" title="第十章：Jupyter 入门：经典 Notebook、安装与内核">
+                  第十章：Jupyter 入门：经典 Notebook、安装与内核 <i class="fa fa-angle-right"></i>
                 </a>
             </div>
           </div>
@@ -413,13 +441,13 @@ flowchart LR
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">195k</span>
+    <span title="站点总字数">253k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">10:49</span>
+    <span title="站点阅读时长">14:03</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

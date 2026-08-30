@@ -18,17 +18,17 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
 
-<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
+<script class="next-config" data-name="main" type="application/json">{"hostname":"my919.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
 
-    <meta name="description" content="Ruff 是 Astral 旗下的 Python 极快 linter 与 formatter，可替代或搭配 flake8、isort、pyupgrade 等工具链。本文假定你已有 uv 管理的项目（含 pyproject.toml）；若还没有，可先按《UV从0到1创建项目》完成初始化。下文命令均在项目根目录执行。  一、在 uv 项目中安装 Ruff1. 作为开发依赖添加将 Ruff 写入开发依赖">
+    <meta name="description" content="第三章：UV 项目开发添加 Ruff：代码检查与格式化概念基础：Ruff 是什么Ruff 是 Astral（uv 的同门）用 Rust 编写的 Python Linter + Formatter：  一个工具干两件事：同时覆盖静态检查（lint）与代码格式化（format），可替代 flake8 + isort + Black 的多工具组合，且速度快 10~100 倍。 规则集丰富：内置 pyco">
 <meta property="og:type" content="article">
-<meta property="og:title" content="UV项目开发添加Ruff">
-<meta property="og:url" content="http://example.com/2026/05/01/Python/UV%E9%A1%B9%E7%9B%AE%E5%BC%80%E5%8F%91%E6%B7%BB%E5%8A%A0Ruff/index.html">
+<meta property="og:title" content="第三章：UV 项目开发添加 Ruff：代码检查与格式化">
+<meta property="og:url" content="https://my919.github.io/2026/05/01/Python/UV%E9%A1%B9%E7%9B%AE%E5%BC%80%E5%8F%91%E6%B7%BB%E5%8A%A0Ruff/index.html">
 <meta property="og:site_name" content="my">
-<meta property="og:description" content="Ruff 是 Astral 旗下的 Python 极快 linter 与 formatter，可替代或搭配 flake8、isort、pyupgrade 等工具链。本文假定你已有 uv 管理的项目（含 pyproject.toml）；若还没有，可先按《UV从0到1创建项目》完成初始化。下文命令均在项目根目录执行。  一、在 uv 项目中安装 Ruff1. 作为开发依赖添加将 Ruff 写入开发依赖">
+<meta property="og:description" content="第三章：UV 项目开发添加 Ruff：代码检查与格式化概念基础：Ruff 是什么Ruff 是 Astral（uv 的同门）用 Rust 编写的 Python Linter + Formatter：  一个工具干两件事：同时覆盖静态检查（lint）与代码格式化（format），可替代 flake8 + isort + Black 的多工具组合，且速度快 10~100 倍。 规则集丰富：内置 pyco">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-05-01T02:30:00.000Z">
-<meta property="article:modified_time" content="2026-05-05T05:12:49.294Z">
+<meta property="article:modified_time" content="2026-08-30T07:28:19.359Z">
 <meta property="article:author" content="miracle">
 <meta property="article:tag" content="Python">
 <meta property="article:tag" content="Ruff">
@@ -37,13 +37,13 @@
 <meta name="twitter:card" content="summary">
 
 
-<link rel="canonical" href="http://example.com/2026/05/01/Python/UV%E9%A1%B9%E7%9B%AE%E5%BC%80%E5%8F%91%E6%B7%BB%E5%8A%A0Ruff/">
+<link rel="canonical" href="https://my919.github.io/2026/05/01/Python/UV%E9%A1%B9%E7%9B%AE%E5%BC%80%E5%8F%91%E6%B7%BB%E5%8A%A0Ruff/">
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2026/05/01/Python/UV%E9%A1%B9%E7%9B%AE%E5%BC%80%E5%8F%91%E6%B7%BB%E5%8A%A0Ruff/","path":"2026/05/01/Python/UV项目开发添加Ruff/","title":"UV项目开发添加Ruff"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://my919.github.io/2026/05/01/Python/UV%E9%A1%B9%E7%9B%AE%E5%BC%80%E5%8F%91%E6%B7%BB%E5%8A%A0Ruff/","path":"2026/05/01/Python/UV项目开发添加Ruff/","title":"第三章：UV 项目开发添加 Ruff：代码检查与格式化"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>UV项目开发添加Ruff | my</title>
+<title>第三章：UV 项目开发添加 Ruff：代码检查与格式化 | my</title>
   
 
 
@@ -71,12 +71,6 @@
   
 
 
-
-
-  
-
-  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
-<script src="/js/third-party/math/mathjax.js" defer></script>
 
 
 
@@ -170,7 +164,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E5%9C%A8-uv-%E9%A1%B9%E7%9B%AE%E4%B8%AD%E5%AE%89%E8%A3%85-Ruff"><span class="nav-number">1.</span> <span class="nav-text">一、在 uv 项目中安装 Ruff</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E4%BD%9C%E4%B8%BA%E5%BC%80%E5%8F%91%E4%BE%9D%E8%B5%96%E6%B7%BB%E5%8A%A0"><span class="nav-number">1.1.</span> <span class="nav-text">1. 作为开发依赖添加</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E7%A1%AE%E8%AE%A4%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6"><span class="nav-number">1.2.</span> <span class="nav-text">2. 确认可执行文件</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E5%9C%A8-pyproject-toml-%E4%B8%AD%E9%85%8D%E7%BD%AE-Ruff"><span class="nav-number">2.</span> <span class="nav-text">二、在 pyproject.toml 中配置 Ruff</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E6%9C%80%E5%B0%8F%E5%8F%AF%E7%94%A8%E9%85%8D%E7%BD%AE"><span class="nav-number">2.1.</span> <span class="nav-text">1. 最小可用配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E6%8C%87%E5%AE%9A%E8%A6%81%E6%A3%80%E6%9F%A5%E7%9A%84%E8%B7%AF%E5%BE%84%EF%BC%88%E5%8F%AF%E9%80%89%EF%BC%89"><span class="nav-number">2.2.</span> <span class="nav-text">2. 指定要检查的路径（可选）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E6%97%A5%E5%B8%B8%E6%A3%80%E6%9F%A5%E4%B8%8E%E6%A0%BC%E5%BC%8F%E5%8C%96"><span class="nav-number">3.</span> <span class="nav-text">三、日常检查与格式化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E9%9D%99%E6%80%81%E6%A3%80%E6%9F%A5%EF%BC%88lint%EF%BC%89"><span class="nav-number">3.1.</span> <span class="nav-text">1. 静态检查（lint）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E8%87%AA%E5%8A%A8%E4%BF%AE%E5%A4%8D%E5%8F%AF%E4%BF%AE%E9%97%AE%E9%A2%98"><span class="nav-number">3.2.</span> <span class="nav-text">2. 自动修复可修问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E6%A0%BC%E5%BC%8F%E5%8C%96%EF%BC%88formatter%EF%BC%89"><span class="nav-number">3.3.</span> <span class="nav-text">3. 格式化（formatter）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E4%B8%8E-uv-run-%E4%BB%A5%E5%A4%96%E7%9A%84%E7%94%A8%E6%B3%95"><span class="nav-number">4.</span> <span class="nav-text">四、与 uv run 以外的用法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E6%BF%80%E6%B4%BB%E8%99%9A%E6%8B%9F%E7%8E%AF%E5%A2%83%E5%90%8E%E7%9B%B4%E6%8E%A5%E4%BD%BF%E7%94%A8"><span class="nav-number">4.1.</span> <span class="nav-text">1. 激活虚拟环境后直接使用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E5%9C%A8-CI-%E4%B8%AD%E8%B0%83%E7%94%A8"><span class="nav-number">4.2.</span> <span class="nav-text">2. 在 CI 中调用</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E5%8F%AF%E9%80%89%EF%BC%9A%E5%BF%BD%E7%95%A5%E6%96%87%E4%BB%B6%E4%B8%8E-VS-Code"><span class="nav-number">5.</span> <span class="nav-text">五、可选：忽略文件与 VS Code</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-ruffignore"><span class="nav-number">5.1.</span> <span class="nav-text">1. .ruffignore</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E7%BC%96%E8%BE%91%E5%99%A8"><span class="nav-number">5.2.</span> <span class="nav-text">2. 编辑器</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%E9%80%9F%E6%9F%A5"><span class="nav-number">6.</span> <span class="nav-text">六、常用命令速查</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%B8%89%E7%AB%A0%EF%BC%9AUV-%E9%A1%B9%E7%9B%AE%E5%BC%80%E5%8F%91%E6%B7%BB%E5%8A%A0-Ruff%EF%BC%9A%E4%BB%A3%E7%A0%81%E6%A3%80%E6%9F%A5%E4%B8%8E%E6%A0%BC%E5%BC%8F%E5%8C%96"><span class="nav-number">1.</span> <span class="nav-text">第三章：UV 项目开发添加 Ruff：代码检查与格式化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80%EF%BC%9ARuff-%E6%98%AF%E4%BB%80%E4%B9%88"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础：Ruff 是什么</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E5%9C%A8-uv-%E9%A1%B9%E7%9B%AE%E4%B8%AD%E5%AE%89%E8%A3%85-Ruff"><span class="nav-number">1.2.</span> <span class="nav-text">一、在 uv 项目中安装 Ruff</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E4%BD%9C%E4%B8%BA%E5%BC%80%E5%8F%91%E4%BE%9D%E8%B5%96%E6%B7%BB%E5%8A%A0"><span class="nav-number">1.2.1.</span> <span class="nav-text">1. 作为开发依赖添加</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E7%A1%AE%E8%AE%A4%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6"><span class="nav-number">1.2.2.</span> <span class="nav-text">2. 确认可执行文件</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E5%9C%A8-pyproject-toml-%E4%B8%AD%E9%85%8D%E7%BD%AE-Ruff"><span class="nav-number">1.3.</span> <span class="nav-text">二、在 pyproject.toml 中配置 Ruff</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E6%9C%80%E5%B0%8F%E5%8F%AF%E7%94%A8%E9%85%8D%E7%BD%AE"><span class="nav-number">1.3.1.</span> <span class="nav-text">1. 最小可用配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E6%8C%87%E5%AE%9A%E8%A6%81%E6%A3%80%E6%9F%A5%E7%9A%84%E8%B7%AF%E5%BE%84%EF%BC%88%E5%8F%AF%E9%80%89%EF%BC%89"><span class="nav-number">1.3.2.</span> <span class="nav-text">2. 指定要检查的路径（可选）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E6%97%A5%E5%B8%B8%E6%A3%80%E6%9F%A5%E4%B8%8E%E6%A0%BC%E5%BC%8F%E5%8C%96"><span class="nav-number">1.4.</span> <span class="nav-text">三、日常检查与格式化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E9%9D%99%E6%80%81%E6%A3%80%E6%9F%A5%EF%BC%88lint%EF%BC%89"><span class="nav-number">1.4.1.</span> <span class="nav-text">1. 静态检查（lint）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E8%87%AA%E5%8A%A8%E4%BF%AE%E5%A4%8D%E5%8F%AF%E4%BF%AE%E9%97%AE%E9%A2%98"><span class="nav-number">1.4.2.</span> <span class="nav-text">2. 自动修复可修问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E6%A0%BC%E5%BC%8F%E5%8C%96%EF%BC%88formatter%EF%BC%89"><span class="nav-number">1.4.3.</span> <span class="nav-text">3. 格式化（formatter）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E4%B8%8E-uv-run-%E4%BB%A5%E5%A4%96%E7%9A%84%E7%94%A8%E6%B3%95"><span class="nav-number">1.5.</span> <span class="nav-text">四、与 uv run 以外的用法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E6%BF%80%E6%B4%BB%E8%99%9A%E6%8B%9F%E7%8E%AF%E5%A2%83%E5%90%8E%E7%9B%B4%E6%8E%A5%E4%BD%BF%E7%94%A8"><span class="nav-number">1.5.1.</span> <span class="nav-text">1. 激活虚拟环境后直接使用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E5%9C%A8-CI-%E4%B8%AD%E8%B0%83%E7%94%A8"><span class="nav-number">1.5.2.</span> <span class="nav-text">2. 在 CI 中调用</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E5%8F%AF%E9%80%89%EF%BC%9A%E5%BF%BD%E7%95%A5%E6%96%87%E4%BB%B6%E4%B8%8E-VS-Code"><span class="nav-number">1.6.</span> <span class="nav-text">五、可选：忽略文件与 VS Code</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-ruffignore"><span class="nav-number">1.6.1.</span> <span class="nav-text">1. .ruffignore</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E7%BC%96%E8%BE%91%E5%99%A8"><span class="nav-number">1.6.2.</span> <span class="nav-text">2. 编辑器</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%E9%80%9F%E6%9F%A5"><span class="nav-number">1.7.</span> <span class="nav-text">六、常用命令速查</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.8.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -183,18 +177,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">192</span>
+          <span class="site-state-item-count">194</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">39</span>
+        <span class="site-state-item-count">33</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">108</span>
+        <span class="site-state-item-count">114</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -232,7 +226,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/Python/UV%E9%A1%B9%E7%9B%AE%E5%BC%80%E5%8F%91%E6%B7%BB%E5%8A%A0Ruff/">
+    <link itemprop="mainEntityOfPage" href="https://my919.github.io/2026/05/01/Python/UV%E9%A1%B9%E7%9B%AE%E5%BC%80%E5%8F%91%E6%B7%BB%E5%8A%A0Ruff/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -245,12 +239,12 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="UV项目开发添加Ruff | my">
+      <meta itemprop="name" content="第三章：UV 项目开发添加 Ruff：代码检查与格式化 | my">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          UV项目开发添加Ruff
+          第三章：UV 项目开发添加 Ruff：代码检查与格式化
         </h1>
 
         <div class="post-meta-container">
@@ -268,7 +262,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-05-05 13:12:49" itemprop="dateModified" datetime="2026-05-05T13:12:49+08:00">2026-05-05</time>
+      <time title="修改时间：2026-08-30 15:28:19" itemprop="dateModified" datetime="2026-08-30T15:28:19+08:00">2026-08-30</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -287,14 +281,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>709</span>
+      <span>1k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>2 分钟</span>
+      <span>3 分钟</span>
     </span>
 </div>
 
@@ -304,51 +298,58 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><p><strong>Ruff</strong> 是 <a target="_blank" rel="noopener external nofollow noreferrer" href="https://astral.sh/">Astral</a> 旗下的 Python <strong>极快</strong> linter 与 formatter，可替代或搭配 flake8、isort、pyupgrade 等工具链。本文假定你已有 <strong>uv 管理的项目</strong>（含 <code>pyproject.toml</code>）；若还没有，可先按《UV从0到1创建项目》完成初始化。下文命令均在<strong>项目根目录</strong>执行。</p>
+    <div class="post-body" itemprop="articleBody"><h1 id="第三章：UV-项目开发添加-Ruff：代码检查与格式化"><a href="#第三章：UV-项目开发添加-Ruff：代码检查与格式化" class="headerlink" title="第三章：UV 项目开发添加 Ruff：代码检查与格式化"></a>第三章：UV 项目开发添加 Ruff：代码检查与格式化</h1><h2 id="概念基础：Ruff-是什么"><a href="#概念基础：Ruff-是什么" class="headerlink" title="概念基础：Ruff 是什么"></a>概念基础：Ruff 是什么</h2><p><strong>Ruff</strong> 是 <strong>Astral</strong>（uv 的同门）用 <strong>Rust</strong> 编写的 <strong>Python Linter + Formatter</strong>：</p>
+<ol>
+<li><strong>一个工具干两件事</strong>：同时覆盖<strong>静态检查（lint）<strong>与</strong>代码格式化（format）</strong>，可替代 flake8 + isort + Black 的多工具组合，且速度快 <strong>10~100 倍</strong>。</li>
+<li><strong>规则集丰富</strong>：内置 <strong>pycodestyle（E）</strong>、<strong>Pyflakes（F）</strong>、<strong>import 排序（I）</strong>、<strong>pyupgrade（UP）</strong>、<strong>bugbear（B）</strong> 等 800+ 规则，通过 <code>select</code> 按团队规范按需启用。</li>
+<li><strong>与 uv 无缝协作</strong>：<code>uv add --dev ruff</code> 装入<strong>开发依赖组</strong>（不进入生产依赖），<code>uv run ruff</code> 保证本地与 CI 用同一份环境与版本。</li>
+<li><strong>配置集中</strong>：所有配置写在 <strong><code>pyproject.toml</code></strong> 的 <strong><code>[tool.ruff]</code></strong>，无需额外 dotfile，与第二章的项目化工作流一脉相承。</li>
+</ol>
+<p>下面从安装、配置到日常使用逐步实操：</p>
 <hr>
-<h1 id="一、在-uv-项目中安装-Ruff"><a href="#一、在-uv-项目中安装-Ruff" class="headerlink" title="一、在 uv 项目中安装 Ruff"></a>一、在 uv 项目中安装 Ruff</h1><h2 id="1-作为开发依赖添加"><a href="#1-作为开发依赖添加" class="headerlink" title="1. 作为开发依赖添加"></a>1. 作为开发依赖添加</h2><p>将 <strong>Ruff</strong> 写入开发依赖组（不进入生产安装的最小集合，便于 CI 与本地统一）：</p>
+<h2 id="一、在-uv-项目中安装-Ruff"><a href="#一、在-uv-项目中安装-Ruff" class="headerlink" title="一、在 uv 项目中安装 Ruff"></a>一、在 uv 项目中安装 Ruff</h2><h3 id="1-作为开发依赖添加"><a href="#1-作为开发依赖添加" class="headerlink" title="1. 作为开发依赖添加"></a>1. 作为开发依赖添加</h3><p>将 <strong>Ruff</strong> 写入开发依赖组（不进入生产安装的最小集合，便于 CI 与本地统一）：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uv add --dev ruff</span><br></pre></td></tr></table></figure>
 
 <p>若你使用 uv 的 <strong>dependency-groups</strong> 语法，等价写法可能是 <code>uv add --group dev ruff</code>，以本机 <code>uv add --help</code> 为准。</p>
-<h2 id="2-确认可执行文件"><a href="#2-确认可执行文件" class="headerlink" title="2. 确认可执行文件"></a>2. 确认可执行文件</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uv run ruff --version</span><br></pre></td></tr></table></figure>
+<h3 id="2-确认可执行文件"><a href="#2-确认可执行文件" class="headerlink" title="2. 确认可执行文件"></a>2. 确认可执行文件</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uv run ruff --version</span><br></pre></td></tr></table></figure>
 
 <p>能输出版本号即表示当前项目的虚拟环境里已可用 Ruff。</p>
 <hr>
-<h1 id="二、在-pyproject-toml-中配置-Ruff"><a href="#二、在-pyproject-toml-中配置-Ruff" class="headerlink" title="二、在 pyproject.toml 中配置 Ruff"></a>二、在 <code>pyproject.toml</code> 中配置 Ruff</h1><h2 id="1-最小可用配置"><a href="#1-最小可用配置" class="headerlink" title="1. 最小可用配置"></a>1. 最小可用配置</h2><p>在 <strong><code>pyproject.toml</code></strong> 末尾增加（或合并进已有 <strong><code>[tool.ruff]</code></strong>）：</p>
+<h2 id="二、在-pyproject-toml-中配置-Ruff"><a href="#二、在-pyproject-toml-中配置-Ruff" class="headerlink" title="二、在 pyproject.toml 中配置 Ruff"></a>二、在 <code>pyproject.toml</code> 中配置 Ruff</h2><h3 id="1-最小可用配置"><a href="#1-最小可用配置" class="headerlink" title="1. 最小可用配置"></a>1. 最小可用配置</h3><p>在 <strong><code>pyproject.toml</code></strong> 末尾增加（或合并进已有 <strong><code>[tool.ruff]</code></strong>）：</p>
 <figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[tool.ruff]</span></span><br><span class="line"><span class="attr">target-version</span> = <span class="string">&quot;py314&quot;</span>   <span class="comment"># 与项目 Python 一致；若 Ruff 版本较旧可改为 py313 等</span></span><br><span class="line"><span class="attr">line-length</span> = <span class="number">88</span></span><br><span class="line"></span><br><span class="line"><span class="section">[tool.ruff.lint]</span></span><br><span class="line"><span class="attr">select</span> = [<span class="string">&quot;E&quot;</span>, <span class="string">&quot;F&quot;</span>, <span class="string">&quot;I&quot;</span>, <span class="string">&quot;UP&quot;</span>, <span class="string">&quot;B&quot;</span>]   <span class="comment"># 按需增减规则集</span></span><br><span class="line"><span class="attr">ignore</span> = []</span><br><span class="line"></span><br><span class="line"><span class="section">[tool.ruff.format]</span></span><br><span class="line"><span class="attr">quote-style</span> = <span class="string">&quot;double&quot;</span></span><br></pre></td></tr></table></figure>
 
 <ul>
 <li><strong><code>target-version</code></strong>：与 <code>requires-python</code> &#x2F; 实际运行版本对齐，避免规则与语法不匹配。  </li>
 <li><strong><code>select</code></strong>：示例包含 pycodestyle 类（E）、Pyflakes（F）、import 排序（I）、pyupgrade（UP）、bugbear（B）；可按团队规范调整。</li>
 </ul>
-<h2 id="2-指定要检查的路径（可选）"><a href="#2-指定要检查的路径（可选）" class="headerlink" title="2. 指定要检查的路径（可选）"></a>2. 指定要检查的路径（可选）</h2><p>默认可对仓库根目录递归检查；若只想扫源码目录，可加：</p>
+<h3 id="2-指定要检查的路径（可选）"><a href="#2-指定要检查的路径（可选）" class="headerlink" title="2. 指定要检查的路径（可选）"></a>2. 指定要检查的路径（可选）</h3><p>默认可对仓库根目录递归检查；若只想扫源码目录，可加：</p>
 <figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[tool.ruff]</span></span><br><span class="line"><span class="attr">src</span> = [<span class="string">&quot;src&quot;</span>]</span><br></pre></td></tr></table></figure>
 
 <p>目录名按你项目实际修改（例如只有 <code>hello_uv</code> 包目录则写 <code>[&quot;hello_uv&quot;]</code>）。</p>
 <hr>
-<h1 id="三、日常检查与格式化"><a href="#三、日常检查与格式化" class="headerlink" title="三、日常检查与格式化"></a>三、日常检查与格式化</h1><h2 id="1-静态检查（lint）"><a href="#1-静态检查（lint）" class="headerlink" title="1. 静态检查（lint）"></a>1. 静态检查（lint）</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uv run ruff check .</span><br></pre></td></tr></table></figure>
+<h2 id="三、日常检查与格式化"><a href="#三、日常检查与格式化" class="headerlink" title="三、日常检查与格式化"></a>三、日常检查与格式化</h2><h3 id="1-静态检查（lint）"><a href="#1-静态检查（lint）" class="headerlink" title="1. 静态检查（lint）"></a>1. 静态检查（lint）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uv run ruff check .</span><br></pre></td></tr></table></figure>
 
 <p>仅检查 <strong><code>src</code></strong> 时：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uv run ruff check src</span><br></pre></td></tr></table></figure>
 
-<h2 id="2-自动修复可修问题"><a href="#2-自动修复可修问题" class="headerlink" title="2. 自动修复可修问题"></a>2. 自动修复可修问题</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uv run ruff check . --fix</span><br></pre></td></tr></table></figure>
+<h3 id="2-自动修复可修问题"><a href="#2-自动修复可修问题" class="headerlink" title="2. 自动修复可修问题"></a>2. 自动修复可修问题</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uv run ruff check . --fix</span><br></pre></td></tr></table></figure>
 
 <p><strong>建议</strong>在提交前于分支上执行，并 review diff；部分规则不会自动修复。</p>
-<h2 id="3-格式化（formatter）"><a href="#3-格式化（formatter）" class="headerlink" title="3. 格式化（formatter）"></a>3. 格式化（formatter）</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uv run ruff format .</span><br></pre></td></tr></table></figure>
+<h3 id="3-格式化（formatter）"><a href="#3-格式化（formatter）" class="headerlink" title="3. 格式化（formatter）"></a>3. 格式化（formatter）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uv run ruff format .</span><br></pre></td></tr></table></figure>
 
 <p>与 <strong>Black</strong> 风格接近；若团队已有 Black，需统一约定再启用 Ruff format。</p>
 <hr>
-<h1 id="四、与-uv-run-以外的用法"><a href="#四、与-uv-run-以外的用法" class="headerlink" title="四、与 uv run 以外的用法"></a>四、与 <code>uv run</code> 以外的用法</h1><h2 id="1-激活虚拟环境后直接使用"><a href="#1-激活虚拟环境后直接使用" class="headerlink" title="1. 激活虚拟环境后直接使用"></a>1. 激活虚拟环境后直接使用</h2><p>若已 <code>source .venv/bin/activate</code>（Linux &#x2F; macOS），可直接：</p>
+<h2 id="四、与-uv-run-以外的用法"><a href="#四、与-uv-run-以外的用法" class="headerlink" title="四、与 uv run 以外的用法"></a>四、与 <code>uv run</code> 以外的用法</h2><h3 id="1-激活虚拟环境后直接使用"><a href="#1-激活虚拟环境后直接使用" class="headerlink" title="1. 激活虚拟环境后直接使用"></a>1. 激活虚拟环境后直接使用</h3><p>若已 <code>source .venv/bin/activate</code>（Linux &#x2F; macOS），可直接：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ruff check .</span><br><span class="line">ruff format .</span><br></pre></td></tr></table></figure>
 
-<h2 id="2-在-CI-中调用"><a href="#2-在-CI-中调用" class="headerlink" title="2. 在 CI 中调用"></a>2. 在 CI 中调用</h2><p>在流水线里进入仓库根目录后执行与本地相同的 <strong><code>uv sync</code></strong>（含 dev 依赖），再 <strong><code>uv run ruff check .</code></strong>，保证与开发机一致。</p>
+<h3 id="2-在-CI-中调用"><a href="#2-在-CI-中调用" class="headerlink" title="2. 在 CI 中调用"></a>2. 在 CI 中调用</h3><p>在流水线里进入仓库根目录后执行与本地相同的 <strong><code>uv sync</code></strong>（含 dev 依赖），再 <strong><code>uv run ruff check .</code></strong>，保证与开发机一致。</p>
 <hr>
-<h1 id="五、可选：忽略文件与-VS-Code"><a href="#五、可选：忽略文件与-VS-Code" class="headerlink" title="五、可选：忽略文件与 VS Code"></a>五、可选：忽略文件与 VS Code</h1><h2 id="1-ruffignore"><a href="#1-ruffignore" class="headerlink" title="1. .ruffignore"></a>1. <code>.ruffignore</code></h2><p>与 <code>.gitignore</code> 类似，在项目根创建 <strong><code>.ruffignore</code></strong>，排除迁移脚本、生成代码等：</p>
+<h2 id="五、可选：忽略文件与-VS-Code"><a href="#五、可选：忽略文件与-VS-Code" class="headerlink" title="五、可选：忽略文件与 VS Code"></a>五、可选：忽略文件与 VS Code</h2><h3 id="1-ruffignore"><a href="#1-ruffignore" class="headerlink" title="1. .ruffignore"></a>1. <code>.ruffignore</code></h3><p>与 <code>.gitignore</code> 类似，在项目根创建 <strong><code>.ruffignore</code></strong>，排除迁移脚本、生成代码等：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">.venv/</span><br><span class="line">__pycache__/</span><br><span class="line">*.egg-info/</span><br></pre></td></tr></table></figure>
 
-<h2 id="2-编辑器"><a href="#2-编辑器" class="headerlink" title="2. 编辑器"></a>2. 编辑器</h2><p>VS Code &#x2F; Cursor 可安装官方 <strong>Ruff</strong> 扩展，与本地 <strong><code>uv run</code></strong> 或激活后的解释器指向同一 <code>.venv</code>，便于保存时格式化与行内提示。详见 <a target="_blank" rel="noopener external nofollow noreferrer" href="https://docs.astral.sh/ruff/editors/setup/">Ruff 编辑器集成</a>。</p>
+<h3 id="2-编辑器"><a href="#2-编辑器" class="headerlink" title="2. 编辑器"></a>2. 编辑器</h3><p>VS Code &#x2F; Cursor 可安装官方 <strong>Ruff</strong> 扩展，与本地 <strong><code>uv run</code></strong> 或激活后的解释器指向同一 <code>.venv</code>，便于保存时格式化与行内提示。详见 <a target="_blank" rel="noopener external nofollow noreferrer" href="https://docs.astral.sh/ruff/editors/setup/">Ruff 编辑器集成</a>。</p>
 <hr>
-<h1 id="六、常用命令速查"><a href="#六、常用命令速查" class="headerlink" title="六、常用命令速查"></a>六、常用命令速查</h1><table>
+<h2 id="六、常用命令速查"><a href="#六、常用命令速查" class="headerlink" title="六、常用命令速查"></a>六、常用命令速查</h2><table>
 <thead>
 <tr>
 <th>目的</th>
@@ -377,6 +378,36 @@
 </tr>
 </tbody></table>
 <p>官方文档：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://docs.astral.sh/ruff/">Ruff</a>。</p>
+<h2 id="本章小结"><a href="#本章小结" class="headerlink" title="本章小结"></a>本章小结</h2><table>
+<thead>
+<tr>
+<th>要点</th>
+<th>结论</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>工具定位</td>
+<td><strong>Rust 系 Linter + Formatter 二合一</strong>，替代 flake8 + isort + Black 组合</td>
+</tr>
+<tr>
+<td>安装方式</td>
+<td><code>uv add --dev ruff</code> 进入开发依赖组，<code>uv run ruff</code> 保证环境一致</td>
+</tr>
+<tr>
+<td>核心配置</td>
+<td><strong><code>[tool.ruff]</code></strong> 写在 <code>pyproject.toml</code>：<code>target-version</code>、<code>select</code> 规则集、格式化风格</td>
+</tr>
+<tr>
+<td>日常命令</td>
+<td><code>ruff check . --fix</code> 检查并自动修复，<code>ruff format .</code> 统一格式</td>
+</tr>
+<tr>
+<td>CI 一致性</td>
+<td>流水线先 <code>uv sync</code> 再 <code>uv run ruff check .</code>，与开发机行为相同</td>
+</tr>
+</tbody></table>
+<hr>
+<p>下一步：为项目接入静态类型检查 → <a href="/2026/05/01/Python/UV%E9%A1%B9%E7%9B%AE%E5%BC%80%E5%8F%91%E6%B7%BB%E5%8A%A0Pyright/" title="第四章：UV 项目开发添加 Pyright：静态类型检查">第四章：UV 项目开发添加 Pyright：静态类型检查</a></p>
 
     </div>
 
@@ -396,13 +427,13 @@
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2026/05/01/Python/UV%E4%BB%8E0%E5%88%B01%E5%88%9B%E5%BB%BA%E9%A1%B9%E7%9B%AE/" rel="prev" title="UV从0到1创建项目">
-                  <i class="fa fa-angle-left"></i> UV从0到1创建项目
+                <a href="/2026/05/01/Python/UV%E4%BB%8E0%E5%88%B01%E5%88%9B%E5%BB%BA%E9%A1%B9%E7%9B%AE/" rel="prev" title="第二章：UV 从 0 到 1 创建项目：初始化、依赖与运行">
+                  <i class="fa fa-angle-left"></i> 第二章：UV 从 0 到 1 创建项目：初始化、依赖与运行
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2026/05/01/Python/UV%E9%A1%B9%E7%9B%AE%E5%BC%80%E5%8F%91%E6%B7%BB%E5%8A%A0Pyright/" rel="next" title="UV项目开发添加Pyright">
-                  UV项目开发添加Pyright <i class="fa fa-angle-right"></i>
+                <a href="/2026/05/01/Python/UV%E9%A1%B9%E7%9B%AE%E5%BC%80%E5%8F%91%E6%B7%BB%E5%8A%A0Pyright/" rel="next" title="第四章：UV 项目开发添加 Pyright：静态类型检查">
+                  第四章：UV 项目开发添加 Pyright：静态类型检查 <i class="fa fa-angle-right"></i>
                 </a>
             </div>
           </div>
@@ -434,13 +465,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">195k</span>
+    <span title="站点总字数">253k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">10:49</span>
+    <span title="站点阅读时长">14:03</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

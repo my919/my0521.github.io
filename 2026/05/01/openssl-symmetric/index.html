@@ -18,29 +18,29 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
 
-<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
+<script class="next-config" data-name="main" type="application/json">{"hostname":"my919.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
 
-    <meta name="description" content="对称加密使用同一密钥加解密，适合** bulk 数据**（文件、会话流量）。OpenSSL 命令行主要用 openssl enc；TLS 会话密钥也是对称算法（如 AES-128-GCM）。操作入门见 OpenSSL 常用操作。 推荐算法（2020s 生产）   优先级 算法 &#x2F; 模式 用途    首选 AES-256-GCM 文件加密、磁盘、API 载荷（须唯一 nonce）   首选">
+    <meta name="description" content="第四章：OpenSSL 对称加密：AES-GCM、ChaCha20 与推荐用法概念基础：对称加密是什么、为什么这样选 对称加密：加密与解密使用同一把密钥，速度快、开销低，适合大块数据（文件、磁盘、TLS 记录层流量）。 两大要素：算法 + 工作模式（如 AES-256-GCM）决定安全性质；密钥来自随机数或口令派生（PBKDF2，见第七章）。 为什么推荐 AEAD：GCM &#x2F; ChaCh">
 <meta property="og:type" content="article">
-<meta property="og:title" content="OpenSSL 对称加密：AES-GCM、ChaCha20 与推荐用法">
-<meta property="og:url" content="http://example.com/2026/05/01/openssl-symmetric/index.html">
+<meta property="og:title" content="第四章：OpenSSL 对称加密：AES-GCM、ChaCha20 与推荐用法">
+<meta property="og:url" content="https://my919.github.io/2026/05/01/openssl-symmetric/index.html">
 <meta property="og:site_name" content="my">
-<meta property="og:description" content="对称加密使用同一密钥加解密，适合** bulk 数据**（文件、会话流量）。OpenSSL 命令行主要用 openssl enc；TLS 会话密钥也是对称算法（如 AES-128-GCM）。操作入门见 OpenSSL 常用操作。 推荐算法（2020s 生产）   优先级 算法 &#x2F; 模式 用途    首选 AES-256-GCM 文件加密、磁盘、API 载荷（须唯一 nonce）   首选">
+<meta property="og:description" content="第四章：OpenSSL 对称加密：AES-GCM、ChaCha20 与推荐用法概念基础：对称加密是什么、为什么这样选 对称加密：加密与解密使用同一把密钥，速度快、开销低，适合大块数据（文件、磁盘、TLS 记录层流量）。 两大要素：算法 + 工作模式（如 AES-256-GCM）决定安全性质；密钥来自随机数或口令派生（PBKDF2，见第七章）。 为什么推荐 AEAD：GCM &#x2F; ChaCh">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-05-01T06:05:00.000Z">
-<meta property="article:modified_time" content="2026-06-03T12:57:51.560Z">
+<meta property="article:modified_time" content="2026-08-30T07:15:40.748Z">
 <meta property="article:author" content="miracle">
 <meta property="article:tag" content="OpenSSL">
 <meta name="twitter:card" content="summary">
 
 
-<link rel="canonical" href="http://example.com/2026/05/01/openssl-symmetric/">
+<link rel="canonical" href="https://my919.github.io/2026/05/01/openssl-symmetric/">
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2026/05/01/openssl-symmetric/","path":"/2026/05/01/openssl-symmetric/","title":"OpenSSL 对称加密：AES-GCM、ChaCha20 与推荐用法"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://my919.github.io/2026/05/01/openssl-symmetric/","path":"/2026/05/01/openssl-symmetric/","title":"第四章：OpenSSL 对称加密：AES-GCM、ChaCha20 与推荐用法"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>OpenSSL 对称加密：AES-GCM、ChaCha20 与推荐用法 | my</title>
+<title>第四章：OpenSSL 对称加密：AES-GCM、ChaCha20 与推荐用法 | my</title>
   
 
 
@@ -68,12 +68,6 @@
   
 
 
-
-
-  
-
-  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
-<script src="/js/third-party/math/mathjax.js" defer></script>
 
 
 
@@ -167,7 +161,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8E%A8%E8%8D%90%E7%AE%97%E6%B3%95%EF%BC%882020s-%E7%94%9F%E4%BA%A7%EF%BC%89"><span class="nav-number">1.</span> <span class="nav-text">推荐算法（2020s 生产）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E7%AE%97%E6%B3%95%E7%89%B9%E7%82%B9"><span class="nav-number">2.</span> <span class="nav-text">一、算法特点</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-AES%EF%BC%88Advanced-Encryption-Standard%EF%BC%89"><span class="nav-number">2.1.</span> <span class="nav-text">1. AES（Advanced Encryption Standard）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-ChaCha20-Poly1305"><span class="nav-number">2.2.</span> <span class="nav-text">2. ChaCha20-Poly1305</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E5%B7%B2%E6%B7%98%E6%B1%B0%EF%BC%88legacy-provider%EF%BC%89"><span class="nav-number">2.3.</span> <span class="nav-text">3. 已淘汰（legacy provider）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E6%8E%A8%E8%8D%90%EF%BC%9Aopenssl-enc-%E5%8A%A0%E5%AF%86%E6%96%87%E4%BB%B6"><span class="nav-number">3.</span> <span class="nav-text">二、推荐：openssl enc 加密文件</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-AES-256-CBC-PBKDF2%EF%BC%88%E5%8F%A3%E4%BB%A4%E4%BF%9D%E6%8A%A4%EF%BC%8C%E9%80%9A%E7%94%A8%EF%BC%89"><span class="nav-number">3.1.</span> <span class="nav-text">1. AES-256-CBC + PBKDF2（口令保护，通用）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E6%9F%A5%E7%9C%8B%E6%94%AF%E6%8C%81%E7%9A%84-cipher"><span class="nav-number">3.2.</span> <span class="nav-text">2. 查看支持的 cipher</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81AEAD%EF%BC%88GCM%EF%BC%89%E5%9C%A8-OpenSSL-%E4%B8%AD%E7%9A%84%E6%B3%A8%E6%84%8F%E7%82%B9"><span class="nav-number">4.</span> <span class="nav-text">三、AEAD（GCM）在 OpenSSL 中的注意点</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E4%B8%8E-TLS-HTTPS-%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="nav-number">5.</span> <span class="nav-text">四、与 TLS &#x2F; HTTPS 的关系</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E9%80%89%E5%9E%8B%E5%B0%8F%E7%BB%93"><span class="nav-number">6.</span> <span class="nav-text">五、选型小结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BB%B6%E4%BC%B8%E9%98%85%E8%AF%BB"><span class="nav-number">7.</span> <span class="nav-text">延伸阅读</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%9AOpenSSL-%E5%AF%B9%E7%A7%B0%E5%8A%A0%E5%AF%86%EF%BC%9AAES-GCM%E3%80%81ChaCha20-%E4%B8%8E%E6%8E%A8%E8%8D%90%E7%94%A8%E6%B3%95"><span class="nav-number">1.</span> <span class="nav-text">第四章：OpenSSL 对称加密：AES-GCM、ChaCha20 与推荐用法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80%EF%BC%9A%E5%AF%B9%E7%A7%B0%E5%8A%A0%E5%AF%86%E6%98%AF%E4%BB%80%E4%B9%88%E3%80%81%E4%B8%BA%E4%BB%80%E4%B9%88%E8%BF%99%E6%A0%B7%E9%80%89"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础：对称加密是什么、为什么这样选</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8E%A8%E8%8D%90%E7%AE%97%E6%B3%95%EF%BC%882020s-%E7%94%9F%E4%BA%A7%EF%BC%89"><span class="nav-number">1.2.</span> <span class="nav-text">推荐算法（2020s 生产）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E7%AE%97%E6%B3%95%E7%89%B9%E7%82%B9"><span class="nav-number">1.3.</span> <span class="nav-text">一、算法特点</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-AES%EF%BC%88Advanced-Encryption-Standard%EF%BC%89"><span class="nav-number">1.3.1.</span> <span class="nav-text">1. AES（Advanced Encryption Standard）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-ChaCha20-Poly1305"><span class="nav-number">1.3.2.</span> <span class="nav-text">2. ChaCha20-Poly1305</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E5%B7%B2%E6%B7%98%E6%B1%B0%EF%BC%88legacy-provider%EF%BC%89"><span class="nav-number">1.3.3.</span> <span class="nav-text">3. 已淘汰（legacy provider）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E6%8E%A8%E8%8D%90%EF%BC%9Aopenssl-enc-%E5%8A%A0%E5%AF%86%E6%96%87%E4%BB%B6"><span class="nav-number">1.4.</span> <span class="nav-text">二、推荐：openssl enc 加密文件</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-AES-256-CBC-PBKDF2%EF%BC%88%E5%8F%A3%E4%BB%A4%E4%BF%9D%E6%8A%A4%EF%BC%8C%E9%80%9A%E7%94%A8%EF%BC%89"><span class="nav-number">1.4.1.</span> <span class="nav-text">1. AES-256-CBC + PBKDF2（口令保护，通用）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E6%9F%A5%E7%9C%8B%E6%94%AF%E6%8C%81%E7%9A%84-cipher"><span class="nav-number">1.4.2.</span> <span class="nav-text">2. 查看支持的 cipher</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81AEAD%EF%BC%88GCM%EF%BC%89%E5%9C%A8-OpenSSL-%E4%B8%AD%E7%9A%84%E6%B3%A8%E6%84%8F%E7%82%B9"><span class="nav-number">1.5.</span> <span class="nav-text">三、AEAD（GCM）在 OpenSSL 中的注意点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E4%B8%8E-TLS-HTTPS-%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="nav-number">1.6.</span> <span class="nav-text">四、与 TLS &#x2F; HTTPS 的关系</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E9%80%89%E5%9E%8B%E5%B0%8F%E7%BB%93"><span class="nav-number">1.7.</span> <span class="nav-text">五、选型小结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BB%B6%E4%BC%B8%E9%98%85%E8%AF%BB"><span class="nav-number">1.8.</span> <span class="nav-text">延伸阅读</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.9.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -180,18 +174,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">192</span>
+          <span class="site-state-item-count">194</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">39</span>
+        <span class="site-state-item-count">33</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">108</span>
+        <span class="site-state-item-count">114</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -229,7 +223,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/05/01/openssl-symmetric/">
+    <link itemprop="mainEntityOfPage" href="https://my919.github.io/2026/05/01/openssl-symmetric/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -242,12 +236,12 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="OpenSSL 对称加密：AES-GCM、ChaCha20 与推荐用法 | my">
+      <meta itemprop="name" content="第四章：OpenSSL 对称加密：AES-GCM、ChaCha20 与推荐用法 | my">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          OpenSSL 对称加密：AES-GCM、ChaCha20 与推荐用法
+          第四章：OpenSSL 对称加密：AES-GCM、ChaCha20 与推荐用法
         </h1>
 
         <div class="post-meta-container">
@@ -265,7 +259,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-06-03 20:57:51" itemprop="dateModified" datetime="2026-06-03T20:57:51+08:00">2026-06-03</time>
+      <time title="修改时间：2026-08-30 15:15:40" itemprop="dateModified" datetime="2026-08-30T15:15:40+08:00">2026-08-30</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -284,14 +278,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>864</span>
+      <span>1.2k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>3 分钟</span>
+      <span>4 分钟</span>
     </span>
 </div>
 
@@ -301,8 +295,14 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><p><strong>对称加密</strong>使用<strong>同一密钥</strong>加解密，适合** bulk 数据**（文件、会话流量）。OpenSSL 命令行主要用 <strong><code>openssl enc</code></strong>；<a href="/2026/05/01/Protocol/HTTPS/" title="HTTPS 详解：TLS 握手、证书与 openssl&#x2F;curl 示例">TLS</a> 会话密钥也是对称算法（如 <strong>AES-128-GCM</strong>）。操作入门见 <a href="/2026/05/01/OpenSSL/OpenSSL/" title="OpenSSL">OpenSSL 常用操作</a>。</p>
-<h1 id="推荐算法（2020s-生产）"><a href="#推荐算法（2020s-生产）" class="headerlink" title="推荐算法（2020s 生产）"></a>推荐算法（2020s 生产）</h1><table>
+    <div class="post-body" itemprop="articleBody"><h1 id="第四章：OpenSSL-对称加密：AES-GCM、ChaCha20-与推荐用法"><a href="#第四章：OpenSSL-对称加密：AES-GCM、ChaCha20-与推荐用法" class="headerlink" title="第四章：OpenSSL 对称加密：AES-GCM、ChaCha20 与推荐用法"></a>第四章：OpenSSL 对称加密：AES-GCM、ChaCha20 与推荐用法</h1><h2 id="概念基础：对称加密是什么、为什么这样选"><a href="#概念基础：对称加密是什么、为什么这样选" class="headerlink" title="概念基础：对称加密是什么、为什么这样选"></a>概念基础：对称加密是什么、为什么这样选</h2><ol>
+<li><strong>对称加密</strong>：<strong>加密与解密使用同一把密钥</strong>，速度快、开销低，适合<strong>大块数据</strong>（文件、磁盘、TLS 记录层流量）。</li>
+<li><strong>两大要素</strong>：<strong>算法 + 工作模式</strong>（如 <strong>AES-256-GCM</strong>）决定安全性质；<strong>密钥</strong>来自<strong>随机数</strong>或<strong>口令派生</strong>（PBKDF2，见第七章）。</li>
+<li><strong>为什么推荐 AEAD</strong>：<strong>GCM &#x2F; ChaCha20-Poly1305</strong> 属于<strong>认证加密</strong>，同时提供<strong>保密性 + 完整性</strong>（Auth Tag 防篡改）；裸 <strong>CBC &#x2F; ECB</strong> 无认证，存在<strong>填充 oracle</strong> 等风险。</li>
+<li><strong>Nonce 纪律</strong>：GCM 的 <strong>(key, nonce&#x2F;IV) 绝不能重复</strong>，否则密钥流泄露、安全性崩塌——这是使用 AEAD 的头号大坑。</li>
+<li><strong>口令 ≠ 密钥</strong>：人类口令<strong>熵低</strong>、可猜测，必须经 <strong>KDF（salt + 高迭代）</strong> 派生密钥；生产环境更推荐<strong>随机 32 字节密钥</strong>。</li>
+</ol>
+<h2 id="推荐算法（2020s-生产）"><a href="#推荐算法（2020s-生产）" class="headerlink" title="推荐算法（2020s 生产）"></a>推荐算法（2020s 生产）</h2><table>
 <thead>
 <tr>
 <th>优先级</th>
@@ -345,7 +345,7 @@ flowchart LR
 </pre>
 
 <hr>
-<h1 id="一、算法特点"><a href="#一、算法特点" class="headerlink" title="一、算法特点"></a>一、算法特点</h1><h2 id="1-AES（Advanced-Encryption-Standard）"><a href="#1-AES（Advanced-Encryption-Standard）" class="headerlink" title="1. AES（Advanced Encryption Standard）"></a>1. AES（Advanced Encryption Standard）</h2><table>
+<h2 id="一、算法特点"><a href="#一、算法特点" class="headerlink" title="一、算法特点"></a>一、算法特点</h2><h3 id="1-AES（Advanced-Encryption-Standard）"><a href="#1-AES（Advanced-Encryption-Standard）" class="headerlink" title="1. AES（Advanced Encryption Standard）"></a>1. AES（Advanced Encryption Standard）</h3><table>
 <thead>
 <tr>
 <th>密钥长度</th>
@@ -390,23 +390,23 @@ flowchart LR
 <td><strong>否</strong></td>
 </tr>
 </tbody></table>
-<h2 id="2-ChaCha20-Poly1305"><a href="#2-ChaCha20-Poly1305" class="headerlink" title="2. ChaCha20-Poly1305"></a>2. ChaCha20-Poly1305</h2><ul>
+<h3 id="2-ChaCha20-Poly1305"><a href="#2-ChaCha20-Poly1305" class="headerlink" title="2. ChaCha20-Poly1305"></a>2. ChaCha20-Poly1305</h3><ul>
 <li>256 bit 密钥，<strong>256 bit nonce</strong>（TLS 中规范用法由协议约束）。  </li>
 <li>常数时间实现友好，<strong>TLS 1.3</strong> 默认套件之一。  </li>
 <li>OpenSSL <strong><code>enc</code></strong> 对 ChaCha20 支持依版本而异；应用层多用库 API 或 TLS。</li>
 </ul>
-<h2 id="3-已淘汰（legacy-provider）"><a href="#3-已淘汰（legacy-provider）" class="headerlink" title="3. 已淘汰（legacy provider）"></a>3. 已淘汰（legacy provider）</h2><p><strong>DES、3DES、RC4、Blowfish</strong> — 仅维护老设备；新系统勿选。</p>
+<h3 id="3-已淘汰（legacy-provider）"><a href="#3-已淘汰（legacy-provider）" class="headerlink" title="3. 已淘汰（legacy provider）"></a>3. 已淘汰（legacy provider）</h3><p><strong>DES、3DES、RC4、Blowfish</strong> — 仅维护老设备；新系统勿选。</p>
 <hr>
-<h1 id="二、推荐：openssl-enc-加密文件"><a href="#二、推荐：openssl-enc-加密文件" class="headerlink" title="二、推荐：openssl enc 加密文件"></a>二、推荐：<code>openssl enc</code> 加密文件</h1><h2 id="1-AES-256-CBC-PBKDF2（口令保护，通用）"><a href="#1-AES-256-CBC-PBKDF2（口令保护，通用）" class="headerlink" title="1. AES-256-CBC + PBKDF2（口令保护，通用）"></a>1. AES-256-CBC + PBKDF2（口令保护，通用）</h2><p>比裸 CBC 更安全：<strong><code>-pbkdf2</code></strong> 迭代派生密钥、<strong><code>-salt</code></strong> 防彩虹表。</p>
+<h2 id="二、推荐：openssl-enc-加密文件"><a href="#二、推荐：openssl-enc-加密文件" class="headerlink" title="二、推荐：openssl enc 加密文件"></a>二、推荐：<code>openssl enc</code> 加密文件</h2><h3 id="1-AES-256-CBC-PBKDF2（口令保护，通用）"><a href="#1-AES-256-CBC-PBKDF2（口令保护，通用）" class="headerlink" title="1. AES-256-CBC + PBKDF2（口令保护，通用）"></a>1. AES-256-CBC + PBKDF2（口令保护，通用）</h3><p>比裸 CBC 更安全：<strong><code>-pbkdf2</code></strong> 迭代派生密钥、<strong><code>-salt</code></strong> 防彩虹表。</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 加密</span></span><br><span class="line">openssl enc -aes-256-cbc -pbkdf2 -iter 600000 -salt \</span><br><span class="line">  -<span class="keyword">in</span> secret.pdf -out secret.pdf.enc \</span><br><span class="line">  -pass pass:<span class="string">&#x27;强口令或环境变量&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 解密（算法参数必须一致）</span></span><br><span class="line">openssl enc -d -aes-256-cbc -pbkdf2 -iter 600000 \</span><br><span class="line">  -<span class="keyword">in</span> secret.pdf.enc -out secret.pdf \</span><br><span class="line">  -pass pass:<span class="string">&#x27;强口令或环境变量&#x27;</span></span><br></pre></td></tr></table></figure>
 
 <p><strong>生产更推荐</strong>：随机 <strong>32 字节密钥</strong> 写文件或 KMS，而非长期口令：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">openssl rand -hex 32 &gt; key.bin</span><br><span class="line">openssl enc -aes-256-cbc -pbkdf2 -iter 1 -salt \</span><br><span class="line">  -<span class="keyword">in</span> plain.txt -out cipher.bin -pass file:./key.bin</span><br></pre></td></tr></table></figure>
 
-<h2 id="2-查看支持的-cipher"><a href="#2-查看支持的-cipher" class="headerlink" title="2. 查看支持的 cipher"></a>2. 查看支持的 cipher</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">openssl enc -ciphers</span><br><span class="line">openssl list -cipher-algorithms | grep -i aes</span><br></pre></td></tr></table></figure>
+<h3 id="2-查看支持的-cipher"><a href="#2-查看支持的-cipher" class="headerlink" title="2. 查看支持的 cipher"></a>2. 查看支持的 cipher</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">openssl enc -ciphers</span><br><span class="line">openssl list -cipher-algorithms | grep -i aes</span><br></pre></td></tr></table></figure>
 
 <hr>
-<h1 id="三、AEAD（GCM）在-OpenSSL-中的注意点"><a href="#三、AEAD（GCM）在-OpenSSL-中的注意点" class="headerlink" title="三、AEAD（GCM）在 OpenSSL 中的注意点"></a>三、AEAD（GCM）在 OpenSSL 中的注意点</h1><p><strong>GCM</strong> 必须保证 <strong>(key, nonce&#x2F;IV) 永不重复</strong>。命令行 <strong><code>enc -aes-256-gcm</code></strong> 在 OpenSSL 3.x 可用，但 <strong>tag 处理</strong> 与 <strong><code>enc</code> 默认行为</strong> 因版本而异；<strong>生产 bulk 加密</strong>更建议：</p>
+<h2 id="三、AEAD（GCM）在-OpenSSL-中的注意点"><a href="#三、AEAD（GCM）在-OpenSSL-中的注意点" class="headerlink" title="三、AEAD（GCM）在 OpenSSL 中的注意点"></a>三、AEAD（GCM）在 OpenSSL 中的注意点</h2><p><strong>GCM</strong> 必须保证 <strong>(key, nonce&#x2F;IV) 永不重复</strong>。命令行 <strong><code>enc -aes-256-gcm</code></strong> 在 OpenSSL 3.x 可用，但 <strong>tag 处理</strong> 与 <strong><code>enc</code> 默认行为</strong> 因版本而异；<strong>生产 bulk 加密</strong>更建议：</p>
 <ul>
 <li>应用代码使用 <strong>EVP_aes_256_gcm</strong> 并显式管理 IV + tag；或  </li>
 <li>使用 <strong>age</strong>、<strong>libsodium</strong> 等封装好的文件加密工具。</li>
@@ -415,15 +415,15 @@ flowchart LR
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">openssl enc -aes-256-gcm -pbkdf2 -iter 600000 -salt \</span><br><span class="line">  -<span class="keyword">in</span> note.txt -out note.enc -pass pass:demo</span><br><span class="line">openssl enc -d -aes-256-gcm -pbkdf2 -iter 600000 \</span><br><span class="line">  -<span class="keyword">in</span> note.enc -out note.txt -pass pass:demo</span><br></pre></td></tr></table></figure>
 
 <hr>
-<h1 id="四、与-TLS-HTTPS-的关系"><a href="#四、与-TLS-HTTPS-的关系" class="headerlink" title="四、与 TLS &#x2F; HTTPS 的关系"></a>四、与 TLS &#x2F; HTTPS 的关系</h1><p>浏览器访问 <strong>HTTPS</strong> 时：</p>
+<h2 id="四、与-TLS-HTTPS-的关系"><a href="#四、与-TLS-HTTPS-的关系" class="headerlink" title="四、与 TLS &#x2F; HTTPS 的关系"></a>四、与 TLS &#x2F; HTTPS 的关系</h2><p>浏览器访问 <strong>HTTPS</strong> 时：</p>
 <ol>
-<li><strong>TLS 握手</strong>（<a href="/2026/05/01/openssl-asymmetric/" title="OpenSSL 非对称加密与密钥交换：RSA、Ed25519、X25519">非对称&#x2F;密钥交换</a>）协商出 <strong>对称会话密钥</strong>；  </li>
+<li><strong>TLS 握手</strong>（<a href="/2026/05/01/openssl-asymmetric/" title="第五章：OpenSSL 非对称加密与密钥交换：RSA、Ed25519、X25519">第五章：OpenSSL 非对称加密与密钥交换：RSA、Ed25519、X25519</a>）协商出 <strong>对称会话密钥</strong>；  </li>
 <li>记录层用 <strong>AES-GCM</strong> 或 <strong>ChaCha20-Poly1305</strong> 加密 HTTP 数据。</li>
 </ol>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl s_client -connect example.com:443 -tls1_3 &lt;/dev/null 2&gt;&amp;1 | grep -E <span class="string">&#x27;Protocol|Cipher&#x27;</span></span><br></pre></td></tr></table></figure>
 
 <hr>
-<h1 id="五、选型小结"><a href="#五、选型小结" class="headerlink" title="五、选型小结"></a>五、选型小结</h1><table>
+<h2 id="五、选型小结"><a href="#五、选型小结" class="headerlink" title="五、选型小结"></a>五、选型小结</h2><table>
 <thead>
 <tr>
 <th>需求</th>
@@ -448,7 +448,7 @@ flowchart LR
 </tr>
 </tbody></table>
 <hr>
-<h1 id="延伸阅读"><a href="#延伸阅读" class="headerlink" title="延伸阅读"></a>延伸阅读</h1><table>
+<h2 id="延伸阅读"><a href="#延伸阅读" class="headerlink" title="延伸阅读"></a>延伸阅读</h2><table>
 <thead>
 <tr>
 <th>文档</th>
@@ -456,18 +456,44 @@ flowchart LR
 </tr>
 </thead>
 <tbody><tr>
-<td><a href="/2026/05/01/openssl-hash/" title="OpenSSL 哈希算法：SHA-256、SHA-3 与推荐用法">哈希算法</a></td>
+<td><a href="/2026/05/01/openssl-hash/" title="第三章：OpenSSL 哈希算法：SHA-256、SHA-3 与推荐用法">第三章：OpenSSL 哈希算法：SHA-256、SHA-3 与推荐用法</a></td>
 <td>完整性摘要</td>
 </tr>
 <tr>
-<td><a href="/2026/05/01/openssl-asymmetric/" title="OpenSSL 非对称加密与密钥交换：RSA、Ed25519、X25519">非对称与密钥交换</a></td>
+<td><a href="/2026/05/01/openssl-asymmetric/" title="第五章：OpenSSL 非对称加密与密钥交换：RSA、Ed25519、X25519">第五章：OpenSSL 非对称加密与密钥交换：RSA、Ed25519、X25519</a></td>
 <td>包装对称密钥</td>
 </tr>
 <tr>
-<td><a href="/2026/05/01/openssl-kdf-rand/" title="OpenSSL 密钥派生与随机数：PBKDF2、rand 与推荐用法">密钥派生与随机数</a></td>
+<td><a href="/2026/05/01/openssl-kdf-rand/" title="第七章：OpenSSL 密钥派生与随机数：PBKDF2、rand 与推荐用法">第七章：OpenSSL 密钥派生与随机数：PBKDF2、rand 与推荐用法</a></td>
 <td>从口令派生 AES 密钥</td>
 </tr>
 </tbody></table>
+<hr>
+<h2 id="本章小结"><a href="#本章小结" class="headerlink" title="本章小结"></a>本章小结</h2><table>
+<thead>
+<tr>
+<th>要点</th>
+<th>结论</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>首选算法</td>
+<td><strong>AES-256-GCM</strong>；无 AES 硬件加速用 <strong>ChaCha20-Poly1305</strong></td>
+</tr>
+<tr>
+<td>命令要点</td>
+<td><strong><code>enc -aes-256-cbc -pbkdf2 -iter 600000 -salt</code></strong>；解密带 <strong><code>-d</code></strong>、算法参数必须一致</td>
+</tr>
+<tr>
+<td>禁用清单</td>
+<td><strong>ECB</strong>、裸 <strong>CBC</strong>（无 MAC）、<strong>RC4 &#x2F; DES &#x2F; 3DES</strong></td>
+</tr>
+<tr>
+<td>生产实践</td>
+<td>随机 32 字节密钥或 <strong>age &#x2F; libsodium</strong>；GCM 的 <strong>nonce 永不重复</strong></td>
+</tr>
+</tbody></table>
+<p>下一步：对称密钥如何安全送达？非对称加密与密钥交换登场 → <a href="/2026/05/01/openssl-asymmetric/" title="第五章：OpenSSL 非对称加密与密钥交换：RSA、Ed25519、X25519">第五章：OpenSSL 非对称加密与密钥交换：RSA、Ed25519、X25519</a>。</p>
 
     </div>
 
@@ -484,13 +510,13 @@ flowchart LR
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2026/05/01/openssl-hash/" rel="prev" title="OpenSSL 哈希算法：SHA-256、SHA-3 与推荐用法">
-                  <i class="fa fa-angle-left"></i> OpenSSL 哈希算法：SHA-256、SHA-3 与推荐用法
+                <a href="/2026/05/01/openssl-hash/" rel="prev" title="第三章：OpenSSL 哈希算法：SHA-256、SHA-3 与推荐用法">
+                  <i class="fa fa-angle-left"></i> 第三章：OpenSSL 哈希算法：SHA-256、SHA-3 与推荐用法
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2026/05/01/openssl-asymmetric/" rel="next" title="OpenSSL 非对称加密与密钥交换：RSA、Ed25519、X25519">
-                  OpenSSL 非对称加密与密钥交换：RSA、Ed25519、X25519 <i class="fa fa-angle-right"></i>
+                <a href="/2026/05/01/openssl-asymmetric/" rel="next" title="第五章：OpenSSL 非对称加密与密钥交换：RSA、Ed25519、X25519">
+                  第五章：OpenSSL 非对称加密与密钥交换：RSA、Ed25519、X25519 <i class="fa fa-angle-right"></i>
                 </a>
             </div>
           </div>
@@ -522,13 +548,13 @@ flowchart LR
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">195k</span>
+    <span title="站点总字数">253k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">10:49</span>
+    <span title="站点阅读时长">14:03</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动
