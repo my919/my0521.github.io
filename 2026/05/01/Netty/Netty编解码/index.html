@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"my919.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="第四章：编解码与粘包拆包概念基础：为什么需要编解码 TCP 是字节流，不是消息流：发送方连续 write 两条消息，接收方可能一次读到两条粘在一起（粘包），也可能读到半条（拆包）。这是 TCP 本性，不是 bug。 Netty 的解决思路：在 Pipeline 入口加一个 FrameDecoder（帧解码器），按某种边界规则把字节流切成一条条完整消息，再交给后续 Handler。 编解码两层：解码">
+<meta property="og:type" content="article">
+<meta property="og:title" content="第四章：编解码与粘包拆包">
+<meta property="og:url" content="https://my919.github.io/2026/05/01/Netty/Netty%E7%BC%96%E8%A7%A3%E7%A0%81/index.html">
+<meta property="og:site_name" content="my">
+<meta property="og:description" content="第四章：编解码与粘包拆包概念基础：为什么需要编解码 TCP 是字节流，不是消息流：发送方连续 write 两条消息，接收方可能一次读到两条粘在一起（粘包），也可能读到半条（拆包）。这是 TCP 本性，不是 bug。 Netty 的解决思路：在 Pipeline 入口加一个 FrameDecoder（帧解码器），按某种边界规则把字节流切成一条条完整消息，再交给后续 Handler。 编解码两层：解码">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-05-01T04:33:20.000Z">
+<meta property="article:modified_time" content="2026-08-31T13:42:01.284Z">
+<meta property="article:author" content="miracle">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="Netty">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://my919.github.io/2026/05/01/Netty/Netty%E7%BC%96%E8%A7%A3%E7%A0%81/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://my919.github.io/2026/05/01/Netty/Netty%E7%BC%96%E8%A7%A3%E7%A0%81/","path":"2026/05/01/Netty/Netty编解码/","title":"第四章：编解码与粘包拆包"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>第四章：编解码与粘包拆包 | my</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.10.1/mermaid.min.js","integrity":"sha256-BmQmdWDS8X2OTbrwELWK366LV6escyWhHHe0XCTU/Hk="}}</script>
+  <script src="/js/third-party/tags/mermaid.js" defer></script>
+
+
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="my" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">my</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-service"><a href="/service/" rel="section"><i class="fa fa-server fa-fw"></i>服务</a></li><li class="menu-item menu-item-tool"><a href="/tool/" rel="section"><i class="fa fa-wrench fa-fw"></i>工具</a></li><li class="menu-item menu-item-project"><a href="/project/" rel="section"><i class="fa fa-folder-open fa-fw"></i>项目</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%9A%E7%BC%96%E8%A7%A3%E7%A0%81%E4%B8%8E%E7%B2%98%E5%8C%85%E6%8B%86%E5%8C%85"><span class="nav-number">1.</span> <span class="nav-text">第四章：编解码与粘包拆包</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81%E7%BC%96%E8%A7%A3%E7%A0%81"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础：为什么需要编解码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E7%B2%98%E5%8C%85%E4%B8%8E%E6%8B%86%E5%8C%85%E7%8E%B0%E8%B1%A1"><span class="nav-number">1.2.</span> <span class="nav-text">一、粘包与拆包现象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E5%86%85%E7%BD%AE%E5%B8%A7%E8%A7%A3%E7%A0%81%E5%99%A8%EF%BC%88%E8%A7%A3%E5%86%B3%E5%88%87%E5%88%86%E8%BE%B9%E7%95%8C%EF%BC%89"><span class="nav-number">1.3.</span> <span class="nav-text">二、内置帧解码器（解决切分边界）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%9B%BA%E5%AE%9A%E9%95%BF%E5%BA%A6%EF%BC%9AFixedLengthFrameDecoder"><span class="nav-number">1.3.1.</span> <span class="nav-text">1. 固定长度：FixedLengthFrameDecoder</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E6%8D%A2%E8%A1%8C%E7%AC%A6%EF%BC%9ALineBasedFrameDecoder"><span class="nav-number">1.3.2.</span> <span class="nav-text">2. 换行符：LineBasedFrameDecoder</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E5%88%86%E9%9A%94%E7%AC%A6%EF%BC%9ADelimiterBasedFrameDecoder"><span class="nav-number">1.3.3.</span> <span class="nav-text">3. 分隔符：DelimiterBasedFrameDecoder</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E9%95%BF%E5%BA%A6%E5%9F%9F%EF%BC%9ALengthFieldBasedFrameDecoder%EF%BC%88%E6%9C%80%E9%80%9A%E7%94%A8%EF%BC%89"><span class="nav-number">1.3.4.</span> <span class="nav-text">4. 长度域：LengthFieldBasedFrameDecoder（最通用）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81MessageToMessageDecoder%EF%BC%9A%E6%B6%88%E6%81%AF%E2%86%92%E6%B6%88%E6%81%AF"><span class="nav-number">1.4.</span> <span class="nav-text">三、MessageToMessageDecoder：消息→消息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81ByteToMessageDecoder%EF%BC%9A%E5%AD%97%E8%8A%82%E2%86%92%E6%B6%88%E6%81%AF%EF%BC%88%E8%87%AA%E5%AE%9A%E4%B9%89%EF%BC%89"><span class="nav-number">1.5.</span> <span class="nav-text">四、ByteToMessageDecoder：字节→消息（自定义）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E7%BC%96%E7%A0%81%E5%99%A8%EF%BC%9A%E5%AF%B9%E8%B1%A1%E2%86%92%E5%AD%97%E8%8A%82"><span class="nav-number">1.6.</span> <span class="nav-text">五、编码器：对象→字节</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E7%BC%96%E8%A7%A3%E7%A0%81%E5%99%A8%E4%B8%80%E4%BD%93%EF%BC%9AMessageToMessageCodec"><span class="nav-number">1.7.</span> <span class="nav-text">六、编解码器一体：MessageToMessageCodec</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%83%E3%80%81%E5%85%B8%E5%9E%8B-Pipeline-%E7%BC%96%E6%8E%92%E6%A8%A1%E6%9D%BF"><span class="nav-number">1.8.</span> <span class="nav-text">七、典型 Pipeline 编排模板</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AB%E3%80%81%E5%B8%B8%E8%A7%81%E9%99%B7%E9%98%B1"><span class="nav-number">1.9.</span> <span class="nav-text">八、常见陷阱</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.10.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">miracle</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">234</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">36</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">124</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/my919" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;my919" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://gitee.com/my919" title="Gitee → https:&#x2F;&#x2F;gitee.com&#x2F;my919" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>Gitee</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:yeal166@163.com" title="E-Mail → mailto:yeal166@163.com" rel="noopener me external nofollow noreferrer" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://my919.github.io/2026/05/01/Netty/Netty%E7%BC%96%E8%A7%A3%E7%A0%81/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="第四章：编解码与粘包拆包 | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          第四章：编解码与粘包拆包
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-05-01 12:33:20" itemprop="dateCreated datePublished" datetime="2026-05-01T12:33:20+08:00">2026-05-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-08-31 21:42:01" itemprop="dateModified" datetime="2026-08-31T21:42:01+08:00">2026-08-31</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Netty/" itemprop="url" rel="index"><span itemprop="name">Netty</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>2k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>7 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="第四章：编解码与粘包拆包"><a href="#第四章：编解码与粘包拆包" class="headerlink" title="第四章：编解码与粘包拆包"></a>第四章：编解码与粘包拆包</h1><h2 id="概念基础：为什么需要编解码"><a href="#概念基础：为什么需要编解码" class="headerlink" title="概念基础：为什么需要编解码"></a>概念基础：为什么需要编解码</h2><ol>
+<li><strong>TCP 是字节流，不是消息流</strong>：发送方连续 <code>write</code> 两条消息，接收方可能<strong>一次读到两条粘在一起</strong>（粘包），也可能<strong>读到半条</strong>（拆包）。这是 TCP 本性，不是 bug。</li>
+<li><strong>Netty 的解决思路</strong>：在 Pipeline 入口加一个 <strong><code>FrameDecoder</code></strong>（帧解码器），按某种<strong>边界规则</strong>把字节流切成一条条完整消息，再交给后续 Handler。</li>
+<li><strong>编解码两层</strong>：<strong>解码（Decoder）</strong> 把字节→对象（入站方向），<strong>编码（Encoder）</strong> 把对象→字节（出站方向）。二者常成对出现，组成「协议层」。</li>
+<li><strong>内置即用</strong>：Netty 预置了按换行、分隔符、长度域等切分的解码器，覆盖大多数二进制协议；不满足时继承 <strong><code>ByteToMessageDecoder</code></strong> 自定义。</li>
+<li><strong>正确性 &gt; 性能</strong>：编解码是协议正确性的根基，错一个长度域会触发<strong>整条连接崩溃</strong>。务必先保证语义正确，再做池化&#x2F;零拷贝优化。</li>
+</ol>
+<blockquote>
+<p>本章承接 <a href="/2026/05/01/Netty/Netty%E6%A0%B8%E5%BF%83%E7%BB%84%E4%BB%B6/" title="第三章：Netty 核心组件深入">第三章：Netty 核心组件深入</a> 的 Pipeline &#x2F; ByteBuf 知识，把「字节流如何变成消息」讲透。</p>
+</blockquote>
+<hr>
+<h2 id="一、粘包与拆包现象"><a href="#一、粘包与拆包现象" class="headerlink" title="一、粘包与拆包现象"></a>一、粘包与拆包现象</h2><pre>
+<code class="mermaid">
+
+flowchart TB
+  subgraph send [发送方发了两条：ABC 与 DEF]
+    M1[消息1 ABC] 
+    M2[消息2 DEF]
+  end
+  subgraph recv [接收方可能看到]
+    R1[&quot;情况1 粘包：ABCDEF 一次到&quot;]
+    R2[&quot;情况2 拆包：AB 一次，CDEF 一次&quot;]
+    R3[&quot;情况3 正常：ABC 一次，DEF 一次&quot;]
+  end
+  M1 --&gt; R1
+  M2 --&gt; R1
+  M1 --&gt; R2
+  M1 --&gt; R3
+  M2 --&gt; R2
+  M2 --&gt; R3
+</code>
+</pre>
+
+<p>不解决粘包，业务 Handler 里 <code>channelRead</code> 拿到的 <code>ByteBuf</code> 可能含<strong>多条半消息</strong>，无法正确解析。<strong>必须在业务 Handler 之前加帧解码器</strong>。</p>
+<hr>
+<h2 id="二、内置帧解码器（解决切分边界）"><a href="#二、内置帧解码器（解决切分边界）" class="headerlink" title="二、内置帧解码器（解决切分边界）"></a>二、内置帧解码器（解决切分边界）</h2><p>Netty 的帧解码器都继承 <code>ByteToMessageDecoder</code>，按规则把入站 <code>ByteBuf</code> 切成完整帧。</p>
+<h3 id="1-固定长度：FixedLengthFrameDecoder"><a href="#1-固定长度：FixedLengthFrameDecoder" class="headerlink" title="1. 固定长度：FixedLengthFrameDecoder"></a>1. 固定长度：FixedLengthFrameDecoder</h3><p>每条消息定长，不足则累积等待：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 每条消息固定 8 字节</span></span><br><span class="line">pipeline.addLast(<span class="keyword">new</span> <span class="title class_">FixedLengthFrameDecoder</span>(<span class="number">8</span>));</span><br></pre></td></tr></table></figure>
+
+<p>适合定长报文（如某些金融报文），应用面窄。</p>
+<h3 id="2-换行符：LineBasedFrameDecoder"><a href="#2-换行符：LineBasedFrameDecoder" class="headerlink" title="2. 换行符：LineBasedFrameDecoder"></a>2. 换行符：LineBasedFrameDecoder</h3><p>按 <code>LF</code>（<code>\n</code>）或 <code>CRLF</code>（<code>\r\n</code>）切分，适合文本协议（HTTP 头、Redis RESP）：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 最大长度 1024，超出抛 TooLongFrameException；stripEnd=true 去掉换行符</span></span><br><span class="line">pipeline.addLast(<span class="keyword">new</span> <span class="title class_">LineBasedFrameDecoder</span>(<span class="number">1024</span>));</span><br><span class="line">pipeline.addLast(<span class="keyword">new</span> <span class="title class_">StringDecoder</span>(CharsetUtil.UTF_8)); <span class="comment">// 字节→String</span></span><br><span class="line">pipeline.addLast(<span class="keyword">new</span> <span class="title class_">StringEncoder</span>(CharsetUtil.UTF_8));</span><br><span class="line">pipeline.addLast(<span class="keyword">new</span> <span class="title class_">MyLineHandler</span>()); <span class="comment">// 收到的是 String</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="3-分隔符：DelimiterBasedFrameDecoder"><a href="#3-分隔符：DelimiterBasedFrameDecoder" class="headerlink" title="3. 分隔符：DelimiterBasedFrameDecoder"></a>3. 分隔符：DelimiterBasedFrameDecoder</h3><p>自定义分隔符：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 以 $$ 为分隔符</span></span><br><span class="line"><span class="type">ByteBuf</span> <span class="variable">delim</span> <span class="operator">=</span> Unpooled.copiedBuffer(<span class="string">&quot;$$&quot;</span>, CharsetUtil.UTF_8);</span><br><span class="line">pipeline.addLast(<span class="keyword">new</span> <span class="title class_">DelimiterBasedFrameDecoder</span>(<span class="number">1024</span>, delim));</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-长度域：LengthFieldBasedFrameDecoder（最通用）"><a href="#4-长度域：LengthFieldBasedFrameDecoder（最通用）" class="headerlink" title="4. 长度域：LengthFieldBasedFrameDecoder（最通用）"></a>4. 长度域：LengthFieldBasedFrameDecoder（最通用）</h3><p>绝大多数二进制协议采用「<strong>长度字段 + 载荷</strong>」。该解码器按长度字段读取完整帧，参数含义：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 构造参数（最常用四参形式）</span></span><br><span class="line"><span class="keyword">new</span> <span class="title class_">LengthFieldBasedFrameDecoder</span>(</span><br><span class="line">    maxFrameLength,        <span class="comment">// 最大帧长，超限抛异常防 OOM</span></span><br><span class="line">    lengthFieldOffset,     <span class="comment">// 长度字段在帧中的偏移（前面可能有魔数/版本）</span></span><br><span class="line">    lengthFieldLength,     <span class="comment">// 长度字段自身占几个字节（1/2/3/4/8）</span></span><br><span class="line">    lengthAdjustment,      <span class="comment">// 长度值与后续载荷的修正量</span></span><br><span class="line">    initialBytesToStrip    <span class="comment">// 解码后跳过头部多少字节（通常跳过长度字段本身）</span></span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<p><strong>示例</strong>：协议为 <code>[4字节长度(含自身)][载荷]</code>，长度字段值 &#x3D; 整帧总长，希望解码后<strong>去掉长度字段</strong>只留载荷：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 协议：长度字段 4 字节，值表示「载荷长度」(不含长度字段本身)</span></span><br><span class="line"><span class="comment">// lengthAdjustment=0：长度值之后就是 N 字节载荷，无额外修正</span></span><br><span class="line"><span class="comment">// initialBytesToStrip=4：解码后跳过 4 字节长度字段</span></span><br><span class="line">pipeline.addLast(<span class="keyword">new</span> <span class="title class_">LengthFieldBasedFrameDecoder</span>(<span class="number">65535</span>, <span class="number">0</span>, <span class="number">4</span>, <span class="number">0</span>, <span class="number">4</span>));</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>参数易配错。务必对照真实协议字节布局逐项核对，并用 <code>HexDumpHandler</code> 或日志打印解码后的字节验证。</p>
+</blockquote>
+<hr>
+<h2 id="三、MessageToMessageDecoder：消息→消息"><a href="#三、MessageToMessageDecoder：消息→消息" class="headerlink" title="三、MessageToMessageDecoder：消息→消息"></a>三、MessageToMessageDecoder：消息→消息</h2><p>帧解码器输出的是 <code>ByteBuf</code>（一条完整帧）。若需把 <code>ByteBuf</code> 再转成业务对象，用 <strong><code>MessageToMessageDecoder&lt;I&gt;</code></strong>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 把一条完整帧 ByteBuf 解析为 Request 对象</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">RequestDecoder</span> <span class="keyword">extends</span> <span class="title class_">MessageToMessageDecoder</span>&lt;ByteBuf&gt; &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">decode</span><span class="params">(ChannelHandlerContext ctx, ByteBuf in, List&lt;Object&gt; out)</span> &#123;</span><br><span class="line">        <span class="comment">// 此时 in 已是完整帧（前面有 FrameDecoder 保证）</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">type</span> <span class="operator">=</span> in.readByte();</span><br><span class="line">        <span class="type">int</span> <span class="variable">len</span> <span class="operator">=</span> in.readInt();</span><br><span class="line">        <span class="type">byte</span>[] data = <span class="keyword">new</span> <span class="title class_">byte</span>[len];</span><br><span class="line">        in.readBytes(data);</span><br><span class="line">        out.add(<span class="keyword">new</span> <span class="title class_">Request</span>(type, <span class="keyword">new</span> <span class="title class_">String</span>(data, CharsetUtil.UTF_8)));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">pipeline.addLast(<span class="keyword">new</span> <span class="title class_">LengthFieldBasedFrameDecoder</span>(<span class="number">65535</span>, <span class="number">0</span>, <span class="number">4</span>, <span class="number">0</span>, <span class="number">4</span>));</span><br><span class="line">pipeline.addLast(<span class="keyword">new</span> <span class="title class_">RequestDecoder</span>());   <span class="comment">// ByteBuf → Request</span></span><br><span class="line">pipeline.addLast(<span class="keyword">new</span> <span class="title class_">RequestHandler</span>());   <span class="comment">// 处理 Request</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="四、ByteToMessageDecoder：字节→消息（自定义）"><a href="#四、ByteToMessageDecoder：字节→消息（自定义）" class="headerlink" title="四、ByteToMessageDecoder：字节→消息（自定义）"></a>四、ByteToMessageDecoder：字节→消息（自定义）</h2><p>当内置帧解码器都不满足时，直接继承 <strong><code>ByteToMessageDecoder</code></strong>，自己控制累积缓冲的读取。它会把多次到达的字节累积到内部缓冲，直到数据足够：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 自定义：魔数 + 1字节类型 + 4字节长度 + 载荷</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MagicFrameDecoder</span> <span class="keyword">extends</span> <span class="title class_">ByteToMessageDecoder</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">byte</span> <span class="variable">MAGIC</span> <span class="operator">=</span> (<span class="type">byte</span>) <span class="number">0xAB</span>;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">decode</span><span class="params">(ChannelHandlerContext ctx, ByteBuf in, List&lt;Object&gt; out)</span> &#123;</span><br><span class="line">        <span class="comment">// 1. 至少要能读到头部（魔数1 + 类型1 + 长度4 = 6 字节）</span></span><br><span class="line">        <span class="keyword">if</span> (in.readableBytes() &lt; <span class="number">6</span>) <span class="keyword">return</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 2. 标记当前读指针，校验魔数失败时回滚</span></span><br><span class="line">        in.markReaderIndex();</span><br><span class="line">        <span class="keyword">if</span> (in.readByte() != MAGIC) &#123;</span><br><span class="line">            in.resetReaderIndex();</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">DecoderException</span>(<span class="string">&quot;非法魔数&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="type">byte</span> <span class="variable">type</span> <span class="operator">=</span> in.readByte();</span><br><span class="line">        <span class="type">int</span> <span class="variable">len</span> <span class="operator">=</span> in.readInt();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 3. 载荷没到齐，回滚等待下次</span></span><br><span class="line">        <span class="keyword">if</span> (in.readableBytes() &lt; len) &#123;</span><br><span class="line">            in.resetReaderIndex();</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 4. 足够了，切出载荷</span></span><br><span class="line">        <span class="type">ByteBuf</span> <span class="variable">payload</span> <span class="operator">=</span> in.readBytes(len);</span><br><span class="line">        out.add(<span class="keyword">new</span> <span class="title class_">Frame</span>(type, payload)); <span class="comment">// payload 由调用方释放</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>三个要点</strong>：</p>
+<ol>
+<li><strong>不足时 <code>return</code> 前 <code>resetReaderIndex</code></strong>，让下次 <code>decode</code> 从头部重新读。</li>
+<li><strong>切出的 <code>ByteBuf</code> 若放进 <code>out</code></strong>，所有权转移给下游，由下游 release；不要在这里 release。</li>
+<li>多次 <code>decode</code> 调用是 Netty 自动驱动的，<strong>不要自己写循环</strong>等待（框架已处理）。</li>
+</ol>
+<hr>
+<h2 id="五、编码器：对象→字节"><a href="#五、编码器：对象→字节" class="headerlink" title="五、编码器：对象→字节"></a>五、编码器：对象→字节</h2><p>出站方向对称。两类基类：</p>
+<table>
+<thead>
+<tr>
+<th>基类</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong><code>MessageToByteEncoder&lt;I&gt;</code></strong></td>
+<td>对象→单个 <code>ByteBuf</code></td>
+</tr>
+<tr>
+<td><strong><code>MessageToMessageEncoder&lt;I&gt;</code></strong></td>
+<td>对象→对象（如对象→另一种对象）</td>
+</tr>
+</tbody></table>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Request → ByteBuf</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">RequestEncoder</span> <span class="keyword">extends</span> <span class="title class_">MessageToByteEncoder</span>&lt;Request&gt; &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">encode</span><span class="params">(ChannelHandlerContext ctx, Request req, ByteBuf out)</span> &#123;</span><br><span class="line">        <span class="type">byte</span>[] data = req.payload.getBytes(CharsetUtil.UTF_8);</span><br><span class="line">        out.writeByte(req.type);          <span class="comment">// 类型</span></span><br><span class="line">        out.writeInt(data.length);        <span class="comment">// 长度</span></span><br><span class="line">        out.writeBytes(data);             <span class="comment">// 载荷</span></span><br><span class="line">        <span class="comment">// out 由框架释放，无需手动 release</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong><code>MessageToByteEncoder</code></strong> 只在出站消息<strong>类型匹配 <code>I</code></strong> 时触发，其他类型直接跳过——可安全混用多种出站消息。</p>
+</blockquote>
+<hr>
+<h2 id="六、编解码器一体：MessageToMessageCodec"><a href="#六、编解码器一体：MessageToMessageCodec" class="headerlink" title="六、编解码器一体：MessageToMessageCodec"></a>六、编解码器一体：MessageToMessageCodec</h2><p>把成对的编解码器合并成一个 <strong><code>MessageToMessageCodec&lt;INBOUND, OUTBOUND&gt;</code></strong>，便于组织：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@ChannelHandler</span>.Sharable</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">RequestCodec</span></span><br><span class="line">        <span class="keyword">extends</span> <span class="title class_">MessageToMessageCodec</span>&lt;ByteBuf, Request&gt; &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 入站：ByteBuf → Request</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">decode</span><span class="params">(ChannelHandlerContext ctx, ByteBuf in, List&lt;Object&gt; out)</span> &#123;</span><br><span class="line">        <span class="comment">// 解析为 Request，加入 out</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 出站：Request → ByteBuf</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">encode</span><span class="params">(ChannelHandlerContext ctx, Request req, List&lt;Object&gt; out)</span> &#123;</span><br><span class="line">        <span class="type">ByteBuf</span> <span class="variable">buf</span> <span class="operator">=</span> ctx.alloc().buffer();</span><br><span class="line">        <span class="comment">// 编码写入 buf...</span></span><br><span class="line">        out.add(buf);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>注意：Codec 仍需配合 <strong>FrameDecoder</strong> 使用（它本身不做粘包切分）。</p>
+<hr>
+<h2 id="七、典型-Pipeline-编排模板"><a href="#七、典型-Pipeline-编排模板" class="headerlink" title="七、典型 Pipeline 编排模板"></a>七、典型 Pipeline 编排模板</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">pipeline.addLast(<span class="keyword">new</span> <span class="title class_">LengthFieldBasedFrameDecoder</span>(<span class="number">65535</span>, <span class="number">0</span>, <span class="number">4</span>, <span class="number">0</span>, <span class="number">4</span>)); <span class="comment">// 拆包</span></span><br><span class="line">pipeline.addLast(<span class="keyword">new</span> <span class="title class_">RequestDecoder</span>());   <span class="comment">// ByteBuf → Request  (入站)</span></span><br><span class="line">pipeline.addLast(<span class="keyword">new</span> <span class="title class_">ResponseEncoder</span>());  <span class="comment">// Response → ByteBuf (出站)</span></span><br><span class="line">pipeline.addLast(<span class="keyword">new</span> <span class="title class_">IdleStateHandler</span>(<span class="number">60</span>, <span class="number">0</span>, <span class="number">0</span>, TimeUnit.SECONDS));    <span class="comment">// 心跳</span></span><br><span class="line">pipeline.addLast(<span class="keyword">new</span> <span class="title class_">BusinessHandler</span>());  <span class="comment">// 业务（入站，处理 Request）</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>顺序原则</strong>：帧解码器<strong>最前</strong>→编解码器→心跳→业务。出站编码器位置不影响出站触发（出站会从调用者向链头反向经过所有出站 Handler），但放业务前更清晰。</p>
+<hr>
+<h2 id="八、常见陷阱"><a href="#八、常见陷阱" class="headerlink" title="八、常见陷阱"></a>八、常见陷阱</h2><table>
+<thead>
+<tr>
+<th>陷阱</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>漏 FrameDecoder</strong></td>
+<td>业务直接读 <code>ByteBuf</code>，粘包下解析错乱。<strong>任何二进制协议都必须先切包</strong></td>
+</tr>
+<tr>
+<td><strong>MessageToByteEncoder 不释放</strong></td>
+<td>框架会释放 <code>encode</code> 产出的 <code>ByteBuf</code>；但若你 <code>write</code> 的是外部传入的 <code>ByteBuf</code>，需自己管理引用计数</td>
+</tr>
+<tr>
+<td><strong>解码 throw 异常未处理</strong></td>
+<td>异常会触发 <code>exceptionCaught</code>，默认关闭连接；非法帧应记录日志后 <code>ctx.close()</code></td>
+</tr>
+<tr>
+<td><strong><code>LengthFieldBasedFrameDecoder</code> 参数错</strong></td>
+<td>长度值含不含长度字段自身、有没有调整量，配错会一直读到错位数据。打印十六进制对照</td>
+</tr>
+<tr>
+<td><strong>未限制最大帧长</strong></td>
+<td><code>maxFrameLength</code> 过大或缺失，恶意端发巨帧触发 OOM</td>
+</tr>
+<tr>
+<td><strong><code>StringDecoder</code> 后又当 ByteBuf 用</strong></td>
+<td>一旦解码成 String，下游类型已变，不会再有 ByteBuf</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="本章小结"><a href="#本章小结" class="headerlink" title="本章小结"></a>本章小结</h2><table>
+<thead>
+<tr>
+<th>要点</th>
+<th>结论</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>粘包拆包</td>
+<td>TCP 字节流本性，<strong>必须</strong>用帧解码器切分，业务 Handler 才能拿到完整消息</td>
+</tr>
+<tr>
+<td>内置帧解码器</td>
+<td>定长 <code>FixedLength</code>、换行 <code>LineBased</code>、分隔符 <code>DelimiterBased</code>、<strong>长度域 <code>LengthFieldBasedFrameDecoder</code> 最通用</strong></td>
+</tr>
+<tr>
+<td>两层抽象</td>
+<td><code>ByteToMessageDecoder</code>：字节→消息（含切包）；<code>MessageToMessageDecoder</code>：消息→消息</td>
+</tr>
+<tr>
+<td>编码器</td>
+<td><code>MessageToByteEncoder&lt;I&gt;</code> 对象→ByteBuf；只在类型匹配时触发</td>
+</tr>
+<tr>
+<td>一体化</td>
+<td><code>MessageToMessageCodec</code> 合并编解码，但<strong>仍需 FrameDecoder</strong> 切包</td>
+</tr>
+<tr>
+<td>Pipeline 顺序</td>
+<td>帧解码 → 业务编解码 → 心跳 → 业务 Handler</td>
+</tr>
+<tr>
+<td>安全</td>
+<td>限制 <code>maxFrameLength</code>、处理非法帧异常、对照十六进制调试长度域参数</td>
+</tr>
+</tbody></table>
+<p>进入 <a href="/2026/05/01/Netty/Netty%E8%87%AA%E5%AE%9A%E4%B9%89%E5%8D%8F%E8%AE%AE/" title="第五章：自定义协议实战">第五章：自定义协议实战</a>，把本章的编解码器组装成一套完整的私有协议客户端&#x2F;服务端。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Java/" rel="tag"># Java</a>
+              <a href="/tags/Netty/" rel="tag"># Netty</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/05/01/Netty/Netty%E8%87%AA%E5%AE%9A%E4%B9%89%E5%8D%8F%E8%AE%AE/" rel="prev" title="第五章：自定义协议实战">
+                  <i class="fa fa-angle-left"></i> 第五章：自定义协议实战
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2026/05/01/Netty/Netty%E6%A0%B8%E5%BF%83%E7%BB%84%E4%BB%B6/" rel="next" title="第三章：Netty 核心组件深入">
+                  第三章：Netty 核心组件深入 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">miracle</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">321k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">17:52</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+<script>
+(function () {
+  function normalizeClipboard(s) {
+    return (s || '').replace(/\u00a0/g, ' ');
+  }
+
+  /** When innerText is empty, treat <br> as newlines (matches Hexo fenced + line_number HTML). */
+  function plainTextFromElement(el) {
+    if (!el) return '';
+    var t = el.innerText;
+    if (t != null && t !== '') return normalizeClipboard(t);
+    var clone = el.cloneNode(true);
+    clone.querySelectorAll('br').forEach(function (br) {
+      br.parentNode.replaceChild(document.createTextNode('\n'), br);
+    });
+    return normalizeClipboard(clone.textContent || '');
+  }
+
+  function extractFromFigure(fig) {
+    if (!fig) return '';
+    var cell = fig.querySelector('td.code') || fig.querySelector('.code');
+    if (cell) return plainTextFromElement(cell);
+    var pre = fig.querySelector('pre');
+    if (pre) return plainTextFromElement(pre);
+    var code = fig.querySelector('code');
+    return code ? plainTextFromElement(code) : '';
+  }
+
+  function extractForCopyBtn(btn) {
+    var fig = btn.closest('figure.highlight');
+    if (fig) return extractFromFigure(fig);
+    var wrap = btn.closest('.code-container');
+    if (wrap) {
+      var innerFig = wrap.querySelector('figure.highlight');
+      if (innerFig) return extractFromFigure(innerFig);
+      var preOnly = wrap.querySelector('pre');
+      if (preOnly) return plainTextFromElement(preOnly);
+    }
+    return '';
+  }
+
+  function setCopyIcon(btn, ok) {
+    var i = btn.querySelector('i');
+    if (i) i.className = ok ? 'fa fa-check-circle fa-fw' : 'fa fa-times-circle fa-fw';
+  }
+
+  function writeClipboard(text, btn) {
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(text).then(
+        function () { setCopyIcon(btn, true); },
+        function () { fallbackCopy(text, btn); }
+      );
+    }
+    fallbackCopy(text, btn);
+    return Promise.resolve();
+  }
+
+  function fallbackCopy(text, btn) {
+    try {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed';
+      ta.style.left = '-9999px';
+      document.body.appendChild(ta);
+      ta.select();
+      var ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      setCopyIcon(btn, ok);
+    } catch (e) {
+      setCopyIcon(btn, false);
+    }
+  }
+
+  document.addEventListener(
+    'click',
+    function (e) {
+      var btn = e.target.closest && e.target.closest('.copy-btn');
+      if (!btn) return;
+      if (!btn.closest('figure.highlight') && !btn.closest('.code-container')) return;
+      e.stopPropagation();
+      e.preventDefault();
+      var text = extractForCopyBtn(btn);
+      writeClipboard(text, btn);
+    },
+    true
+  );
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"my919.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="第三章：音视频编辑处理概念基础：编辑≠转码 编辑操作多在「容器&#x2F;时间」层：裁剪、截图、合并、抽取音轨，多数可 -c copy 不重编码，秒级完成；只有变速、加滤镜才需重编码。 时间精度取决于关键帧：-c copy 裁剪只能切在关键帧，可能比目标点晚几帧；要精确到帧需重编码或先对齐关键帧。 合并与拆分：同编码参数的多段用** concat 协议&#x2F;滤镜**无损拼接；异构参数需重编码">
+<meta property="og:type" content="article">
+<meta property="og:title" content="第三章：音视频编辑处理">
+<meta property="og:url" content="https://my919.github.io/2026/05/01/FFmpeg/FFmpeg%E9%9F%B3%E8%A7%86%E9%A2%91%E5%A4%84%E7%90%86/index.html">
+<meta property="og:site_name" content="my">
+<meta property="og:description" content="第三章：音视频编辑处理概念基础：编辑≠转码 编辑操作多在「容器&#x2F;时间」层：裁剪、截图、合并、抽取音轨，多数可 -c copy 不重编码，秒级完成；只有变速、加滤镜才需重编码。 时间精度取决于关键帧：-c copy 裁剪只能切在关键帧，可能比目标点晚几帧；要精确到帧需重编码或先对齐关键帧。 合并与拆分：同编码参数的多段用** concat 协议&#x2F;滤镜**无损拼接；异构参数需重编码">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-05-01T05:41:59.000Z">
+<meta property="article:modified_time" content="2026-08-31T14:05:04.420Z">
+<meta property="article:author" content="miracle">
+<meta property="article:tag" content="FFmpeg">
+<meta property="article:tag" content="音视频">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://my919.github.io/2026/05/01/FFmpeg/FFmpeg%E9%9F%B3%E8%A7%86%E9%A2%91%E5%A4%84%E7%90%86/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://my919.github.io/2026/05/01/FFmpeg/FFmpeg%E9%9F%B3%E8%A7%86%E9%A2%91%E5%A4%84%E7%90%86/","path":"2026/05/01/FFmpeg/FFmpeg音视频处理/","title":"第三章：音视频编辑处理"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>第三章：音视频编辑处理 | my</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.10.1/mermaid.min.js","integrity":"sha256-BmQmdWDS8X2OTbrwELWK366LV6escyWhHHe0XCTU/Hk="}}</script>
+  <script src="/js/third-party/tags/mermaid.js" defer></script>
+
+
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="my" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">my</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-service"><a href="/service/" rel="section"><i class="fa fa-server fa-fw"></i>服务</a></li><li class="menu-item menu-item-tool"><a href="/tool/" rel="section"><i class="fa fa-wrench fa-fw"></i>工具</a></li><li class="menu-item menu-item-project"><a href="/project/" rel="section"><i class="fa fa-folder-open fa-fw"></i>项目</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%B8%89%E7%AB%A0%EF%BC%9A%E9%9F%B3%E8%A7%86%E9%A2%91%E7%BC%96%E8%BE%91%E5%A4%84%E7%90%86"><span class="nav-number">1.</span> <span class="nav-text">第三章：音视频编辑处理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80%EF%BC%9A%E7%BC%96%E8%BE%91%E2%89%A0%E8%BD%AC%E7%A0%81"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础：编辑≠转码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E8%A3%81%E5%89%AA%E4%B8%8E%E5%88%87%E7%89%87"><span class="nav-number">1.2.</span> <span class="nav-text">一、裁剪与切片</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E6%8C%89%E6%97%B6%E9%97%B4%E8%A3%81%E5%89%AA"><span class="nav-number">1.2.1.</span> <span class="nav-text">1. 按时间裁剪</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E7%AD%89%E5%88%86%E5%88%87%E7%89%87"><span class="nav-number">1.2.2.</span> <span class="nav-text">2. 等分切片</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E6%88%AA%E5%9B%BE%E4%B8%8E%E5%BA%8F%E5%88%97%E5%B8%A7"><span class="nav-number">1.3.</span> <span class="nav-text">二、截图与序列帧</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81GIF-%E7%94%9F%E6%88%90"><span class="nav-number">1.4.</span> <span class="nav-text">三、GIF 生成</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E9%9F%B3%E9%A2%91%E6%8F%90%E5%8F%96%E4%B8%8E%E5%88%86%E7%A6%BB"><span class="nav-number">1.5.</span> <span class="nav-text">四、音频提取与分离</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E5%90%88%E5%B9%B6"><span class="nav-number">1.6.</span> <span class="nav-text">五、合并</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-concat-%E5%8D%8F%E8%AE%AE%EF%BC%88%E5%90%8C%E7%BC%96%E7%A0%81%E5%8F%82%E6%95%B0%EF%BC%8C%E6%97%A0%E6%8D%9F%E6%9C%80%E5%BF%AB%EF%BC%89"><span class="nav-number">1.6.1.</span> <span class="nav-text">1. concat 协议（同编码参数，无损最快）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-concat-%E6%BB%A4%E9%95%9C%EF%BC%88%E5%BC%82%E6%9E%84%E5%8F%82%E6%95%B0%EF%BC%8C%E9%9C%80%E9%87%8D%E7%BC%96%E7%A0%81%EF%BC%89"><span class="nav-number">1.6.2.</span> <span class="nav-text">2. concat 滤镜（异构参数，需重编码）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E9%9F%B3%E8%A7%86%E9%A2%91%E5%90%88%E5%B9%B6%EF%BC%88%E7%8B%AC%E7%AB%8B%E8%A7%86%E9%A2%91-%E7%8B%AC%E7%AB%8B%E9%9F%B3%E9%A2%91%EF%BC%89"><span class="nav-number">1.6.3.</span> <span class="nav-text">3. 音视频合并（独立视频 + 独立音频）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E5%8F%98%E9%80%9F"><span class="nav-number">1.7.</span> <span class="nav-text">六、变速</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%83%E3%80%81%E9%9F%B3%E9%87%8F%E4%B8%8E%E9%9D%99%E9%9F%B3%E5%A4%84%E7%90%86"><span class="nav-number">1.8.</span> <span class="nav-text">七、音量与静音处理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AB%E3%80%81%E6%97%8B%E8%BD%AC%E4%B8%8E%E7%BF%BB%E8%BD%AC"><span class="nav-number">1.9.</span> <span class="nav-text">八、旋转与翻转</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B9%9D%E3%80%81%E5%B8%B8%E8%A7%81%E9%99%B7%E9%98%B1"><span class="nav-number">1.10.</span> <span class="nav-text">九、常见陷阱</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.11.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">miracle</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">234</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">36</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">124</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/my919" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;my919" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://gitee.com/my919" title="Gitee → https:&#x2F;&#x2F;gitee.com&#x2F;my919" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>Gitee</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:yeal166@163.com" title="E-Mail → mailto:yeal166@163.com" rel="noopener me external nofollow noreferrer" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://my919.github.io/2026/05/01/FFmpeg/FFmpeg%E9%9F%B3%E8%A7%86%E9%A2%91%E5%A4%84%E7%90%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="第三章：音视频编辑处理 | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          第三章：音视频编辑处理
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-05-01 13:41:59" itemprop="dateCreated datePublished" datetime="2026-05-01T13:41:59+08:00">2026-05-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-08-31 22:05:04" itemprop="dateModified" datetime="2026-08-31T22:05:04+08:00">2026-08-31</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/FFmpeg/" itemprop="url" rel="index"><span itemprop="name">FFmpeg</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>1.6k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>5 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="第三章：音视频编辑处理"><a href="#第三章：音视频编辑处理" class="headerlink" title="第三章：音视频编辑处理"></a>第三章：音视频编辑处理</h1><h2 id="概念基础：编辑≠转码"><a href="#概念基础：编辑≠转码" class="headerlink" title="概念基础：编辑≠转码"></a>概念基础：编辑≠转码</h2><ol>
+<li><strong>编辑操作多在「容器&#x2F;时间」层</strong>：裁剪、截图、合并、抽取音轨，多数可 <code>-c copy</code> 不重编码，<strong>秒级完成</strong>；只有变速、加滤镜才需重编码。</li>
+<li><strong>时间精度取决于关键帧</strong>：<code>-c copy</code> 裁剪只能切在关键帧，可能比目标点晚几帧；要精确到帧需重编码或先对齐关键帧。</li>
+<li><strong>合并与拆分</strong>：同编码参数的多段用** concat 协议&#x2F;滤镜**无损拼接；异构参数需重编码统一后再拼。</li>
+<li><strong>GIF 是特殊输出</strong>：调色板优化是高质量 GIF 的关键，直接转 GIF 易有色带。</li>
+<li><strong>本章目标</strong>：覆盖日常编辑 90% 需求——裁剪、截图、GIF、提取&#x2F;分离音轨、合并、变速、音量调整。</li>
+</ol>
+<blockquote>
+<p>本章承接 <a href="/2026/05/01/FFmpeg/FFmpeg%E7%BC%96%E8%A7%A3%E7%A0%81/" title="第二章：编解码与转码">第二章：编解码与转码</a>，操作多可 <code>-c copy</code>，速度优先。</p>
+</blockquote>
+<hr>
+<h2 id="一、裁剪与切片"><a href="#一、裁剪与切片" class="headerlink" title="一、裁剪与切片"></a>一、裁剪与切片</h2><h3 id="1-按时间裁剪"><a href="#1-按时间裁剪" class="headerlink" title="1. 按时间裁剪"></a>1. 按时间裁剪</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 截取 00:01:00 起 30 秒（-ss 在 -i 前，快速关键帧定位，-c copy 秒级）</span></span><br><span class="line">ffmpeg -ss 00:01:00 -i input.mp4 -t 30 -c copy clip.mp4</span><br><span class="line"></span><br><span class="line"><span class="comment"># 用 -to 指定结束时间点（与 -t 二选一）</span></span><br><span class="line">ffmpeg -ss 00:01:00 -i input.mp4 -to 00:01:30 -c copy clip.mp4</span><br><span class="line"></span><br><span class="line"><span class="comment"># 精确裁剪（需重编码，逐帧定位）</span></span><br><span class="line">ffmpeg -i input.mp4 -ss 00:01:00 -t 30 -c:v libx264 -c:a aac clip.mp4</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong><code>-ss</code> 在 <code>-i</code> 前</strong>：解封装快速跳转（推荐），可能不精确到帧。</li>
+<li><strong><code>-t</code></strong>：时长；<strong><code>-to</code></strong>：结束时间点。</li>
+<li><strong><code>-c copy</code></strong>：裁剪只能切在关键帧，开头可能略偏；要精确用重编码。</li>
+</ul>
+<h3 id="2-等分切片"><a href="#2-等分切片" class="headerlink" title="2. 等分切片"></a>2. 等分切片</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 每 10 秒一片，命名 clip_000.mp4、clip_001.mp4...</span></span><br><span class="line">ffmpeg -i input.mp4 -c copy -map 0 -f segment -segment_time 10 -reset_timestamps 1 clip_%03d.mp4</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="二、截图与序列帧"><a href="#二、截图与序列帧" class="headerlink" title="二、截图与序列帧"></a>二、截图与序列帧</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 第 5 秒一帧</span></span><br><span class="line">ffmpeg -ss 00:00:05 -i input.mp4 -frames:v 1 frame.jpg</span><br><span class="line"></span><br><span class="line"><span class="comment"># 每秒一帧，连续截图（fps=1）</span></span><br><span class="line">ffmpeg -i input.mp4 -vf <span class="string">&quot;fps=1&quot;</span> frame_%04d.jpg</span><br><span class="line"></span><br><span class="line"><span class="comment"># 指定分辨率截图</span></span><br><span class="line">ffmpeg -ss 00:00:05 -i input.mp4 -frames:v 1 -s 1280x720 frame.jpg</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong><code>-frames:v 1</code></strong>：只输出 1 帧。</li>
+<li><strong><code>-vf &quot;fps=N&quot;</code></strong>：每秒 N 帧采样，用于连续截图&#x2F;缩略图。</li>
+</ul>
+<hr>
+<h2 id="三、GIF-生成"><a href="#三、GIF-生成" class="headerlink" title="三、GIF 生成"></a>三、GIF 生成</h2><p>直接转 GIF 易有色带，<strong>先生成调色板再引用</strong>是高质量做法：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 简单 GIF（质量一般）</span></span><br><span class="line">ffmpeg -i input.mp4 -vf <span class="string">&quot;fps=10,scale=480:-1&quot;</span> -t 5 demo.gif</span><br><span class="line"></span><br><span class="line"><span class="comment"># 高质量 GIF：先提取调色板</span></span><br><span class="line">ffmpeg -i input.mp4 -t 5 -vf <span class="string">&quot;fps=10,scale=480:-1:flags=lanczos,palettegen&quot;</span> palette.png</span><br><span class="line"><span class="comment"># 再用调色板生成 GIF</span></span><br><span class="line">ffmpeg -i input.mp4 -i palette.png -t 5 -filter_complex <span class="string">&quot;fps=10,scale=480:-1:flags=lanczos[x];[x][1:v]paletteuse&quot;</span> demo.gif</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong><code>fps=10</code></strong>：帧率（GIF 体积敏感，10–15 帧够用）。</li>
+<li><strong><code>scale=480:-1</code></strong>：宽度 480，高度按比例。</li>
+<li><strong><code>flags=lanczos</code></strong>：高质量缩放算法。</li>
+<li><strong><code>palettegen</code>&#x2F;<code>paletteuse</code></strong>：生成与使用调色板，显著减少色带。</li>
+</ul>
+<hr>
+<h2 id="四、音频提取与分离"><a href="#四、音频提取与分离" class="headerlink" title="四、音频提取与分离"></a>四、音频提取与分离</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 提取音频为 MP3（从视频抽音轨）</span></span><br><span class="line">ffmpeg -i input.mp4 -vn -c:a libmp3lame -b:a 192k audio.mp3</span><br><span class="line"></span><br><span class="line"><span class="comment"># 只保留音频，丢弃视频（-vn）</span></span><br><span class="line">ffmpeg -i input.mp4 -vn -c:a copy audio.aac</span><br><span class="line"></span><br><span class="line"><span class="comment"># 分离出某一路音轨（多音轨源）</span></span><br><span class="line">ffmpeg -i input.mp4 -map 0:a:0 -c:a copy audio0.aac</span><br><span class="line">ffmpeg -i input.mp4 -map 0:a:1 -c:a copy audio1.aac</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong><code>-vn</code></strong>：丢视频；<strong><code>-map 0:a:N</code></strong>：选第 N 路音轨（从 0 起）。</li>
+<li><strong><code>-c:a copy</code></strong>：原样抽出，不重编码（仅改封装）。</li>
+</ul>
+<hr>
+<h2 id="五、合并"><a href="#五、合并" class="headerlink" title="五、合并"></a>五、合并</h2><h3 id="1-concat-协议（同编码参数，无损最快）"><a href="#1-concat-协议（同编码参数，无损最快）" class="headerlink" title="1. concat 协议（同编码参数，无损最快）"></a>1. concat 协议（同编码参数，无损最快）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># file list 格式</span></span><br><span class="line"><span class="built_in">cat</span> &gt; list.txt &lt;&lt;<span class="string">&#x27;EOF&#x27;</span></span><br><span class="line">file <span class="string">&#x27;part1.mp4&#x27;</span></span><br><span class="line">file <span class="string">&#x27;part2.mp4&#x27;</span></span><br><span class="line">file <span class="string">&#x27;part3.mp4&#x27;</span></span><br><span class="line">EOF</span><br><span class="line"><span class="comment"># 无损拼接（要求各段编码/分辨率/时间基一致）</span></span><br><span class="line">ffmpeg -f concat -safe 0 -i list.txt -c copy merged.mp4</span><br></pre></td></tr></table></figure>
+
+<p><code>-safe 0</code>：允许 list.txt 用绝对路径或相对路径。</p>
+<h3 id="2-concat-滤镜（异构参数，需重编码）"><a href="#2-concat-滤镜（异构参数，需重编码）" class="headerlink" title="2. concat 滤镜（异构参数，需重编码）"></a>2. concat 滤镜（异构参数，需重编码）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 各段分辨率/编码不同时，用滤镜重编码统一</span></span><br><span class="line">ffmpeg -i part1.mp4 -i part2.mp4 -filter_complex <span class="string">&quot;concat=n=2:v=1:a=1&quot;</span> -c:v libx264 -c:a aac merged.mp4</span><br></pre></td></tr></table></figure>
+
+<p><code>n=2</code>：段数；<code>v=1:a=1</code>：各段有 1 路视频 1 路音频。</p>
+<h3 id="3-音视频合并（独立视频-独立音频）"><a href="#3-音视频合并（独立视频-独立音频）" class="headerlink" title="3. 音视频合并（独立视频 + 独立音频）"></a>3. 音视频合并（独立视频 + 独立音频）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 视频 + 背景音乐，取视频画面与音频音轨</span></span><br><span class="line">ffmpeg -i video.mp4 -i bgm.mp3 -c:v copy -c:a aac -map 0:v:0 -map 1:a:0 -shortest out.mp4</span><br></pre></td></tr></table></figure>
+
+<p><strong><code>-shortest</code></strong>：以最短流为准截断（防音频比视频长导致黑屏拖尾）。</p>
+<hr>
+<h2 id="六、变速"><a href="#六、变速" class="headerlink" title="六、变速"></a>六、变速</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 视频加速 2 倍（setpts 减半）、音频加速 2 倍（atempo=2）</span></span><br><span class="line">ffmpeg -i input.mp4 -filter_complex <span class="string">&quot;[0:v]setpts=0.5*PTS[v];[0:a]atempo=2[a]&quot;</span> -map <span class="string">&quot;[v]&quot;</span> -map <span class="string">&quot;[a]&quot;</span> out.mp4</span><br><span class="line"></span><br><span class="line"><span class="comment"># 慢放 2 倍</span></span><br><span class="line">ffmpeg -i input.mp4 -filter_complex <span class="string">&quot;[0:v]setpts=2.0*PTS[v];[0:a]atempo=0.5[a]&quot;</span> -map <span class="string">&quot;[v]&quot;</span> -map <span class="string">&quot;[a]&quot;</span> out.mp4</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong><code>setpts=N*PTS</code></strong>：视频时间戳缩放，<code>&lt;1</code> 加速、<code>&gt;1</code> 慢放。</li>
+<li><strong><code>atempo=N</code></strong>：音频变速，范围 0.5–2.0；更大倍率需链式 <code>atempo=2,atempo=2</code>（4 倍）。</li>
+</ul>
+<hr>
+<h2 id="七、音量与静音处理"><a href="#七、音量与静音处理" class="headerlink" title="七、音量与静音处理"></a>七、音量与静音处理</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 音量增到 150%</span></span><br><span class="line">ffmpeg -i input.mp4 -af <span class="string">&quot;volume=1.5&quot;</span> -c:v copy out.mp4</span><br><span class="line"></span><br><span class="line"><span class="comment"># 音量减半</span></span><br><span class="line">ffmpeg -i input.mp4 -af <span class="string">&quot;volume=0.5&quot;</span> -c:v copy out.mp4</span><br><span class="line"></span><br><span class="line"><span class="comment"># 自动音量归一化（loudnorm，统一响度）</span></span><br><span class="line">ffmpeg -i input.mp4 -af <span class="string">&quot;loudnorm&quot;</span> -c:v copy out.mp4</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong><code>volume=N</code></strong>：线性增益，1.0 原音量。</li>
+<li><strong><code>loudnorm</code></strong>：EBU R128 响度归一化，适合多段混剪统一音量。</li>
+</ul>
+<hr>
+<h2 id="八、旋转与翻转"><a href="#八、旋转与翻转" class="headerlink" title="八、旋转与翻转"></a>八、旋转与翻转</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 顺时针 90 度</span></span><br><span class="line">ffmpeg -i input.mp4 -vf <span class="string">&quot;transpose=1&quot;</span> -c:a copy out.mp4</span><br><span class="line"><span class="comment"># 180 度</span></span><br><span class="line">ffmpeg -i input.mp4 -vf <span class="string">&quot;transpose=1,transpose=1&quot;</span> -c:a copy out.mp4</span><br><span class="line"><span class="comment"># 水平翻转（镜像）</span></span><br><span class="line">ffmpeg -i input.mp4 -vf <span class="string">&quot;hflip&quot;</span> -c:a copy out.mp4</span><br><span class="line"><span class="comment"># 垂直翻转</span></span><br><span class="line">ffmpeg -i input.mp4 -vf <span class="string">&quot;vflip&quot;</span> -c:a copy out.mp4</span><br></pre></td></tr></table></figure>
+
+<p><code>transpose</code>：0&#x3D;逆90、1&#x3D;顺90、2&#x3D;逆90+垂直翻转、3&#x3D;顺90+垂直翻转。</p>
+<hr>
+<h2 id="九、常见陷阱"><a href="#九、常见陷阱" class="headerlink" title="九、常见陷阱"></a>九、常见陷阱</h2><table>
+<thead>
+<tr>
+<th>陷阱</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>concat 协议参数不一</strong></td>
+<td>各段编码&#x2F;分辨率&#x2F;时间基不同会花屏或失败，需先用重编码统一</td>
+</tr>
+<tr>
+<td><strong>裁剪开头黑帧</strong></td>
+<td><code>-c copy</code> 切在关键帧，开头可能有几帧偏差；精确需重编码</td>
+</tr>
+<tr>
+<td><strong>GIF 体积爆炸</strong></td>
+<td>不限帧率&#x2F;尺寸 GIF 极大；用 <code>fps</code>+<code>scale</code>+调色板控制</td>
+</tr>
+<tr>
+<td><strong>变速没动音频</strong></td>
+<td>只 <code>setpts</code> 视频变速，音频仍原速，导致不同步；必须同步 <code>atempo</code></td>
+</tr>
+<tr>
+<td><strong>合并音视频拖尾</strong></td>
+<td>音频比视频长，未加 <code>-shortest</code> 导致黑屏拖尾</td>
+</tr>
+<tr>
+<td><strong>截图无 -frames:v 1</strong></td>
+<td>不限制会输出该时间点后所有帧到文件序列</td>
+</tr>
+<tr>
+<td><strong>-map 选错流</strong></td>
+<td>多音轨源默认只取第一路；需用 <code>-map 0:a:N</code> 指定</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="本章小结"><a href="#本章小结" class="headerlink" title="本章小结"></a>本章小结</h2><table>
+<thead>
+<tr>
+<th>要点</th>
+<th>结论</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>裁剪</td>
+<td><code>-ss</code>+<code>-t</code>&#x2F;<code>-to</code>，<code>-ss</code> 在 <code>-i</code> 前快速；<code>-c copy</code> 切关键帧，精确需重编码</td>
+</tr>
+<tr>
+<td>截图</td>
+<td><code>-frames:v 1</code> 单帧；<code>fps=N</code> 连续截图</td>
+</tr>
+<tr>
+<td>GIF</td>
+<td>先 <code>palettegen</code> 再 <code>paletteuse</code>，配 <code>fps</code>+<code>scale</code>+<code>lanczos</code> 控体积质量</td>
+</tr>
+<tr>
+<td>音频提取</td>
+<td><code>-vn</code> 丢视频；<code>-map 0:a:N</code> 选音轨；<code>-c:a copy</code> 原样抽</td>
+</tr>
+<tr>
+<td>合并</td>
+<td>同参数用 <code>concat</code> 协议（无损）；异构用 <code>concat</code> 滤镜（重编码）</td>
+</tr>
+<tr>
+<td>音视频合</td>
+<td><code>-map</code> 选流 + <code>-shortest</code> 防拖尾</td>
+</tr>
+<tr>
+<td>变速</td>
+<td><code>setpts</code> 视频变速 + <code>atempo</code> 音频变速必须同步</td>
+</tr>
+<tr>
+<td>音量</td>
+<td><code>volume=N</code> 线性增益；<code>loudnorm</code> 统一响度</td>
+</tr>
+</tbody></table>
+<p>进入 <a href="/2026/05/01/FFmpeg/FFmpeg%E6%BB%A4%E9%95%9C/" title="第四章：滤镜与滤镜图">第四章：滤镜与滤镜图</a>，系统学习滤镜图语法与常用滤镜。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/FFmpeg/" rel="tag"># FFmpeg</a>
+              <a href="/tags/%E9%9F%B3%E8%A7%86%E9%A2%91/" rel="tag"># 音视频</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/05/01/FFmpeg/FFmpeg%E9%AB%98%E7%BA%A7%E7%89%B9%E6%80%A7/" rel="prev" title="第六章：高级技巧与性能调优">
+                  <i class="fa fa-angle-left"></i> 第六章：高级技巧与性能调优
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2026/05/01/FFmpeg/FFmpeg%E7%BC%96%E8%A7%A3%E7%A0%81/" rel="next" title="第二章：编解码与转码">
+                  第二章：编解码与转码 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">miracle</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">321k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">17:52</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+<script>
+(function () {
+  function normalizeClipboard(s) {
+    return (s || '').replace(/\u00a0/g, ' ');
+  }
+
+  /** When innerText is empty, treat <br> as newlines (matches Hexo fenced + line_number HTML). */
+  function plainTextFromElement(el) {
+    if (!el) return '';
+    var t = el.innerText;
+    if (t != null && t !== '') return normalizeClipboard(t);
+    var clone = el.cloneNode(true);
+    clone.querySelectorAll('br').forEach(function (br) {
+      br.parentNode.replaceChild(document.createTextNode('\n'), br);
+    });
+    return normalizeClipboard(clone.textContent || '');
+  }
+
+  function extractFromFigure(fig) {
+    if (!fig) return '';
+    var cell = fig.querySelector('td.code') || fig.querySelector('.code');
+    if (cell) return plainTextFromElement(cell);
+    var pre = fig.querySelector('pre');
+    if (pre) return plainTextFromElement(pre);
+    var code = fig.querySelector('code');
+    return code ? plainTextFromElement(code) : '';
+  }
+
+  function extractForCopyBtn(btn) {
+    var fig = btn.closest('figure.highlight');
+    if (fig) return extractFromFigure(fig);
+    var wrap = btn.closest('.code-container');
+    if (wrap) {
+      var innerFig = wrap.querySelector('figure.highlight');
+      if (innerFig) return extractFromFigure(innerFig);
+      var preOnly = wrap.querySelector('pre');
+      if (preOnly) return plainTextFromElement(preOnly);
+    }
+    return '';
+  }
+
+  function setCopyIcon(btn, ok) {
+    var i = btn.querySelector('i');
+    if (i) i.className = ok ? 'fa fa-check-circle fa-fw' : 'fa fa-times-circle fa-fw';
+  }
+
+  function writeClipboard(text, btn) {
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(text).then(
+        function () { setCopyIcon(btn, true); },
+        function () { fallbackCopy(text, btn); }
+      );
+    }
+    fallbackCopy(text, btn);
+    return Promise.resolve();
+  }
+
+  function fallbackCopy(text, btn) {
+    try {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed';
+      ta.style.left = '-9999px';
+      document.body.appendChild(ta);
+      ta.select();
+      var ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      setCopyIcon(btn, ok);
+    } catch (e) {
+      setCopyIcon(btn, false);
+    }
+  }
+
+  document.addEventListener(
+    'click',
+    function (e) {
+      var btn = e.target.closest && e.target.closest('.copy-btn');
+      if (!btn) return;
+      if (!btn.closest('figure.highlight') && !btn.closest('.code-container')) return;
+      e.stopPropagation();
+      e.preventDefault();
+      var text = extractForCopyBtn(btn);
+      writeClipboard(text, btn);
+    },
+    true
+  );
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"my919.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="第二章：图像基础操作概念基础：把图像当数组来操作 OpenCV 的图像就是 NumPy 数组：所有「基础操作」本质是数组索引、切片、算术与广播——掌握 NumPy，OpenCV 基础就通了大半。 色彩空间是不同的「视角」：BGR 适合显示，GRAY 省一半数据，HSV 把颜色与亮度分离便于按色取物，Lab 接近人眼感知。 绘图是写回数组：circle&#x2F;rectangle&#x2F;lin">
+<meta property="og:type" content="article">
+<meta property="og:title" content="第二章：图像基础操作">
+<meta property="og:url" content="https://my919.github.io/2026/05/01/OpenCV/OpenCV%E5%9B%BE%E5%83%8F%E5%9F%BA%E7%A1%80%E6%93%8D%E4%BD%9C/index.html">
+<meta property="og:site_name" content="my">
+<meta property="og:description" content="第二章：图像基础操作概念基础：把图像当数组来操作 OpenCV 的图像就是 NumPy 数组：所有「基础操作」本质是数组索引、切片、算术与广播——掌握 NumPy，OpenCV 基础就通了大半。 色彩空间是不同的「视角」：BGR 适合显示，GRAY 省一半数据，HSV 把颜色与亮度分离便于按色取物，Lab 接近人眼感知。 绘图是写回数组：circle&#x2F;rectangle&#x2F;lin">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-05-01T05:42:38.000Z">
+<meta property="article:modified_time" content="2026-08-31T14:07:29.096Z">
+<meta property="article:author" content="miracle">
+<meta property="article:tag" content="OpenCV">
+<meta property="article:tag" content="Python">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://my919.github.io/2026/05/01/OpenCV/OpenCV%E5%9B%BE%E5%83%8F%E5%9F%BA%E7%A1%80%E6%93%8D%E4%BD%9C/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://my919.github.io/2026/05/01/OpenCV/OpenCV%E5%9B%BE%E5%83%8F%E5%9F%BA%E7%A1%80%E6%93%8D%E4%BD%9C/","path":"2026/05/01/OpenCV/OpenCV图像基础操作/","title":"第二章：图像基础操作"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>第二章：图像基础操作 | my</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.10.1/mermaid.min.js","integrity":"sha256-BmQmdWDS8X2OTbrwELWK366LV6escyWhHHe0XCTU/Hk="}}</script>
+  <script src="/js/third-party/tags/mermaid.js" defer></script>
+
+
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="my" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">my</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-service"><a href="/service/" rel="section"><i class="fa fa-server fa-fw"></i>服务</a></li><li class="menu-item menu-item-tool"><a href="/tool/" rel="section"><i class="fa fa-wrench fa-fw"></i>工具</a></li><li class="menu-item menu-item-project"><a href="/project/" rel="section"><i class="fa fa-folder-open fa-fw"></i>项目</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%9A%E5%9B%BE%E5%83%8F%E5%9F%BA%E7%A1%80%E6%93%8D%E4%BD%9C"><span class="nav-number">1.</span> <span class="nav-text">第二章：图像基础操作</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80%EF%BC%9A%E6%8A%8A%E5%9B%BE%E5%83%8F%E5%BD%93%E6%95%B0%E7%BB%84%E6%9D%A5%E6%93%8D%E4%BD%9C"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础：把图像当数组来操作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81NumPy-%E6%95%B0%E7%BB%84%E6%93%8D%E4%BD%9C"><span class="nav-number">1.2.</span> <span class="nav-text">一、NumPy 数组操作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E8%89%B2%E5%BD%A9%E7%A9%BA%E9%97%B4%E8%BD%AC%E6%8D%A2"><span class="nav-number">1.3.</span> <span class="nav-text">二、色彩空间转换</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#HSV-%E6%8C%89%E8%89%B2%E5%8F%96%E7%89%A9%EF%BC%88%E7%BB%8F%E5%85%B8%E7%94%A8%E6%B3%95%EF%BC%89"><span class="nav-number">1.3.1.</span> <span class="nav-text">HSV 按色取物（经典用法）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E7%BB%98%E5%9B%BE%EF%BC%88%E5%8F%AF%E8%A7%86%E5%8C%96%EF%BC%89"><span class="nav-number">1.4.</span> <span class="nav-text">三、绘图（可视化）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81ROI-%E4%B8%8E%E6%8E%A9%E8%86%9C%EF%BC%88%E4%BD%8D%E8%BF%90%E7%AE%97%EF%BC%89"><span class="nav-number">1.5.</span> <span class="nav-text">四、ROI 与掩膜（位运算）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E5%9B%BE%E5%83%8F%E7%AE%97%E6%9C%AF%E4%B8%8E%E6%B7%B7%E5%90%88"><span class="nav-number">1.6.</span> <span class="nav-text">五、图像算术与混合</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E6%80%A7%E8%83%BD%E6%8F%90%E7%A4%BA"><span class="nav-number">1.7.</span> <span class="nav-text">六、性能提示</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%83%E3%80%81%E5%B8%B8%E8%A7%81%E9%99%B7%E9%98%B1"><span class="nav-number">1.8.</span> <span class="nav-text">七、常见陷阱</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.9.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">miracle</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">234</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">36</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">124</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/my919" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;my919" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://gitee.com/my919" title="Gitee → https:&#x2F;&#x2F;gitee.com&#x2F;my919" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>Gitee</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:yeal166@163.com" title="E-Mail → mailto:yeal166@163.com" rel="noopener me external nofollow noreferrer" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://my919.github.io/2026/05/01/OpenCV/OpenCV%E5%9B%BE%E5%83%8F%E5%9F%BA%E7%A1%80%E6%93%8D%E4%BD%9C/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="第二章：图像基础操作 | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          第二章：图像基础操作
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-05-01 13:42:38" itemprop="dateCreated datePublished" datetime="2026-05-01T13:42:38+08:00">2026-05-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-08-31 22:07:29" itemprop="dateModified" datetime="2026-08-31T22:07:29+08:00">2026-08-31</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/OpenCV/" itemprop="url" rel="index"><span itemprop="name">OpenCV</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>1.3k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>4 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="第二章：图像基础操作"><a href="#第二章：图像基础操作" class="headerlink" title="第二章：图像基础操作"></a>第二章：图像基础操作</h1><h2 id="概念基础：把图像当数组来操作"><a href="#概念基础：把图像当数组来操作" class="headerlink" title="概念基础：把图像当数组来操作"></a>概念基础：把图像当数组来操作</h2><ol>
+<li><strong>OpenCV 的图像就是 NumPy 数组</strong>：所有「基础操作」本质是数组索引、切片、算术与广播——掌握 NumPy，OpenCV 基础就通了大半。</li>
+<li><strong>色彩空间是不同的「视角」</strong>：BGR 适合显示，GRAY 省一半数据，HSV 把颜色与亮度分离便于按色取物，Lab 接近人眼感知。</li>
+<li><strong>绘图是写回数组</strong>：<code>circle</code>&#x2F;<code>rectangle</code>&#x2F;<code>line</code>&#x2F;<code>putText</code> 直接在数组上改像素，常用于可视化检测结果。</li>
+<li><strong>位运算做掩膜</strong>：<code>bitwise_and</code> 配合掩膜，实现「只保留感兴趣区域」或「按色抠图」，是抠图与合成的基石。</li>
+<li><strong>本章目标</strong>：覆盖数组操作、色彩空间、绘图、位运算、ROI 与掩膜，为后续滤波与特征打基础。</li>
+</ol>
+<blockquote>
+<p>本章承接 <a href="/2026/05/01/OpenCV/OpenCV/" title="第一章：OpenCV 计算机视觉入门">第一章：OpenCV 计算机视觉入门</a> 的「图像即数组」心智模型。</p>
+</blockquote>
+<hr>
+<h2 id="一、NumPy-数组操作"><a href="#一、NumPy-数组操作" class="headerlink" title="一、NumPy 数组操作"></a>一、NumPy 数组操作</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> cv2</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"></span><br><span class="line">img = cv2.imread(<span class="string">&quot;photo.jpg&quot;</span>)</span><br><span class="line">h, w, c = img.shape</span><br><span class="line"></span><br><span class="line"><span class="comment"># 切片取 ROI</span></span><br><span class="line">roi = img[<span class="number">100</span>:<span class="number">300</span>, <span class="number">200</span>:<span class="number">500</span>]        <span class="comment"># 行 100-300、列 200-500</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 拷贝（避免视图引用）</span></span><br><span class="line">roi_copy = img[<span class="number">100</span>:<span class="number">300</span>, <span class="number">200</span>:<span class="number">500</span>].copy()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 填充边界（卷积前对齐尺寸常用）</span></span><br><span class="line">padded = cv2.copyMakeBorder(img, <span class="number">10</span>, <span class="number">10</span>, <span class="number">10</span>, <span class="number">10</span>, cv2.BORDER_REFLECT)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 拼接：水平 hstack、垂直 vstack（需同高/同宽）</span></span><br><span class="line">vis = np.hstack((img1, img2))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 数组算术（广播）</span></span><br><span class="line">bright = cv2.add(img, np.array([<span class="number">50</span>, <span class="number">50</span>, <span class="number">50</span>]))   <span class="comment"># 饱和加法（上限 255）</span></span><br><span class="line"><span class="comment"># 注意：img + 50 是 numpy 加法，溢出回绕（&gt;255 取模），故用 cv2.add</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong><code>cv2.add</code> vs <code>+</code></strong>：<code>cv2.add</code> 饱和（255 封顶），<code>numpy +</code> 回绕（溢出取模）。图像合成用 <code>cv2.add</code>&#x2F;<code>cv2.addWeighted</code> 防止颜色翻转。</p>
+</blockquote>
+<hr>
+<h2 id="二、色彩空间转换"><a href="#二、色彩空间转换" class="headerlink" title="二、色彩空间转换"></a>二、色彩空间转换</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)        <span class="comment"># BGR→灰度</span></span><br><span class="line">hsv  = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)         <span class="comment"># BGR→HSV</span></span><br><span class="line">lab  = cv2.cvtColor(img, cv2.COLOR_BGR2LAB)         <span class="comment"># BGR→Lab</span></span><br><span class="line">rgb  = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)         <span class="comment"># 给 matplotlib 显示用</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="HSV-按色取物（经典用法）"><a href="#HSV-按色取物（经典用法）" class="headerlink" title="HSV 按色取物（经典用法）"></a>HSV 按色取物（经典用法）</h3><p>HSV 把颜色（H）、饱和度（S）、亮度（V）分离，<strong>按颜色范围抠图</strong>比 BGR 直观：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)</span><br><span class="line"><span class="comment"># OpenCV 中 H 范围 0-179（不是 0-360），S/V 为 0-255</span></span><br><span class="line"><span class="comment"># 红色横跨 0 附近，需两段合并</span></span><br><span class="line">lower_red1 = np.array([<span class="number">0</span>, <span class="number">70</span>, <span class="number">50</span>])</span><br><span class="line">upper_red1 = np.array([<span class="number">10</span>, <span class="number">255</span>, <span class="number">255</span>])</span><br><span class="line">lower_red2 = np.array([<span class="number">170</span>, <span class="number">70</span>, <span class="number">50</span>])</span><br><span class="line">upper_red2 = np.array([<span class="number">180</span>, <span class="number">255</span>, <span class="number">255</span>])</span><br><span class="line">mask1 = cv2.inRange(hsv, lower_red1, upper_red1)</span><br><span class="line">mask2 = cv2.inRange(hsv, lower_red2, upper_red2)</span><br><span class="line">mask = cv2.bitwise_or(mask1, mask2)</span><br><span class="line">result = cv2.bitwise_and(img, img, mask=mask)   <span class="comment"># 只保留红色区域</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong>HSV 的 H 范围是 0–179</strong>（为适配 8bit），换算色相需 ×2。这是踩坑高发点。</p>
+</blockquote>
+<hr>
+<h2 id="三、绘图（可视化）"><a href="#三、绘图（可视化）" class="headerlink" title="三、绘图（可视化）"></a>三、绘图（可视化）</h2><p>绘图函数直接修改输入数组，故常在副本上画，保留原图：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">canvas = img.copy()</span><br><span class="line">cv2.line(canvas, (<span class="number">0</span>, <span class="number">0</span>), (w, h), (<span class="number">0</span>, <span class="number">255</span>, <span class="number">0</span>), <span class="number">2</span>)            <span class="comment"># 线，颜色 BGR，线宽</span></span><br><span class="line">cv2.rectangle(canvas, (<span class="number">100</span>, <span class="number">100</span>), (<span class="number">300</span>, <span class="number">300</span>), (<span class="number">0</span>, <span class="number">0</span>, <span class="number">255</span>), <span class="number">3</span>) <span class="comment"># 矩形（对角点）</span></span><br><span class="line">cv2.circle(canvas, (w//<span class="number">2</span>, h//<span class="number">2</span>), <span class="number">50</span>, (<span class="number">255</span>, <span class="number">0</span>, <span class="number">0</span>), -<span class="number">1</span>)        <span class="comment"># -1=填充</span></span><br><span class="line">cv2.ellipse(canvas, (w//<span class="number">2</span>, h//<span class="number">2</span>), (<span class="number">100</span>, <span class="number">50</span>), <span class="number">0</span>, <span class="number">0</span>, <span class="number">360</span>, <span class="number">255</span>, <span class="number">2</span>)</span><br><span class="line">cv2.putText(canvas, <span class="string">&quot;Hello&quot;</span>, (<span class="number">50</span>, <span class="number">50</span>), cv2.FONT_HERSHEY_SIMPLEX,</span><br><span class="line">            <span class="number">1.0</span>, (<span class="number">255</span>, <span class="number">255</span>, <span class="number">255</span>), <span class="number">2</span>, cv2.LINE_AA)</span><br><span class="line">cv2.polylines(canvas, [pts], <span class="literal">True</span>, (<span class="number">0</span>, <span class="number">255</span>, <span class="number">255</span>), <span class="number">2</span>)         <span class="comment"># 多边形，pts 为 int32 数组</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>坐标是 <code>(x, y)</code></strong>（与 <code>img[y, x]</code> 相反，绘图统一用 x-y）。</li>
+<li><strong><code>-1</code> 线宽表示填充</strong>。</li>
+<li><strong>中文 <code>putText</code> 不支持</strong>：需用 PIL 绘制中文再转回 numpy，或用 <code>cv2.putText</code> 配英文。</li>
+</ul>
+<hr>
+<h2 id="四、ROI-与掩膜（位运算）"><a href="#四、ROI-与掩膜（位运算）" class="headerlink" title="四、ROI 与掩膜（位运算）"></a>四、ROI 与掩膜（位运算）</h2><p>掩膜是<strong>单通道二值图</strong>（0&#x2F;255），配合位运算实现区域选择：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建全黑掩膜，画一个白色圆形区域</span></span><br><span class="line">mask = np.zeros((h, w), dtype=np.uint8)</span><br><span class="line">cv2.circle(mask, (w//<span class="number">2</span>, h//<span class="number">2</span>), <span class="number">100</span>, <span class="number">255</span>, -<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 只保留圆内原图，圆外置黑</span></span><br><span class="line">masked = cv2.bitwise_and(img, img, mask=mask)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 反向：圆外保留</span></span><br><span class="line">inv_mask = cv2.bitwise_not(mask)</span><br><span class="line">outside = cv2.bitwise_and(img, img, mask=inv_mask)</span><br></pre></td></tr></table></figure>
+
+<p><strong>位运算四件套</strong>：<code>bitwise_and</code>（与，掩膜取交集）、<code>bitwise_or</code>（或，合并）、<code>bitwise_xor</code>（异或）、<code>bitwise_not</code>（非，反色）。</p>
+<hr>
+<h2 id="五、图像算术与混合"><a href="#五、图像算术与混合" class="headerlink" title="五、图像算术与混合"></a>五、图像算术与混合</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 加权混合：dst = α·img1 + β·img2 + γ</span></span><br><span class="line">blend = cv2.addWeighted(img1, <span class="number">0.7</span>, img2, <span class="number">0.3</span>, <span class="number">0</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 透明叠加（PNG 带 alpha）：</span></span><br><span class="line"><span class="comment"># 用 alpha 通道做掩膜，把前景贴到背景</span></span><br></pre></td></tr></table></figure>
+
+<p>要求两图<strong>同尺寸同通道</strong>；尺寸不同先 <code>cv2.resize</code> 或裁剪对齐。</p>
+<hr>
+<h2 id="六、性能提示"><a href="#六、性能提示" class="headerlink" title="六、性能提示"></a>六、性能提示</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 向量化远快于 Python 循环遍历像素</span></span><br><span class="line"><span class="comment"># 慢（反例）：</span></span><br><span class="line"><span class="keyword">for</span> y <span class="keyword">in</span> <span class="built_in">range</span>(h):</span><br><span class="line">    <span class="keyword">for</span> x <span class="keyword">in</span> <span class="built_in">range</span>(w):</span><br><span class="line">        img[y, x] = ...   <span class="comment"># 千万别这么写</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 快：用 numpy 向量化或 cv2 算子</span></span><br><span class="line">gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)</span><br></pre></td></tr></table></figure>
+
+<p>OpenCV 的 C++ 算子比纯 Python 循环快数百倍；像素级遍历是性能杀手，能用向量化&#x2F;算子就别写双层循环。</p>
+<hr>
+<h2 id="七、常见陷阱"><a href="#七、常见陷阱" class="headerlink" title="七、常见陷阱"></a>七、常见陷阱</h2><table>
+<thead>
+<tr>
+<th>陷阱</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong><code>+</code> 溢出回绕</strong></td>
+<td>numpy <code>+</code> 超 255 取模致颜色翻转，用 <code>cv2.add</code> 饱和加</td>
+</tr>
+<tr>
+<td><strong>坐标顺序混淆</strong></td>
+<td><code>img[y,x]</code> 行列，绘图 <code>(x,y)</code> 宽高，两套相反</td>
+</tr>
+<tr>
+<td><strong>HSV 的 H 是 0-179</strong></td>
+<td>不是 0-360，红色横跨 0 需两段合并</td>
+</tr>
+<tr>
+<td><strong>imread 不报错</strong></td>
+<td>路径错返回 None，后续 <code>.shape</code> 报 AttributeError</td>
+</tr>
+<tr>
+<td><strong>绘图改原图</strong></td>
+<td>直接修改输入数组，在 <code>.copy()</code> 上画</td>
+</tr>
+<tr>
+<td><strong>尺寸不匹配混合</strong></td>
+<td><code>addWeighted</code> 要求同尺寸，否则报错</td>
+</tr>
+<tr>
+<td><strong>中文 putText 乱码</strong></td>
+<td>不支持中文，需 PIL 中转</td>
+</tr>
+<tr>
+<td><strong>像素循环慢</strong></td>
+<td>双层 Python 循环慢百倍，用向量化</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="本章小结"><a href="#本章小结" class="headerlink" title="本章小结"></a>本章小结</h2><table>
+<thead>
+<tr>
+<th>要点</th>
+<th>结论</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>数组操作</td>
+<td>切片取 ROI、<code>.copy()</code> 防视图、<code>hstack/vstack</code> 拼接</td>
+</tr>
+<tr>
+<td>算术</td>
+<td><code>cv2.add</code>&#x2F;<code>addWeighted</code> 饱和加；numpy <code>+</code> 会回绕</td>
+</tr>
+<tr>
+<td>色彩空间</td>
+<td>BGR 显示、GRAY 省流、HSV 按色取物、Lab 感知均匀</td>
+</tr>
+<tr>
+<td>HSV 抠图</td>
+<td><code>inRange</code> 生成掩膜 + <code>bitwise_and</code> 取区域；H 范围 0-179</td>
+</tr>
+<tr>
+<td>绘图</td>
+<td><code>line/rectangle/circle/ellipse/putText/polylines</code>，坐标 (x,y)，-1 填充</td>
+</tr>
+<tr>
+<td>掩膜</td>
+<td>单通道二值图，配 <code>bitwise_and</code> 区域选择</td>
+</tr>
+<tr>
+<td>性能</td>
+<td>向量化&#x2F;算子替代像素循环</td>
+</tr>
+</tbody></table>
+<p>进入 <a href="/2026/05/01/OpenCV/OpenCV%E6%BB%A4%E6%B3%A2%E4%B8%8E%E5%8F%98%E6%8D%A2/" title="第三章：滤波与几何变换">第三章：滤波与几何变换</a>，学习模糊、形态学与几何变换。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/OpenCV/" rel="tag"># OpenCV</a>
+              <a href="/tags/Python/" rel="tag"># Python</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/05/01/OpenCV/OpenCV%E6%BB%A4%E6%B3%A2%E4%B8%8E%E5%8F%98%E6%8D%A2/" rel="prev" title="第三章：滤波与几何变换">
+                  <i class="fa fa-angle-left"></i> 第三章：滤波与几何变换
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2026/05/01/OpenCV/OpenCV/" rel="next" title="第一章：OpenCV 计算机视觉入门">
+                  第一章：OpenCV 计算机视觉入门 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">miracle</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">321k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">17:52</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+<script>
+(function () {
+  function normalizeClipboard(s) {
+    return (s || '').replace(/\u00a0/g, ' ');
+  }
+
+  /** When innerText is empty, treat <br> as newlines (matches Hexo fenced + line_number HTML). */
+  function plainTextFromElement(el) {
+    if (!el) return '';
+    var t = el.innerText;
+    if (t != null && t !== '') return normalizeClipboard(t);
+    var clone = el.cloneNode(true);
+    clone.querySelectorAll('br').forEach(function (br) {
+      br.parentNode.replaceChild(document.createTextNode('\n'), br);
+    });
+    return normalizeClipboard(clone.textContent || '');
+  }
+
+  function extractFromFigure(fig) {
+    if (!fig) return '';
+    var cell = fig.querySelector('td.code') || fig.querySelector('.code');
+    if (cell) return plainTextFromElement(cell);
+    var pre = fig.querySelector('pre');
+    if (pre) return plainTextFromElement(pre);
+    var code = fig.querySelector('code');
+    return code ? plainTextFromElement(code) : '';
+  }
+
+  function extractForCopyBtn(btn) {
+    var fig = btn.closest('figure.highlight');
+    if (fig) return extractFromFigure(fig);
+    var wrap = btn.closest('.code-container');
+    if (wrap) {
+      var innerFig = wrap.querySelector('figure.highlight');
+      if (innerFig) return extractFromFigure(innerFig);
+      var preOnly = wrap.querySelector('pre');
+      if (preOnly) return plainTextFromElement(preOnly);
+    }
+    return '';
+  }
+
+  function setCopyIcon(btn, ok) {
+    var i = btn.querySelector('i');
+    if (i) i.className = ok ? 'fa fa-check-circle fa-fw' : 'fa fa-times-circle fa-fw';
+  }
+
+  function writeClipboard(text, btn) {
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(text).then(
+        function () { setCopyIcon(btn, true); },
+        function () { fallbackCopy(text, btn); }
+      );
+    }
+    fallbackCopy(text, btn);
+    return Promise.resolve();
+  }
+
+  function fallbackCopy(text, btn) {
+    try {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed';
+      ta.style.left = '-9999px';
+      document.body.appendChild(ta);
+      ta.select();
+      var ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      setCopyIcon(btn, ok);
+    } catch (e) {
+      setCopyIcon(btn, false);
+    }
+  }
+
+  document.addEventListener(
+    'click',
+    function (e) {
+      var btn = e.target.closest && e.target.closest('.copy-btn');
+      if (!btn) return;
+      if (!btn.closest('figure.highlight') && !btn.closest('.code-container')) return;
+      e.stopPropagation();
+      e.preventDefault();
+      var text = extractForCopyBtn(btn);
+      writeClipboard(text, btn);
+    },
+    true
+  );
+})();
+</script>
+
+</body>
+</html>

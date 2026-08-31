@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"my919.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="第二章：编解码与转码概念基础：为什么转码是核心 转码 &#x3D; 解码 + 重新编码：把输入的某种编码（如 ProRes&#x2F;HEVC）转成另一种（如 H.264），是 FFmpeg 最高频的操作，也是质量与体积权衡的主战场。 容器与编码两层独立：.mp4 是容器，可装 H.264&#x2F;H.265&#x2F;AV1 多种视频编码与 AAC&#x2F;MP3 多种音频编码；改容器不一定">
+<meta property="og:type" content="article">
+<meta property="og:title" content="第二章：编解码与转码">
+<meta property="og:url" content="https://my919.github.io/2026/05/01/FFmpeg/FFmpeg%E7%BC%96%E8%A7%A3%E7%A0%81/index.html">
+<meta property="og:site_name" content="my">
+<meta property="og:description" content="第二章：编解码与转码概念基础：为什么转码是核心 转码 &#x3D; 解码 + 重新编码：把输入的某种编码（如 ProRes&#x2F;HEVC）转成另一种（如 H.264），是 FFmpeg 最高频的操作，也是质量与体积权衡的主战场。 容器与编码两层独立：.mp4 是容器，可装 H.264&#x2F;H.265&#x2F;AV1 多种视频编码与 AAC&#x2F;MP3 多种音频编码；改容器不一定">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-05-01T05:41:59.000Z">
+<meta property="article:modified_time" content="2026-08-31T14:04:58.619Z">
+<meta property="article:author" content="miracle">
+<meta property="article:tag" content="FFmpeg">
+<meta property="article:tag" content="音视频">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://my919.github.io/2026/05/01/FFmpeg/FFmpeg%E7%BC%96%E8%A7%A3%E7%A0%81/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://my919.github.io/2026/05/01/FFmpeg/FFmpeg%E7%BC%96%E8%A7%A3%E7%A0%81/","path":"2026/05/01/FFmpeg/FFmpeg编解码/","title":"第二章：编解码与转码"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>第二章：编解码与转码 | my</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.10.1/mermaid.min.js","integrity":"sha256-BmQmdWDS8X2OTbrwELWK366LV6escyWhHHe0XCTU/Hk="}}</script>
+  <script src="/js/third-party/tags/mermaid.js" defer></script>
+
+
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="my" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">my</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-service"><a href="/service/" rel="section"><i class="fa fa-server fa-fw"></i>服务</a></li><li class="menu-item menu-item-tool"><a href="/tool/" rel="section"><i class="fa fa-wrench fa-fw"></i>工具</a></li><li class="menu-item menu-item-project"><a href="/project/" rel="section"><i class="fa fa-folder-open fa-fw"></i>项目</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%9A%E7%BC%96%E8%A7%A3%E7%A0%81%E4%B8%8E%E8%BD%AC%E7%A0%81"><span class="nav-number">1.</span> <span class="nav-text">第二章：编解码与转码</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%B8%BA%E4%BB%80%E4%B9%88%E8%BD%AC%E7%A0%81%E6%98%AF%E6%A0%B8%E5%BF%83"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础：为什么转码是核心</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E5%AE%B9%E5%99%A8%E4%B8%8E%E7%BC%96%E7%A0%81%EF%BC%9A%E4%B8%A4%E5%B1%82%E6%A6%82%E5%BF%B5"><span class="nav-number">1.2.</span> <span class="nav-text">一、容器与编码：两层概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E5%B8%B8%E7%94%A8%E7%BC%96%E7%A0%81%E5%99%A8%E9%80%89%E6%8B%A9"><span class="nav-number">1.3.</span> <span class="nav-text">二、常用编码器选择</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E8%A7%86%E9%A2%91%E7%BC%96%E7%A0%81%E5%99%A8"><span class="nav-number">1.3.1.</span> <span class="nav-text">1. 视频编码器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E9%9F%B3%E9%A2%91%E7%BC%96%E7%A0%81%E5%99%A8"><span class="nav-number">1.3.2.</span> <span class="nav-text">2. 音频编码器</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81CRF%EF%BC%9A%E6%81%92%E5%AE%9A%E8%B4%A8%E9%87%8F%EF%BC%88%E6%9C%80%E5%B8%B8%E7%94%A8%EF%BC%89"><span class="nav-number">1.4.</span> <span class="nav-text">三、CRF：恒定质量（最常用）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E4%B8%A4%E6%AC%A1%E7%BC%96%E7%A0%81%EF%BC%882-pass%EF%BC%89%EF%BC%9A%E7%B2%BE%E7%A1%AE%E4%BD%93%E7%A7%AF"><span class="nav-number">1.5.</span> <span class="nav-text">四、两次编码（2-pass）：精确体积</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E7%A0%81%E7%8E%87%E4%B8%8E%E7%9B%AE%E6%A0%87%E4%BD%93%E7%A7%AF%E6%8D%A2%E7%AE%97"><span class="nav-number">1.6.</span> <span class="nav-text">五、码率与目标体积换算</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E5%88%86%E8%BE%A8%E7%8E%87%E4%B8%8E%E5%B8%A7%E7%8E%87%E8%B0%83%E6%95%B4"><span class="nav-number">1.7.</span> <span class="nav-text">六、分辨率与帧率调整</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%83%E3%80%81%E7%A1%AC%E4%BB%B6%E7%BC%96%E7%A0%81"><span class="nav-number">1.8.</span> <span class="nav-text">七、硬件编码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AB%E3%80%81%E5%B8%B8%E8%A7%81%E9%99%B7%E9%98%B1"><span class="nav-number">1.9.</span> <span class="nav-text">八、常见陷阱</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.10.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">miracle</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">234</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">36</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">124</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/my919" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;my919" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://gitee.com/my919" title="Gitee → https:&#x2F;&#x2F;gitee.com&#x2F;my919" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>Gitee</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:yeal166@163.com" title="E-Mail → mailto:yeal166@163.com" rel="noopener me external nofollow noreferrer" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://my919.github.io/2026/05/01/FFmpeg/FFmpeg%E7%BC%96%E8%A7%A3%E7%A0%81/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="第二章：编解码与转码 | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          第二章：编解码与转码
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-05-01 13:41:59" itemprop="dateCreated datePublished" datetime="2026-05-01T13:41:59+08:00">2026-05-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-08-31 22:04:58" itemprop="dateModified" datetime="2026-08-31T22:04:58+08:00">2026-08-31</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/FFmpeg/" itemprop="url" rel="index"><span itemprop="name">FFmpeg</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>1.7k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>6 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="第二章：编解码与转码"><a href="#第二章：编解码与转码" class="headerlink" title="第二章：编解码与转码"></a>第二章：编解码与转码</h1><h2 id="概念基础：为什么转码是核心"><a href="#概念基础：为什么转码是核心" class="headerlink" title="概念基础：为什么转码是核心"></a>概念基础：为什么转码是核心</h2><ol>
+<li><strong>转码 &#x3D; 解码 + 重新编码</strong>：把输入的某种编码（如 ProRes&#x2F;HEVC）转成另一种（如 H.264），是 FFmpeg 最高频的操作，也是质量与体积权衡的主战场。</li>
+<li><strong>容器与编码两层独立</strong>：<code>.mp4</code> 是容器，可装 H.264&#x2F;H.265&#x2F;AV1 多种视频编码与 AAC&#x2F;MP3 多种音频编码；改容器不一定要改编码，改编码也不一定要改容器。</li>
+<li><strong>质量来自编码器与参数</strong>：同一 H.264，<code>libx264</code> 的 <code>-crf</code>&#x2F;<code>-preset</code> 决定「画质-体积-速度」三角；选错参数要么体积爆炸、要么画质崩坏。</li>
+<li><strong>码率模式三选一</strong>：<strong>CRF</strong>（恒定质量，最常用）、<strong>两次编码</strong>（精确体积，离线归档）、<strong>CBR&#x2F;VBR</strong>（直播定码率）。</li>
+<li><strong>硬件编码提速</strong>：CPU 软编画质最好但慢；NVIDIA&#x2F;Intel&#x2F;Apple 硬件编码器数倍提速，适合实时与批量，画质略逊但多数场景可接受。</li>
+</ol>
+<blockquote>
+<p>本章承接 <a href="/2026/05/01/FFmpeg/FFmpeg/" title="第一章：FFmpeg 音视频处理入门">第一章：FFmpeg 音视频处理入门</a> 的命令骨架，把转码从「能跑」讲到「会调」。</p>
+</blockquote>
+<hr>
+<h2 id="一、容器与编码：两层概念"><a href="#一、容器与编码：两层概念" class="headerlink" title="一、容器与编码：两层概念"></a>一、容器与编码：两层概念</h2><table>
+<thead>
+<tr>
+<th>层</th>
+<th>例子</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>容器（封装）</strong></td>
+<td>MP4、MKV、MOV、FLV、TS、WebM</td>
+<td>打包音视频&#x2F;字幕流 + 索引 + 时间戳</td>
+</tr>
+<tr>
+<td><strong>视频编码</strong></td>
+<td>H.264、H.265&#x2F;HEVC、AV1、VP9、ProRes</td>
+<td>压缩视频画面</td>
+</tr>
+<tr>
+<td><strong>音频编码</strong></td>
+<td>AAC、MP3、Opus、FLAC、PCM</td>
+<td>压缩音频</td>
+</tr>
+</tbody></table>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 看 ffprobe 输出：container=format_name，stream.codec_name 才是编码</span></span><br><span class="line">ffprobe -v error -show_entries format=format_name:stream=codec_type,codec_name in.mp4</span><br></pre></td></tr></table></figure>
+
+<p><code>-c copy</code> 拷贝的是<strong>编码后的码流</strong>，故只能换容器、不能改编码或分辨率；要改必须重编码（解码→编码）。</p>
+<hr>
+<h2 id="二、常用编码器选择"><a href="#二、常用编码器选择" class="headerlink" title="二、常用编码器选择"></a>二、常用编码器选择</h2><h3 id="1-视频编码器"><a href="#1-视频编码器" class="headerlink" title="1. 视频编码器"></a>1. 视频编码器</h3><table>
+<thead>
+<tr>
+<th>编码器</th>
+<th>编码</th>
+<th>特点</th>
+<th>典型场景</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong><code>libx264</code></strong></td>
+<td>H.264</td>
+<td>软编，画质&#x2F;兼容性最好，最常用</td>
+<td>通用 Web&#x2F;移动端</td>
+</tr>
+<tr>
+<td><strong><code>libx265</code></strong></td>
+<td>H.265&#x2F;HEVC</td>
+<td>同画质体积约省 40%，编码慢、兼容性次之</td>
+<td>4K&#x2F;高压缩归档</td>
+</tr>
+<tr>
+<td><strong><code>libvpx-vp9</code></strong></td>
+<td>VP9</td>
+<td>开源，WebM 常用，慢</td>
+<td>YouTube&#x2F;WebM</td>
+</tr>
+<tr>
+<td><strong><code>libaom-av1</code></strong></td>
+<td>AV1</td>
+<td>最新开源，压缩率最高，编码极慢</td>
+<td>面向未来&#x2F;带宽敏感</td>
+</tr>
+<tr>
+<td><strong><code>h264_nvenc</code></strong></td>
+<td>H.264</td>
+<td>NVIDIA 硬编，快</td>
+<td>实时&#x2F;批量</td>
+</tr>
+<tr>
+<td><strong><code>h264_qsv</code></strong></td>
+<td>H.264</td>
+<td>Intel QuickSync 硬编</td>
+<td>Intel 服务器</td>
+</tr>
+<tr>
+<td><strong><code>h264_videotoolbox</code></strong></td>
+<td>H.264</td>
+<td>Apple 硬编</td>
+<td>macOS&#x2F;iOS</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>查可用编码器：<code>ffmpeg -encoders | grep 264</code>；查某编码器参数：<code>ffmpeg -h encoder=libx264</code>。</p>
+</blockquote>
+<h3 id="2-音频编码器"><a href="#2-音频编码器" class="headerlink" title="2. 音频编码器"></a>2. 音频编码器</h3><table>
+<thead>
+<tr>
+<th>编码器</th>
+<th>编码</th>
+<th>特点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong><code>aac</code></strong></td>
+<td>AAC</td>
+<td>通用首选，<code>-b:a 128k</code> 够用</td>
+</tr>
+<tr>
+<td><strong><code>libmp3lame</code></strong></td>
+<td>MP3</td>
+<td>兼容老设备</td>
+</tr>
+<tr>
+<td><strong><code>libopus</code></strong></td>
+<td>Opus</td>
+<td>低码率语音&#x2F;直播最优</td>
+</tr>
+<tr>
+<td><strong><code>flac</code></strong></td>
+<td>FLAC</td>
+<td>无损，音乐归档</td>
+</tr>
+<tr>
+<td><strong><code>copy</code></strong></td>
+<td>原样</td>
+<td>不重编码</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="三、CRF：恒定质量（最常用）"><a href="#三、CRF：恒定质量（最常用）" class="headerlink" title="三、CRF：恒定质量（最常用）"></a>三、CRF：恒定质量（最常用）</h2><p><strong>CRF（Constant Rate Factor）</strong> 让编码器按「目标画质」自适应分配码率——复杂场景多给字节、简单场景少给，<strong>体积随内容变化但画质恒定</strong>，是离线转码首选。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ffmpeg -i input.mov -c:v libx264 -crf 23 -preset medium -c:a aac -b:a 128k output.mp4</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong><code>-crf</code></strong> 范围 0–51（libx264），<strong>越小质量越高、文件越大</strong>：<ul>
+<li>18：视觉无损（归档）</li>
+<li>23：默认，画质与体积均衡</li>
+<li>28：可接受画质，体积小（预览）</li>
+</ul>
+</li>
+<li><strong><code>-preset</code></strong> 权衡编码速度与压缩率，<strong>越慢压缩率越好（同画质体积更小）</strong>：<br><code>ultrafast → superfast → veryfast → faster → fast → medium（默认）→ slow → slower → veryslow</code></li>
+<li><strong><code>-tune</code></strong> 针对内容调优：<code>film</code>（电影）、<code>animation</code>（动画）、<code>fastdecode</code>（易解码）等。</li>
+</ul>
+<blockquote>
+<p>经验：离线归档用 <code>-crf 18 -preset slow</code>；日常转码 <code>-crf 23 -preset medium</code>；批量预览 <code>-crf 28 -preset fast</code>。</p>
+</blockquote>
+<hr>
+<h2 id="四、两次编码（2-pass）：精确体积"><a href="#四、两次编码（2-pass）：精确体积" class="headerlink" title="四、两次编码（2-pass）：精确体积"></a>四、两次编码（2-pass）：精确体积</h2><p>需控制输出体积（如限制 100MB）时，CRF 无法预测体积；用 <strong>2-pass</strong>：第一遍分析码率分布，第二遍按目标码率精准分配。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 目标码率：视频 1M + 音频 128k</span></span><br><span class="line"><span class="comment"># 第一遍：只分析，pass=1，输出到 /dev/null</span></span><br><span class="line">ffmpeg -y -i input.mp4 -c:v libx264 -b:v 1M -pass 1 -an -f mp4 /dev/null</span><br><span class="line"><span class="comment"># 第二遍：实际编码，pass=2</span></span><br><span class="line">ffmpeg -i input.mp4 -c:v libx264 -b:v 1M -pass 2 -c:a aac -b:a 128k output.mp4</span><br></pre></td></tr></table></figure>
+
+<p>适用：视频网站固定码率档位、存储受限的归档。实时场景<strong>不可用</strong>（需两遍）。</p>
+<hr>
+<h2 id="五、码率与目标体积换算"><a href="#五、码率与目标体积换算" class="headerlink" title="五、码率与目标体积换算"></a>五、码率与目标体积换算</h2><p>视频码率与体积关系：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">体积 ≈ 码率 × 时长</span><br></pre></td></tr></table></figure>
+
+<p>例：1 小时视频，目标 1GB，则总码率 ≈ 1000MB×8 &#x2F; 3600s ≈ 2.2 Mbps，分给视频约 2M、音频 128k。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 按目标体积反推码率</span></span><br><span class="line">ffmpeg -i input.mp4 -c:v libx264 -b:v 2M -maxrate 2.5M -bufsize 4M -c:a aac -b:a 128k output.mp4</span><br></pre></td></tr></table></figure>
+
+<p><code>-maxrate</code>&#x2F;<code>-bufsize</code> 配合做受限 VBR，防码率尖峰超限。</p>
+<hr>
+<h2 id="六、分辨率与帧率调整"><a href="#六、分辨率与帧率调整" class="headerlink" title="六、分辨率与帧率调整"></a>六、分辨率与帧率调整</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 缩放到 1280 宽，高度自动按比例（-2 保证偶数，编码器要求）</span></span><br><span class="line">ffmpeg -i input.mp4 -vf <span class="string">&quot;scale=1280:-2&quot;</span> -c:v libx264 -crf 23 out.mp4</span><br><span class="line"></span><br><span class="line"><span class="comment"># 限定最大不超过 720p，更小则不放大</span></span><br><span class="line">ffmpeg -i input.mp4 -vf <span class="string">&quot;scale=&#x27;min(1280,iw)&#x27;:&#x27;min(720,ih)&#x27;:force_original_aspect_ratio=decrease&quot;</span> out.mp4</span><br><span class="line"></span><br><span class="line"><span class="comment"># 改帧率到 30</span></span><br><span class="line">ffmpeg -i input.mp4 -r 30 -c:v libx264 -crf 23 out.mp4</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>缩放务必用 <code>-2</code> 而非 <code>-1</code> 作为偶数维度，H.264 要求宽高为偶数。</p>
+</blockquote>
+<hr>
+<h2 id="七、硬件编码"><a href="#七、硬件编码" class="headerlink" title="七、硬件编码"></a>七、硬件编码</h2><p>软编画质好但慢；硬件编码器数倍提速，CPU 占用低：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># NVIDIA NVENC</span></span><br><span class="line">ffmpeg -i input.mp4 -c:v h264_nvenc -preset p5 -rc vbr -cq 23 -b:v 0 -c:a copy out.mp4</span><br><span class="line"><span class="comment"># Intel QuickSync</span></span><br><span class="line">ffmpeg -i input.mp4 -c:v h264_qsv -preset medium -global_quality 23 out.mp4</span><br><span class="line"><span class="comment"># Apple VideoToolbox</span></span><br><span class="line">ffmpeg -i input.mp4 -c:v h264_videotoolbox -q:v 50 out.mp4</span><br></pre></td></tr></table></figure>
+
+<p>硬件编码器参数与软编不同（如 NVENC 用 <code>-preset p1..p7</code>、<code>-cq</code>&#x2F;<code>-rc vbr</code>），查帮助：<code>ffmpeg -h encoder=h264_nvenc</code>。</p>
+<p><strong>取舍</strong>：</p>
+<ul>
+<li>实时直播&#x2F;批量转码：硬件编码优先（速度、并发）。</li>
+<li>高画质离线归档：<code>libx264 -preset slow</code> 软编，画质同体积最优。</li>
+<li>兼容性：硬件编码器依赖驱动与编译选项，部署前确认 <code>ffmpeg -encoders</code> 含目标编码器。</li>
+</ul>
+<hr>
+<h2 id="八、常见陷阱"><a href="#八、常见陷阱" class="headerlink" title="八、常见陷阱"></a>八、常见陷阱</h2><table>
+<thead>
+<tr>
+<th>陷阱</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong><code>-c copy</code> 改分辨率</strong></td>
+<td><code>copy</code> 跳过编解码，分辨率&#x2F;滤镜无效；要改必须重编码</td>
+</tr>
+<tr>
+<td><strong>容器与编码不匹配</strong></td>
+<td>如 HEVC 装进某些旧 MP4 profile 不被 Safari 播放；用 <code>-tag:v hvc1</code> 兼容</td>
+</tr>
+<tr>
+<td><strong>CRF 当直播用</strong></td>
+<td>CRF 体积不可控，直播应用 CBR&#x2F;<code>-maxrate</code> 限码率</td>
+</tr>
+<tr>
+<td><strong>preset 误解</strong></td>
+<td><code>ultrafast</code> 不是「最快且最好」，是「最快但体积大」；画质同则慢 preset 体积更小</td>
+</tr>
+<tr>
+<td><strong>音频忘了设编码</strong></td>
+<td>不指定 <code>-c:a</code> 时默认可能选不兼容编码；显式 <code>-c:a aac</code></td>
+</tr>
+<tr>
+<td><strong>缩放奇数维度</strong></td>
+<td>H.264 要求偶数，奇数报错；用 <code>-2</code> 自动取偶</td>
+</tr>
+<tr>
+<td><strong>10bit 源降 8bit 崩色</strong></td>
+<td>加 <code>-pix_fmt yuv420p</code> 保证 8bit 兼容播放器</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="本章小结"><a href="#本章小结" class="headerlink" title="本章小结"></a>本章小结</h2><table>
+<thead>
+<tr>
+<th>要点</th>
+<th>结论</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>两层概念</td>
+<td>容器（MP4&#x2F;MKV）与编码（H.264&#x2F;AAC）独立；<code>-c copy</code> 只换容器</td>
+</tr>
+<tr>
+<td>编码器</td>
+<td>通用首选 <code>libx264</code>；高压缩 <code>libx265</code>&#x2F;AV1；实时用 <code>h264_nvenc</code>&#x2F;<code>qsv</code></td>
+</tr>
+<tr>
+<td>CRF</td>
+<td>恒定画质自适应码率，离线首选；18 视觉无损、23 默认、28 预览</td>
+</tr>
+<tr>
+<td>preset</td>
+<td>越慢压缩率越好；归档 <code>slow</code>、日常 <code>medium</code></td>
+</tr>
+<tr>
+<td>2-pass</td>
+<td>精确体积，第一遍分析第二遍编码；实时不可用</td>
+</tr>
+<tr>
+<td>码率</td>
+<td>体积 ≈ 码率 × 时长；直播用 <code>-maxrate</code>&#x2F;<code>-bufsize</code> 限峰</td>
+</tr>
+<tr>
+<td>缩放</td>
+<td><code>scale=W:-2</code> 偶数；<code>force_original_aspect_ratio=decrease</code> 防放大</td>
+</tr>
+<tr>
+<td>硬件</td>
+<td>实时&#x2F;批量优先，参数与软编不同；归档画质选软编</td>
+</tr>
+</tbody></table>
+<p>进入 <a href="/2026/05/01/FFmpeg/FFmpeg%E9%9F%B3%E8%A7%86%E9%A2%91%E5%A4%84%E7%90%86/" title="第三章：音视频编辑处理">第三章：音视频编辑处理</a>，学习裁剪、截图、GIF、音频提取与合并等编辑操作。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/FFmpeg/" rel="tag"># FFmpeg</a>
+              <a href="/tags/%E9%9F%B3%E8%A7%86%E9%A2%91/" rel="tag"># 音视频</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/05/01/FFmpeg/FFmpeg%E9%9F%B3%E8%A7%86%E9%A2%91%E5%A4%84%E7%90%86/" rel="prev" title="第三章：音视频编辑处理">
+                  <i class="fa fa-angle-left"></i> 第三章：音视频编辑处理
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2026/05/01/FFmpeg/FFmpeg%E6%BB%A4%E9%95%9C/" rel="next" title="第四章：滤镜与滤镜图">
+                  第四章：滤镜与滤镜图 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">miracle</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">321k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">17:52</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+<script>
+(function () {
+  function normalizeClipboard(s) {
+    return (s || '').replace(/\u00a0/g, ' ');
+  }
+
+  /** When innerText is empty, treat <br> as newlines (matches Hexo fenced + line_number HTML). */
+  function plainTextFromElement(el) {
+    if (!el) return '';
+    var t = el.innerText;
+    if (t != null && t !== '') return normalizeClipboard(t);
+    var clone = el.cloneNode(true);
+    clone.querySelectorAll('br').forEach(function (br) {
+      br.parentNode.replaceChild(document.createTextNode('\n'), br);
+    });
+    return normalizeClipboard(clone.textContent || '');
+  }
+
+  function extractFromFigure(fig) {
+    if (!fig) return '';
+    var cell = fig.querySelector('td.code') || fig.querySelector('.code');
+    if (cell) return plainTextFromElement(cell);
+    var pre = fig.querySelector('pre');
+    if (pre) return plainTextFromElement(pre);
+    var code = fig.querySelector('code');
+    return code ? plainTextFromElement(code) : '';
+  }
+
+  function extractForCopyBtn(btn) {
+    var fig = btn.closest('figure.highlight');
+    if (fig) return extractFromFigure(fig);
+    var wrap = btn.closest('.code-container');
+    if (wrap) {
+      var innerFig = wrap.querySelector('figure.highlight');
+      if (innerFig) return extractFromFigure(innerFig);
+      var preOnly = wrap.querySelector('pre');
+      if (preOnly) return plainTextFromElement(preOnly);
+    }
+    return '';
+  }
+
+  function setCopyIcon(btn, ok) {
+    var i = btn.querySelector('i');
+    if (i) i.className = ok ? 'fa fa-check-circle fa-fw' : 'fa fa-times-circle fa-fw';
+  }
+
+  function writeClipboard(text, btn) {
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(text).then(
+        function () { setCopyIcon(btn, true); },
+        function () { fallbackCopy(text, btn); }
+      );
+    }
+    fallbackCopy(text, btn);
+    return Promise.resolve();
+  }
+
+  function fallbackCopy(text, btn) {
+    try {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed';
+      ta.style.left = '-9999px';
+      document.body.appendChild(ta);
+      ta.select();
+      var ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      setCopyIcon(btn, ok);
+    } catch (e) {
+      setCopyIcon(btn, false);
+    }
+  }
+
+  document.addEventListener(
+    'click',
+    function (e) {
+      var btn = e.target.closest && e.target.closest('.copy-btn');
+      if (!btn) return;
+      if (!btn.closest('figure.highlight') && !btn.closest('.code-container')) return;
+      e.stopPropagation();
+      e.preventDefault();
+      var text = extractForCopyBtn(btn);
+      writeClipboard(text, btn);
+    },
+    true
+  );
+})();
+</script>
+
+</body>
+</html>

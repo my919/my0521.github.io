@@ -28,7 +28,7 @@
 <meta property="og:description" content="Go 并发编程入门概念基础：Go 并发编程是什么&#x2F;为什么 并发是语言内建能力：Go 在语言层面提供 goroutine 与 channel，无需第三方库即可写出高并发程序，这是 Go 最具辨识度的特性。 CSP 模型：遵循「不要通过共享内存来通信，而要通过通信来共享内存」，用 channel 在 goroutine 之间传递数据与所有权。 M:N 调度：运行时把成千上万个轻量 gorou">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-05-01T04:28:41.000Z">
-<meta property="article:modified_time" content="2026-08-30T08:07:08.703Z">
+<meta property="article:modified_time" content="2026-08-31T12:59:17.919Z">
 <meta property="article:author" content="miracle">
 <meta property="article:tag" content="Golang">
 <meta name="twitter:card" content="summary">
@@ -174,18 +174,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">218</span>
+          <span class="site-state-item-count">234</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">35</span>
+        <span class="site-state-item-count">36</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">119</span>
+        <span class="site-state-item-count">124</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -259,7 +259,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-08-30 16:07:08" itemprop="dateModified" datetime="2026-08-30T16:07:08+08:00">2026-08-30</time>
+      <time title="修改时间：2026-08-31 20:59:17" itemprop="dateModified" datetime="2026-08-31T20:59:17+08:00">2026-08-31</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -278,14 +278,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>1.4k</span>
+      <span>2k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>5 分钟</span>
+      <span>7 分钟</span>
     </span>
 </div>
 
@@ -339,12 +339,29 @@ flowchart LR
 <li>多 goroutine <strong>读写同一内存</strong>且无 channel 串行化时，用 <strong><code>sync.Mutex</code></strong> 保护临界区；<strong>读多写少</strong>可考虑 <strong><code>RWMutex</code></strong>。</li>
 <li>锁粒度要小、持有时间要短；避免在持锁时做 IO 或可能阻塞很久的逻辑。</li>
 </ul>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Counter 用 Mutex 把对 value 的自增串行化，是并发安全的计数器</span></span><br><span class="line"><span class="keyword">type</span> Counter <span class="keyword">struct</span> &#123;</span><br><span class="line">    mu    sync.Mutex</span><br><span class="line">    value <span class="type">int</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *Counter)</span></span> Inc() &#123;</span><br><span class="line">    c.mu.Lock()</span><br><span class="line">    <span class="keyword">defer</span> c.mu.Unlock() <span class="comment">// 持锁时间尽量短：只保护共享状态的更新</span></span><br><span class="line">    c.value++</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *Counter)</span></span> Value() <span class="type">int</span> &#123;</span><br><span class="line">    c.mu.Lock()</span><br><span class="line">    <span class="keyword">defer</span> c.mu.Unlock()</span><br><span class="line">    <span class="keyword">return</span> c.value</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">var</span> c Counter</span><br><span class="line">    <span class="keyword">var</span> wg sync.WaitGroup</span><br><span class="line">    <span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">1000</span>; i++ &#123;</span><br><span class="line">        wg.Add(<span class="number">1</span>) <span class="comment">// 先 Add 再启动 goroutine</span></span><br><span class="line">        <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">            <span class="keyword">defer</span> wg.Done()</span><br><span class="line">            c.Inc()</span><br><span class="line">        &#125;()</span><br><span class="line">    &#125;</span><br><span class="line">    wg.Wait()</span><br><span class="line">    fmt.Println(c.Value()) <span class="comment">// 1000，无竞态</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>读多写少用 <code>RWMutex</code></strong>：读用 <code>RLock</code>&#x2F;<code>RUnlock</code> 可<strong>多读并发</strong>，写用 <code>Lock</code>&#x2F;<code>Unlock</code> 与所有读写互斥；当读操作远多于写、且读临界区稍长时，比 <code>Mutex</code> 更利于吞吐。</li>
+</ul>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// SafeCache 读多写少：读走 RLock 可多读并发，写走 Lock 与所有读写互斥</span></span><br><span class="line"><span class="keyword">type</span> SafeCache <span class="keyword">struct</span> &#123;</span><br><span class="line">    mu   sync.RWMutex</span><br><span class="line">    data <span class="keyword">map</span>[<span class="type">string</span>]<span class="type">string</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewSafeCache</span><span class="params">()</span></span> *SafeCache &#123;</span><br><span class="line">    <span class="keyword">return</span> &amp;SafeCache&#123;data: <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="type">string</span>]<span class="type">string</span>)&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *SafeCache)</span></span> Get(key <span class="type">string</span>) (<span class="type">string</span>, <span class="type">bool</span>) &#123;</span><br><span class="line">    c.mu.RLock()</span><br><span class="line">    <span class="keyword">defer</span> c.mu.RUnlock()</span><br><span class="line">    v, ok := c.data[key] <span class="comment">// 多个 goroutine 可同时读</span></span><br><span class="line">    <span class="keyword">return</span> v, ok</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *SafeCache)</span></span> Set(key, val <span class="type">string</span>) &#123;</span><br><span class="line">    c.mu.Lock()</span><br><span class="line">    <span class="keyword">defer</span> c.mu.Unlock()</span><br><span class="line">    c.data[key] = val</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    cache := NewSafeCache()</span><br><span class="line">    cache.Set(<span class="string">&quot;greeting&quot;</span>, <span class="string">&quot;hello&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> wg sync.WaitGroup</span><br><span class="line">    <span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">100</span>; i++ &#123;</span><br><span class="line">        wg.Add(<span class="number">1</span>)</span><br><span class="line">        <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">            <span class="keyword">defer</span> wg.Done()</span><br><span class="line">            _, _ = cache.Get(<span class="string">&quot;greeting&quot;</span>) <span class="comment">// 100 个读可并发进入临界区</span></span><br><span class="line">        &#125;()</span><br><span class="line">    &#125;</span><br><span class="line">    wg.Wait()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> v, ok := cache.Get(<span class="string">&quot;greeting&quot;</span>); ok &#123;</span><br><span class="line">        fmt.Println(v) <span class="comment">// hello</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>注意：<code>RWMutex</code> 并非「必优于 <code>Mutex</code>」。读临界区很短时，<code>RLock</code>&#x2F;<code>RUnlock</code> 的计数开销可能反超 <code>Mutex</code>；不确定时先 <code>Mutex</code>，<strong>用 <code>go test -race</code> + benchmark 验证</strong>再换。</p>
+</blockquote>
 <h3 id="4-2-WaitGroup"><a href="#4-2-WaitGroup" class="headerlink" title="4.2 WaitGroup"></a>4.2 <code>WaitGroup</code></h3><ul>
 <li><strong><code>Add</code> &#x2F; <code>Done</code> &#x2F; <code>Wait</code></strong>：主 goroutine <code>Wait()</code> 等待一组子任务结束；<strong><code>Add</code> 要在启动 goroutine 之前</strong>（或确保不竞态地提前 <code>Add</code>），避免 <code>Wait</code> 早于 <code>Add</code> 导致计数错误。</li>
 </ul>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// square 计算平方并回写结果；wg 由调用方在启动前 Add、本函数 defer Done</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">square</span><span class="params">(n <span class="type">int</span>, wg *sync.WaitGroup, results <span class="keyword">chan</span>&lt;- <span class="type">int</span>)</span></span> &#123;</span><br><span class="line">    <span class="keyword">defer</span> wg.Done()</span><br><span class="line">    results &lt;- n * n</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    nums := []<span class="type">int</span>&#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>&#125;</span><br><span class="line">    results := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="type">int</span>, <span class="built_in">len</span>(nums)) <span class="comment">// 缓冲避免发送方阻塞</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> wg sync.WaitGroup</span><br><span class="line">    <span class="keyword">for</span> _, n := <span class="keyword">range</span> nums &#123;</span><br><span class="line">        wg.Add(<span class="number">1</span>)            <span class="comment">// ✅ 先 Add 再启动 goroutine</span></span><br><span class="line">        <span class="keyword">go</span> square(n, &amp;wg, results)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 另起 goroutine 等所有任务完成后关闭 results，</span></span><br><span class="line">    <span class="comment">// 主 goroutine 即可用 range 安全消费全部结果</span></span><br><span class="line">    <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">        wg.Wait()</span><br><span class="line">        <span class="built_in">close</span>(results)</span><br><span class="line">    &#125;()</span><br><span class="line"></span><br><span class="line">    sum := <span class="number">0</span></span><br><span class="line">    <span class="keyword">for</span> r := <span class="keyword">range</span> results &#123;</span><br><span class="line">        sum += r</span><br><span class="line">    &#125;</span><br><span class="line">    fmt.Println(sum) <span class="comment">// 55</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><code>Add</code> 必须在启动 goroutine 之前调用：<code>Wait()</code> 在计数归零时立即返回，若 <code>Add</code> 落到子 goroutine 内部，<code>Wait</code> 可能在任何 <code>Add</code> 之前就执行而提前放行。这是逻辑时序错误，<code>go test -race</code> 未必能检出，需靠规范避免——<strong><code>Add</code> 在前、<code>Done</code> 用 <code>defer</code> 在内</strong>。</p>
+</blockquote>
 <h3 id="4-3-Once"><a href="#4-3-Once" class="headerlink" title="4.3 Once"></a>4.3 <code>Once</code></h3><ul>
 <li><strong><code>sync.Once</code></strong> 保证 <code>Do(f)</code> 里的 <code>f</code> <strong>全局只执行一次</strong>，常用于懒初始化单例。</li>
 </ul>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Config 应用配置，Once 保证全局只加载一次</span></span><br><span class="line"><span class="keyword">type</span> Config <span class="keyword">struct</span> &#123;</span><br><span class="line">    Env  <span class="type">string</span></span><br><span class="line">    Port <span class="type">int</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> (</span><br><span class="line">    once   sync.Once</span><br><span class="line">    config *Config</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment">// GetConfig 懒加载：并发调用时只有首个 goroutine 真正执行初始化</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">GetConfig</span><span class="params">()</span></span> *Config &#123;</span><br><span class="line">    once.Do(<span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">        config = &amp;Config&#123;Env: <span class="string">&quot;production&quot;</span>, Port: <span class="number">8080</span>&#125; <span class="comment">// 实际项目里在此读环境变量/解析配置文件</span></span><br><span class="line">    &#125;)</span><br><span class="line">    <span class="keyword">return</span> config</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">var</span> wg sync.WaitGroup</span><br><span class="line">    <span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">10</span>; i++ &#123;</span><br><span class="line">        wg.Add(<span class="number">1</span>)</span><br><span class="line">        <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">            <span class="keyword">defer</span> wg.Done()</span><br><span class="line">            _ = GetConfig() <span class="comment">// 并发调用，config 只初始化一次</span></span><br><span class="line">        &#125;()</span><br><span class="line">    &#125;</span><br><span class="line">    wg.Wait()</span><br><span class="line"></span><br><span class="line">    c := GetConfig()</span><br><span class="line">    fmt.Printf(<span class="string">&quot;env=%s port=%d\n&quot;</span>, c.Env, c.Port) <span class="comment">// env=production port=8080</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <h2 id="五、context：取消、超时与传值"><a href="#五、context：取消、超时与传值" class="headerlink" title="五、context：取消、超时与传值"></a>五、<code>context</code>：取消、超时与传值</h2><ul>
 <li><strong><code>context.Context</code></strong> 贯穿调用链：<strong>超时</strong>（<code>WithTimeout</code>）、<strong>手动取消</strong>（<code>WithCancel</code>）、<strong>截止时间</strong>（<code>WithDeadline</code>）；下游应监听 <code>ctx.Done()</code> 并尽快返回。</li>
 <li><strong>值传递</strong>：<code>WithValue</code> 适合传<strong>请求范围元数据</strong>（如 trace id）；不要塞业务大对象，也不要把 <code>Context</code> 放进结构体字段长期保存（应作为函数首参传递）。</li>
@@ -403,13 +420,13 @@ flowchart LR
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2026/05/01/ClickHouse/ClickHouse/" rel="prev" title="第一章：ClickHouse 列式存储入门">
-                  <i class="fa fa-angle-left"></i> 第一章：ClickHouse 列式存储入门
+                <a href="/2026/05/01/Oracle/Oracle%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/" rel="prev" title="第四章：体系结构与存储管理">
+                  <i class="fa fa-angle-left"></i> 第四章：体系结构与存储管理
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2026/05/01/Python/Jupyter/" rel="next" title="第十章：Jupyter 入门：经典 Notebook、安装与内核">
-                  第十章：Jupyter 入门：经典 Notebook、安装与内核 <i class="fa fa-angle-right"></i>
+                <a href="/2026/05/01/Oracle/Oracle%E9%AB%98%E5%8F%AF%E7%94%A8/" rel="next" title="第五章：高可用与备份恢复">
+                  第五章：高可用与备份恢复 <i class="fa fa-angle-right"></i>
                 </a>
             </div>
           </div>
@@ -441,13 +458,13 @@ flowchart LR
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">279k</span>
+    <span title="站点总字数">321k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">15:29</span>
+    <span title="站点阅读时长">17:52</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

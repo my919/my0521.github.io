@@ -168,18 +168,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">218</span>
+          <span class="site-state-item-count">234</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">35</span>
+        <span class="site-state-item-count">36</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">119</span>
+        <span class="site-state-item-count">124</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -207,6 +207,1910 @@
     </div>
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://my919.github.io/2026/05/01/Embedded/USB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/05/01/Embedded/USB/" class="post-title-link" itemprop="url">第十五章：USB 总线：拓扑、描述符与 CDC 虚拟串口</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-05-01 13:16:19" itemprop="dateCreated datePublished" datetime="2026-05-01T13:16:19+08:00">2026-05-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-08-30 17:10:05" itemprop="dateModified" datetime="2026-08-30T17:10:05+08:00">2026-08-30</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Embedded/" itemprop="url" rel="index"><span itemprop="name">Embedded</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>630</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>2 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="第十五章：USB-总线：拓扑、描述符与-CDC-虚拟串口"><a href="#第十五章：USB-总线：拓扑、描述符与-CDC-虚拟串口" class="headerlink" title="第十五章：USB 总线：拓扑、描述符与 CDC 虚拟串口"></a>第十五章：USB 总线：拓扑、描述符与 CDC 虚拟串口</h1><h2 id="概念基础：USB-是什么"><a href="#概念基础：USB-是什么" class="headerlink" title="概念基础：USB 是什么"></a>概念基础：USB 是什么</h2><ol>
+<li><strong>USB</strong>（<strong>Universal Serial Bus</strong>，通用串行总线）是 <strong>主机中心（Host-centric）</strong> 的有线总线：<strong>所有事务都由 Host 发起</strong>，Device 只能被动响应——与 CAN 的多主对等、LIN 的主从调度都不相同。</li>
+<li><strong>树形寻址</strong>：Host 经 <strong>Root Hub → Hub</strong> 树形扩展挂载设备，靠<strong>枚举</strong>过程为每个设备分配<strong>唯一地址</strong>，再读<strong>描述符</strong>获知它是谁、能做什么。</li>
+<li><strong>描述符即自描述</strong>：<strong>设备描述符 → 配置 → 接口 → 端点</strong>层层描述，插入即枚举，无需跳线或硬编码地址——「即插即用」的机制本质。</li>
+<li><strong>速度分级演进</strong>：<strong>Low&#x2F;Full&#x2F;High Speed（1.5M&#x2F;12M&#x2F;480 Mbps）→ USB 3.x（5 Gbps+）→ USB4</strong>；MCU 侧 <strong>Full Speed 12 Mbps</strong> 仍最常见。</li>
+<li><strong>定位</strong>：PC 与外设的<strong>标准互联</strong>；嵌入式里最常见的玩法是 <strong>CDC 虚拟串口</strong>与 <strong>HID</strong>，Type-C 时代还要关注 <strong>PD 供电协商</strong>与 <strong>Alt Mode</strong>。</li>
+</ol>
+<p>主机-设备树形拓扑：</p>
+<h2 id="主机–设备拓扑"><a href="#主机–设备拓扑" class="headerlink" title="主机–设备拓扑"></a>主机–设备拓扑</h2><pre>
+<code class="mermaid">
+
+flowchart LR
+  Host[USB Host PC] --&gt; Hub[Hub 可选]
+  Hub --&gt; Dev1[Device 键鼠]
+  Hub --&gt; Dev2[Device CDC 串口]
+</code>
+</pre>
+
+<hr>
+<h2 id="一、拓扑"><a href="#一、拓扑" class="headerlink" title="一、拓扑"></a>一、拓扑</h2><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Host (PC) ── Root Hub ── Device</span><br><span class="line">                      └── Hub ── 多 Device</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>Host</strong> 发起事务；<strong>Device</strong> 响应。  </li>
+<li><strong>OTG</strong> 设备可切换 Host&#x2F;Device（手机接 U 盘）。</li>
+</ul>
+<hr>
+<h2 id="二、速度等级"><a href="#二、速度等级" class="headerlink" title="二、速度等级"></a>二、速度等级</h2><table>
+<thead>
+<tr>
+<th>版本</th>
+<th>速率（量级）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>USB 2.0 HS</strong></td>
+<td>480 Mbps</td>
+</tr>
+<tr>
+<td><strong>USB 3.x</strong></td>
+<td>5 Gbps+</td>
+</tr>
+<tr>
+<td><strong>USB4</strong></td>
+<td>基于 Thunderbolt 生态</td>
+</tr>
+</tbody></table>
+<p><strong>Full Speed 12 Mbps</strong> 仍常见于 MCU Device。</p>
+<hr>
+<h2 id="三、描述符与-Class"><a href="#三、描述符与-Class" class="headerlink" title="三、描述符与 Class"></a>三、描述符与 Class</h2><ul>
+<li><strong>设备描述符</strong> → <strong>配置</strong> → <strong>接口</strong> → <strong>端点</strong>。  </li>
+<li><strong>Class</strong>：<strong>HID</strong>（键鼠）、<strong>MSC</strong>（U 盘）、<strong>CDC-ACM</strong>（虚拟 <a href="/2026/05/01/Embedded/UART/" title="第四章：UART">第四章：UART</a>）、<strong>Audio</strong>、<strong>Video</strong> 等。  </li>
+<li><strong>Vendor Specific</strong>：自定义 <strong>Bulk&#x2F;Interrupt</strong> 端点 + 主机驱动&#x2F;libusb。</li>
+</ul>
+<hr>
+<h2 id="四、CDC-虚拟串口"><a href="#四、CDC-虚拟串口" class="headerlink" title="四、CDC 虚拟串口"></a>四、CDC 虚拟串口</h2><p>MCU 通过 <strong>USB CDC ACM</strong> 暴露 <strong><code>/dev/ttyACM0</code></strong>（Linux）或 <strong>COM</strong> 口（Windows），应用层与 UART 类似发字节，物理层是 USB 包。</p>
+<p>与 <a href="/2026/05/01/Embedded/RS232/" title="第五章：RS232">第五章：RS232</a>：<strong>USB 转串口</strong> 芯片（<strong>CH340</strong>、<strong>CP2102</strong>、<strong>FT232</strong>）内部即 UART ↔ USB 桥接。</p>
+<hr>
+<h2 id="五、嵌入式开发要点"><a href="#五、嵌入式开发要点" class="headerlink" title="五、嵌入式开发要点"></a>五、嵌入式开发要点</h2><ul>
+<li><strong>STM32 USB Device Library</strong>、<strong>TinyUSB</strong>、<strong>ESP32-S2&#x2F;S3</strong> USB OTG。  </li>
+<li><strong>枚举失败</strong>：检查 <strong>D+&#x2F;D-</strong>、<strong>1.5k 上拉</strong>（Full Speed Device）、供电与描述符。  </li>
+<li><strong>USB 3 &#x2F; Type-C</strong>：<strong>PD</strong> 协商、<strong>Alt Mode</strong>（DP&#x2F;Thunderbolt）另论。</li>
+</ul>
+<p>规范：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://www.usb.org/documents">https://www.usb.org/documents</a></p>
+<hr>
+<h2 id="本章小结"><a href="#本章小结" class="headerlink" title="本章小结"></a>本章小结</h2><table>
+<thead>
+<tr>
+<th>要点</th>
+<th>结论</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>拓扑</td>
+<td>Host 中心 + Hub 树形扩展，事务全部由 Host 发起</td>
+</tr>
+<tr>
+<td>即插即用</td>
+<td>枚举分配地址 + 分层描述符自描述</td>
+</tr>
+<tr>
+<td>复用机制</td>
+<td>Class 驱动标准化（HID&#x2F;MSC&#x2F;CDC 等），免装驱动</td>
+</tr>
+<tr>
+<td>嵌入式常用</td>
+<td>CDC 虚拟串口、HID；协议栈可上 TinyUSB</td>
+</tr>
+<tr>
+<td>排障要点</td>
+<td>枚举失败先查 D+&#x2F;D-、1.5k 上拉、供电与描述符</td>
+</tr>
+</tbody></table>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://my919.github.io/2026/05/01/Embedded/NFC/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/05/01/Embedded/NFC/" class="post-title-link" itemprop="url">第十四章：NFC 近场通信：工作模式与 NDEF</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-05-01 13:15:54" itemprop="dateCreated datePublished" datetime="2026-05-01T13:15:54+08:00">2026-05-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-08-30 17:10:05" itemprop="dateModified" datetime="2026-08-30T17:10:05+08:00">2026-08-30</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Embedded/" itemprop="url" rel="index"><span itemprop="name">Embedded</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>665</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>2 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="第十四章：NFC-近场通信：工作模式与-NDEF"><a href="#第十四章：NFC-近场通信：工作模式与-NDEF" class="headerlink" title="第十四章：NFC 近场通信：工作模式与 NDEF"></a>第十四章：NFC 近场通信：工作模式与 NDEF</h1><h2 id="概念基础：NFC-是什么"><a href="#概念基础：NFC-是什么" class="headerlink" title="概念基础：NFC 是什么"></a>概念基础：NFC 是什么</h2><ol>
+<li><strong>NFC</strong>（<strong>Near Field Communication</strong>，近场通信）工作在 <strong>13.56MHz</strong>，通信距离仅<strong>几厘米</strong>——「近」是刻意设计：贴一下才触发，天然防误触，适合支付与门禁。</li>
+<li><strong>有源与无源</strong>：<strong>Reader</strong> 产生射频场并为 <strong>passive Tag 供电</strong>（无源卡没有电池，靠感应取电通信），这是它与蓝牙等「双方都要电池」技术最本质的差别。</li>
+<li><strong>三种工作模式</strong>：<strong>读卡&#x2F;写卡</strong>（碰 Tag）、<strong>卡模拟</strong>（手机变门禁卡&#x2F;交通卡）、<strong>点对点</strong>（两设备交换小数据，已较少用）。</li>
+<li><strong>NDEF 是通用数据格式</strong>：把 <strong>URI、文本、Wi-Fi 配置、蓝牙配对信息</strong>统一封装进 Tag，手机一碰即触发对应系统动作。</li>
+<li><strong>定位</strong>：身份识别、小额支付、<strong>设备配对加速器</strong>（给 BLE 递密钥）；大数据传输交给 Wi-Fi&#x2F;蓝牙，NFC 只负责「握手」。</li>
+</ol>
+<p>最典型的读卡交互：</p>
+<h2 id="读卡模式交互"><a href="#读卡模式交互" class="headerlink" title="读卡模式交互"></a>读卡模式交互</h2><pre>
+<code class="mermaid">
+
+sequenceDiagram
+  participant R as NFC Reader 手机
+  participant T as NFC Tag 卡
+  R-&gt;&gt;T: 射频场供电 + 轮询
+  T--&gt;&gt;R: NDEF URL &#x2F; 文本
+</code>
+</pre>
+
+<hr>
+<h2 id="一、工作模式"><a href="#一、工作模式" class="headerlink" title="一、工作模式"></a>一、工作模式</h2><table>
+<thead>
+<tr>
+<th>模式</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Reader&#x2F;Writer</strong></td>
+<td>读或写 passive Tag</td>
+</tr>
+<tr>
+<td><strong>Card Emulation</strong></td>
+<td>手机模拟门禁&#x2F;交通卡</td>
+</tr>
+<tr>
+<td><strong>Peer-to-Peer</strong></td>
+<td>两设备交换小数据（较少用）</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="二、Tag-标准"><a href="#二、Tag-标准" class="headerlink" title="二、Tag 标准"></a>二、Tag 标准</h2><ul>
+<li><strong>Type 1~4 Tag</strong>：不同容量与协议（NFC Forum）。  </li>
+<li><strong>MIFARE Classic&#x2F;Ultralight</strong>：交通、门禁（Classic 安全性已弱，新项目慎用）。  </li>
+<li><strong>ISO 14443 A&#x2F;B</strong>、<strong>ISO 15693</strong>（稍远，仍近场）。</li>
+</ul>
+<hr>
+<h2 id="三、NDEF（NFC-Data-Exchange-Format）"><a href="#三、NDEF（NFC-Data-Exchange-Format）" class="headerlink" title="三、NDEF（NFC Data Exchange Format）"></a>三、NDEF（NFC Data Exchange Format）</h2><p>常用 payload 格式，可封装：</p>
+<ul>
+<li><strong>URI</strong>（打开网页）  </li>
+<li><strong>文本</strong>  </li>
+<li><strong>Wi-Fi 配置</strong>（WSC）  </li>
+<li><strong>Bluetooth LE 配对</strong> OOB 数据</li>
+</ul>
+<p>手机贴近 Tag 即可触发系统动作（依 OS 策略）。</p>
+<hr>
+<h2 id="四、与其它接口"><a href="#四、与其它接口" class="headerlink" title="四、与其它接口"></a>四、与其它接口</h2><ul>
+<li><strong><a href="/2026/05/01/Embedded/Bluetooth/" title="第十三章：Bluetooth 与 BLE：GATT 模型与低功耗设计">第十三章：Bluetooth 与 BLE：GATT 模型与低功耗设计</a></strong>：NFC 传递配对密钥，BLE 传大数据。  </li>
+<li><strong><a href="/2026/05/01/Embedded/USB/" title="第十五章：USB 总线：拓扑、描述符与 CDC 虚拟串口">第十五章：USB 总线：拓扑、描述符与 CDC 虚拟串口</a></strong>：PC 用 <strong>USB NFC 读卡器</strong> 开发调试。  </li>
+<li><strong>支付</strong>：<strong>EMVCo</strong>、<strong>HCE</strong>（Host Card Emulation）在 SE&#x2F;TEE 中存密钥。</li>
+</ul>
+<hr>
+<h2 id="五、开发"><a href="#五、开发" class="headerlink" title="五、开发"></a>五、开发</h2><ul>
+<li><strong>Android</strong>：<strong><code>NfcAdapter</code></strong>、<strong><code>enableReaderMode</code></strong>。  </li>
+<li><strong>MCU</strong>：<strong>PN532</strong>、<strong>MFRC522</strong>（SPI&#x2F;<a href="/2026/05/01/Embedded/I2C/" title="第七章：I2C">第七章：I2C</a>）+ 天线设计。  </li>
+<li><strong>安全</strong>：Tag 可只读；支付与门禁依赖芯片级密钥，勿明文存敏感数据于可写 Tag。</li>
+</ul>
+<hr>
+<h2 id="本章小结"><a href="#本章小结" class="headerlink" title="本章小结"></a>本章小结</h2><table>
+<thead>
+<tr>
+<th>要点</th>
+<th>结论</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>物理层</td>
+<td>13.56MHz、几厘米近场，Reader 射频场为无源 Tag 供电</td>
+</tr>
+<tr>
+<td>工作模式</td>
+<td>读卡&#x2F;写卡、卡模拟、点对点三类</td>
+</tr>
+<tr>
+<td>数据格式</td>
+<td>NDEF 统一封装 URI&#x2F;文本&#x2F;Wi-Fi&#x2F;蓝牙配对数据</td>
+</tr>
+<tr>
+<td>典型组合</td>
+<td>NFC 递密钥加速 BLE 配对，大数据走 BLE&#x2F;Wi-Fi</td>
+</tr>
+<tr>
+<td>安全边界</td>
+<td>Tag 勿存明文敏感数据，支付依赖 SE&#x2F;TEE 芯片级密钥</td>
+</tr>
+</tbody></table>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://my919.github.io/2026/05/01/Embedded/Bluetooth/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/05/01/Embedded/Bluetooth/" class="post-title-link" itemprop="url">第十三章：Bluetooth 与 BLE：GATT 模型与低功耗设计</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-05-01 13:15:19" itemprop="dateCreated datePublished" datetime="2026-05-01T13:15:19+08:00">2026-05-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-08-30 17:10:05" itemprop="dateModified" datetime="2026-08-30T17:10:05+08:00">2026-08-30</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Embedded/" itemprop="url" rel="index"><span itemprop="name">Embedded</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>671</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>2 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="第十三章：Bluetooth-与-BLE：GATT-模型与低功耗设计"><a href="#第十三章：Bluetooth-与-BLE：GATT-模型与低功耗设计" class="headerlink" title="第十三章：Bluetooth 与 BLE：GATT 模型与低功耗设计"></a>第十三章：Bluetooth 与 BLE：GATT 模型与低功耗设计</h1><h2 id="概念基础：Bluetooth-是什么"><a href="#概念基础：Bluetooth-是什么" class="headerlink" title="概念基础：Bluetooth 是什么"></a>概念基础：Bluetooth 是什么</h2><ol>
+<li><strong>Bluetooth</strong>（蓝牙）工作在 <strong>2.4GHz ISM 频段</strong>，是<strong>短距离无线</strong>技术；今天物联网的主角是 <strong>BLE</strong>（<strong>Bluetooth Low Energy</strong>，蓝牙低功耗，4.0 起），为<strong>纽扣电池供电</strong>的小设备而生。</li>
+<li><strong>BLE 的核心是 GATT</strong>：设备暴露<strong>服务（Service）→ 特征值（Characteristic）<strong>的属性树，手机等 <strong>Central</strong> 通过</strong>读写&#x2F;订阅特征值</strong>与 <strong>Peripheral</strong> 交互，数据模型像访问资源一样清晰。</li>
+<li><strong>广播先行</strong>：BLE 设备平时<strong>广播</strong>（可携带自定义数据，即 Beacon），Central 扫描后再发起连接——<strong>不连不上、先广播</strong>，这与 Wi-Fi「先关联再通信」完全不同。</li>
+<li><strong>为什么省电</strong>：深度<strong>休眠 + 快速建立连接</strong>，只在事件发生时短暂收发；配合 <strong>Notify&#x2F;Indicate</strong> 让外设主动推送，避免轮询空耗电。</li>
+<li><strong>定位</strong>：手环、传感器、智能家居<strong>直连手机</strong>的场景；需要跨厂商<strong>标准化互操作</strong>时选 Zigbee（见 <a href="/2026/05/01/Embedded/Zigbee/" title="第十六章：Zigbee：基于 802.15.4 的 Mesh 组网">第十六章：Zigbee：基于 802.15.4 的 Mesh 组网</a>），配对加速可用 <strong>NFC</strong> 递密钥。</li>
+</ol>
+<p>BLE 连接后的 GATT 数据模型：</p>
+<h2 id="BLE-GATT-模型"><a href="#BLE-GATT-模型" class="headerlink" title="BLE GATT 模型"></a>BLE GATT 模型</h2><pre>
+<code class="mermaid">
+
+flowchart TB
+  Central[Central 手机] --&gt;|连接| Peripheral[Peripheral 设备]
+  Peripheral --&gt; Svc[Service UUID]
+  Svc --&gt; Char[Characteristic 读写 Notify]
+</code>
+</pre>
+
+<hr>
+<h2 id="一、BLE-角色"><a href="#一、BLE-角色" class="headerlink" title="一、BLE 角色"></a>一、BLE 角色</h2><table>
+<thead>
+<tr>
+<th>角色</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Central</strong></td>
+<td>发起连接，如手机、网关</td>
+</tr>
+<tr>
+<td><strong>Peripheral</strong></td>
+<td>广播、被连接，如手环、温湿度计</td>
+</tr>
+<tr>
+<td><strong>Broadcaster &#x2F; Observer</strong></td>
+<td>仅广播&#x2F;扫描（Beacon）</td>
+</tr>
+</tbody></table>
+<p>连接后通过 <strong>ATT&#x2F;GATT</strong> 读写<strong>特征值（Characteristic）</strong>。</p>
+<hr>
+<h2 id="二、GATT-模型"><a href="#二、GATT-模型" class="headerlink" title="二、GATT 模型"></a>二、GATT 模型</h2><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Service (如 0x180F Battery Service)</span><br><span class="line">  └── Characteristic (如 Battery Level 0x2A19)</span><br><span class="line">        └── Value / Descriptor</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>UUID</strong>：16 位标准 UUID 或 128 位自定义。  </li>
+<li><strong>Notify&#x2F;Indicate</strong>：外设主动推送数据，省 polling 功耗。</li>
+</ul>
+<hr>
+<h2 id="三、配对与安全"><a href="#三、配对与安全" class="headerlink" title="三、配对与安全"></a>三、配对与安全</h2><ul>
+<li><strong>Just Works &#x2F; Passkey &#x2F; OOB</strong> 等配对模式。  </li>
+<li><strong>LE Secure Connections</strong>（<strong>ECDH</strong>）防中间人。  </li>
+<li>与 <a href="/2026/05/01/Embedded/NFC/" title="第十四章：NFC 近场通信：工作模式与 NDEF">第十四章：NFC 近场通信：工作模式与 NDEF</a> <strong>tap-to-pair</strong>：NFC 交换临时信息辅助 BLE 配对。</li>
+</ul>
+<hr>
+<h2 id="四、经典蓝牙-vs-BLE"><a href="#四、经典蓝牙-vs-BLE" class="headerlink" title="四、经典蓝牙 vs BLE"></a>四、经典蓝牙 vs BLE</h2><table>
+<thead>
+<tr>
+<th></th>
+<th><strong>经典</strong></th>
+<th><strong>BLE</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>功耗</td>
+<td>较高</td>
+<td>极低</td>
+</tr>
+<tr>
+<td>吞吐</td>
+<td>音频、SPP 串口</td>
+<td>小数据、传感器</td>
+</tr>
+<tr>
+<td>协议</td>
+<td>RFCOMM、A2DP 等</td>
+<td>GATT</td>
+</tr>
+</tbody></table>
+<p>音频耳机等多用 <strong>经典 + BLE</strong> 双模芯片。</p>
+<hr>
+<h2 id="五、开发工具"><a href="#五、开发工具" class="headerlink" title="五、开发工具"></a>五、开发工具</h2><ul>
+<li><strong>nRF Connect</strong>（手机抓包 GATT）。  </li>
+<li>芯片：<strong>Nordic nRF</strong>、<strong>ESP32</strong>（<strong>Bluedroid&#x2F;NimBLE</strong>）、<strong>TI CC2340</strong>。  </li>
+<li>与 <a href="/2026/05/01/Embedded/USB/" title="第十五章：USB 总线：拓扑、描述符与 CDC 虚拟串口">第十五章：USB 总线：拓扑、描述符与 CDC 虚拟串口</a>：BLE  dongle 常通过 USB 接 PC；逻辑仍是无线 GATT。</li>
+</ul>
+<p>官方：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://www.bluetooth.com/specifications/">https://www.bluetooth.com/specifications/</a></p>
+<hr>
+<h2 id="本章小结"><a href="#本章小结" class="headerlink" title="本章小结"></a>本章小结</h2><table>
+<thead>
+<tr>
+<th>要点</th>
+<th>结论</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>角色</td>
+<td>Central 发起连接、Peripheral 广播被连，另有纯广播 Beacon</td>
+</tr>
+<tr>
+<td>数据模型</td>
+<td>GATT：Service → Characteristic → Value&#x2F;Descriptor</td>
+</tr>
+<tr>
+<td>交互方式</td>
+<td>读写特征值 + Notify&#x2F;Indicate 主动推送，省轮询功耗</td>
+</tr>
+<tr>
+<td>安全</td>
+<td>Just Works&#x2F;Passkey&#x2F;OOB 配对，LE Secure Connections 防 MITM</td>
+</tr>
+<tr>
+<td>选型</td>
+<td>小数据直连手机选 BLE，跨厂商互操作选 Zigbee</td>
+</tr>
+</tbody></table>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://my919.github.io/2026/05/01/Embedded/LoRaWAN/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/05/01/Embedded/LoRaWAN/" class="post-title-link" itemprop="url">第十二章：LoRaWAN：远距离低功耗星型组网</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-05-01 13:14:16" itemprop="dateCreated datePublished" datetime="2026-05-01T13:14:16+08:00">2026-05-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-08-30 17:10:05" itemprop="dateModified" datetime="2026-08-30T17:10:05+08:00">2026-08-30</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Embedded/" itemprop="url" rel="index"><span itemprop="name">Embedded</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>749</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>2 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="第十二章：LoRaWAN：远距离低功耗星型组网"><a href="#第十二章：LoRaWAN：远距离低功耗星型组网" class="headerlink" title="第十二章：LoRaWAN：远距离低功耗星型组网"></a>第十二章：LoRaWAN：远距离低功耗星型组网</h1><h2 id="概念基础：LoRaWAN-是什么"><a href="#概念基础：LoRaWAN-是什么" class="headerlink" title="概念基础：LoRaWAN 是什么"></a>概念基础：LoRaWAN 是什么</h2><ol>
+<li><strong>LoRaWAN</strong> 是构建在 <strong>LoRa 扩频射频</strong>之上的<strong>开放网络协议</strong>：终端节点通过<strong>网关</strong>接入 <strong>Network Server</strong>，典型覆盖<strong>公里级</strong>，专为<strong>电池供电、小数据量、上报为主</strong>的物联网场景设计。</li>
+<li><strong>LoRa ≠ LoRaWAN</strong>：<strong>LoRa</strong> 是 Semtech 的<strong>物理层调制技术</strong>（Chirp Spread Spectrum，灵敏度高、抗干扰强）；<strong>LoRaWAN</strong> 是其上的 <strong>MAC 层协议</strong>（入网激活、速率自适应、双向调度）——「电台」与「通信规约」的关系。</li>
+<li><strong>星型拓扑换功耗</strong>：节点只与网关直连一跳，<strong>不做 mesh 路由转发</strong>，省去中继耗电，换来<strong>数年电池寿命</strong>；覆盖靠增加网关与 <strong>ADR 速率自适应</strong>来平衡。</li>
+<li><strong>速率换距离</strong>：<strong>SF（扩频因子）越大，速率越低、传得越远</strong>，网络侧按链路质量动态调整，本质是「速率-距离-容量」的三角权衡。</li>
+<li><strong>定位</strong>：智能抄表、资产追踪、农业监测等<strong>公里级、极低速率</strong>场景；高吞吐走 Wi-Fi&#x2F;以太网 + MQTT&#x2F;HTTP，局域 mesh 则选 Zigbee &#x2F; 蓝牙 Mesh。</li>
+</ol>
+<p>先看整体架构：</p>
+<h2 id="星型拓扑架构"><a href="#星型拓扑架构" class="headerlink" title="星型拓扑架构"></a>星型拓扑架构</h2><pre>
+<code class="mermaid">
+
+flowchart TB
+  Dev1[终端节点] --&gt; GW[LoRa 网关]
+  Dev2[终端节点] --&gt; GW
+  GW --&gt; NS[Network Server]
+  NS --&gt; App[应用服务器]
+</code>
+</pre>
+
+<hr>
+<h2 id="一、架构"><a href="#一、架构" class="headerlink" title="一、架构"></a>一、架构</h2><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">End Device --LoRa RF--&gt; Gateway --IP--&gt; Network Server --&gt; Application Server</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>Gateway</strong>：只做射频转发，不解密应用 payload（取决于模式）。  </li>
+<li><strong>ADR</strong>（Adaptive Data Rate）：网络侧调节 SF&#x2F;功率平衡距离与容量。</li>
+</ul>
+<hr>
+<h2 id="二、区域参数"><a href="#二、区域参数" class="headerlink" title="二、区域参数"></a>二、区域参数</h2><table>
+<thead>
+<tr>
+<th>区域</th>
+<th>典型频段</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>EU868</strong></td>
+<td>863–870 MHz</td>
+</tr>
+<tr>
+<td><strong>US915</strong></td>
+<td>902–928 MHz</td>
+</tr>
+<tr>
+<td><strong>CN470</strong></td>
+<td>470–510 MHz</td>
+</tr>
+</tbody></table>
+<p>需遵守当地无线电法规；模块需合规认证。</p>
+<hr>
+<h2 id="三、设备-Class"><a href="#三、设备-Class" class="headerlink" title="三、设备 Class"></a>三、设备 Class</h2><table>
+<thead>
+<tr>
+<th>Class</th>
+<th>下行窗口</th>
+<th>功耗</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>A</strong></td>
+<td>仅上行后两个短窗口</td>
+<td>最低，传感器常用</td>
+</tr>
+<tr>
+<td><strong>B</strong></td>
+<td>附加信标窗口</td>
+<td>中</td>
+</tr>
+<tr>
+<td><strong>C</strong></td>
+<td>几乎常开接收</td>
+<td>高，供电设备</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="四、安全"><a href="#四、安全" class="headerlink" title="四、安全"></a>四、安全</h2><ul>
+<li><strong>Join</strong>：<strong>OTAA</strong>（Over-The-Air Activation，推荐）或 <strong>ABP</strong>（预置密钥）。  </li>
+<li><strong>AES-128</strong>：<strong>NwkSKey</strong>、<strong>AppSKey</strong> 分层加密与完整性。  </li>
+<li>应用层仍可封装 <a href="/2026/05/01/Embedded/CoAP/" title="第十一章：CoAP：REST over UDP 的物联网应用协议">第十一章：CoAP：REST over UDP 的物联网应用协议</a> 或自定义二进制。</li>
+</ul>
+<hr>
+<h2 id="五、与其它物联网协议"><a href="#五、与其它物联网协议" class="headerlink" title="五、与其它物联网协议"></a>五、与其它物联网协议</h2><ul>
+<li>长距离、低带宽、电池 → <strong>LoRaWAN</strong>。  </li>
+<li>有 <strong>Wi-Fi&#x2F;以太网</strong>、高吞吐 → <a href="/2026/05/01/Protocol/MQTT/" title="第十二章：MQTT 详解：发布订阅、QoS 与 mosquitto &#x2F; Python 示例">第十二章：MQTT 详解：发布订阅、QoS 与 mosquitto &#x2F; Python 示例</a>、<a href="/2026/05/01/Protocol/HTTP/" title="第二章：HTTP 详解：报文、方法、版本与 curl&#x2F;nc 示例">第二章：HTTP 详解：报文、方法、版本与 curl&#x2F;nc 示例</a>。  </li>
+<li>局域 mesh → <a href="/2026/05/01/Embedded/Zigbee/" title="第十六章：Zigbee：基于 802.15.4 的 Mesh 组网">第十六章：Zigbee：基于 802.15.4 的 Mesh 组网</a>、<a href="/2026/05/01/Embedded/Bluetooth/" title="第十三章：Bluetooth 与 BLE：GATT 模型与低功耗设计">第十三章：Bluetooth 与 BLE：GATT 模型与低功耗设计</a> Mesh。</li>
+</ul>
+<p>开源栈：<strong>LoRaMac-node</strong>、<strong>Semtech LoRaWAN Stack</strong>；云平台：TTN、ChirpStack 等。</p>
+<hr>
+<h2 id="本章小结"><a href="#本章小结" class="headerlink" title="本章小结"></a>本章小结</h2><table>
+<thead>
+<tr>
+<th>要点</th>
+<th>结论</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>架构</td>
+<td>节点 → 网关（仅射频转发）→ Network Server → 应用服务器</td>
+</tr>
+<tr>
+<td>功耗</td>
+<td>星型无路由转发，Class A 可电池工作数年</td>
+</tr>
+<tr>
+<td>速率</td>
+<td>SF 越大越远越慢，ADR 动态平衡速率与距离</td>
+</tr>
+<tr>
+<td>入网安全</td>
+<td>推荐 OTAA 动态激活；NwkSKey&#x2F;AppSKey 双层 AES-128</td>
+</tr>
+<tr>
+<td>选型边界</td>
+<td>公里级低速率选 LoRaWAN，局域 mesh 选 Zigbee&#x2F;蓝牙 Mesh</td>
+</tr>
+</tbody></table>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://my919.github.io/2026/05/01/Embedded/CoAP/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/05/01/Embedded/CoAP/" class="post-title-link" itemprop="url">第十一章：CoAP：REST over UDP 的物联网应用协议</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-05-01 13:13:28" itemprop="dateCreated datePublished" datetime="2026-05-01T13:13:28+08:00">2026-05-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-08-30 17:10:05" itemprop="dateModified" datetime="2026-08-30T17:10:05+08:00">2026-08-30</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Embedded/" itemprop="url" rel="index"><span itemprop="name">Embedded</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>718</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>2 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="第十一章：CoAP：REST-over-UDP-的物联网应用协议"><a href="#第十一章：CoAP：REST-over-UDP-的物联网应用协议" class="headerlink" title="第十一章：CoAP：REST over UDP 的物联网应用协议"></a>第十一章：CoAP：REST over UDP 的物联网应用协议</h1><h2 id="概念基础：CoAP-是什么"><a href="#概念基础：CoAP-是什么" class="headerlink" title="概念基础：CoAP 是什么"></a>概念基础：CoAP 是什么</h2><ol>
+<li><strong>CoAP</strong>（<strong>Constrained Application Protocol</strong>，受限应用协议）是给<strong>单片机、低带宽网络</strong>用的<strong>应用层协议</strong>：把 Web 的 <strong>REST 模型</strong>（GET &#x2F; PUT &#x2F; POST &#x2F; DELETE 操作资源）搬到 <strong>UDP</strong> 之上。</li>
+<li><strong>为什么轻量</strong>：报文头仅 <strong>4 字节</strong>起（对比 HTTP 动辄数百字节），二进制紧凑编码，默认端口 <strong>5683 &#x2F; 5684（DTLS）</strong>，RAM&#x2F;Flash 占用极小，可直接跑在 <strong>6LoWPAN</strong> 等受限链路上。</li>
+<li><strong>请求&#x2F;响应 + 订阅两种模式</strong>：既支持类 HTTP 的<strong>请求-响应</strong>，又通过 <strong>Observe（RFC 7641）</strong> 让服务器在资源变化时<strong>主动推送 NOTIFY</strong>，传感器上报无需反复轮询。</li>
+<li><strong>可靠性自选</strong>：UDP 本身不可靠，CoAP 用 <strong>CON &#x2F; NON &#x2F; ACK &#x2F; RST</strong> 消息类型自己决定要不要确认重传——把「要不要可靠」交给应用按需选择。</li>
+<li><strong>定位</strong>：<strong>资源型设备</strong>（一台设备就是一组可读写的资源）的首选；海量消息汇聚与发布订阅则更适合 Broker 型的 MQTT，二者在同一系统里常互补出现。</li>
+</ol>
+<p>一次典型交互长这样：</p>
+<h2 id="REST-over-UDP-交互"><a href="#REST-over-UDP-交互" class="headerlink" title="REST over UDP 交互"></a>REST over UDP 交互</h2><pre>
+<code class="mermaid">
+
+sequenceDiagram
+  participant C as CoAP Client
+  participant S as CoAP Server
+  C-&gt;&gt;S: GET &#x2F;temp
+  S--&gt;&gt;C: 2.05 Content 25.3
+  C-&gt;&gt;S: Observe 订阅
+  S--&gt;&gt;C: 推送变化
+</code>
+</pre>
+
+<hr>
+<h2 id="一、设计目标"><a href="#一、设计目标" class="headerlink" title="一、设计目标"></a>一、设计目标</h2><ul>
+<li><strong>低开销</strong>：适合 <strong>MCU</strong>、<strong>6LoWPAN</strong>、低带宽链路。  </li>
+<li><strong>异步</strong>：支持 Separate 响应（ACK 先回，结果稍后 CON 通知）。  </li>
+<li><strong>发现</strong>：<strong><code>.well-known/core</code></strong> 资源目录。</li>
+</ul>
+<p>默认端口 <strong>5683</strong>（CoAPS <strong>5684</strong>）。</p>
+<hr>
+<h2 id="二、报文（简化）"><a href="#二、报文（简化）" class="headerlink" title="二、报文（简化）"></a>二、报文（简化）</h2><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Ver(2) | Type(2) | TKL(4) | Code | Message ID | Token | Options | Payload</span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>CON</strong></td>
+<td>需确认</td>
+</tr>
+<tr>
+<td><strong>NON</strong></td>
+<td>不需确认</td>
+</tr>
+<tr>
+<td><strong>ACK</strong></td>
+<td>确认</td>
+</tr>
+<tr>
+<td><strong>RST</strong></td>
+<td>复位</td>
+</tr>
+</tbody></table>
+<p><strong>Code</strong>：<strong>0.xx</strong> 请求（<strong>GET&#x3D;0.01</strong>），<strong>2.xx</strong> 成功，<strong>4.xx&#x2F;5.xx</strong> 错误（类比 HTTP）。</p>
+<hr>
+<h2 id="三、Observe（RFC-7641）"><a href="#三、Observe（RFC-7641）" class="headerlink" title="三、Observe（RFC 7641）"></a>三、Observe（RFC 7641）</h2><p>客户端带 <strong>Observe Option</strong> 订阅资源；服务器在资源变化时 <strong>NOTIFY</strong>，适合传感器推送，比轮询省流量。</p>
+<hr>
+<h2 id="四、与-MQTT"><a href="#四、与-MQTT" class="headerlink" title="四、与 MQTT"></a>四、与 MQTT</h2><table>
+<thead>
+<tr>
+<th></th>
+<th><strong>CoAP</strong></th>
+<th><strong><a href="/2026/05/01/Protocol/MQTT/" title="第十二章：MQTT 详解：发布订阅、QoS 与 mosquitto &#x2F; Python 示例">第十二章：MQTT 详解：发布订阅、QoS 与 mosquitto &#x2F; Python 示例</a></strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>模型</td>
+<td>REST 资源</td>
+<td>发布&#x2F;订阅 Topic</td>
+</tr>
+<tr>
+<td>传输</td>
+<td>UDP 为主</td>
+<td>TCP 常见</td>
+</tr>
+<tr>
+<td>代理</td>
+<td><strong>CoAP-HTTP 代理</strong></td>
+<td>Broker 中心化</td>
+</tr>
+</tbody></table>
+<p>物联网选型：资源型设备、<strong>LwM2M</strong>（基于 CoAP）vs 海量消息经 Broker 的 <strong>MQTT</strong>。</p>
+<hr>
+<h2 id="五、应用"><a href="#五、应用" class="headerlink" title="五、应用"></a>五、应用</h2><ul>
+<li><strong>智能抄表</strong>、<strong>楼宇传感器</strong>、<strong>Edge 网关</strong> 南向 CoAP、北向 HTTP&#x2F;<a href="/2026/05/01/Protocol/MQTT/" title="第十二章：MQTT 详解：发布订阅、QoS 与 mosquitto &#x2F; Python 示例">第十二章：MQTT 详解：发布订阅、QoS 与 mosquitto &#x2F; Python 示例</a>。  </li>
+<li>安全：<strong>DTLS</strong> 预共享密钥或证书；与 <a href="/2026/05/01/Embedded/LoRaWAN/" title="第十二章：LoRaWAN：远距离低功耗星型组网">第十二章：LoRaWAN：远距离低功耗星型组网</a> 可组合（应用 payload 再解析）。</li>
+</ul>
+<p>库：<strong>libcoap</strong>、<strong>aiocoap</strong>（Python）、<strong>Californium</strong>（Java）。</p>
+<hr>
+<h2 id="本章小结"><a href="#本章小结" class="headerlink" title="本章小结"></a>本章小结</h2><table>
+<thead>
+<tr>
+<th>要点</th>
+<th>结论</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>模型</td>
+<td>REST 风格操作资源，类 HTTP 但跑在 UDP 上</td>
+</tr>
+<tr>
+<td>开销</td>
+<td>头部 4 字节起，二进制紧凑，适合 MCU 与受限网络</td>
+</tr>
+<tr>
+<td>可靠性</td>
+<td>CON&#x2F;NON&#x2F;ACK&#x2F;RST 自选确认与重传</td>
+</tr>
+<tr>
+<td>推送</td>
+<td>Observe 订阅-通知，比轮询省流量</td>
+</tr>
+<tr>
+<td>安全</td>
+<td>DTLS（PSK 或证书），默认端口 5683&#x2F;5684</td>
+</tr>
+</tbody></table>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://my919.github.io/2026/05/01/Embedded/LIN/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/05/01/Embedded/LIN/" class="post-title-link" itemprop="url">第十章：LIN 总线：单主多从与调度表</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-05-01 13:12:56" itemprop="dateCreated datePublished" datetime="2026-05-01T13:12:56+08:00">2026-05-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-08-30 17:10:05" itemprop="dateModified" datetime="2026-08-30T17:10:05+08:00">2026-08-30</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Embedded/" itemprop="url" rel="index"><span itemprop="name">Embedded</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>636</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>2 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="第十章：LIN-总线：单主多从与调度表"><a href="#第十章：LIN-总线：单主多从与调度表" class="headerlink" title="第十章：LIN 总线：单主多从与调度表"></a>第十章：LIN 总线：单主多从与调度表</h1><h2 id="概念基础：LIN-是什么"><a href="#概念基础：LIN-是什么" class="headerlink" title="概念基础：LIN 是什么"></a>概念基础：LIN 是什么</h2><ol>
+<li><strong>LIN</strong>（<strong>Local Interconnect Network</strong>，局部互联网络）是<strong>低成本</strong>的<strong>单主多从</strong>串行总线：一根总线挂一个 <strong>Master</strong> 与若干 <strong>Slave</strong>，常见于<strong>车窗、座椅、雨刮</strong>等车身电子。</li>
+<li><strong>为什么便宜</strong>：基于普通 <strong>UART 硬件</strong>即可实现，物理层常用<strong>单线</strong>、<strong>12V</strong> 电平，收发器（如 <strong>TJA1021</strong>）远比 CAN 便宜，从节点甚至可用<strong>廉价 8 位 MCU</strong>——它就是 CAN 的「经济版补充」。</li>
+<li><strong>无仲裁、靠调度</strong>：与 CAN 的竞争仲裁不同，LIN <strong>由 Master 固定调度</strong>：Master 发 <strong>Header（含 PID）</strong>，对应 Slave 填 <strong>Response</strong>，时序确定、天然无冲突。</li>
+<li><strong>帧结构简单</strong>：<strong>Break + Sync(0x55) + PID + Data(1~8) + Checksum</strong>，速率约 <strong>20 kbps</strong>，只适合<strong>非安全、低带宽</strong>场景。</li>
+<li><strong>定位</strong>：动力底盘走 CAN、车身舒适系统走 LIN，网关 ECU 常同时挂两种总线；它的「单主轮询」思想与工业里的 Modbus 主从也一脉相承。</li>
+</ol>
+<p>先看单主多从的拓扑：</p>
+<h2 id="单主多从拓扑"><a href="#单主多从拓扑" class="headerlink" title="单主多从拓扑"></a>单主多从拓扑</h2><pre>
+<code class="mermaid">
+
+flowchart LR
+  Master[LIN Master ECU] --- Bus[LIN 总线]
+  S1[从节点 门窗] --- Bus
+  S2[从节点 座椅] --- Bus
+</code>
+</pre>
+
+<hr>
+<h2 id="一、角色"><a href="#一、角色" class="headerlink" title="一、角色"></a>一、角色</h2><ul>
+<li><strong>Master</strong>：通常由 Body ECU 担任，发送 <strong>Header</strong>（含 <strong>PID</strong>）。  </li>
+<li><strong>Slave</strong>：响应 <strong>Data</strong> 或发布自身数据；<strong>无仲裁</strong>，时隙由 Master 调度。</li>
+</ul>
+<hr>
+<h2 id="二、帧结构（简化）"><a href="#二、帧结构（简化）" class="headerlink" title="二、帧结构（简化）"></a>二、帧结构（简化）</h2><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Break + Sync(0x55) + PID + Data(1~8) + Checksum</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>Break</strong>：显性低电平较长，同步从机。  </li>
+<li><strong>PID</strong>：含 <strong>6 位 ID + 2 位奇偶</strong>。  </li>
+<li><strong>Checksum</strong>：<strong>Classic</strong> 或 <strong>Enhanced</strong>（LIN 2.x）。</li>
+</ul>
+<hr>
+<h2 id="三、调度表（Schedule-Table）"><a href="#三、调度表（Schedule-Table）" class="headerlink" title="三、调度表（Schedule Table）"></a>三、调度表（Schedule Table）</h2><p>Master 按固定周期发送各 <strong>Frame ID</strong>，保证确定性延迟；配置在 <strong>LDF</strong>（LIN Description File）中，工具链生成驱动代码。</p>
+<hr>
+<h2 id="四、与-CAN"><a href="#四、与-CAN" class="headerlink" title="四、与 CAN"></a>四、与 CAN</h2><table>
+<thead>
+<tr>
+<th></th>
+<th><strong>LIN</strong></th>
+<th><strong><a href="/2026/05/01/Embedded/CAN/" title="第九章：CAN 总线：帧结构、多主仲裁与 CAN FD">第九章：CAN 总线：帧结构、多主仲裁与 CAN FD</a></strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>成本</td>
+<td>低（常单线）</td>
+<td>收发器稍贵</td>
+</tr>
+<tr>
+<td>速率</td>
+<td>~20 kbps</td>
+<td>最高 Mbps 级</td>
+</tr>
+<tr>
+<td>拓扑</td>
+<td>单主</td>
+<td>多主</td>
+</tr>
+<tr>
+<td>用途</td>
+<td>非安全、低带宽</td>
+<td>动力、底盘、网关</td>
+</tr>
+</tbody></table>
+<p>网关 ECU 常同时接 <strong>CAN</strong> 与多条 <strong>LIN</strong> 总线。</p>
+<hr>
+<h2 id="五、硬件与调试"><a href="#五、硬件与调试" class="headerlink" title="五、硬件与调试"></a>五、硬件与调试</h2><ul>
+<li>物理层：<strong>12V</strong> 系统常见，收发器如 <strong>TJA1021</strong>。  </li>
+<li>调试：<strong>LIN 分析仪</strong>、USB-LIN 适配器；协议依 <strong>LIN 2.0&#x2F;2.1&#x2F;2.2</strong> 与 <strong>ISO 17987</strong>。</li>
+</ul>
+<p>与 <a href="/2026/05/01/Embedded/RS232/" title="第五章：RS232">第五章：RS232</a> 不同：LIN 有固定 <strong>Break&#x2F;Sync</strong> 与 <strong>PID</strong> 语义，不是裸串口文本。</p>
+<hr>
+<h2 id="本章小结"><a href="#本章小结" class="headerlink" title="本章小结"></a>本章小结</h2><table>
+<thead>
+<tr>
+<th>要点</th>
+<th>结论</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>拓扑</td>
+<td>单主多从：Master 发 Header、Slave 响应</td>
+</tr>
+<tr>
+<td>成本</td>
+<td>单线 12V + UART 级硬件，远低于 CAN</td>
+</tr>
+<tr>
+<td>帧结构</td>
+<td>Break + Sync + PID + Data(1~8) + Checksum</td>
+</tr>
+<tr>
+<td>确定性</td>
+<td>依赖调度表（LDF 配置），延迟固定可预期</td>
+</tr>
+<tr>
+<td>适用边界</td>
+<td>~20 kbps、非安全相关，车身舒适系统首选</td>
+</tr>
+</tbody></table>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://my919.github.io/2026/05/01/Embedded/CAN/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/05/01/Embedded/CAN/" class="post-title-link" itemprop="url">第九章：CAN 总线：帧结构、多主仲裁与 CAN FD</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-05-01 13:12:23" itemprop="dateCreated datePublished" datetime="2026-05-01T13:12:23+08:00">2026-05-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-08-30 17:10:05" itemprop="dateModified" datetime="2026-08-30T17:10:05+08:00">2026-08-30</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Embedded/" itemprop="url" rel="index"><span itemprop="name">Embedded</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>788</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>3 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="第九章：CAN-总线：帧结构、多主仲裁与-CAN-FD"><a href="#第九章：CAN-总线：帧结构、多主仲裁与-CAN-FD" class="headerlink" title="第九章：CAN 总线：帧结构、多主仲裁与 CAN FD"></a>第九章：CAN 总线：帧结构、多主仲裁与 CAN FD</h1><h2 id="概念基础：CAN-是什么"><a href="#概念基础：CAN-是什么" class="headerlink" title="概念基础：CAN 是什么"></a>概念基础：CAN 是什么</h2><ol>
+<li><strong>CAN</strong>（<strong>Controller Area Network</strong>，控制器局域网）是 <strong>Bosch</strong> 为汽车电子设计的<strong>多主串行总线</strong>：所有 <strong>ECU</strong> 节点挂在一对<strong>差分线</strong>（<strong>CAN_H &#x2F; CAN_L</strong>）上，以<strong>广播帧</strong>通信，各节点按 ID 自行过滤收帧。</li>
+<li><strong>为什么抗干扰</strong>：<strong>差分传输</strong>让共模噪声相互抵消，配合总线两端的 <strong>120Ω 终端电阻</strong>抑制信号反射，适合发动机舱等<strong>电磁环境恶劣</strong>的场景——这与单端电平的 RS232 是本质差别。</li>
+<li><strong>多主无损仲裁</strong>：总线空闲时<strong>任意节点都可发送</strong>，逐 bit 仲裁中<strong>发显性 0 的胜出</strong>、<strong>ID 越小优先级越高</strong>，败者自动退为接收方，<strong>既不丢帧也不需要中心主站</strong>。</li>
+<li><strong>硬件级可靠性</strong>：帧尾 <strong>CRC + ACK</strong> 硬件检错与确认，出错自动重发；故障节点经<strong>错误计数</strong>进入 <strong>bus-off</strong> 主动离线，不会拖垮整条总线。</li>
+<li><strong>定位</strong>：汽车<strong>动力、底盘、网关</strong>等<strong>实时、安全相关</strong>场景的主力总线，速率 125 kbps ~ 1 Mbps；<strong>CAN FD</strong> 把数据段扩到 64 字节并提升数据段速率；车身低成本传感器则交给 LIN（见 <a href="/2026/05/01/Embedded/LIN/" title="第十章：LIN 总线：单主多从与调度表">第十章：LIN 总线：单主多从与调度表</a>）。</li>
+</ol>
+<p>先看整体拓扑：</p>
+<h2 id="总线拓扑"><a href="#总线拓扑" class="headerlink" title="总线拓扑"></a>总线拓扑</h2><pre>
+<code class="mermaid">
+
+flowchart LR
+  ECU1[ECU 节点 1] --- BUS[CAN_H &#x2F; CAN_L 总线]
+  ECU2[ECU 节点 2] --- BUS
+  ECU3[ECU 节点 3] --- BUS
+</code>
+</pre>
+
+<hr>
+<h2 id="一、经典-CAN-帧（概念）"><a href="#一、经典-CAN-帧（概念）" class="headerlink" title="一、经典 CAN 帧（概念）"></a>一、经典 CAN 帧（概念）</h2><table>
+<thead>
+<tr>
+<th>字段</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>仲裁 ID</strong></td>
+<td>11 位（标准）或 29 位（扩展），越小优先级越高</td>
+</tr>
+<tr>
+<td><strong>RTR</strong></td>
+<td>远程帧（较少用）</td>
+</tr>
+<tr>
+<td><strong>DLC</strong></td>
+<td>数据长度 0~8 字节</td>
+</tr>
+<tr>
+<td><strong>Data</strong></td>
+<td>载荷</td>
+</tr>
+<tr>
+<td><strong>CRC + ACK</strong></td>
+<td>硬件检错与确认</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="二、多主仲裁"><a href="#二、多主仲裁" class="headerlink" title="二、多主仲裁"></a>二、多主仲裁</h2><p>总线空闲时多个节点可同时发送；<strong>ID 仲裁</strong>时逐 bit 比较，<strong>发显性 0 的胜出</strong>，失败者自动退为接收方，<strong>无中心主站</strong>。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">CAN_H / CAN_L 差分（ISO 11898）</span><br><span class="line">终端电阻 120Ω 于总线两端</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="三、速率与长度"><a href="#三、速率与长度" class="headerlink" title="三、速率与长度"></a>三、速率与长度</h2><table>
+<thead>
+<tr>
+<th>速率</th>
+<th>典型最大总线长度（粗估）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>1 Mbps</strong></td>
+<td>数十米</td>
+</tr>
+<tr>
+<td><strong>500 kbps</strong></td>
+<td>~100m</td>
+</tr>
+<tr>
+<td><strong>125 kbps</strong></td>
+<td>更长</td>
+</tr>
+</tbody></table>
+<p>实际以收发器、电缆与拓扑仿真为准。</p>
+<hr>
+<h2 id="四、CAN-FD"><a href="#四、CAN-FD" class="headerlink" title="四、CAN FD"></a>四、CAN FD</h2><ul>
+<li><strong>数据段</strong>可 &gt; 8 字节（最高 64），<strong>数据段波特率</strong>可高于仲裁段。  </li>
+<li>新车载网络大量采用 <strong>CAN FD</strong>；旧 ECU 可能仅 <strong>Classic CAN</strong>。</li>
+</ul>
+<p>MCU 侧：<strong>bxCAN</strong>、<strong>FDCAN</strong> 外设 + 收发器（<strong>TJA1050</strong> 等）。</p>
+<hr>
+<h2 id="五、与其它总线"><a href="#五、与其它总线" class="headerlink" title="五、与其它总线"></a>五、与其它总线</h2><table>
+<thead>
+<tr>
+<th>总线</th>
+<th>场景</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong><a href="/2026/05/01/Embedded/LIN/" title="第十章：LIN 总线：单主多从与调度表">第十章：LIN 总线：单主多从与调度表</a></strong></td>
+<td>车身低成本传感器，单主</td>
+</tr>
+<tr>
+<td><strong><a href="/2026/05/01/Embedded/RS485/" title="第六章：RS485">第六章：RS485</a></strong> + <a href="/2026/05/01/Embedded/ModbusRTU/" title="第一章：Modbus RTU">第一章：Modbus RTU</a></td>
+<td>工业 PLC</td>
+</tr>
+<tr>
+<td><strong>CAN</strong></td>
+<td>汽车、机器人关节、安全相关</td>
+</tr>
+</tbody></table>
+<p>上层协议：<strong>CANopen</strong>、<strong>J1939</strong>、<strong>UDS</strong>（诊断）等建立在 CAN 帧之上。</p>
+<hr>
+<h2 id="本章小结"><a href="#本章小结" class="headerlink" title="本章小结"></a>本章小结</h2><table>
+<thead>
+<tr>
+<th>要点</th>
+<th>结论</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>物理层</td>
+<td>CAN_H &#x2F; CAN_L 差分 + 两端 120Ω 终端电阻，抗干扰强</td>
+</tr>
+<tr>
+<td>仲裁</td>
+<td>多主、逐 bit 非破坏性仲裁，ID 越小优先级越高</td>
+</tr>
+<tr>
+<td>可靠性</td>
+<td>CRC + ACK + 错误计数 bus-off，硬件级容错</td>
+</tr>
+<tr>
+<td>速率与距离</td>
+<td>125 kbps ~ 1 Mbps，速率越高可用距离越短</td>
+</tr>
+<tr>
+<td>演进</td>
+<td>CAN FD 数据段最大 64 字节，数据段波特率可独立提高</td>
+</tr>
+</tbody></table>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://my919.github.io/2026/05/01/Embedded/SPI/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/05/01/Embedded/SPI/" class="post-title-link" itemprop="url">第八章：SPI</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-05-01 13:11:54" itemprop="dateCreated datePublished" datetime="2026-05-01T13:11:54+08:00">2026-05-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-08-30 17:10:05" itemprop="dateModified" datetime="2026-08-30T17:10:05+08:00">2026-08-30</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Embedded/" itemprop="url" rel="index"><span itemprop="name">Embedded</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>602</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>2 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="第八章：SPI"><a href="#第八章：SPI" class="headerlink" title="第八章：SPI"></a>第八章：SPI</h1><h2 id="概念基础：SPI-是什么-为什么"><a href="#概念基础：SPI-是什么-为什么" class="headerlink" title="概念基础：SPI 是什么&#x2F;为什么"></a>概念基础：SPI 是什么&#x2F;为什么</h2><ol>
+<li><strong>SPI</strong>（Serial Peripheral Interface）是 <strong>Motorola 提出的四线同步全双工总线</strong>：<strong>SCLK &#x2F; MOSI &#x2F; MISO &#x2F; CS</strong>，板级高速外设互联的主力。</li>
+<li><strong>主驱时钟</strong>：主站产生 <strong>SCLK</strong>，数据按约定<strong>边沿</strong>采样；主从的 <strong>CPOL&#x2F;CPHA 模式必须一致</strong>（Mode 0~3），这是 SPI 调试最常见的坑。</li>
+<li><strong>片选寻址</strong>：没有地址概念，每个从机一根独立 <strong>CS</strong> 线，<strong>多占一根线换取高速度</strong>；<strong>MISO</strong> 未选中时需保持三态。</li>
+<li><strong>为什么快</strong>：无地址开销、<strong>全双工</strong>、时钟可达<strong>几十 MHz</strong>，Flash、SD 卡、TFT 屏等<strong>高带宽外设</strong>首选。</li>
+<li><strong>取舍</strong>：线数多（每从机 +1 CS）、只适合<strong>短 PCB 走线</strong>；长距离&#x2F;多机改用 RS485，少线低速场景可用 I2C，异步调试打印仍用 UART。</li>
+</ol>
+<p>先看一主多从的连接：</p>
+<h2 id="一主多从"><a href="#一主多从" class="headerlink" title="一主多从"></a>一主多从</h2><pre>
+<code class="mermaid">
+
+flowchart LR
+  M[Master] --&gt;|SCLK MOSI MISO| Flash[Flash CS0]
+  M --&gt;|独立 CS| SD[SD 卡 CS1]
+</code>
+</pre>
+
+<hr>
+<h2 id="一、信号"><a href="#一、信号" class="headerlink" title="一、信号"></a>一、信号</h2><table>
+<thead>
+<tr>
+<th>线</th>
+<th>方向（相对 Master）</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>SCLK</strong></td>
+<td>输出</td>
+<td>时钟</td>
+</tr>
+<tr>
+<td><strong>MOSI</strong></td>
+<td>输出</td>
+<td>Master Out Slave In</td>
+</tr>
+<tr>
+<td><strong>MISO</strong></td>
+<td>输入</td>
+<td>Master In Slave Out</td>
+</tr>
+<tr>
+<td><strong>CS&#x2F;SS</strong></td>
+<td>输出</td>
+<td>低有效选中从机</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="二、CPOL-CPHA（模式-0-3）"><a href="#二、CPOL-CPHA（模式-0-3）" class="headerlink" title="二、CPOL &#x2F; CPHA（模式 0~3）"></a>二、CPOL &#x2F; CPHA（模式 0~3）</h2><ul>
+<li><strong>CPOL</strong>：空闲时 SCLK 电平（0&#x3D;低，1&#x3D;高）。  </li>
+<li><strong>CPHA</strong>：第几个边沿采样（0&#x3D;第一边沿，1&#x3D;第二边沿）。</li>
+</ul>
+<p>主从 <strong>模式必须一致</strong>（数据手册会写 Mode 0 等）。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 概念：8 位、MSB 先发、Mode 0</span></span><br><span class="line">HAL_SPI_TransmitReceive(&amp;hspi1, tx, rx, len, <span class="number">100</span>);</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="三、多从机"><a href="#三、多从机" class="headerlink" title="三、多从机"></a>三、多从机</h2><ul>
+<li><strong>独立 CS</strong>：每个从机一根 <strong>CS</strong>，<strong>MOSI&#x2F;MISO&#x2F;SCLK</strong> 共享（<strong>MISO</strong> 需三态，未选中不高驱）。  </li>
+<li><strong>Daisy Chain</strong>：如部分 <strong>Shift Register</strong>、<strong>LED 驱动</strong>，数据串行穿过多芯片。</li>
+</ul>
+<hr>
+<h2 id="四、典型应用"><a href="#四、典型应用" class="headerlink" title="四、典型应用"></a>四、典型应用</h2><ul>
+<li><strong>Flash</strong>（W25Q）、<strong>SD 卡</strong>（SPI 模式）、<strong>ADC&#x2F;DAC</strong>、<strong>TFT</strong> 屏、<strong>RF 模块</strong>（NRF24L01）。  </li>
+<li>速率常 <strong>MHz~ tens of MHz</strong>，短 PCB 走线；长距离不如 <a href="/2026/05/01/Embedded/RS485/" title="第六章：RS485">第六章：RS485</a>。</li>
+</ul>
+<hr>
+<h2 id="五、与-I2C"><a href="#五、与-I2C" class="headerlink" title="五、与 I2C"></a>五、与 I2C</h2><table>
+<thead>
+<tr>
+<th></th>
+<th><strong>SPI</strong></th>
+<th><strong><a href="/2026/05/01/Embedded/I2C/" title="第七章：I2C">第七章：I2C</a></strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>线数</td>
+<td>4+（每从机 +CS）</td>
+<td>2</td>
+</tr>
+<tr>
+<td>速度</td>
+<td>通常更快</td>
+<td>400k&#x2F;1M 常见</td>
+</tr>
+<tr>
+<td>寻址</td>
+<td>硬件 CS</td>
+<td>7 位地址</td>
+</tr>
+<tr>
+<td>双工</td>
+<td>全双工</td>
+<td>半双工</td>
+</tr>
+</tbody></table>
+<p>异步调试打印仍用 <a href="/2026/05/01/Embedded/UART/" title="第四章：UART">第四章：UART</a>。</p>
+<h2 id="本章小结"><a href="#本章小结" class="headerlink" title="本章小结"></a>本章小结</h2><table>
+<thead>
+<tr>
+<th>要点</th>
+<th>结论</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>信号</td>
+<td><strong>SCLK&#x2F;MOSI&#x2F;MISO&#x2F;CS</strong> 四线，主驱时钟、全双工</td>
+</tr>
+<tr>
+<td>模式</td>
+<td><strong>CPOL&#x2F;CPHA</strong> 组成 Mode 0~3，主从配置必须一致</td>
+</tr>
+<tr>
+<td>寻址</td>
+<td>无地址，靠独立 <strong>CS</strong> 片选；MISO 未选中需三态</td>
+</tr>
+<tr>
+<td>速度</td>
+<td>无地址开销、全双工，可达几十 MHz，高带宽外设首选</td>
+</tr>
+<tr>
+<td>局限</td>
+<td>线多、仅短走线；远距离换 RS485，少线换 I2C</td>
+</tr>
+</tbody></table>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://my919.github.io/2026/05/01/Embedded/I2C/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/05/01/Embedded/I2C/" class="post-title-link" itemprop="url">第七章：I2C</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-05-01 13:11:31" itemprop="dateCreated datePublished" datetime="2026-05-01T13:11:31+08:00">2026-05-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-08-30 17:10:05" itemprop="dateModified" datetime="2026-08-30T17:10:05+08:00">2026-08-30</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Embedded/" itemprop="url" rel="index"><span itemprop="name">Embedded</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>683</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>2 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="第七章：I2C"><a href="#第七章：I2C" class="headerlink" title="第七章：I2C"></a>第七章：I2C</h1><h2 id="概念基础：I2C-是什么-为什么"><a href="#概念基础：I2C-是什么-为什么" class="headerlink" title="概念基础：I2C 是什么&#x2F;为什么"></a>概念基础：I2C 是什么&#x2F;为什么</h2><ol>
+<li><strong>I2C</strong>（Inter-Integrated Circuit）是 <strong>Philips 发明的两线同步总线</strong>：<strong>SCL 时钟 + SDA 数据</strong>，是板级互联传感器&#x2F;存储器等外设的事实标准。</li>
+<li><strong>地址寻址多从</strong>：每个从设备有 <strong>7 位地址</strong>（0x00~0x7F），主设备以<strong>地址帧</strong>寻址——两根线即可挂多个器件，扩展外设几乎不加线。</li>
+<li><strong>开漏 + 上拉</strong>：SDA&#x2F;SCL 均为<strong>开漏输出加上拉电阻</strong>，天然支持<strong>多主仲裁与时钟同步</strong>，也决定了速率上限（100k&#x2F;400k&#x2F;1M&#x2F;3.4M）。</li>
+<li><strong>协议机制清晰</strong>：<strong>START&#x2F;STOP</strong> 条件界定传输，逐字节 <strong>ACK&#x2F;NACK</strong> 确认；读操作用<strong>重复 START</strong> 切换方向。</li>
+<li><strong>取舍</strong>：<strong>线最少、成本低</strong>，EEPROM&#x2F;RTC&#x2F;IMU&#x2F;OLED 全支持；但速率不如 SPI，上拉取值需按总线电容与速率权衡。</li>
+</ol>
+<p>先看总线拓扑：</p>
+<h2 id="总线拓扑"><a href="#总线拓扑" class="headerlink" title="总线拓扑"></a>总线拓扑</h2><pre>
+<code class="mermaid">
+
+flowchart TB
+  Master[主设备 MCU] --- SCL[SCL 时钟]
+  Master --- SDA[SDA 数据]
+  SDA --&gt; S1[从设备 地址 0x48]
+  SDA --&gt; S2[从设备 地址 0x50]
+  SCL --&gt; S1
+  SCL --&gt; S2
+</code>
+</pre>
+
+<hr>
+<h2 id="一、信号与起始-停止"><a href="#一、信号与起始-停止" class="headerlink" title="一、信号与起始&#x2F;停止"></a>一、信号与起始&#x2F;停止</h2><ul>
+<li><strong>空闲</strong>：SDA、SCL 均为高（靠<strong>上拉电阻</strong>）。  </li>
+<li><strong>START</strong>：SCL 高时 SDA 下降沿。  </li>
+<li><strong>STOP</strong>：SCL 高时 SDA 上升沿。  </li>
+<li><strong>数据位</strong>：SCL 低时 SDA 变化，SCL 高时采样。</li>
+</ul>
+<hr>
+<h2 id="二、7-位地址帧（写）"><a href="#二、7-位地址帧（写）" class="headerlink" title="二、7 位地址帧（写）"></a>二、7 位地址帧（写）</h2><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">START + 7bit地址(写) + ACK + 寄存器地址 + ACK + 数据 + ACK + STOP</span><br></pre></td></tr></table></figure>
+
+<p>读操作：写寄存器指针 → <strong>重复 START</strong> → 读地址 + 读数据 + <strong>NACK</strong> + STOP。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// STM32 HAL 概念</span></span><br><span class="line">HAL_I2C_Mem_Write(&amp;hi2c1, <span class="number">0x50</span>&lt;&lt;<span class="number">1</span>, reg, I2C_MEMADD_SIZE_8BIT, &amp;val, <span class="number">1</span>, <span class="number">100</span>);</span><br><span class="line">HAL_I2C_Mem_Read(&amp;hi2c1, <span class="number">0x50</span>&lt;&lt;<span class="number">1</span>, reg, I2C_MEMADD_SIZE_8BIT, &amp;val, <span class="number">1</span>, <span class="number">100</span>);</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="三、速率模式"><a href="#三、速率模式" class="headerlink" title="三、速率模式"></a>三、速率模式</h2><table>
+<thead>
+<tr>
+<th>模式</th>
+<th>速率</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Standard</strong></td>
+<td>100 kHz</td>
+</tr>
+<tr>
+<td><strong>Fast</strong></td>
+<td>400 kHz</td>
+</tr>
+<tr>
+<td><strong>Fast Mode Plus</strong></td>
+<td>1 MHz</td>
+</tr>
+<tr>
+<td><strong>High Speed</strong></td>
+<td>3.4 MHz（较少用）</td>
+</tr>
+</tbody></table>
+<p><strong>上拉电阻</strong>：常见 <strong>2.2k~10k</strong>（3.3V、总线电容与速率相关）；长电缆或多设备需降低电容、可能用 <strong>I2C 缓冲器&#x2F;扩展器</strong>。</p>
+<hr>
+<h2 id="四、典型设备"><a href="#四、典型设备" class="headerlink" title="四、典型设备"></a>四、典型设备</h2><ul>
+<li><strong>EEPROM</strong>（24Cxx）、<strong>RTC</strong>（DS3231）、<strong>IMU</strong>、<strong>OLED</strong> 小屏、<strong>PMIC</strong>、<strong>GPIO 扩展</strong>（PCF8574）。  </li>
+<li><strong>同一地址冲突</strong>：部分芯片有 <strong>ADDR</strong> 引脚改地址；否则需不同总线（<strong>I2C mux</strong>）。</li>
+</ul>
+<hr>
+<h2 id="五、与-SPI、UART"><a href="#五、与-SPI、UART" class="headerlink" title="五、与 SPI、UART"></a>五、与 SPI、UART</h2><table>
+<thead>
+<tr>
+<th>总线</th>
+<th>线数</th>
+<th>速度</th>
+<th>特点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>I2C</strong></td>
+<td>2 + GND</td>
+<td>中</td>
+<td>多从、地址、开漏</td>
+</tr>
+<tr>
+<td><strong><a href="/2026/05/01/Embedded/SPI/" title="第八章：SPI">第八章：SPI</a></strong></td>
+<td>4+</td>
+<td>高</td>
+<td>全双工、无标准地址</td>
+</tr>
+<tr>
+<td><strong><a href="/2026/05/01/Embedded/UART/" title="第四章：UART">第四章：UART</a></strong></td>
+<td>2 + GND</td>
+<td>中</td>
+<td>点对点、异步</td>
+</tr>
+</tbody></table>
+<p> <strong><a href="/2026/05/01/Embedded/CAN/" title="第九章：CAN 总线：帧结构、多主仲裁与 CAN FD">第九章：CAN 总线：帧结构、多主仲裁与 CAN FD</a></strong> 用于车载&#x2F;工业现场总线，抗干扰与仲裁不同于 I2C。</p>
+<h2 id="本章小结"><a href="#本章小结" class="headerlink" title="本章小结"></a>本章小结</h2><table>
+<thead>
+<tr>
+<th>要点</th>
+<th>结论</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>总线</td>
+<td><strong>SCL+SDA 两线同步总线</strong>，开漏 + 上拉，支持多主多从</td>
+</tr>
+<tr>
+<td>寻址</td>
+<td><strong>7 位地址</strong>帧寻址，读方向用<strong>重复 START</strong> 切换</td>
+</tr>
+<tr>
+<td>握手</td>
+<td>每字节 <strong>ACK&#x2F;NACK</strong> 确认；START&#x2F;STOP 界定传输</td>
+</tr>
+<tr>
+<td>速率</td>
+<td>标准 100k &#x2F; 快速 400k &#x2F; FM+ 1M &#x2F; HS 3.4M</td>
+</tr>
+<tr>
+<td>实务</td>
+<td>上拉 2.2k~10k 按速率与电容配置；地址冲突用 ADDR 引脚或 I2C mux</td>
+</tr>
+</tbody></table>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -406,1880 +2310,8 @@ flowchart LR
 
 
 
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://my919.github.io/2026/05/01/Embedded/RS232/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="miracle">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="my">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | my">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/05/01/Embedded/RS232/" class="post-title-link" itemprop="url">第五章：RS232</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2026-05-01 13:10:04" itemprop="dateCreated datePublished" datetime="2026-05-01T13:10:04+08:00">2026-05-01</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-08-30 17:10:05" itemprop="dateModified" datetime="2026-08-30T17:10:05+08:00">2026-08-30</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Embedded/" itemprop="url" rel="index"><span itemprop="name">Embedded</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>596</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>2 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="第五章：RS232"><a href="#第五章：RS232" class="headerlink" title="第五章：RS232"></a>第五章：RS232</h1><h2 id="概念基础：RS232-是什么-为什么"><a href="#概念基础：RS232-是什么-为什么" class="headerlink" title="概念基础：RS232 是什么&#x2F;为什么"></a>概念基础：RS232 是什么&#x2F;为什么</h2><ol>
-<li><strong>RS232</strong> 是 <strong>EIA 定义的串行物理层标准</strong>，规定<strong>电气电平、信号线与连接器（DB9）</strong>——「PC 老式 COM 口」背后的标准。</li>
-<li><strong>负逻辑电平</strong>：逻辑 1 是<strong>负电压（-5V~-15V）</strong>，逻辑 0 是<strong>正电压（+5V~+15V）</strong>，与 MCU 的 <strong>TTL UART（0&#x2F;3.3V）完全不同</strong>，必须经 <strong>MAX232</strong> 等芯片做电平转换。</li>
-<li><strong>点对点、单端</strong>：一收一发加共地，<strong>抗干扰弱、典型距离 &lt; 15m</strong>，速率与距离反相关。</li>
-<li><strong>为什么仍要学</strong>：工业仪器、老式 PLC、条码枪仍大量保留 <strong>DB9</strong> 口；PC 侧 <strong>USB 转 RS232</strong> 线依然是常用调试手段。</li>
-<li><strong>与 UART 的关系</strong>：UART 是<strong>控制器逻辑</strong>，RS232 是<strong>物理层电气标准</strong>；其上仍可跑 <strong>Modbus RTU</strong> 或自定义帧协议。</li>
-</ol>
-<p>先看典型的 DTE-DCE 连接：</p>
-<h2 id="DTE-DCE-连接"><a href="#DTE-DCE-连接" class="headerlink" title="DTE-DCE 连接"></a>DTE-DCE 连接</h2><pre>
-<code class="mermaid">
-
-flowchart LR
-  PC[DTE PC] --&gt;|TXD RXD GND| Conv[USB-RS232 转换]
-  Conv --&gt; Dev[DCE 设备]
-</code>
-</pre>
-
-<hr>
-<h2 id="一、电平与特点"><a href="#一、电平与特点" class="headerlink" title="一、电平与特点"></a>一、电平与特点</h2><ul>
-<li><strong>逻辑 1</strong>：负电压（如 <strong>-5V ~ -15V</strong>）  </li>
-<li><strong>逻辑 0</strong>：正电压（如 <strong>+5V ~ +15V</strong>）  </li>
-<li><strong>单端</strong>：抗干扰弱于 <a href="/2026/05/01/Embedded/RS485/" title="第六章：RS485">第六章：RS485</a> 差分；距离通常 <strong>&lt; 15m</strong>（与波特率反相关）。  </li>
-<li><strong>点对点</strong>：多机需额外切换，不像 RS485 总线型。</li>
-</ul>
-<p>MCU 侧为 <strong>TTL <a href="/2026/05/01/Embedded/UART/" title="第四章：UART">第四章：UART</a></strong>（0&#x2F;3.3V），需 <strong>MAX232</strong>、<strong>SP3232</strong> 等芯片做电平转换。</p>
-<hr>
-<h2 id="二、最小三线连接"><a href="#二、最小三线连接" class="headerlink" title="二、最小三线连接"></a>二、最小三线连接</h2><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">设备 A TXD ──→ 设备 B RXD</span><br><span class="line">设备 A RXD ←── 设备 B TXD</span><br><span class="line">GND ───────── GND</span><br></pre></td></tr></table></figure>
-
-<p><strong>交叉连接</strong> TX&#x2F;RX；<strong>不要</strong>把 RS232 口直接接 MCU UART 引脚。</p>
-<hr>
-<h2 id="三、流控（可选）"><a href="#三、流控（可选）" class="headerlink" title="三、流控（可选）"></a>三、流控（可选）</h2><table>
-<thead>
-<tr>
-<th>信号</th>
-<th>作用</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>RTS&#x2F;CTS</strong></td>
-<td>硬件流控，防缓冲区溢出</td>
-</tr>
-<tr>
-<td><strong>DTR&#x2F;DSR</strong></td>
-<td>设备就绪（Modem 时代遗留）</td>
-</tr>
-<tr>
-<td><strong>软件流控</strong></td>
-<td><strong>XON&#x2F;XOFF</strong> 字符</td>
-</tr>
-</tbody></table>
-<p>嵌入式调试常 <strong>115200 8N1 无流控</strong>。</p>
-<hr>
-<h2 id="四、应用场景"><a href="#四、应用场景" class="headerlink" title="四、应用场景"></a>四、应用场景</h2><ul>
-<li>工业仪器、老式 PLC、条码枪 <strong>DB9</strong> 口。  </li>
-<li><strong>USB 转 RS232</strong>  dongle 在 PC 上模拟 <strong>COM</strong> 口。  </li>
-<li>长距离、多机、抗干扰场景优先 <strong>RS485</strong> 或 <strong>以太网</strong>（<a href="/2026/05/01/Embedded/ModbusTCP/" title="第二章：Modbus TCP">第二章：Modbus TCP</a>）。</li>
-</ul>
-<p>协议层仍可能是 <a href="/2026/05/01/Embedded/ModbusRTU/" title="第一章：Modbus RTU">第一章：Modbus RTU</a> 或自定义 ASCII 帧。</p>
-<h2 id="本章小结"><a href="#本章小结" class="headerlink" title="本章小结"></a>本章小结</h2><table>
-<thead>
-<tr>
-<th>要点</th>
-<th>结论</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>电平</td>
-<td><strong>负逻辑</strong>：1 &#x3D; -5V<del>-15V，0 &#x3D; +5V</del>+15V，与 TTL 不兼容</td>
-</tr>
-<tr>
-<td>拓扑</td>
-<td><strong>点对点、单端</strong>，典型距离 &lt; 15m，多机换 RS485</td>
-</tr>
-<tr>
-<td>连接</td>
-<td>最小三线 TXD&#x2F;RXD&#x2F;GND，<strong>TX&#x2F;RX 交叉</strong>；禁止直连 MCU 引脚</td>
-</tr>
-<tr>
-<td>电平转换</td>
-<td>MCU TTL UART 经 <strong>MAX232&#x2F;SP3232</strong> 接入</td>
-</tr>
-<tr>
-<td>定位</td>
-<td>老设备&#x2F;仪器调试口；新设计长距离优先 RS485 或以太网</td>
-</tr>
-</tbody></table>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://my919.github.io/2026/05/01/Embedded/UART/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="miracle">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="my">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | my">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/05/01/Embedded/UART/" class="post-title-link" itemprop="url">第四章：UART</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2026-05-01 13:09:30" itemprop="dateCreated datePublished" datetime="2026-05-01T13:09:30+08:00">2026-05-01</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-08-30 17:10:05" itemprop="dateModified" datetime="2026-08-30T17:10:05+08:00">2026-08-30</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Embedded/" itemprop="url" rel="index"><span itemprop="name">Embedded</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>664</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>2 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="第四章：UART"><a href="#第四章：UART" class="headerlink" title="第四章：UART"></a>第四章：UART</h1><h2 id="概念基础：UART-是什么-为什么"><a href="#概念基础：UART-是什么-为什么" class="headerlink" title="概念基础：UART 是什么&#x2F;为什么"></a>概念基础：UART 是什么&#x2F;为什么</h2><ol>
-<li><strong>UART</strong>（通用异步收发器）是<strong>异步串行通信控制器</strong>：只用 <strong>TX&#x2F;RX</strong> 两根信号线加共地，<strong>不传时钟</strong>，收发双方按<strong>约定的波特率</strong>各自采样。</li>
-<li><strong>异步帧</strong>：<code>起始位(0) + 数据位(通常 8) + 可选校验位 + 停止位(1)</code>；<strong>空闲为高电平</strong>，起始位拉低完成一次同步，数据 <strong>LSB 先发</strong>。</li>
-<li><strong>为什么无处不在</strong>：实现极简、调试直观，<strong>日志打印、AT 指令、GPS NMEA、Bootloader</strong> 都走 UART，是嵌入式最基础的调试与互联手段。</li>
-<li><strong>只是逻辑层</strong>：UART 引脚是 <strong>TTL 电平（0&#x2F;3.3V）</strong>，接 PC 老串口或工业总线需 <strong>MAX232（RS232）</strong>、<strong>MAX485（RS485）</strong> 等收发器转换物理层。</li>
-<li><strong>点对点</strong>：无从机地址、无仲裁，多机组网要靠上层协议或改用总线型物理层。</li>
-</ol>
-<p>先看最基本的连接形态：</p>
-<h2 id="点对点连接"><a href="#点对点连接" class="headerlink" title="点对点连接"></a>点对点连接</h2><pre>
-<code class="mermaid">
-
-flowchart LR
-  MCU1[MCU A TX] --&gt;|RX| MCU2[MCU B RX]
-  MCU2 --&gt;|TX| MCU1
-</code>
-</pre>
-
-<hr>
-<h2 id="一、异步帧结构"><a href="#一、异步帧结构" class="headerlink" title="一、异步帧结构"></a>一、异步帧结构</h2><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">起始位(0) + 数据位(通常8) + 可选校验位 + 停止位(1)</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><strong>空闲</strong>：线路高电平。  </li>
-<li><strong>起始位</strong>：拉低，通知接收方开始采样。  </li>
-<li><strong>LSB 先发</strong>：数据位从低位到高位。  </li>
-<li><strong>校验</strong>：<strong>None &#x2F; Odd &#x2F; Even</strong>（可选）。  </li>
-<li><strong>停止位</strong>：1 或 2 位高电平，恢复空闲。</li>
-</ul>
-<hr>
-<h2 id="二、波特率"><a href="#二、波特率" class="headerlink" title="二、波特率"></a>二、波特率</h2><p>常见：<strong>9600</strong>、<strong>115200</strong>、<strong>921600</strong>。收发双方<strong>波特率必须一致</strong>（误差通常 &lt; 2%）。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 概念：USART 分频得到比特率</span></span><br><span class="line"><span class="comment">// baud = f_clk / (16 * USARTDIV)  // 依芯片手册</span></span><br><span class="line">HAL_UART_Init(&amp;huart1);  <span class="comment">// STM32 HAL 示例</span></span><br><span class="line">HAL_UART_Transmit(&amp;huart1, (<span class="type">uint8_t</span>*)<span class="string">&quot;OK\r\n&quot;</span>, <span class="number">4</span>, <span class="number">100</span>);</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="三、电平与接口层"><a href="#三、电平与接口层" class="headerlink" title="三、电平与接口层"></a>三、电平与接口层</h2><table>
-<thead>
-<tr>
-<th>层次</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>TTL UART</strong></td>
-<td>MCU 引脚 <strong>3.3V&#x2F;5V</strong>，直连 USB-TTL 模块</td>
-</tr>
-<tr>
-<td><strong><a href="/2026/05/01/Embedded/RS232/" title="第五章：RS232">第五章：RS232</a></strong></td>
-<td>± 电平，PC 老式串口、部分工业设备</td>
-</tr>
-<tr>
-<td><strong><a href="/2026/05/01/Embedded/RS485/" title="第六章：RS485">第六章：RS485</a></strong></td>
-<td>差分、半双工、多机总线，常经 UART+收发器</td>
-</tr>
-</tbody></table>
-<p><strong>UART</strong> 指<strong>控制器逻辑</strong>；对外物理层常加 <strong>MAX232</strong>、<strong>MAX485</strong> 等芯片。</p>
-<hr>
-<h2 id="四、应用与调试"><a href="#四、应用与调试" class="headerlink" title="四、应用与调试"></a>四、应用与调试</h2><ul>
-<li><strong>日志打印</strong>、<strong>AT 指令</strong>（4G&#x2F;Wi-Fi 模块）、<strong>GPS NMEA</strong>、Bootloader。  </li>
-<li><strong>Linux</strong>：<strong><code>/dev/ttyUSB0</code></strong>，<strong><code>minicom</code></strong> &#x2F; <strong><code>picocom</code></strong> &#x2F; <strong><code>screen</code></strong>。  </li>
-<li><strong>注意</strong>：<strong>TX 接 RX</strong> 交叉；共地 <strong>GND</strong> 必须连接。</li>
-</ul>
-<p>与 <a href="/2026/05/01/Embedded/SPI/" title="第八章：SPI">第八章：SPI</a>、<a href="/2026/05/01/Embedded/I2C/" title="第七章：I2C">第七章：I2C</a> 对照：UART <strong>线少、距离短（TTL）</strong>、协议简单，无硬件从机地址。</p>
-<h2 id="本章小结"><a href="#本章小结" class="headerlink" title="本章小结"></a>本章小结</h2><table>
-<thead>
-<tr>
-<th>要点</th>
-<th>结论</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>本质</td>
-<td>两线<strong>异步</strong>串行控制器，不传时钟，靠约定波特率采样</td>
-</tr>
-<tr>
-<td>帧格式</td>
-<td>起始位 + 数据位（<strong>LSB 先发</strong>）+ 可选校验 + 停止位</td>
-</tr>
-<tr>
-<td>关键参数</td>
-<td>双方<strong>波特率必须一致</strong>（误差 &lt; 2%），常见 9600&#x2F;115200</td>
-</tr>
-<tr>
-<td>物理层</td>
-<td>TTL 引脚直连需共地；上 RS232&#x2F;RS485 需收发器转换</td>
-</tr>
-<tr>
-<td>调试要点</td>
-<td><strong>TX&#x2F;RX 交叉</strong>、<strong>必须共地</strong>；Linux 用 minicom&#x2F;picocom&#x2F;screen</td>
-</tr>
-</tbody></table>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://my919.github.io/2026/05/01/Embedded/ModbusASCII/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="miracle">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="my">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | my">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/05/01/Embedded/ModbusASCII/" class="post-title-link" itemprop="url">第三章：Modbus ASCII</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2026-05-01 13:08:42" itemprop="dateCreated datePublished" datetime="2026-05-01T13:08:42+08:00">2026-05-01</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-08-30 17:10:05" itemprop="dateModified" datetime="2026-08-30T17:10:05+08:00">2026-08-30</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Embedded/" itemprop="url" rel="index"><span itemprop="name">Embedded</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>611</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>2 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="第三章：Modbus-ASCII"><a href="#第三章：Modbus-ASCII" class="headerlink" title="第三章：Modbus ASCII"></a>第三章：Modbus ASCII</h1><h2 id="概念基础：Modbus-ASCII-是什么-为什么"><a href="#概念基础：Modbus-ASCII-是什么-为什么" class="headerlink" title="概念基础：Modbus ASCII 是什么&#x2F;为什么"></a>概念基础：Modbus ASCII 是什么&#x2F;为什么</h2><ol>
-<li><strong>Modbus ASCII</strong> 是 Modbus 的<strong>文本编码变体</strong>：每个字节用<strong>两个 ASCII 十六进制字符</strong>（<strong>0-9 A-F</strong>）表示，帧以 <strong><code>:</code></strong> 开始、<strong>CR LF</strong> 结束。</li>
-<li><strong>为什么存在</strong>：早期<strong>调制解调器&#x2F;串口终端</strong>时代，文本帧<strong>人眼可读、可直接粘贴调试</strong>，字符间容忍度也比 RTU 严格的 3.5 字符静默<strong>宽松</strong>。</li>
-<li><strong>校验不同</strong>：RTU 用 <strong>CRC16</strong>，ASCII 用 <strong>LRC</strong>（8 位求和取补码）——<strong>检错能力较弱但实现极简</strong>。</li>
-<li><strong>代价</strong>：同样数据<strong>传输长度约 2 倍</strong>、带宽利用率低，新项目工业现场几乎都选 <strong>RTU</strong>，ASCII 只保留在<strong>老设备与维护口</strong>。</li>
-<li><strong>同一套 PDU</strong>：与 RTU&#x2F;TCP 的<strong>功能码与寄存器语义完全一致</strong>，切换链路层不影响上层应用逻辑。</li>
-</ol>
-<p>先直观对比两种编码：</p>
-<h2 id="与-RTU-对比"><a href="#与-RTU-对比" class="headerlink" title="与 RTU 对比"></a>与 RTU 对比</h2><pre>
-<code class="mermaid">
-
-flowchart LR
-  subgraph ascii [Modbus ASCII]
-    A1[可读 HEX 字符] --&gt; A2[LRC 校验]
-  end
-  subgraph rtu [Modbus RTU]
-    R1[二进制 ADU] --&gt; R2[CRC16]
-  end
-  M[主站] --&gt; ascii
-  M --&gt; rtu
-</code>
-</pre>
-
-<hr>
-<h2 id="一、帧格式"><a href="#一、帧格式" class="headerlink" title="一、帧格式"></a>一、帧格式</h2><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">: + ASCII-HEX(地址, 功能码, 数据...) + LRC(2 ASCII hex) + CR + LF</span><br></pre></td></tr></table></figure>
-
-<p>示例（读保持寄存器，概念）：</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">:01030000000AF9\r\n</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><strong><code>:</code></strong> 起始。  </li>
-<li>每字节用 <strong>两个 ASCII 十六进制字符</strong>（<strong>0-9 A-F</strong>）。  </li>
-<li><strong><code>CR LF</code></strong> 结束（<strong>0x0D 0x0A</strong>）。</li>
-</ul>
-<hr>
-<h2 id="二、LRC"><a href="#二、LRC" class="headerlink" title="二、LRC"></a>二、LRC</h2><p>对 <strong>地址到数据末字节</strong> 求和（8 位），取二进制补码（<strong>256 - sum</strong>），再转两个 ASCII 十六进制字符。</p>
-<p>RTU 使用 <strong>CRC16</strong>；ASCII 用 <strong>LRC</strong>，检错能力较弱但实现简单。</p>
-<hr>
-<h2 id="三、与-RTU-TCP"><a href="#三、与-RTU-TCP" class="headerlink" title="三、与 RTU &#x2F; TCP"></a>三、与 RTU &#x2F; TCP</h2><table>
-<thead>
-<tr>
-<th>变体</th>
-<th>编码</th>
-<th>效率</th>
-<th>场景</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>RTU</strong></td>
-<td>二进制</td>
-<td>高</td>
-<td>RS485 主流</td>
-</tr>
-<tr>
-<td><strong>ASCII</strong></td>
-<td>文本 HEX</td>
-<td>低（约 2× 字节）</td>
-<td>调试、老设备</td>
-</tr>
-<tr>
-<td><strong><a href="/2026/05/01/Embedded/ModbusTCP/" title="第二章：Modbus TCP">第二章：Modbus TCP</a></strong></td>
-<td>二进制 + MBAP</td>
-<td>高</td>
-<td>以太网</td>
-</tr>
-</tbody></table>
-<p>同一 <strong>PDU 功能码</strong> 语义一致；切换链路层时注意地址与寄存器映射相同。</p>
-<hr>
-<h2 id="四、调试"><a href="#四、调试" class="headerlink" title="四、调试"></a>四、调试</h2><ul>
-<li>串口终端可直接粘贴 <strong><code>:</code></strong> 帧（若设备支持 ASCII 模式）。  </li>
-<li>物理层常为 <a href="/2026/05/01/Embedded/RS232/" title="第五章：RS232">第五章：RS232</a> 或 <a href="/2026/05/01/Embedded/RS485/" title="第六章：RS485">第六章：RS485</a> + <a href="/2026/05/01/Embedded/UART/" title="第四章：UART">第四章：UART</a>。  </li>
-<li>生产系统优先 <strong>RTU</strong> 或 <strong>TCP</strong>，ASCII 多用于维护口。</li>
-</ul>
-<h2 id="本章小结"><a href="#本章小结" class="headerlink" title="本章小结"></a>本章小结</h2><table>
-<thead>
-<tr>
-<th>要点</th>
-<th>结论</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>帧格式</td>
-<td><strong><code>:</code></strong> 起、CRLF 止，每字节展开为两个 ASCII HEX 字符</td>
-</tr>
-<tr>
-<td>校验</td>
-<td><strong>LRC</strong> 8 位求和取补码，弱于 RTU 的 CRC16</td>
-</tr>
-<tr>
-<td>效率</td>
-<td>传输体积约 2 倍，工业新项目首选 RTU</td>
-</tr>
-<tr>
-<td>价值</td>
-<td>可读可粘贴，适合调试与老设备维护</td>
-</tr>
-<tr>
-<td>兼容</td>
-<td>PDU 功能码语义与 RTU&#x2F;TCP 完全一致</td>
-</tr>
-</tbody></table>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://my919.github.io/2026/05/01/Embedded/ModbusTCP/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="miracle">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="my">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | my">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/05/01/Embedded/ModbusTCP/" class="post-title-link" itemprop="url">第二章：Modbus TCP</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2026-05-01 13:08:20" itemprop="dateCreated datePublished" datetime="2026-05-01T13:08:20+08:00">2026-05-01</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-08-30 17:10:05" itemprop="dateModified" datetime="2026-08-30T17:10:05+08:00">2026-08-30</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Embedded/" itemprop="url" rel="index"><span itemprop="name">Embedded</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>662</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>2 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="第二章：Modbus-TCP"><a href="#第二章：Modbus-TCP" class="headerlink" title="第二章：Modbus TCP"></a>第二章：Modbus TCP</h1><h2 id="概念基础：Modbus-TCP-是什么-为什么"><a href="#概念基础：Modbus-TCP-是什么-为什么" class="headerlink" title="概念基础：Modbus TCP 是什么&#x2F;为什么"></a>概念基础：Modbus TCP 是什么&#x2F;为什么</h2><ol>
-<li><strong>Modbus TCP</strong> 把 <strong>Modbus</strong> 的主从语义搬到<strong>以太网&#x2F;TCP</strong>：报文仍是「<strong>功能码 + 数据</strong>」，但帧定界交给 TCP、校验交给 TCP 校验和，因此<strong>没有 CRC、没有静默时序</strong>。</li>
-<li><strong>MBAP 头</strong>（7 字节）取代 RTU 的「从站地址 + 静默界定」：<strong>Transaction ID</strong> 让<strong>一条连接可区分多个并发事务</strong>，<strong>Unit ID</strong> 负责映射网关后的串口从站。</li>
-<li><strong>默认端口 502</strong>：约定俗成；接入即用，可<strong>跨交换机、跨网段</strong>访问远程设备，无需 485 布线与收发方向切换。</li>
-<li><strong>网关共存</strong>：大量存量设备仍是 RTU 串口设备，<strong>TCP ↔ RTU 网关</strong>完成两者转换，是工业现场新旧系统融合的典型形态。</li>
-<li><strong>边界</strong>：<strong>明文、无认证</strong>，安全只能靠<strong>工控内网隔离、VPN、TLS 隧道</strong>，绝不能直接暴露公网。</li>
-</ol>
-<p>先看典型的连接模型：</p>
-<h2 id="TCP-连接模型"><a href="#TCP-连接模型" class="headerlink" title="TCP 连接模型"></a>TCP 连接模型</h2><pre>
-<code class="mermaid">
-
-flowchart LR
-  SCADA[SCADA 主站] --&gt;|TCP :502| PLC[PLC &#x2F; 网关]
-  PLC --&gt; RTU[Modbus RTU 从站 经串口]
-</code>
-</pre>
-
-<hr>
-<h2 id="一、MBAP-头（7-字节）"><a href="#一、MBAP-头（7-字节）" class="headerlink" title="一、MBAP 头（7 字节）"></a>一、MBAP 头（7 字节）</h2><table>
-<thead>
-<tr>
-<th>字段</th>
-<th>长度</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>Transaction ID</strong></td>
-<td>2</td>
-<td>事务标识，请求&#x2F;响应配对</td>
-</tr>
-<tr>
-<td><strong>Protocol ID</strong></td>
-<td>2</td>
-<td>固定 <strong>0</strong></td>
-</tr>
-<tr>
-<td><strong>Length</strong></td>
-<td>2</td>
-<td>后续字节数（Unit ID + PDU）</td>
-</tr>
-<tr>
-<td><strong>Unit ID</strong></td>
-<td>1</td>
-<td>设备地址（经网关映射 RTU 从站）</td>
-</tr>
-</tbody></table>
-<p>其后为与 <a href="/2026/05/01/Embedded/ModbusRTU/" title="第一章：Modbus RTU">第一章：Modbus RTU</a> 相同的 <strong>功能码 + 数据</strong>（<strong>无 CRC</strong>）。</p>
-<hr>
-<h2 id="二、示例（读保持寄存器）"><a href="#二、示例（读保持寄存器）" class="headerlink" title="二、示例（读保持寄存器）"></a>二、示例（读保持寄存器）</h2><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">MBAP: Trans=0x0001 Proto=0 Len=0x0006 Unit=0x01</span><br><span class="line">PDU:  Func=0x03 Addr=0x0000 Qty=0x000A</span><br></pre></td></tr></table></figure>
-
-<p>响应 MBAP 中 <strong>Length</strong> 与 <strong>Transaction ID</strong> 与请求对应。</p>
-<hr>
-<h2 id="三、连接模型"><a href="#三、连接模型" class="headerlink" title="三、连接模型"></a>三、连接模型</h2><ul>
-<li><strong>单连接多事务</strong>：常见一客户端对一 PLC 长连接 <strong>502</strong>。  </li>
-<li><strong>并发</strong>：多客户端连同一设备需注意 PLC 连接数限制。  </li>
-<li><strong>与 <a href="/2026/05/01/Protocol/HTTP/" title="第二章：HTTP 详解：报文、方法、版本与 curl&#x2F;nc 示例">第二章：HTTP 详解：报文、方法、版本与 curl&#x2F;nc 示例</a></strong>：不同协议；工业网关可能同时提供 <strong>Modbus TCP</strong> 与 <strong>OPC UA</strong>。</li>
-</ul>
-<hr>
-<h2 id="四、串口网关"><a href="#四、串口网关" class="headerlink" title="四、串口网关"></a>四、串口网关</h2><p><strong>Modbus TCP ↔ RTU</strong> 网关：<br><strong>Unit ID</strong> 映射 RS485 从站地址；网关内维护 <a href="/2026/05/01/Embedded/RS485/" title="第六章：RS485">第六章：RS485</a> 轮询时序。</p>
-<hr>
-<h2 id="五、安全"><a href="#五、安全" class="headerlink" title="五、安全"></a>五、安全</h2><ul>
-<li><strong>502</strong> 明文、无认证 → 仅放<strong>工控内网</strong>或 <strong>VPN</strong>；勿暴露公网。  </li>
-<li>现代方案：<strong>TLS</strong> 隧道、<strong>VPN</strong>、专用安全网关。  </li>
-<li>与 <a href="/2026/05/01/Embedded/ModbusASCII/" title="第三章：Modbus ASCII">第三章：Modbus ASCII</a> 比：<strong>TCP</strong> 适合跨交换机、远程 SCADA。</li>
-</ul>
-<h2 id="本章小结"><a href="#本章小结" class="headerlink" title="本章小结"></a>本章小结</h2><table>
-<thead>
-<tr>
-<th>要点</th>
-<th>结论</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>帧变化</td>
-<td>无 CRC、无静默界定；<strong>MBAP 头</strong>（7 字节）+ PDU</td>
-</tr>
-<tr>
-<td>并发</td>
-<td><strong>Transaction ID</strong> 支持单连接多事务；留意 PLC 连接数上限</td>
-</tr>
-<tr>
-<td>网关</td>
-<td>TCP ↔ RTU 网关：Unit ID 映射 485 从站地址与轮询时序</td>
-</tr>
-<tr>
-<td>安全</td>
-<td>502 明文无认证，仅限工控内网 &#x2F; VPN &#x2F; TLS 隧道</td>
-</tr>
-<tr>
-<td>选型</td>
-<td>跨网段、远程 SCADA 选 TCP；现场总线仍是 RTU 主流</td>
-</tr>
-</tbody></table>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://my919.github.io/2026/05/01/Embedded/ModbusRTU/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="miracle">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="my">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | my">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/05/01/Embedded/ModbusRTU/" class="post-title-link" itemprop="url">第一章：Modbus RTU</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2026-05-01 13:07:53" itemprop="dateCreated datePublished" datetime="2026-05-01T13:07:53+08:00">2026-05-01</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-08-30 17:10:05" itemprop="dateModified" datetime="2026-08-30T17:10:05+08:00">2026-08-30</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Embedded/" itemprop="url" rel="index"><span itemprop="name">Embedded</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>774</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>3 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="第一章：Modbus-RTU"><a href="#第一章：Modbus-RTU" class="headerlink" title="第一章：Modbus RTU"></a>第一章：Modbus RTU</h1><h2 id="概念基础：Modbus-RTU-是什么-为什么"><a href="#概念基础：Modbus-RTU-是什么-为什么" class="headerlink" title="概念基础：Modbus RTU 是什么&#x2F;为什么"></a>概念基础：Modbus RTU 是什么&#x2F;为什么</h2><ol>
-<li><strong>Modbus</strong> 是 <strong>Modicon</strong> 于 1979 年为 <strong>PLC</strong> 设计的<strong>应用层主从协议</strong>，如今是工业通信最通用的<strong>事实标准</strong>之一；<strong>RTU</strong> 是其中「<strong>二进制编码 + 异步串口</strong>」的变体。</li>
-<li><strong>主从轮询模型</strong>：一个<strong>主站</strong>（PLC&#x2F;SCADA）按<strong>从站地址</strong>轮询，从站<strong>永不主动上报</strong>，只有被寻址才应答——模型简单、时序确定、实现成本低。</li>
-<li><strong>帧结构极简</strong>：<code>地址 + 功能码 + 数据 + CRC16</code>，一帧即一次完整的请求&#x2F;应答；统一的<strong>寄存器语义</strong>（线圈、保持寄存器等）让不同厂商设备能用同一套报文访问。</li>
-<li><strong>为什么选 RTU</strong>：跑在 <strong>RS485</strong> 差分总线上，一根双绞线可挂多设备、传数百米，<strong>抗干扰强、布线便宜</strong>，是工业现场最常见组合。</li>
-<li><strong>边界</strong>：RTU 只定义<strong>数据读写语义</strong>，不含认证加密；帧界定靠<strong>静默时间</strong>而非特殊字符，底层串口由 <strong>UART</strong> 控制器提供。</li>
-</ol>
-<p>理解了定位，先看最典型的主从轮询交互：</p>
-<h2 id="主从轮询"><a href="#主从轮询" class="headerlink" title="主从轮询"></a>主从轮询</h2><pre>
-<code class="mermaid">
-
-sequenceDiagram
-  participant M as 主站 PLC
-  participant S as 从站 地址 1
-  M-&gt;&gt;S: 读保持寄存器 FC03
-  S--&gt;&gt;M: 数据 + CRC
-  M-&gt;&gt;S: 写单个寄存器 FC06
-  S--&gt;&gt;M: ACK
-</code>
-</pre>
-
-<hr>
-<h2 id="一、RTU-帧结构"><a href="#一、RTU-帧结构" class="headerlink" title="一、RTU 帧结构"></a>一、RTU 帧结构</h2><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[从站地址 1B][功能码 1B][数据 N][CRC16 2B 低字节在前]</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><strong>地址 0</strong>：广播（从站不应应答）。  </li>
-<li><strong>CRC</strong>：对地址到数据末字节计算 <strong>Modbus CRC16</strong>。</li>
-</ul>
-<p>示例（读保持寄存器 <strong>0x03</strong>）：主站发 <strong><code>01 03 00 00 00 0A C5 CD</code></strong>（含义依上下文解析）。</p>
-<hr>
-<h2 id="二、常用功能码"><a href="#二、常用功能码" class="headerlink" title="二、常用功能码"></a>二、常用功能码</h2><table>
-<thead>
-<tr>
-<th>码</th>
-<th>名称</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>0x01</strong></td>
-<td>Read Coils</td>
-<td>读线圈（位）</td>
-</tr>
-<tr>
-<td><strong>0x03</strong></td>
-<td>Read Holding Registers</td>
-<td>读保持寄存器（16 位）</td>
-</tr>
-<tr>
-<td><strong>0x04</strong></td>
-<td>Read Input Registers</td>
-<td>读输入寄存器</td>
-</tr>
-<tr>
-<td><strong>0x06</strong></td>
-<td>Write Single Register</td>
-<td>写单寄存器</td>
-</tr>
-<tr>
-<td><strong>0x10</strong></td>
-<td>Write Multiple Registers</td>
-<td>写多寄存器</td>
-</tr>
-</tbody></table>
-<p>异常应答：功能码 <strong>+ 0x80</strong>，后跟异常码。</p>
-<hr>
-<h2 id="三、时序（RTU-特有）"><a href="#三、时序（RTU-特有）" class="headerlink" title="三、时序（RTU 特有）"></a>三、时序（RTU 特有）</h2><p>帧间静默 ≥ <strong>3.5 字符时间</strong>（与波特率相关），用于帧界定；波特率高时该间隔很短，实现需精确。</p>
-<ul>
-<li><strong>115200</strong> 下对 MCU 中断延迟更敏感。  </li>
-<li>半双工 <a href="/2026/05/01/Embedded/RS485/" title="第六章：RS485">第六章：RS485</a> 需在发送前使能 <strong>DE</strong>。</li>
-</ul>
-<hr>
-<h2 id="四、与其它-Modbus"><a href="#四、与其它-Modbus" class="headerlink" title="四、与其它 Modbus"></a>四、与其它 Modbus</h2><table>
-<thead>
-<tr>
-<th>变体</th>
-<th>链路</th>
-<th>帧界定</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>RTU</strong></td>
-<td>RS485&#x2F;RS232</td>
-<td>静默 + CRC</td>
-</tr>
-<tr>
-<td><strong><a href="/2026/05/01/Embedded/ModbusASCII/" title="第三章：Modbus ASCII">第三章：Modbus ASCII</a></strong></td>
-<td>串口</td>
-<td><strong><code>:</code></strong> 起 <strong>CRLF</strong> 止，LRC</td>
-</tr>
-<tr>
-<td><strong><a href="/2026/05/01/Embedded/ModbusTCP/" title="第二章：Modbus TCP">第二章：Modbus TCP</a></strong></td>
-<td>以太网</td>
-<td>MBAP 头 + 无 CRC</td>
-</tr>
-</tbody></table>
-<p>寄存器地址映射（<strong>40001</strong> 等）在文档与 <strong>PDU</strong> 偏移间需 <strong>减 1</strong> 转换，避免 off-by-one。</p>
-<hr>
-<h2 id="五、调试"><a href="#五、调试" class="headerlink" title="五、调试"></a>五、调试</h2><ul>
-<li><strong>Modbus Poll &#x2F; Slave</strong>（Windows）、<strong>pymodbus</strong>、<strong>QModMaster</strong>（Linux）。  </li>
-<li>抓包：串口监听或 RS485 分析仪。  </li>
-<li>与 <a href="/2026/05/01/Embedded/UART/" title="第四章：UART">第四章：UART</a> 关系：RTU 是<strong>应用层协议</strong>，底下是异步串口 + 485 收发器。</li>
-</ul>
-<p>Modbus 组织：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://modbus.org/">https://modbus.org/</a></p>
-<h2 id="本章小结"><a href="#本章小结" class="headerlink" title="本章小结"></a>本章小结</h2><table>
-<thead>
-<tr>
-<th>要点</th>
-<th>结论</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>协议本质</td>
-<td>应用层<strong>主从轮询</strong>协议，从站只应答、不主动上报</td>
-</tr>
-<tr>
-<td>帧结构</td>
-<td>地址 + 功能码 + 数据 + <strong>CRC16</strong>，帧间静默 ≥ 3.5 字符时间</td>
-</tr>
-<tr>
-<td>核心功能码</td>
-<td>0x01&#x2F;0x03&#x2F;0x04 读，0x06&#x2F;0x10 写；异常应答 &#x3D; 功能码 + 0x80</td>
-</tr>
-<tr>
-<td>物理搭配</td>
-<td>半双工 RS485 总线，发送前使能 <strong>DE</strong></td>
-</tr>
-<tr>
-<td>调试</td>
-<td>Modbus Poll&#x2F;pymodbus&#x2F;QModMaster + 串口抓包</td>
-</tr>
-</tbody></table>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://my919.github.io/2026/05/01/Frontend/Vite/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="miracle">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="my">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | my">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/05/01/Frontend/Vite/" class="post-title-link" itemprop="url">第二章：Vite 工程化构建与部署</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2026-05-01 12:53:57" itemprop="dateCreated datePublished" datetime="2026-05-01T12:53:57+08:00">2026-05-01</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-08-30 17:10:05" itemprop="dateModified" datetime="2026-08-30T17:10:05+08:00">2026-08-30</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Frontend/" itemprop="url" rel="index"><span itemprop="name">Frontend</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>779</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>3 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="第二章：Vite-工程化构建与部署"><a href="#第二章：Vite-工程化构建与部署" class="headerlink" title="第二章：Vite 工程化构建与部署"></a>第二章：Vite 工程化构建与部署</h1><h2 id="概念基础：Vite-是什么-为什么"><a href="#概念基础：Vite-是什么-为什么" class="headerlink" title="概念基础：Vite 是什么&#x2F;为什么"></a>概念基础：Vite 是什么&#x2F;为什么</h2><ol>
-<li><strong>下一代前端工具链</strong>：开发态用<strong>原生 ESM 按需编译</strong>（不打包整图），生产态用 <strong>Rollup</strong> 打包，一套配置覆盖 dev &#x2F; build。</li>
-<li><strong>为什么快</strong>：依赖用 <strong>esbuild</strong>（Go 实现）预构建，比 JS 工具链快一个量级；HMR 速度与项目规模<strong>解耦</strong>。</li>
-<li><strong>约定优于配置</strong>：零配置即可启动，<strong><code>vite.config.ts</code></strong> 按需增强（别名、代理、插件）。</li>
-<li><strong>框架无关</strong>：官方插件支持 <strong>Vue &#x2F; React &#x2F; Svelte</strong> 等，也是 <strong>Nuxt 3</strong> 等元框架的底层构建器。</li>
-<li><strong>边界</strong>：dev 与 build 行为有差异（<strong>原生 ESM vs 打包产物</strong>），上线前必须 <strong><code>vite build &amp;&amp; vite preview</code></strong> 验证。</li>
-</ol>
-<h2 id="一、为何快：Dev-与-Build-的分工"><a href="#一、为何快：Dev-与-Build-的分工" class="headerlink" title="一、为何快：Dev 与 Build 的分工"></a>一、为何快：Dev 与 Build 的分工</h2><pre>
-<code class="mermaid">
-
-flowchart LR
-  subgraph dev [开发 vite dev]
-    SRC[源码 ESM] --&gt; ESB[esbuild 预构建 deps]
-    ESB --&gt; HMR[浏览器 HMR]
-  end
-  subgraph prod [生产 vite build]
-    SRC2[源码] --&gt; ROL[Rollup 打包]
-    ROL --&gt; DIST[dist 静态资源]
-  end
-</code>
-</pre>
-
-<table>
-<thead>
-<tr>
-<th>阶段</th>
-<th>机制</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>开发</strong></td>
-<td>按需编译单文件，不打包整图；依赖用 <strong>esbuild</strong> 预打包</td>
-</tr>
-<tr>
-<td><strong>HMR</strong></td>
-<td>模块热替换，保留应用状态（依模块类型）</td>
-</tr>
-<tr>
-<td><strong>生产</strong></td>
-<td><strong>Rollup</strong> Tree-shaking、代码分割、资源哈希</td>
-</tr>
-</tbody></table>
-<p>对比 <strong>Webpack</strong> dev：大型项目冷启动与 HMR 通常明显更快。</p>
-<h2 id="二、创建项目与常用脚本"><a href="#二、创建项目与常用脚本" class="headerlink" title="二、创建项目与常用脚本"></a>二、创建项目与常用脚本</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">npm create vite@latest my-app -- --template vue-ts</span><br><span class="line"><span class="built_in">cd</span> my-app</span><br><span class="line">npm install</span><br><span class="line">npm run dev      <span class="comment"># 开发，默认 http://localhost:5173</span></span><br><span class="line">npm run build    <span class="comment"># 输出 dist/</span></span><br><span class="line">npm run preview  <span class="comment"># 本地预览生产包</span></span><br></pre></td></tr></table></figure>
-
-<p>常用模板：<strong><code>vanilla-ts</code></strong>、<strong><code>vue-ts</code></strong>、<strong><code>react-ts</code></strong>、<strong><code>vue</code></strong>。</p>
-<ul>
-<li><strong><code>preview</code></strong>：用本地静态服务器预览 <strong><code>dist</code></strong>，是上线前发现「dev 正常、build 出错」的第一道检查。</li>
-</ul>
-<h2 id="三、vite-config-ts-核心配置"><a href="#三、vite-config-ts-核心配置" class="headerlink" title="三、vite.config.ts 核心配置"></a>三、vite.config.ts 核心配置</h2><figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; defineConfig &#125; <span class="keyword">from</span> <span class="string">&#x27;vite&#x27;</span></span><br><span class="line"><span class="keyword">import</span> vue <span class="keyword">from</span> <span class="string">&#x27;@vitejs/plugin-vue&#x27;</span></span><br><span class="line"><span class="keyword">import</span> path <span class="keyword">from</span> <span class="string">&#x27;node:path&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="title function_">defineConfig</span>(&#123;</span><br><span class="line">  <span class="attr">plugins</span>: [<span class="title function_">vue</span>()],</span><br><span class="line">  <span class="attr">resolve</span>: &#123;</span><br><span class="line">    <span class="attr">alias</span>: &#123; <span class="string">&#x27;@&#x27;</span>: path.<span class="title function_">resolve</span>(__dirname, <span class="string">&#x27;src&#x27;</span>) &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">server</span>: &#123;</span><br><span class="line">    <span class="attr">port</span>: <span class="number">5173</span>,</span><br><span class="line">    <span class="attr">proxy</span>: &#123;</span><br><span class="line">      <span class="string">&#x27;/api&#x27;</span>: &#123;</span><br><span class="line">        <span class="attr">target</span>: <span class="string">&#x27;http://127.0.0.1:8080&#x27;</span>,</span><br><span class="line">        <span class="attr">changeOrigin</span>: <span class="literal">true</span></span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">build</span>: &#123;</span><br><span class="line">    <span class="attr">outDir</span>: <span class="string">&#x27;dist&#x27;</span>,</span><br><span class="line">    <span class="attr">sourcemap</span>: <span class="literal">true</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><strong><code>alias</code></strong>：<strong><code>@</code></strong> 指向 <strong><code>src</code></strong>，免除深层相对路径。  </li>
-<li><strong><code>server.proxy</code></strong>：开发期把 <strong><code>/api</code></strong> 转发到后端，规避 <strong>CORS</strong>；生产环境由 <strong>Nginx</strong> 承担同样角色。</li>
-</ul>
-<h2 id="四、环境变量与模式"><a href="#四、环境变量与模式" class="headerlink" title="四、环境变量与模式"></a>四、环境变量与模式</h2><ul>
-<li><strong><code>.env.development</code></strong> &#x2F; <strong><code>.env.production</code></strong> 按模式加载；只有 <strong><code>VITE_</code></strong> 前缀变量暴露给客户端，通过 <strong><code>import.meta.env.VITE_XXX</code></strong> 访问。  </li>
-<li><strong>密钥不要放进 <code>VITE_*</code></strong>：客户端代码可见，后端密钥走服务端环境。  </li>
-<li><strong><code>import.meta.env.MODE</code></strong> &#x2F; <strong><code>import.meta.env.PROD</code></strong> 可在代码中区分环境分支。</li>
-</ul>
-<h2 id="五、插件生态"><a href="#五、插件生态" class="headerlink" title="五、插件生态"></a>五、插件生态</h2><ul>
-<li><strong><code>@vitejs/plugin-vue</code></strong> &#x2F; <strong><code>plugin-react</code></strong>  </li>
-<li><strong><code>vite-plugin-vue-devtools</code></strong>  </li>
-<li><strong>Legacy</strong>：<strong><code>@vitejs/plugin-legacy</code></strong> 为旧浏览器注入 polyfill</li>
-</ul>
-<p><strong>SSR</strong>：<strong><code>vite-plugin-ssr</code></strong> 或框架内置方案（Nuxt 3 等基于 Vite）。</p>
-<h2 id="六、生产构建与部署"><a href="#六、生产构建与部署" class="headerlink" title="六、生产构建与部署"></a>六、生产构建与部署</h2><ul>
-<li><a href="/2026/05/01/Frontend/VUE3/" title="第一章：Vue 3 核心概念与组件开发">第一章：Vue 3 核心概念与组件开发</a> 官方推荐 **Vite** 作为默认脚手架。  </li>
-<li>生产 <strong><code>dist</code></strong> 为静态文件，由 <a href="/2026/05/01/Nginx/Nginx/" title="Nginx">Nginx</a> 或 CDN 托管；<strong><code>try_files</code></strong> 支持 SPA history 路由。  </li>
-<li><strong><code>base</code></strong>：部署在子路径（如 <strong><code>/blog/</code></strong>）时需设置，资源引用前缀随之改变。</li>
-</ul>
-<p>官方文档：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://vite.dev/">https://vite.dev/</a></p>
-<h2 id="本章小结"><a href="#本章小结" class="headerlink" title="本章小结"></a>本章小结</h2><table>
-<thead>
-<tr>
-<th>要点</th>
-<th>结论</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>双引擎</td>
-<td>开发 <strong>原生 ESM + esbuild</strong>，生产 <strong>Rollup</strong> 打包</td>
-</tr>
-<tr>
-<td>速度</td>
-<td>依赖预构建 + 按需编译，HMR 与项目规模解耦</td>
-</tr>
-<tr>
-<td>配置</td>
-<td><strong><code>vite.config.ts</code></strong>：alias、proxy、build 渐进增强</td>
-</tr>
-<tr>
-<td>环境变量</td>
-<td>仅 <strong><code>VITE_*</code></strong> 前缀暴露到客户端；密钥不进前端</td>
-</tr>
-<tr>
-<td>部署</td>
-<td><strong><code>dist</code></strong> 静态托管；SPA 依赖 <strong><code>try_files</code></strong> 回退 <strong><code>index.html</code></strong></td>
-</tr>
-</tbody></table>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://my919.github.io/2026/05/01/Frontend/VUE3/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="miracle">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="my">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | my">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/05/01/Frontend/VUE3/" class="post-title-link" itemprop="url">第一章：Vue 3 核心概念与组件开发</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2026-05-01 12:53:01" itemprop="dateCreated datePublished" datetime="2026-05-01T12:53:01+08:00">2026-05-01</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-08-30 17:10:05" itemprop="dateModified" datetime="2026-08-30T17:10:05+08:00">2026-08-30</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Frontend/" itemprop="url" rel="index"><span itemprop="name">Frontend</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>984</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>3 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="第一章：Vue-3-核心概念与组件开发"><a href="#第一章：Vue-3-核心概念与组件开发" class="headerlink" title="第一章：Vue 3 核心概念与组件开发"></a>第一章：Vue 3 核心概念与组件开发</h1><h2 id="概念基础：Vue-3-是什么-为什么"><a href="#概念基础：Vue-3-是什么-为什么" class="headerlink" title="概念基础：Vue 3 是什么&#x2F;为什么"></a>概念基础：Vue 3 是什么&#x2F;为什么</h2><ol>
-<li><strong>渐进式框架</strong>：既可以只在页面局部做交互增强，也可以配合 <strong>Vue Router &#x2F; Pinia &#x2F; Vite</strong> 构建完整的单页应用（<strong>SPA</strong>），复杂度随项目成长。</li>
-<li><strong>响应式系统</strong>：基于 <strong>Proxy</strong> 实现，用 <strong><code>ref</code> &#x2F; <code>reactive</code></strong> 包装数据，模板自动<strong>追踪依赖、精确更新 DOM</strong>，几乎无需手写 DOM 操作。</li>
-<li><strong>组合式 API</strong>：<strong>Composition API</strong>（<strong><code>script setup</code></strong> 语法糖 + <strong><code>useXxx</code></strong> 组合式函数）让逻辑<strong>按功能组织</strong>而非按选项分散，复用与 TS 推导更友好。</li>
-<li><strong>编译期优化</strong>：<strong>单文件组件（SFC）</strong> 在编译期做<strong>静态提升</strong>、<strong>patch flags</strong> 等优化，运行时 diff 开销低于传统虚拟 DOM 方案。</li>
-<li><strong>生态成熟</strong>：脚手架 <strong>Vite</strong>、路由 <strong>Vue Router 4</strong>、状态 <strong>Pinia</strong>、类型检查 <strong><code>vue-tsc</code></strong>；官方文档 <a target="_blank" rel="noopener external nofollow noreferrer" href="https://vuejs.org/">https://vuejs.org/</a> 。</li>
-</ol>
-<h2 id="一、核心概念"><a href="#一、核心概念" class="headerlink" title="一、核心概念"></a>一、核心概念</h2><ul>
-<li><strong>单文件组件（SFC）</strong>：<strong><code>.vue</code></strong> 文件含 <strong><code>&lt;template&gt;</code></strong>（模板）、<strong><code>&lt;script&gt;</code></strong>（逻辑）、<strong><code>&lt;style&gt;</code></strong>（样式）三段。  </li>
-<li><strong>响应式</strong>：<strong><code>ref</code></strong>（包装任意值，经 <strong><code>.value</code></strong> 访问）&#x2F;<strong><code>reactive</code></strong>（代理对象）包装数据，模板自动追踪依赖并更新 DOM。  </li>
-<li><strong>虚拟 DOM + 编译优化</strong>：静态提升、补丁标志减少运行时开销。</li>
-</ul>
-<p>与 <strong>Vue 2</strong> 的主要差异：移除 <strong><code>Vue.set</code></strong>、<strong><code>$on</code></strong> 等 API；全局 API 改为 <strong><code>createApp</code></strong> 应用实例；Options API（data&#x2F;methods&#x2F;computed）仍兼容，但新项目推荐 Composition API。</p>
-<h2 id="二、组件与数据流"><a href="#二、组件与数据流" class="headerlink" title="二、组件与数据流"></a>二、组件与数据流</h2><pre>
-<code class="mermaid">
-
-flowchart TB
-  Props[props 父传子] --&gt; Comp[Vue 组件 SFC]
-  Comp --&gt; Emit[emit 子传父]
-  Comp --&gt; Store[Pinia 全局状态]
-  Store --&gt; Comp
-</code>
-</pre>
-
-<ul>
-<li><strong>props 单向下行</strong>：父 → 子传数据；子组件<strong>不要直接修改 props</strong>，需要变更时用 <strong><code>emit</code></strong> 上报事件，由父组件修改数据源。  </li>
-<li><strong>单向数据流</strong>：数据流向清晰可追踪，是组件可维护性的基础。</li>
-</ul>
-<h2 id="三、Composition-API"><a href="#三、Composition-API" class="headerlink" title="三、Composition API"></a>三、Composition API</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">&lt;script setup lang=&quot;ts&quot;&gt;</span><br><span class="line">import &#123; ref, computed, onMounted &#125; from &#x27;vue&#x27;</span><br><span class="line"></span><br><span class="line">const count = ref(0)</span><br><span class="line">const double = computed(() =&gt; count.value * 2)</span><br><span class="line"></span><br><span class="line">function inc() &#123;</span><br><span class="line">  count.value++</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">onMounted(() =&gt; &#123;</span><br><span class="line">  console.log(&#x27;mounted&#x27;)</span><br><span class="line">&#125;)</span><br><span class="line">&lt;/script&gt;</span><br><span class="line"></span><br><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;button @click=&quot;inc&quot;&gt;&#123;&#123; count &#125;&#125; ×2 = &#123;&#123; double &#125;&#125;&lt;/button&gt;</span><br><span class="line">&lt;/template&gt;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><strong><code>script setup</code></strong>：编译期糖，少写 <strong><code>export default</code></strong>，顶层绑定直接在模板可用。  </li>
-<li><strong><code>computed</code></strong>：带缓存的派生值，依赖不变不重算；副作用用 <strong><code>watch</code> &#x2F; <code>watchEffect</code></strong>。  </li>
-<li><strong>生命周期</strong>：<strong><code>onMounted</code> &#x2F; <code>onUnmounted</code> &#x2F; <code>onUpdated</code></strong> 等组合式写法替代 Vue 2 的选项式钩子。  </li>
-<li><strong>组合式函数（Composables）</strong>：<strong><code>useXxx()</code></strong> 抽离可复用逻辑（如 <code>useFetch</code>、<code>useMouse</code>），是组合式 API 最大的工程价值。</li>
-</ul>
-<h2 id="四、组件通信"><a href="#四、组件通信" class="headerlink" title="四、组件通信"></a>四、组件通信</h2><table>
-<thead>
-<tr>
-<th>方式</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>Props &#x2F; Emits</strong></td>
-<td>父 → 子、子 → 父事件</td>
-</tr>
-<tr>
-<td><strong>Provide &#x2F; Inject</strong></td>
-<td>跨层级依赖注入</td>
-</tr>
-<tr>
-<td><strong>v-model</strong></td>
-<td>双向绑定（<strong><code>modelValue</code> + <code>update:modelValue</code></strong>）</td>
-</tr>
-<tr>
-<td><strong>Slots</strong></td>
-<td>默认插槽、具名插槽、作用域插槽</td>
-</tr>
-</tbody></table>
-<ul>
-<li><strong>组件上的 v-model</strong>：等价于传 <strong><code>modelValue</code></strong> prop 并监听 <strong><code>update:modelValue</code></strong> 事件。  </li>
-<li><strong>作用域插槽</strong>：子组件把内部数据暴露给父组件的插槽内容，适合列表项模板定制。</li>
-</ul>
-<h2 id="五、路由与状态管理"><a href="#五、路由与状态管理" class="headerlink" title="五、路由与状态管理"></a>五、路由与状态管理</h2><ul>
-<li><strong>Vue Router 4</strong>：<strong><code>createRouter</code></strong>、嵌套路由、导航守卫、懒加载 <strong><code>() =&gt; import(&#39;./Page.vue&#39;)</code></strong>。  </li>
-<li><strong>Pinia</strong>：官方推荐状态库，替代 Vuex，模块即 <strong><code>defineStore</code></strong>。</li>
-</ul>
-<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; defineStore &#125; <span class="keyword">from</span> <span class="string">&#x27;pinia&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> useUserStore = <span class="title function_">defineStore</span>(<span class="string">&#x27;user&#x27;</span>, &#123;</span><br><span class="line">  <span class="attr">state</span>: <span class="function">() =&gt;</span> (&#123; <span class="attr">name</span>: <span class="string">&#x27;&#x27;</span> &#125;),</span><br><span class="line">  <span class="attr">actions</span>: &#123;</span><br><span class="line">    <span class="title function_">setName</span>(<span class="params"><span class="attr">n</span>: <span class="built_in">string</span></span>) &#123;</span><br><span class="line">      <span class="variable language_">this</span>.<span class="property">name</span> = n</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><strong>何时需要全局状态</strong>：跨页面共享（登录态、主题）或多组件深层传递；局部状态优先留在组件内。  </li>
-<li><strong>导航守卫</strong>：<strong><code>beforeEach</code></strong> 常用于登录校验与权限拦截。</li>
-</ul>
-<h2 id="六、工程化与部署"><a href="#六、工程化与部署" class="headerlink" title="六、工程化与部署"></a>六、工程化与部署</h2><p>推荐使用 <a href="/2026/05/01/Frontend/Vite/" title="第二章：Vite 工程化构建与部署">第二章：Vite 工程化构建与部署</a> 创建项目：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">npm create vite@latest my-app -- --template vue-ts</span><br><span class="line"><span class="built_in">cd</span> my-app &amp;&amp; npm install &amp;&amp; npm run dev</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><strong>类型检查</strong>：<strong><code>vue-tsc --noEmit</code></strong>  </li>
-<li><strong>UI 库</strong>：Element Plus、Naive UI、Ant Design Vue 等  </li>
-<li><strong>构建产物</strong>：静态资源可部署到 <a href="/2026/05/01/Nginx/Nginx/" title="Nginx">Nginx</a></li>
-</ul>
-<p>官方文档：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://vuejs.org/">https://vuejs.org/</a></p>
-<h2 id="本章小结"><a href="#本章小结" class="headerlink" title="本章小结"></a>本章小结</h2><table>
-<thead>
-<tr>
-<th>要点</th>
-<th>结论</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>响应式</td>
-<td><strong><code>ref</code> &#x2F; <code>reactive</code></strong> 包装数据，Proxy 依赖追踪自动更新 DOM</td>
-</tr>
-<tr>
-<td>组织方式</td>
-<td><strong>Composition API</strong> + 组合式函数按功能组织逻辑，TS 友好</td>
-</tr>
-<tr>
-<td>数据流</td>
-<td><strong>props 下行、emit 上行</strong>的单向数据流；跨层级用 <strong>Provide &#x2F; Inject</strong></td>
-</tr>
-<tr>
-<td>路由与状态</td>
-<td><strong>Vue Router 4</strong> 管页面，<strong>Pinia</strong> 管共享状态</td>
-</tr>
-<tr>
-<td>工程化</td>
-<td><strong>Vite</strong> 脚手架 + <strong><code>vue-tsc</code></strong> 类型检查，产物部署到 <strong>Nginx</strong> &#x2F; CDN</td>
-</tr>
-</tbody></table>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://my919.github.io/2026/05/01/Protocol/QUIC/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="miracle">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="my">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | my">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/05/01/Protocol/QUIC/" class="post-title-link" itemprop="url">第十五章：QUIC 详解：基于 UDP 的可靠传输、TLS 集成与 HTTP/3</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2026-05-01 12:51:12" itemprop="dateCreated datePublished" datetime="2026-05-01T12:51:12+08:00">2026-05-01</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-08-30 17:10:05" itemprop="dateModified" datetime="2026-08-30T17:10:05+08:00">2026-08-30</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Protocol/" itemprop="url" rel="index"><span itemprop="name">Protocol</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>2.1k</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>7 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="第十五章：QUIC-详解：基于-UDP-的可靠传输、TLS-集成与-HTTP-3"><a href="#第十五章：QUIC-详解：基于-UDP-的可靠传输、TLS-集成与-HTTP-3" class="headerlink" title="第十五章：QUIC 详解：基于 UDP 的可靠传输、TLS 集成与 HTTP&#x2F;3"></a>第十五章：QUIC 详解：基于 UDP 的可靠传输、TLS 集成与 HTTP&#x2F;3</h1><h2 id="概念基础：QUIC-是什么-为什么"><a href="#概念基础：QUIC-是什么-为什么" class="headerlink" title="概念基础：QUIC 是什么&#x2F;为什么"></a>概念基础：QUIC 是什么&#x2F;为什么</h2><p><strong>QUIC</strong>（<strong>Quick UDP Internet Connections</strong>）是运行在 <strong>UDP</strong> 之上的<strong>可靠、加密、多路复用</strong>传输协议，是 <strong>HTTP&#x2F;3</strong> 的底座：</p>
-<ol>
-<li><strong>解决什么问题</strong>：<strong>TCP</strong> 字节流「一丢全等」的<strong>队头阻塞</strong>、<strong>TCP + TLS</strong> 分层握手往返多、四元组一变连接即断——<strong>QUIC</strong> 在 <strong>UDP</strong> 上逐一重构。</li>
-<li><strong>三大关键设计</strong>：<strong>流（Stream）级隔离</strong>让丢包影响面缩小；<strong>内置 TLS 1.3</strong> 把加密与传输握手合并（目标 <strong>1-RTT</strong> 建连，<strong>0-RTT</strong> 可选加速）；<strong>Connection ID</strong> 让网络切换后连接依旧存活（<strong>连接迁移</strong>）。</li>
-<li><strong>实现在用户态</strong>：与 <a href="/2026/05/01/Protocol/TCP/" title="第一章：TCP 协议详解：连接、可靠传输与编程示例">第一章：TCP 协议详解：连接、可靠传输与编程示例</a> 内核栈不同，<strong>QUIC</strong> 多由用户态库（<strong>ngtcp2</strong>、<strong>quiche</strong>、<strong>MsQuic</strong> 等）实现，迭代快但排障更依赖日志与指标。</li>
-<li><strong>代价与前提</strong>：依赖 <strong>UDP&#x2F;443</strong> 放行与企业网策略对齐；<strong>0-RTT</strong> 有<strong>重放</strong>风险，写操作需谨慎。</li>
-</ol>
-<p>先看设计目标与作用的全貌：</p>
-<h2 id="一、设计目标与作用"><a href="#一、设计目标与作用" class="headerlink" title="一、设计目标与作用"></a>一、设计目标与作用</h2><h3 id="1-解决什么问题"><a href="#1-解决什么问题" class="headerlink" title="1. 解决什么问题"></a>1. 解决什么问题</h3><ul>
-<li><strong>在 UDP 上重建可靠管道</strong>：丢包检测、重传、拥塞控制发生在 <strong>QUIC</strong> 层，而不依赖 <a href="/2026/05/01/Protocol/TCP/" title="第一章：TCP 协议详解：连接、可靠传输与编程示例">第一章：TCP 协议详解：连接、可靠传输与编程示例</a> 单一流上的队头阻塞。  </li>
-<li><strong>默认加密</strong>：传输与握手深度绑定 <strong>TLS 1.3</strong>（<strong>RFC 9001</strong>），减少「明文旁路」与分层带来的额外往返。  </li>
-<li><strong>多流与连接标识</strong>：<strong>Stream</strong> 隔离应用数据；<strong>Connection ID</strong> 让四元组变化时仍能延续同一逻辑连接（<strong>连接迁移</strong>）。</li>
-</ul>
-<h3 id="2-相对-TCP-TLS-的典型取舍"><a href="#2-相对-TCP-TLS-的典型取舍" class="headerlink" title="2. 相对 TCP + TLS 的典型取舍"></a>2. 相对 TCP + TLS 的典型取舍</h3><table>
-<thead>
-<tr>
-<th>问题</th>
-<th><strong><a href="/2026/05/01/Protocol/TCP/" title="第一章：TCP 协议详解：连接、可靠传输与编程示例">第一章：TCP 协议详解：连接、可靠传输与编程示例</a> + TLS</strong> 常见表现</th>
-<th><strong>QUIC</strong> 思路</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>队头阻塞</strong></td>
-<td><strong>TCP</strong> 字节流级丢包会阻塞后续所有应用数据</td>
-<td><strong>QUIC</strong> 在<strong>流</strong>级相对独立地做丢包恢复</td>
-</tr>
-<tr>
-<td><strong>握手 RTT</strong></td>
-<td>常需 <strong>TCP</strong> 三次握手再叠 <strong>TLS</strong> 往返</td>
-<td>常把加密与传输握手合并，目标 <strong>1-RTT</strong> 建连（<strong>0-RTT</strong> 为可选加速）</td>
-</tr>
-<tr>
-<td><strong>NAT 重绑定</strong></td>
-<td>四元组变化常被视作「新连接」</td>
-<td><strong>Connection ID</strong> 标识逻辑连接，支持<strong>连接迁移</strong></td>
-</tr>
-<tr>
-<td><strong>中间设备</strong></td>
-<td><strong>TCP</strong> 成熟、穿透好</td>
-<td>依赖 <strong><a href="/2026/05/01/Protocol/UDP/" title="第五章：UDP 协议详解：数据报语义、MTU 与示例代码">第五章：UDP 协议详解：数据报语义、MTU 与示例代码</a></strong> 放行（如 <strong>UDP&#x2F;443</strong>）；企业网策略需对齐</td>
-</tr>
-</tbody></table>
-<hr>
-<h2 id="二、连接与完整通信流程（原理）"><a href="#二、连接与完整通信流程（原理）" class="headerlink" title="二、连接与完整通信流程（原理）"></a>二、连接与完整通信流程（原理）</h2><p><strong>QUIC</strong> 报文封装在 <strong>UDP</strong> 数据报中（常见 <strong>HTTPS</strong> 场景为 <strong>UDP&#x2F;443</strong>）。以下极度简化，省略版本协商、重试包、地址验证等细节。</p>
-<h3 id="1-建立连接（简化）"><a href="#1-建立连接（简化）" class="headerlink" title="1. 建立连接（简化）"></a>1. 建立连接（简化）</h3><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">客户端                                   服务端</span><br><span class="line">   |    Initial（含加密握手负载）         |</span><br><span class="line">   |------------------------------------&gt;|</span><br><span class="line">   |    Initial / Handshake（应答）      |</span><br><span class="line">   |&lt;------------------------------------|</span><br><span class="line">   |    1-RTT 应用数据（如 HTTP/3）       |</span><br><span class="line">   |&lt;-----------------------------------&gt;|</span><br><span class="line">   |         逻辑上进入「可传数据」阶段    |</span><br></pre></td></tr></table></figure>
-
-<p>首包常带 <strong>TLS ClientHello</strong>；成功后在 <strong>1-RTT</strong> 密钥下发送应用数据。<strong>0-RTT</strong> 可在重复连接时提前带数据，见第五节安全注意。</p>
-<h3 id="2-关闭连接（简化）"><a href="#2-关闭连接（简化）" class="headerlink" title="2. 关闭连接（简化）"></a>2. 关闭连接（简化）</h3><p>任一方可发送 <strong>CONNECTION_CLOSE</strong> 帧；对端进入<strong>排空（draining）<strong>期，不再发送新数据。与 <a href="/2026/05/01/Protocol/TCP/" title="第一章：TCP 协议详解：连接、可靠传输与编程示例">第一章：TCP 协议详解：连接、可靠传输与编程示例</a> 的 <strong>FIN&#x2F;ACK</strong> 不同，<strong>QUIC</strong> 在</strong>连接</strong>粒度表达关闭，内部再回收流与 <strong>UDP</strong> 套接字资源。</p>
-<h3 id="3-与典型「套接字-协议栈」的对应"><a href="#3-与典型「套接字-协议栈」的对应" class="headerlink" title="3. 与典型「套接字 &#x2F; 协议栈」的对应"></a>3. 与典型「套接字 &#x2F; 协议栈」的对应</h3><p>与 <a href="/2026/05/01/Protocol/TCP/" title="第一章：TCP 协议详解：连接、可靠传输与编程示例">第一章：TCP 协议详解：连接、可靠传输与编程示例</a> 的 <code>connect</code>&#x2F;<code>accept</code> 由内核一条龙完成不同，<strong>QUIC</strong> 一般由<strong>用户态库</strong>（如 <strong>ngtcp2</strong>、<strong>quiche</strong>、<strong>MsQuic</strong>、<strong>aioquic</strong>）或浏览器网络栈实现：底层仍是 <strong><a href="/2026/05/01/Protocol/UDP/" title="第五章：UDP 协议详解：数据报语义、MTU 与示例代码">第五章：UDP 协议详解：数据报语义、MTU 与示例代码</a> <code>sendto</code>&#x2F;<code>recvfrom</code></strong>，其上是 <strong>TLS 1.3</strong>、<strong>ACK&#x2F;重传</strong>、<strong>流控</strong>与 <strong>HTTP&#x2F;3</strong> 帧。<strong>HTTP&#x2F;3</strong> 客户端日常通过 <strong><code>curl --http3-only</code></strong> 或内置 <strong>HTTP&#x2F;3</strong> 的 SDK 使用，而不是手写裸 <strong>UDP</strong> 报文。</p>
-<hr>
-<h2 id="三、流、可靠性与拥塞控制（原理要点）"><a href="#三、流、可靠性与拥塞控制（原理要点）" class="headerlink" title="三、流、可靠性与拥塞控制（原理要点）"></a>三、流、可靠性与拥塞控制（原理要点）</h2><ul>
-<li><strong>Connection</strong>：加密上下文、<strong>ACK</strong> 与拥塞控制的归属单位（类似「一条加密了的类 TCP 管道」）。  </li>
-<li><strong>Stream</strong>：单向或双向；<strong>HTTP&#x2F;3</strong> 将请求&#x2F;响应映射到不同流，减轻应用级队头阻塞。  </li>
-<li><strong>Packet Number</strong>：单调递增，配合 <strong>ACK</strong> 范围与<strong>密钥更新</strong>，降低与 <a href="/2026/05/01/Protocol/TCP/" title="第一章：TCP 协议详解：连接、可靠传输与编程示例">第一章：TCP 协议详解：连接、可靠传输与编程示例</a> 序号相关的歧义；<strong>重传不重用旧 PN</strong>（新包新号）。  </li>
-<li><strong>拥塞控制</strong>：在 <strong>Connection</strong> 上运作（如 <strong>Cubic</strong>、<strong>BBR</strong> 等实现依栈而定），与 <a href="/2026/05/01/Protocol/TCP/" title="第一章：TCP 协议详解：连接、可靠传输与编程示例">第一章：TCP 协议详解：连接、可靠传输与编程示例</a> 一样受网络条件约束，但并非「一条字节流管所有多路复用对象」。</li>
-</ul>
-<hr>
-<h2 id="四、Connection-ID、端口与「会话标识」"><a href="#四、Connection-ID、端口与「会话标识」" class="headerlink" title="四、Connection ID、端口与「会话标识」"></a>四、Connection ID、端口与「会话标识」</h2><ul>
-<li><strong>UDP 四元组</strong>仍用于路由首个报文；<strong>Connection ID</strong> 使<strong>源 IP&#x2F;端口变化</strong>（如蜂窝切换 <strong>Wi-Fi</strong>）后，对端仍能识别同一 <strong>QUIC</strong> 连接。  </li>
-<li>公网 <strong>HTTP&#x2F;3</strong> 常见端口为 <strong>443</strong>（<strong>UDP</strong>），与 <a href="/2026/05/01/Protocol/TCP/" title="第一章：TCP 协议详解：连接、可靠传输与编程示例">第一章：TCP 协议详解：连接、可靠传输与编程示例</a> <strong>443</strong> 并存、互不替代。  </li>
-<li>服务端可协商 <strong>CID</strong> 长度与轮换策略，以兼顾隐私与路由。</li>
-</ul>
-<hr>
-<h2 id="五、TLS-1-3-与-QUIC（原理）"><a href="#五、TLS-1-3-与-QUIC（原理）" class="headerlink" title="五、TLS 1.3 与 QUIC（原理）"></a>五、TLS 1.3 与 QUIC（原理）</h2><p><strong>QUIC</strong> 使用 <strong>TLS 1.3</strong> 做<strong>身份认证</strong>与<strong>密钥导出</strong>；载荷由 <strong>AEAD</strong> 保护，<strong>PADDING</strong> 等机制缓解流量分析。<strong>0-RTT</strong> 可加速重复连接，但存在<strong>重放</strong>风险：对金融类写操作应禁用或在应用层做幂等与二次校验。</p>
-<hr>
-<h2 id="六、HTTP-3-与-对比（概念）"><a href="#六、HTTP-3-与-对比（概念）" class="headerlink" title="六、HTTP&#x2F;3 与  对比（概念）"></a>六、HTTP&#x2F;3 与 <a href="/2026/05/01/Protocol/HTTP/" title="第二章：HTTP 详解：报文、方法、版本与 curl&#x2F;nc 示例">第二章：HTTP 详解：报文、方法、版本与 curl&#x2F;nc 示例</a> 对比（概念）</h2><table>
-<thead>
-<tr>
-<th>项</th>
-<th><strong>HTTP&#x2F;2 over <a href="/2026/05/01/Protocol/TCP/" title="第一章：TCP 协议详解：连接、可靠传输与编程示例">第一章：TCP 协议详解：连接、可靠传输与编程示例</a></strong></th>
-<th><strong>HTTP&#x2F;3 over QUIC</strong></th>
-</tr>
-</thead>
-<tbody><tr>
-<td>传输</td>
-<td><strong>TCP</strong> 字节流</td>
-<td><strong><a href="/2026/05/01/Protocol/UDP/" title="第五章：UDP 协议详解：数据报语义、MTU 与示例代码">第五章：UDP 协议详解：数据报语义、MTU 与示例代码</a></strong> 上的 <strong>QUIC</strong></td>
-</tr>
-<tr>
-<td>多路复用</td>
-<td><strong>H2</strong> 帧共享一条 <strong>TCP</strong> 连接</td>
-<td><strong>QUIC</strong> 流级隔离，丢包影响面更小</td>
-</tr>
-<tr>
-<td><strong>TLS</strong></td>
-<td>传统分层（先 <strong>TCP</strong> 再 <strong>TLS</strong>）</td>
-<td>与 <strong>QUIC</strong> 握手紧耦合</td>
-</tr>
-</tbody></table>
-<p><strong>HTTP</strong> 语义（方法、状态码、首部）仍见 <a href="/2026/05/01/Protocol/HTTP/" title="第二章：HTTP 详解：报文、方法、版本与 curl&#x2F;nc 示例">第二章：HTTP 详解：报文、方法、版本与 curl&#x2F;nc 示例</a> 一文；<a href="/2026/05/01/Protocol/HTTPS/" title="第四章：HTTPS 详解：TLS 握手、证书与 openssl&#x2F;curl 示例">第四章：HTTPS 详解：TLS 握手、证书与 openssl&#x2F;curl 示例</a> 在 <strong>HTTP&#x2F;3</strong> 场景下体现为 <strong>QUIC + TLS 1.3</strong> 的组合。</p>
-<hr>
-<h2 id="七、抓包与可观测性"><a href="#七、抓包与可观测性" class="headerlink" title="七、抓包与可观测性"></a>七、抓包与可观测性</h2><p>在 <strong>Linux</strong> 上可先看 <strong>UDP</strong> 外层（载荷默认加密）：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> tcpdump -n -i any <span class="string">&#x27;udp port 443 and host cloudflare.com&#x27;</span></span><br></pre></td></tr></table></figure>
-
-<p>用支持 <strong>HTTP&#x2F;3</strong> 的浏览器或下文 <strong><code>curl</code></strong> 访问时，可观察到 <strong>UDP</strong> 双向流量。<strong>Wireshark</strong> 在合规前提下可用 <strong>SSLKEYLOGFILE</strong> 或端点导出密钥做解密分析；生产排障更多依赖<strong>端侧日志</strong>、<strong>CDN&#x2F;网关指标</strong>，而非明文抓包。</p>
-<hr>
-<h2 id="八、工具示例：curl-与-Python（包装调用）"><a href="#八、工具示例：curl-与-Python（包装调用）" class="headerlink" title="八、工具示例：curl 与 Python（包装调用）"></a>八、工具示例：<strong><code>curl</code></strong> 与 <strong>Python</strong>（包装调用）</h2><p>完整 <strong>QUIC</strong> 客户端&#x2F;服务端开发需引入 <strong>QUIC</strong> 实现库；日常验证 <strong>HTTP&#x2F;3</strong> 以 <strong><code>curl</code></strong> 最省事（需 <strong><code>curl</code></strong> 编译时启用 <strong>HTTP&#x2F;3</strong>，如 <strong>ngtcp2</strong>&#x2F;<strong>quiche</strong> 等后端）。</p>
-<h3 id="1-curl"><a href="#1-curl" class="headerlink" title="1. curl"></a>1. <strong><code>curl</code></strong></h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl --http3-only -I https://cloudflare.com/</span><br></pre></td></tr></table></figure>
-
-<p>查看当前 <strong><code>curl</code></strong> 是否带 <strong>HTTP&#x2F;3</strong>：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -V | grep -i -E <span class="string">&#x27;http3|ngtcp2|quiche&#x27;</span></span><br></pre></td></tr></table></figure>
-
-<p>若报协议不支持，请换用发行版或自行编译带 <strong>HTTP&#x2F;3</strong> 的 <strong><code>curl</code></strong>。</p>
-<h3 id="2-Python（通过-subprocess-调用-curl）"><a href="#2-Python（通过-subprocess-调用-curl）" class="headerlink" title="2. Python（通过 subprocess 调用 curl）"></a>2. <strong>Python</strong>（通过 <strong><code>subprocess</code></strong> 调用 <strong><code>curl</code></strong>）</h3><p>丢弃响应体，只取 <strong>HTTP</strong> 状态码（避免 <strong><code>curl -I</code></strong> 把首部打印到 <strong>stdout</strong> 与 <strong><code>%&#123;http_code&#125;</code></strong> 混在一起）：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> subprocess</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">http3_status</span>(<span class="params">url: <span class="built_in">str</span></span>) -&gt; <span class="built_in">int</span>:</span><br><span class="line">    p = subprocess.run(</span><br><span class="line">        [</span><br><span class="line">            <span class="string">&quot;curl&quot;</span>,</span><br><span class="line">            <span class="string">&quot;-sS&quot;</span>,</span><br><span class="line">            <span class="string">&quot;--http3-only&quot;</span>,</span><br><span class="line">            <span class="string">&quot;-o&quot;</span>,</span><br><span class="line">            <span class="string">&quot;/dev/null&quot;</span>,</span><br><span class="line">            <span class="string">&quot;-w&quot;</span>,</span><br><span class="line">            <span class="string">&quot;%&#123;http_code&#125;&quot;</span>,</span><br><span class="line">            url,</span><br><span class="line">        ],</span><br><span class="line">        capture_output=<span class="literal">True</span>,</span><br><span class="line">        text=<span class="literal">True</span>,</span><br><span class="line">        check=<span class="literal">False</span>,</span><br><span class="line">    )</span><br><span class="line">    <span class="keyword">if</span> p.returncode != <span class="number">0</span>:</span><br><span class="line">        <span class="keyword">raise</span> RuntimeError(p.stderr <span class="keyword">or</span> <span class="string">f&quot;curl exit <span class="subst">&#123;p.returncode&#125;</span>&quot;</span>)</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">int</span>(p.stdout.strip() <span class="keyword">or</span> <span class="string">&quot;0&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;status:&quot;</span>, http3_status(<span class="string">&quot;https://cloudflare.com/&quot;</span>))</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="九、运维注意（落地）"><a href="#九、运维注意（落地）" class="headerlink" title="九、运维注意（落地）"></a>九、运维注意（落地）</h2><table>
-<thead>
-<tr>
-<th>项</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>UDP 放行</strong></td>
-<td>防火墙、<strong>ACL</strong>、运营商策略可能拦或未优先 <strong>UDP&#x2F;443</strong></td>
-</tr>
-<tr>
-<td><strong>观测</strong></td>
-<td>明文 <strong>QUIC</strong> 少；依赖日志、指标、合规密钥导出</td>
-</tr>
-<tr>
-<td><strong>QoS</strong></td>
-<td><strong>UDP</strong> 易被误伤；与网络团队确认分类与限速</td>
-</tr>
-<tr>
-<td><strong>安全</strong></td>
-<td>反射放大主要针对未鉴权 <strong>UDP</strong> 服务；正规 <strong>HTTP&#x2F;3</strong> 栈需跟紧 CVE 与版本</td>
-</tr>
-</tbody></table>
-<hr>
-<h2 id="本章小结"><a href="#本章小结" class="headerlink" title="本章小结"></a>本章小结</h2><table>
-<thead>
-<tr>
-<th>要点</th>
-<th>结论</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>原理</td>
-<td><strong><a href="/2026/05/01/Protocol/UDP/" title="第五章：UDP 协议详解：数据报语义、MTU 与示例代码">第五章：UDP 协议详解：数据报语义、MTU 与示例代码</a></strong> 上的可靠、加密、多流；<strong>CID</strong> 与迁移</td>
-</tr>
-<tr>
-<td>作用</td>
-<td><strong>HTTP&#x2F;3</strong>、移动网络、降低握手延迟</td>
-</tr>
-<tr>
-<td>依赖</td>
-<td><strong><a href="/2026/05/01/Protocol/UDP/" title="第五章：UDP 协议详解：数据报语义、MTU 与示例代码">第五章：UDP 协议详解：数据报语义、MTU 与示例代码</a></strong>、<strong>TLS 1.3</strong></td>
-</tr>
-<tr>
-<td>示例</td>
-<td><strong><code>tcpdump</code> <code>udp port 443</code></strong>、<strong><code>curl --http3-only</code></strong>、<strong>Python + <code>subprocess</code></strong></td>
-</tr>
-<tr>
-<td>延伸</td>
-<td><a href="/2026/05/01/Protocol/TCP/" title="第一章：TCP 协议详解：连接、可靠传输与编程示例">第一章：TCP 协议详解：连接、可靠传输与编程示例</a> · <a href="/2026/05/01/Protocol/UDP/" title="第五章：UDP 协议详解：数据报语义、MTU 与示例代码">第五章：UDP 协议详解：数据报语义、MTU 与示例代码</a> · <a href="/2026/05/01/Protocol/HTTPS/" title="第四章：HTTPS 详解：TLS 握手、证书与 openssl&#x2F;curl 示例">第四章：HTTPS 详解：TLS 握手、证书与 openssl&#x2F;curl 示例</a></td>
-</tr>
-</tbody></table>
-<p>实现细节以 <strong>RFC 9000、9001、9114</strong> 与浏览器、<strong>CDN</strong> 发布说明为准。</p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://my919.github.io/2026/05/01/Protocol/RPC/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="miracle">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="my">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | my">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/05/01/Protocol/RPC/" class="post-title-link" itemprop="url">第十四章：RPC 概念详解：原理、形态与 JSON-RPC / curl 示例</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2026-05-01 12:50:51" itemprop="dateCreated datePublished" datetime="2026-05-01T12:50:51+08:00">2026-05-01</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-08-30 17:10:05" itemprop="dateModified" datetime="2026-08-30T17:10:05+08:00">2026-08-30</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Protocol/" itemprop="url" rel="index"><span itemprop="name">Protocol</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>801</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>3 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="第十四章：RPC-概念详解：原理、形态与-JSON-RPC-curl-示例"><a href="#第十四章：RPC-概念详解：原理、形态与-JSON-RPC-curl-示例" class="headerlink" title="第十四章：RPC 概念详解：原理、形态与 JSON-RPC &#x2F; curl 示例"></a>第十四章：RPC 概念详解：原理、形态与 JSON-RPC &#x2F; curl 示例</h1><h2 id="概念基础：RPC-是什么-为什么"><a href="#概念基础：RPC-是什么-为什么" class="headerlink" title="概念基础：RPC 是什么&#x2F;为什么"></a>概念基础：RPC 是什么&#x2F;为什么</h2><p><strong>RPC</strong>（<strong>Remote Procedure Call</strong>，远程过程调用）的目标：让调用<strong>远程服务</strong>像调用<strong>本地函数</strong>一样自然：</p>
-<ol>
-<li><strong>解决什么问题</strong>：分布式系统中，网络通信的<strong>序列化、连接管理、协议细节</strong>不应散落在业务代码里，<strong>RPC</strong> 框架把它们收敛到 <strong>stub（存根）</strong>。</li>
-<li><strong>如何做到</strong>：客户端 <strong>stub</strong> 把调用<strong>序列化</strong>成消息发出去；服务端 <strong>stub</strong> <strong>反序列化</strong>、执行、再原路返回——开发者只见函数签名。</li>
-<li><strong>不规定字节格式</strong>：<strong>JSON-RPC</strong>（人可读易调试）、<strong>protobuf</strong>（见 <a href="/2026/05/01/Protocol/GRPC/" title="第十三章：gRPC 详解：Protobuf、HTTP&#x2F;2 与 grpcurl &#x2F; Python 示例">第十三章：gRPC 详解：Protobuf、HTTP&#x2F;2 与 grpcurl &#x2F; Python 示例</a>）、<strong>Thrift</strong> 等都是可选载体，传输可用 <strong>HTTP</strong> 或自定义 <strong>TCP</strong>。</li>
-<li><strong>核心难点</strong>：<strong>网络不可靠</strong>——<strong>超时</strong>后客户端不知道服务端是否已执行，重试可能重复扣款，必须用<strong>幂等</strong>设计兜底。</li>
-</ol>
-<p>先看一次 RPC 调用的完整链路：</p>
-<h2 id="一、原理（-stub-与存根）"><a href="#一、原理（-stub-与存根）" class="headerlink" title="一、原理（.stub 与存根）"></a>一、原理（.stub 与存根）</h2><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Client                Network                Server</span><br><span class="line"> |  call add(1,2)       |                      |</span><br><span class="line"> |  stub 序列化          |   请求消息            |</span><br><span class="line"> |---------------------&gt;|---------------------&gt;|</span><br><span class="line"> |                      |  反序列化 + 执行 add |</span><br><span class="line"> |                      |   响应消息            |</span><br><span class="line"> |&lt;---------------------|&lt;---------------------|</span><br><span class="line"> |  返回 3               |                      |</span><br></pre></td></tr></table></figure>
-
-<p><strong>RPC</strong> 不规定具体字节格式；可由 <strong>JSON</strong>、<strong>protobuf</strong>、<strong>Thrift</strong> 等定义。</p>
-<hr>
-<h2 id="二、作用与典型场景"><a href="#二、作用与典型场景" class="headerlink" title="二、作用与典型场景"></a>二、作用与典型场景</h2><ul>
-<li><strong>微服务内部</strong>：低延迟、强类型契约（常选 <a href="/2026/05/01/Protocol/GRPC/" title="第十三章：gRPC 详解：Protobuf、HTTP&#x2F;2 与 grpcurl &#x2F; Python 示例">第十三章：gRPC 详解：Protobuf、HTTP&#x2F;2 与 grpcurl &#x2F; Python 示例</a>）。  </li>
-<li><strong>链上节点</strong>：<strong>Ethereum JSON-RPC</strong> 等文本 <strong>RPC</strong>。  </li>
-<li><strong>脚本自动化</strong>：轻量 <strong>JSON-RPC</strong> 管理接口。</li>
-</ul>
-<hr>
-<h2 id="三、传输与序列化（对照表）"><a href="#三、传输与序列化（对照表）" class="headerlink" title="三、传输与序列化（对照表）"></a>三、传输与序列化（对照表）</h2><table>
-<thead>
-<tr>
-<th>组合</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>JSON + HTTP</strong></td>
-<td>人可读，易调试</td>
-</tr>
-<tr>
-<td><strong>protobuf + HTTP&#x2F;2</strong></td>
-<td><strong>gRPC</strong> 默认路径</td>
-</tr>
-<tr>
-<td><strong>二进制 + 自定义 TCP</strong></td>
-<td>高性能私有协议</td>
-</tr>
-</tbody></table>
-<hr>
-<h2 id="四、失败语义与幂等（原理）"><a href="#四、失败语义与幂等（原理）" class="headerlink" title="四、失败语义与幂等（原理）"></a>四、失败语义与幂等（原理）</h2><ul>
-<li><strong>超时</strong>：客户端不知服务端是否已执行；<strong>重试</strong>可能导致重复扣款。  </li>
-<li><strong>对策</strong>：<strong>幂等键</strong>、<strong>去重表</strong>、<strong>At-least-once</strong> 消费语义与业务配合。</li>
-</ul>
-<hr>
-<h2 id="五、JSON-RPC-2-0-与-curl-示例"><a href="#五、JSON-RPC-2-0-与-curl-示例" class="headerlink" title="五、JSON-RPC 2.0 与 curl 示例"></a>五、JSON-RPC 2.0 与 <code>curl</code> 示例</h2><p><strong>请求体</strong>（<strong><code>application/json</code></strong>）：</p>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;jsonrpc&quot;</span><span class="punctuation">:</span> <span class="string">&quot;2.0&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;method&quot;</span><span class="punctuation">:</span> <span class="string">&quot;subtract&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;params&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span><span class="attr">&quot;a&quot;</span><span class="punctuation">:</span> <span class="number">42</span><span class="punctuation">,</span> <span class="attr">&quot;b&quot;</span><span class="punctuation">:</span> <span class="number">23</span><span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;id&quot;</span><span class="punctuation">:</span> <span class="number">1</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
-
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">curl -sS -X POST <span class="string">&#x27;https://eth.merkle.io/&#x27;</span> \</span><br><span class="line">  -H <span class="string">&#x27;Content-Type: application/json&#x27;</span> \</span><br><span class="line">  -d <span class="string">&#x27;&#123;&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;method&quot;:&quot;eth_blockNumber&quot;,&quot;params&quot;:[],&quot;id&quot;:1&#125;&#x27;</span></span><br></pre></td></tr></table></figure>
-
-<p>（公共端点仅供演示，勿在高频生产直接依赖第三方。）</p>
-<p><strong>成功响应</strong>形如：</p>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span><span class="attr">&quot;jsonrpc&quot;</span><span class="punctuation">:</span><span class="string">&quot;2.0&quot;</span><span class="punctuation">,</span><span class="attr">&quot;id&quot;</span><span class="punctuation">:</span><span class="number">1</span><span class="punctuation">,</span><span class="attr">&quot;result&quot;</span><span class="punctuation">:</span><span class="string">&quot;0x...&quot;</span><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
-
-<p><strong>错误</strong>带 <strong><code>error</code></strong> 对象（<strong><code>code</code> &#x2F; <code>message</code> &#x2F; <code>data</code></strong>）。</p>
-<hr>
-<h2 id="六、Python-最小-JSON-RPC-客户端（标准库）"><a href="#六、Python-最小-JSON-RPC-客户端（标准库）" class="headerlink" title="六、Python 最小 JSON-RPC 客户端（标准库）"></a>六、Python 最小 <strong>JSON-RPC</strong> 客户端（标准库）</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> json</span><br><span class="line"><span class="keyword">import</span> urllib.request</span><br><span class="line"></span><br><span class="line">req = urllib.request.Request(</span><br><span class="line">    <span class="string">&quot;https://eth.merkle.io/&quot;</span>,</span><br><span class="line">    data=json.dumps(&#123;</span><br><span class="line">        <span class="string">&quot;jsonrpc&quot;</span>: <span class="string">&quot;2.0&quot;</span>,</span><br><span class="line">        <span class="string">&quot;method&quot;</span>: <span class="string">&quot;eth_chainId&quot;</span>,</span><br><span class="line">        <span class="string">&quot;params&quot;</span>: [],</span><br><span class="line">        <span class="string">&quot;id&quot;</span>: <span class="number">1</span>,</span><br><span class="line">    &#125;).encode(),</span><br><span class="line">    headers=&#123;<span class="string">&quot;Content-Type&quot;</span>: <span class="string">&quot;application/json&quot;</span>&#125;,</span><br><span class="line">)</span><br><span class="line"><span class="keyword">with</span> urllib.request.urlopen(req, timeout=<span class="number">10</span>) <span class="keyword">as</span> resp:</span><br><span class="line">    <span class="built_in">print</span>(json.load(resp))</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="七、与-REST（-资源风格）对比"><a href="#七、与-REST（-资源风格）对比" class="headerlink" title="七、与 REST（ 资源风格）对比"></a>七、与 <strong>REST</strong>（<a href="/2026/05/01/Protocol/HTTP/" title="第二章：HTTP 详解：报文、方法、版本与 curl&#x2F;nc 示例">第二章：HTTP 详解：报文、方法、版本与 curl&#x2F;nc 示例</a> 资源风格）对比</h2><table>
-<thead>
-<tr>
-<th></th>
-<th><strong>RPC</strong></th>
-<th><strong>REST</strong></th>
-</tr>
-</thead>
-<tbody><tr>
-<td>建模</td>
-<td><strong>过程&#x2F;动词</strong> 中心</td>
-<td><strong>资源&#x2F;名词</strong> 中心</td>
-</tr>
-<tr>
-<td>缓存</td>
-<td>较弱</td>
-<td><strong>GET</strong> 与缓存头成熟</td>
-</tr>
-<tr>
-<td>浏览器</td>
-<td><strong>JSON-RPC</strong> 尚可；<strong>gRPC</strong> 常需网关</td>
-<td>友好</td>
-</tr>
-</tbody></table>
-<hr>
-<h2 id="本章小结"><a href="#本章小结" class="headerlink" title="本章小结"></a>本章小结</h2><table>
-<thead>
-<tr>
-<th>要点</th>
-<th>结论</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>原理</td>
-<td><strong>stub</strong> 隐藏网络，<strong>序列化 + 传输 + 反序列化</strong></td>
-</tr>
-<tr>
-<td>作用</td>
-<td>分布式系统中的「像本地一样调用」</td>
-</tr>
-<tr>
-<td>示例</td>
-<td><strong>JSON-RPC + <code>curl</code></strong></td>
-</tr>
-<tr>
-<td>实现</td>
-<td><a href="/2026/05/01/Protocol/GRPC/" title="第十三章：gRPC 详解：Protobuf、HTTP&#x2F;2 与 grpcurl &#x2F; Python 示例">第十三章：gRPC 详解：Protobuf、HTTP&#x2F;2 与 grpcurl &#x2F; Python 示例</a> · <a href="/2026/05/17/SpringCloud/Dubbo/" title="第十章：Dubbo：RPC 与服务治理扩展">第十章：Dubbo：RPC 与服务治理扩展</a> 等</td>
-</tr>
-</tbody></table>
-<p>选型需同时考虑<strong>观测性</strong>（<strong>trace id</strong>）、<strong>版本演进</strong>与<strong>跨组织边界</strong>（是否暴露 <strong>RPC</strong> 还是 <strong>REST</strong> 网关）。</p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
   <nav class="pagination">
-    <a class="extend prev" rel="prev" title="上一页" aria-label="上一页" href="/page/12/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/12/">12</a><span class="page-number current">13</span><a class="page-number" href="/page/14/">14</a><span class="space">&hellip;</span><a class="page-number" href="/page/22/">22</a><a class="extend next" rel="next" title="下一页" aria-label="下一页" href="/page/14/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" title="上一页" aria-label="上一页" href="/page/12/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/12/">12</a><span class="page-number current">13</span><a class="page-number" href="/page/14/">14</a><span class="space">&hellip;</span><a class="page-number" href="/page/24/">24</a><a class="extend next" rel="next" title="下一页" aria-label="下一页" href="/page/14/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 </div>
@@ -2301,13 +2333,13 @@ flowchart TB
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">279k</span>
+    <span title="站点总字数">321k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">15:29</span>
+    <span title="站点阅读时长">17:52</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

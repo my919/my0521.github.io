@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"my919.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="第四章：滤镜与滤镜图概念基础：滤镜是加工流水线 滤镜（filter）加工每一帧：在解码后、编码前对原始帧做变换——缩放、裁剪、水印、字幕、调色等，是 FFmpeg 表达力最强也最易出错的部分。 三类入口：-vf（简单视频滤镜链，单输入）、-af（简单音频滤镜链）、-filter_complex（复杂滤镜图，多输入&#x2F;多输出&#x2F;多流合成，画中画、多路拼接必用）。 链与图：滤镜链（ch">
+<meta property="og:type" content="article">
+<meta property="og:title" content="第四章：滤镜与滤镜图">
+<meta property="og:url" content="https://my919.github.io/2026/05/01/FFmpeg/FFmpeg%E6%BB%A4%E9%95%9C/index.html">
+<meta property="og:site_name" content="my">
+<meta property="og:description" content="第四章：滤镜与滤镜图概念基础：滤镜是加工流水线 滤镜（filter）加工每一帧：在解码后、编码前对原始帧做变换——缩放、裁剪、水印、字幕、调色等，是 FFmpeg 表达力最强也最易出错的部分。 三类入口：-vf（简单视频滤镜链，单输入）、-af（简单音频滤镜链）、-filter_complex（复杂滤镜图，多输入&#x2F;多输出&#x2F;多流合成，画中画、多路拼接必用）。 链与图：滤镜链（ch">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-05-01T05:41:59.000Z">
+<meta property="article:modified_time" content="2026-08-31T14:05:10.392Z">
+<meta property="article:author" content="miracle">
+<meta property="article:tag" content="FFmpeg">
+<meta property="article:tag" content="音视频">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://my919.github.io/2026/05/01/FFmpeg/FFmpeg%E6%BB%A4%E9%95%9C/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://my919.github.io/2026/05/01/FFmpeg/FFmpeg%E6%BB%A4%E9%95%9C/","path":"2026/05/01/FFmpeg/FFmpeg滤镜/","title":"第四章：滤镜与滤镜图"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>第四章：滤镜与滤镜图 | my</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.10.1/mermaid.min.js","integrity":"sha256-BmQmdWDS8X2OTbrwELWK366LV6escyWhHHe0XCTU/Hk="}}</script>
+  <script src="/js/third-party/tags/mermaid.js" defer></script>
+
+
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="my" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">my</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-service"><a href="/service/" rel="section"><i class="fa fa-server fa-fw"></i>服务</a></li><li class="menu-item menu-item-tool"><a href="/tool/" rel="section"><i class="fa fa-wrench fa-fw"></i>工具</a></li><li class="menu-item menu-item-project"><a href="/project/" rel="section"><i class="fa fa-folder-open fa-fw"></i>项目</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%9A%E6%BB%A4%E9%95%9C%E4%B8%8E%E6%BB%A4%E9%95%9C%E5%9B%BE"><span class="nav-number">1.</span> <span class="nav-text">第四章：滤镜与滤镜图</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80%EF%BC%9A%E6%BB%A4%E9%95%9C%E6%98%AF%E5%8A%A0%E5%B7%A5%E6%B5%81%E6%B0%B4%E7%BA%BF"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础：滤镜是加工流水线</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E6%BB%A4%E9%95%9C%E5%9B%BE%E8%AF%AD%E6%B3%95"><span class="nav-number">1.2.</span> <span class="nav-text">一、滤镜图语法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E7%AE%80%E5%8D%95%E6%BB%A4%E9%95%9C%E9%93%BE%EF%BC%88-vf-af%EF%BC%89"><span class="nav-number">1.2.1.</span> <span class="nav-text">1. 简单滤镜链（-vf &#x2F; -af）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E5%A4%8D%E6%9D%82%E6%BB%A4%E9%95%9C%E5%9B%BE%EF%BC%88-filter-complex%EF%BC%89"><span class="nav-number">1.2.2.</span> <span class="nav-text">2. 复杂滤镜图（-filter_complex）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E5%B8%B8%E7%94%A8%E8%A7%86%E9%A2%91%E6%BB%A4%E9%95%9C"><span class="nav-number">1.3.</span> <span class="nav-text">二、常用视频滤镜</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E7%BC%A9%E6%94%BE-scale"><span class="nav-number">1.3.1.</span> <span class="nav-text">1. 缩放 scale</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E8%A3%81%E5%89%AA-crop"><span class="nav-number">1.3.2.</span> <span class="nav-text">2. 裁剪 crop</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E6%B0%B4%E5%8D%B0-overlay"><span class="nav-number">1.3.3.</span> <span class="nav-text">3. 水印 overlay</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E5%AD%97%E5%B9%95%E7%83%A7%E5%BD%95-subtitles"><span class="nav-number">1.3.4.</span> <span class="nav-text">4. 字幕烧录 subtitles</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E8%B0%83%E8%89%B2%E4%B8%8E%E6%BB%A4%E9%95%9C%E6%95%88%E6%9E%9C"><span class="nav-number">1.3.5.</span> <span class="nav-text">5. 调色与滤镜效果</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-%E5%B8%A7%E7%8E%87-%E6%97%B6%E9%97%B4-trim"><span class="nav-number">1.3.6.</span> <span class="nav-text">6. 帧率&#x2F;时间 trim</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E5%B8%B8%E7%94%A8%E9%9F%B3%E9%A2%91%E6%BB%A4%E9%95%9C"><span class="nav-number">1.4.</span> <span class="nav-text">三、常用音频滤镜</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E5%A4%8D%E6%9D%82%E6%BB%A4%E9%95%9C%E5%9B%BE%E5%AE%9E%E6%88%98"><span class="nav-number">1.5.</span> <span class="nav-text">四、复杂滤镜图实战</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E7%94%BB%E4%B8%AD%E7%94%BB%EF%BC%88Picture-in-Picture%EF%BC%89"><span class="nav-number">1.5.1.</span> <span class="nav-text">1. 画中画（Picture-in-Picture）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E5%A4%9A%E8%B7%AF%E5%B9%B6%E6%8E%92%EF%BC%88grid%EF%BC%89"><span class="nav-number">1.5.2.</span> <span class="nav-text">2. 多路并排（grid）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E5%8F%8C%E9%9F%B3%E8%BD%A8%E6%B7%B7%E9%9F%B3"><span class="nav-number">1.5.3.</span> <span class="nav-text">3. 双音轨混音</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E6%96%87%E5%AD%97%E6%B0%B4%E5%8D%B0-drawtext"><span class="nav-number">1.5.4.</span> <span class="nav-text">4. 文字水印 drawtext</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E6%BB%A4%E9%95%9C%E9%93%BE%E6%89%A7%E8%A1%8C%E9%A1%BA%E5%BA%8F%E4%B8%8E%E6%80%A7%E8%83%BD"><span class="nav-number">1.6.</span> <span class="nav-text">五、滤镜链执行顺序与性能</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E8%B0%83%E8%AF%95%E6%8A%80%E5%B7%A7"><span class="nav-number">1.7.</span> <span class="nav-text">六、调试技巧</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%83%E3%80%81%E5%B8%B8%E8%A7%81%E9%99%B7%E9%98%B1"><span class="nav-number">1.8.</span> <span class="nav-text">七、常见陷阱</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.9.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">miracle</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">234</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">36</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">124</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/my919" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;my919" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://gitee.com/my919" title="Gitee → https:&#x2F;&#x2F;gitee.com&#x2F;my919" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>Gitee</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:yeal166@163.com" title="E-Mail → mailto:yeal166@163.com" rel="noopener me external nofollow noreferrer" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://my919.github.io/2026/05/01/FFmpeg/FFmpeg%E6%BB%A4%E9%95%9C/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="第四章：滤镜与滤镜图 | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          第四章：滤镜与滤镜图
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-05-01 13:41:59" itemprop="dateCreated datePublished" datetime="2026-05-01T13:41:59+08:00">2026-05-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-08-31 22:05:10" itemprop="dateModified" datetime="2026-08-31T22:05:10+08:00">2026-08-31</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/FFmpeg/" itemprop="url" rel="index"><span itemprop="name">FFmpeg</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>1.6k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>5 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="第四章：滤镜与滤镜图"><a href="#第四章：滤镜与滤镜图" class="headerlink" title="第四章：滤镜与滤镜图"></a>第四章：滤镜与滤镜图</h1><h2 id="概念基础：滤镜是加工流水线"><a href="#概念基础：滤镜是加工流水线" class="headerlink" title="概念基础：滤镜是加工流水线"></a>概念基础：滤镜是加工流水线</h2><ol>
+<li><strong>滤镜（filter）加工每一帧</strong>：在解码后、编码前对原始帧做变换——缩放、裁剪、水印、字幕、调色等，是 FFmpeg 表达力最强也最易出错的部分。</li>
+<li><strong>三类入口</strong>：<strong><code>-vf</code></strong>（简单视频滤镜链，单输入）、<strong><code>-af</code></strong>（简单音频滤镜链）、<strong><code>-filter_complex</code></strong>（复杂滤镜图，多输入&#x2F;多输出&#x2F;多流合成，画中画、多路拼接必用）。</li>
+<li><strong>链与图</strong>：<strong>滤镜链（chain）</strong> 用逗号串多个滤镜顺序执行；<strong>滤镜图（graph）</strong> 用分号串多条链并行&#x2F;分支。<code>[label]</code> 标记流的去向。</li>
+<li><strong>简单 vs 复杂</strong>：单输入单输出用 <code>-vf</code>&#x2F;<code>-af</code> 足够；多输入（如视频+水印图、视频+字幕）必须 <code>-filter_complex</code>。</li>
+<li><strong>本章目标</strong>：掌握滤镜图语法、常用视频&#x2F;音频滤镜、典型复杂滤镜图（水印、画中画、字幕烧录），能看懂并自己拼装。</li>
+</ol>
+<blockquote>
+<p>本章承接 <a href="/2026/05/01/FFmpeg/FFmpeg%E9%9F%B3%E8%A7%86%E9%A2%91%E5%A4%84%E7%90%86/" title="第三章：音视频编辑处理">第三章：音视频编辑处理</a>，把零散用到的 <code>-vf</code> 系统化。</p>
+</blockquote>
+<hr>
+<h2 id="一、滤镜图语法"><a href="#一、滤镜图语法" class="headerlink" title="一、滤镜图语法"></a>一、滤镜图语法</h2><h3 id="1-简单滤镜链（-vf-af）"><a href="#1-简单滤镜链（-vf-af）" class="headerlink" title="1. 简单滤镜链（-vf &#x2F; -af）"></a>1. 简单滤镜链（-vf &#x2F; -af）</h3><p>单输入单输出，滤镜用逗号串接，顺序执行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 先缩放再裁剪：scale → crop</span></span><br><span class="line">ffmpeg -i input.mp4 -vf <span class="string">&quot;scale=1280:720,crop=640:360:0:0&quot;</span> out.mp4</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-复杂滤镜图（-filter-complex）"><a href="#2-复杂滤镜图（-filter-complex）" class="headerlink" title="2. 复杂滤镜图（-filter_complex）"></a>2. 复杂滤镜图（-filter_complex）</h3><p>支持多输入、多链、标签路由。语法：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[输入标签] 滤镜链 [输出标签]; [输入标签] 滤镜链 [输出标签]; ...</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong><code>[0:v]</code></strong>：第 0 个输入的视频流；<strong><code>[1:v]</code></strong>：第 1 个输入的视频流；<strong><code>[0:a]</code></strong>：音频流。</li>
+<li><strong><code>[v]</code>&#x2F;<code>[a]</code></strong>：自定义输出标签，供 <code>-map</code> 引用。</li>
+<li><strong><code>;</code></strong> 分隔多条并行链，<strong><code>,</code></strong> 分隔链内顺序滤镜。</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 双输入：主视频 + 水印图，overlay 合成</span></span><br><span class="line">ffmpeg -i video.mp4 -i logo.png -filter_complex <span class="string">&quot;[0:v][1:v]overlay=10:10[v]&quot;</span> -map <span class="string">&quot;[v]&quot;</span> out.mp4</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>查可用滤镜：<code>ffmpeg -filters</code>；查某滤镜参数：<code>ffmpeg -h filter=overlay</code>。</p>
+</blockquote>
+<hr>
+<h2 id="二、常用视频滤镜"><a href="#二、常用视频滤镜" class="headerlink" title="二、常用视频滤镜"></a>二、常用视频滤镜</h2><h3 id="1-缩放-scale"><a href="#1-缩放-scale" class="headerlink" title="1. 缩放 scale"></a>1. 缩放 scale</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1280×720</span></span><br><span class="line">-vf <span class="string">&quot;scale=1280:720&quot;</span></span><br><span class="line"><span class="comment"># 宽 1280 高自动（偶数）</span></span><br><span class="line">-vf <span class="string">&quot;scale=1280:-2&quot;</span></span><br><span class="line"><span class="comment"># 不超过 720p，更小不放大</span></span><br><span class="line">-vf <span class="string">&quot;scale=&#x27;min(1280,iw)&#x27;:&#x27;min(720,ih)&#x27;:force_original_aspect_ratio=decrease&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="2-裁剪-crop"><a href="#2-裁剪-crop" class="headerlink" title="2. 裁剪 crop"></a>2. 裁剪 crop</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># crop=W:H:X:Y，从 (X,Y) 起裁 W×H</span></span><br><span class="line">-vf <span class="string">&quot;crop=640:360:0:0&quot;</span></span><br><span class="line"><span class="comment"># 居中裁 16:9</span></span><br><span class="line">-vf <span class="string">&quot;crop=ih*16/9:ih&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="3-水印-overlay"><a href="#3-水印-overlay" class="headerlink" title="3. 水印 overlay"></a>3. 水印 overlay</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># logo 放左上角 (10,10)</span></span><br><span class="line">-filter_complex <span class="string">&quot;[0:v][1:v]overlay=10:10&quot;</span></span><br><span class="line"><span class="comment"># 右下角：W-w-10, H-h-10（主画面宽高 W/H，logo 宽高 w/h）</span></span><br><span class="line">-filter_complex <span class="string">&quot;[0:v][1:v]overlay=W-w-10:H-h-10&quot;</span></span><br><span class="line"><span class="comment"># 半透明 logo（先 format 透明通道再 colorize 不便，用 geq 或预处理 alpha）</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="4-字幕烧录-subtitles"><a href="#4-字幕烧录-subtitles" class="headerlink" title="4. 字幕烧录 subtitles"></a>4. 字幕烧录 subtitles</h3><p>把字幕「烧」进画面（硬字幕，播放器无需字幕支持）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 烧录 .srt 字幕</span></span><br><span class="line">ffmpeg -i input.mp4 -vf <span class="string">&quot;subtitles=zh.srt&quot;</span> -c:a copy out.mp4</span><br><span class="line"><span class="comment"># 烧录并指定样式</span></span><br><span class="line">ffmpeg -i input.mp4 -vf <span class="string">&quot;subtitles=zh.srt:force_style=&#x27;FontName=Sans,FontSize=24,PrimaryColour=&amp;HFFFFFF&amp;&#x27;&quot;</span> out.mp4</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>路径含特殊字符或 Windows 下需转义；ASS 字幕样式更丰富。</p>
+</blockquote>
+<h3 id="5-调色与滤镜效果"><a href="#5-调色与滤镜效果" class="headerlink" title="5. 调色与滤镜效果"></a>5. 调色与滤镜效果</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 亮度/对比度：eq=brightness=0.06:contrast=1.2:saturation=1.5</span></span><br><span class="line">-vf <span class="string">&quot;eq=brightness=0.06:contrast=1.2&quot;</span></span><br><span class="line"><span class="comment"># 水平镜像</span></span><br><span class="line">-vf <span class="string">&quot;hflip&quot;</span></span><br><span class="line"><span class="comment"># 模糊</span></span><br><span class="line">-vf <span class="string">&quot;boxblur=2:1&quot;</span></span><br><span class="line"><span class="comment"># 锐化</span></span><br><span class="line">-vf <span class="string">&quot;unsharp=5:5:1.0&quot;</span></span><br><span class="line"><span class="comment"># 黑白</span></span><br><span class="line">-vf <span class="string">&quot;format=gray&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="6-帧率-时间-trim"><a href="#6-帧率-时间-trim" class="headerlink" title="6. 帧率&#x2F;时间 trim"></a>6. 帧率&#x2F;时间 trim</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># trim 滤镜精确裁剪（帧级，需重编码）</span></span><br><span class="line">-vf <span class="string">&quot;trim=start=10:end=40,setpts=PTS-STARTPTS&quot;</span></span><br><span class="line"><span class="comment"># 改帧率</span></span><br><span class="line">-vf <span class="string">&quot;fps=30&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p><code>setpts=PTS-STARTPTS</code>：裁剪后重置时间戳从 0 开始，否则开头有空白。</p>
+<hr>
+<h2 id="三、常用音频滤镜"><a href="#三、常用音频滤镜" class="headerlink" title="三、常用音频滤镜"></a>三、常用音频滤镜</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 音量</span></span><br><span class="line">-af <span class="string">&quot;volume=1.5&quot;</span></span><br><span class="line"><span class="comment"># 均衡器</span></span><br><span class="line">-af <span class="string">&quot;bass=g=5:f=100&quot;</span>   <span class="comment"># 低频 +5dB</span></span><br><span class="line"><span class="comment"># 淡入淡出</span></span><br><span class="line">-af <span class="string">&quot;afade=t=in:st=0:d=2,afade=t=out:st=28:d=2&quot;</span></span><br><span class="line"><span class="comment"># 降噪</span></span><br><span class="line">-af <span class="string">&quot;highpass=f=200,lowpass=f=3000&quot;</span></span><br><span class="line"><span class="comment"># 去除静音段</span></span><br><span class="line">-af <span class="string">&quot;silenceremove=stop_periods=-1:stop_duration=0.3:stop_threshold=-50dB&quot;</span></span><br><span class="line"><span class="comment"># 立体声转单声道</span></span><br><span class="line">-af <span class="string">&quot;pan=mono|c0=c0&quot;</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="四、复杂滤镜图实战"><a href="#四、复杂滤镜图实战" class="headerlink" title="四、复杂滤镜图实战"></a>四、复杂滤镜图实战</h2><h3 id="1-画中画（Picture-in-Picture）"><a href="#1-画中画（Picture-in-Picture）" class="headerlink" title="1. 画中画（Picture-in-Picture）"></a>1. 画中画（Picture-in-Picture）</h3><p>主视频右下角叠加小视频：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ffmpeg -i main.mp4 -i small.mp4 -filter_complex \</span><br><span class="line">  <span class="string">&quot;[1:v]scale=320:180[small];[0:v][small]overlay=W-w-10:H-h-10[v]&quot;</span> \</span><br><span class="line">  -map <span class="string">&quot;[v]&quot;</span> -map 0:a -c:a copy out.mp4</span><br></pre></td></tr></table></figure>
+
+<p>流程：<code>[1:v]</code> 缩放成 <code>[small]</code> → 与 <code>[0:v]</code> overlay 合成 <code>[v]</code>。</p>
+<h3 id="2-多路并排（grid）"><a href="#2-多路并排（grid）" class="headerlink" title="2. 多路并排（grid）"></a>2. 多路并排（grid）</h3><p>两路视频左右拼接：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ffmpeg -i left.mp4 -i right.mp4 -filter_complex \</span><br><span class="line">  <span class="string">&quot;[0:v]scale=640:360[l];[1:v]scale=640:360[r];[l][r]hstack[v]&quot;</span> \</span><br><span class="line">  -map <span class="string">&quot;[v]&quot;</span> out.mp4</span><br></pre></td></tr></table></figure>
+
+<p><code>hstack</code> 水平拼接、<code>vstack</code> 垂直拼接；要求各路分辨率一致（先 scale 统一）。</p>
+<h3 id="3-双音轨混音"><a href="#3-双音轨混音" class="headerlink" title="3. 双音轨混音"></a>3. 双音轨混音</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ffmpeg -i video.mp4 -i bgm.mp3 -filter_complex \</span><br><span class="line">  <span class="string">&quot;[0:a][1:a]amix=inputs=2:duration=first:dropout_transition=0[a]&quot;</span> \</span><br><span class="line">  -map 0:v -map <span class="string">&quot;[a]&quot;</span> -c:v copy -c:a aac out.mp4</span><br></pre></td></tr></table></figure>
+
+<p><code>amix</code>：混合多路音频；<code>duration=first</code> 以第一路时长为准。</p>
+<h3 id="4-文字水印-drawtext"><a href="#4-文字水印-drawtext" class="headerlink" title="4. 文字水印 drawtext"></a>4. 文字水印 drawtext</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ffmpeg -i input.mp4 -vf <span class="string">&quot;drawtext=text=&#x27;Hello FFmpeg&#x27;:fontcolor=white:fontsize=24:x=10:y=10&quot;</span> out.mp4</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><code>drawtext</code> 需编译时启用 libfreetype；中文字体用 <code>fontfile=/path/to/font.ttf</code> 指定。</p>
+</blockquote>
+<hr>
+<h2 id="五、滤镜链执行顺序与性能"><a href="#五、滤镜链执行顺序与性能" class="headerlink" title="五、滤镜链执行顺序与性能"></a>五、滤镜链执行顺序与性能</h2><ul>
+<li><strong>顺序敏感</strong>：<code>scale,crop</code> 与 <code>crop,scale</code> 结果不同——先放大再裁剪 vs 先裁剪再放大。</li>
+<li><strong>性能</strong>：滤镜越多越慢；能用 <code>-c copy</code> 跳过的（如只换容器）别加滤镜。</li>
+<li><strong>硬件滤镜</strong>：部分滤镜有 GPU 版（<code>scale_cuda</code>、<code>overlay_cuda</code>），需硬件编码配合。</li>
+<li><strong><code>-filter_complex</code> 与 <code>-vf</code> 混用</strong>：同一输出流不能既用 <code>-vf</code> 又在 <code>-filter_complex</code> 处理；统一用 <code>-filter_complex</code>。</li>
+</ul>
+<hr>
+<h2 id="六、调试技巧"><a href="#六、调试技巧" class="headerlink" title="六、调试技巧"></a>六、调试技巧</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># ffplay 实时预览滤镜效果，不写文件</span></span><br><span class="line">ffplay -vf <span class="string">&quot;scale=640:-2,eq=contrast=1.2&quot;</span> input.mp4</span><br><span class="line"></span><br><span class="line"><span class="comment"># 用 -frames:v 限制只处理几帧，快速验证滤镜图</span></span><br><span class="line">ffmpeg -i input.mp4 -vf <span class="string">&quot;crop=640:360:0:0&quot;</span> -frames:v 1 test.jpg</span><br><span class="line"></span><br><span class="line"><span class="comment"># split 滤镜分流调试：一路预览一路记录</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="七、常见陷阱"><a href="#七、常见陷阱" class="headerlink" title="七、常见陷阱"></a>七、常见陷阱</h2><table>
+<thead>
+<tr>
+<th>陷阱</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>逗号分号混用</strong></td>
+<td><code>,</code> 串链内顺序滤镜，<code>;</code> 分隔多链；用错报「无标签」或语法错</td>
+</tr>
+<tr>
+<td><strong>标签未引用</strong></td>
+<td><code>-filter_complex</code> 产出 <code>[v]</code> 但忘了 <code>-map &quot;[v]&quot;</code>，输出无视频</td>
+</tr>
+<tr>
+<td><strong>overlay 坐标越界</strong></td>
+<td>水印比主画面大会报错；先 <code>scale</code> 缩小水印</td>
+</tr>
+<tr>
+<td><strong>字幕路径含冒号</strong></td>
+<td>Windows 路径 <code>C:\</code> 与字幕选项分隔符冲突，需转义 <code>subtitles=&#39;C\:/path&#39;</code></td>
+</tr>
+<tr>
+<td><strong>trim 不重置时间戳</strong></td>
+<td>裁剪后不加 <code>setpts=PTS-STARTPTS</code>，开头有空白时长</td>
+</tr>
+<tr>
+<td><strong>hstack 分辨率不一</strong></td>
+<td>拼接要求各路同高（hstack）&#x2F;同宽（vstack），先 scale 统一</td>
+</tr>
+<tr>
+<td><strong>drawtext 中文乱码</strong></td>
+<td>需 <code>fontfile</code> 指定含中文字形的 ttf</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="本章小结"><a href="#本章小结" class="headerlink" title="本章小结"></a>本章小结</h2><table>
+<thead>
+<tr>
+<th>要点</th>
+<th>结论</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>三类入口</td>
+<td><code>-vf</code>&#x2F;<code>-af</code> 简单单链；<code>-filter_complex</code> 多输入多流</td>
+</tr>
+<tr>
+<td>语法</td>
+<td><code>,</code> 链内顺序、<code>;</code> 多链分隔、<code>[标签]</code> 路由流、<code>-map</code> 引用输出</td>
+</tr>
+<tr>
+<td>常用视频</td>
+<td><code>scale</code>&#x2F;<code>crop</code>&#x2F;<code>overlay</code>&#x2F;<code>subtitles</code>&#x2F;<code>eq</code>&#x2F;<code>trim</code>&#x2F;<code>fps</code></td>
+</tr>
+<tr>
+<td>常用音频</td>
+<td><code>volume</code>&#x2F;<code>afade</code>&#x2F;<code>silenceremove</code>&#x2F;<code>amix</code>&#x2F;<code>pan</code></td>
+</tr>
+<tr>
+<td>画中画</td>
+<td><code>[1:v]scale[small];[0:v][small]overlay</code></td>
+</tr>
+<tr>
+<td>多路拼接</td>
+<td><code>hstack</code>&#x2F;<code>vstack</code>，先 scale 统一分辨率</td>
+</tr>
+<tr>
+<td>顺序敏感</td>
+<td><code>scale,crop</code> ≠ <code>crop,scale</code>；能用 copy 别加滤镜</td>
+</tr>
+<tr>
+<td>调试</td>
+<td><code>ffplay -vf</code> 实时预览、<code>-frames:v 1</code> 快速验证</td>
+</tr>
+</tbody></table>
+<p>进入 <a href="/2026/05/01/FFmpeg/FFmpeg%E6%B5%81%E5%AA%92%E4%BD%93/" title="第五章：流媒体与直播推流">第五章：流媒体与直播推流</a>，学习 RTMP&#x2F;HLS&#x2F;DASH 推流与拉流转发。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/FFmpeg/" rel="tag"># FFmpeg</a>
+              <a href="/tags/%E9%9F%B3%E8%A7%86%E9%A2%91/" rel="tag"># 音视频</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/05/01/FFmpeg/FFmpeg%E7%BC%96%E8%A7%A3%E7%A0%81/" rel="prev" title="第二章：编解码与转码">
+                  <i class="fa fa-angle-left"></i> 第二章：编解码与转码
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2026/05/01/FFmpeg/FFmpeg%E6%B5%81%E5%AA%92%E4%BD%93/" rel="next" title="第五章：流媒体与直播推流">
+                  第五章：流媒体与直播推流 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">miracle</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">321k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">17:52</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+<script>
+(function () {
+  function normalizeClipboard(s) {
+    return (s || '').replace(/\u00a0/g, ' ');
+  }
+
+  /** When innerText is empty, treat <br> as newlines (matches Hexo fenced + line_number HTML). */
+  function plainTextFromElement(el) {
+    if (!el) return '';
+    var t = el.innerText;
+    if (t != null && t !== '') return normalizeClipboard(t);
+    var clone = el.cloneNode(true);
+    clone.querySelectorAll('br').forEach(function (br) {
+      br.parentNode.replaceChild(document.createTextNode('\n'), br);
+    });
+    return normalizeClipboard(clone.textContent || '');
+  }
+
+  function extractFromFigure(fig) {
+    if (!fig) return '';
+    var cell = fig.querySelector('td.code') || fig.querySelector('.code');
+    if (cell) return plainTextFromElement(cell);
+    var pre = fig.querySelector('pre');
+    if (pre) return plainTextFromElement(pre);
+    var code = fig.querySelector('code');
+    return code ? plainTextFromElement(code) : '';
+  }
+
+  function extractForCopyBtn(btn) {
+    var fig = btn.closest('figure.highlight');
+    if (fig) return extractFromFigure(fig);
+    var wrap = btn.closest('.code-container');
+    if (wrap) {
+      var innerFig = wrap.querySelector('figure.highlight');
+      if (innerFig) return extractFromFigure(innerFig);
+      var preOnly = wrap.querySelector('pre');
+      if (preOnly) return plainTextFromElement(preOnly);
+    }
+    return '';
+  }
+
+  function setCopyIcon(btn, ok) {
+    var i = btn.querySelector('i');
+    if (i) i.className = ok ? 'fa fa-check-circle fa-fw' : 'fa fa-times-circle fa-fw';
+  }
+
+  function writeClipboard(text, btn) {
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(text).then(
+        function () { setCopyIcon(btn, true); },
+        function () { fallbackCopy(text, btn); }
+      );
+    }
+    fallbackCopy(text, btn);
+    return Promise.resolve();
+  }
+
+  function fallbackCopy(text, btn) {
+    try {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed';
+      ta.style.left = '-9999px';
+      document.body.appendChild(ta);
+      ta.select();
+      var ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      setCopyIcon(btn, ok);
+    } catch (e) {
+      setCopyIcon(btn, false);
+    }
+  }
+
+  document.addEventListener(
+    'click',
+    function (e) {
+      var btn = e.target.closest && e.target.closest('.copy-btn');
+      if (!btn) return;
+      if (!btn.closest('figure.highlight') && !btn.closest('.code-container')) return;
+      e.stopPropagation();
+      e.preventDefault();
+      var text = extractForCopyBtn(btn);
+      writeClipboard(text, btn);
+    },
+    true
+  );
+})();
+</script>
+
+</body>
+</html>

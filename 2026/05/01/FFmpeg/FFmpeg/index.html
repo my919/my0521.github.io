@@ -20,15 +20,15 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"my919.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
 
-    <meta name="description" content="FFmpeg概念基础：FFmpeg 是什么&#x2F;为什么 音视频处理瑞士军刀：FFmpeg 是开源的转码、裁剪、截图、推流命令行工具集，几乎所有播放器、视频网站与转码服务背后都有它。 三大组件：ffmpeg（转码与处理）、ffprobe（查看媒体元信息）、ffplay（本地播放调试）。 命令结构固定：ffmpeg [全局选项] -i 输入 [输出选项] 输出，理解「输入 → 滤镜 → 编码 →">
+    <meta name="description" content="第一章：FFmpeg 音视频处理入门概念基础：FFmpeg 是什么&#x2F;为什么 音视频处理瑞士军刀：FFmpeg 是开源的转码、裁剪、截图、推流命令行工具集，几乎所有播放器、视频网站与转码服务背后都有它（Chrome、VLC、OBS 均基于或依赖其底层库）。 三大组件：ffmpeg（转码与处理）、ffprobe（查看媒体元信息）、ffplay（本地播放调试）。底层是四大库 libavcode">
 <meta property="og:type" content="article">
-<meta property="og:title" content="FFmpeg">
+<meta property="og:title" content="第一章：FFmpeg 音视频处理入门">
 <meta property="og:url" content="https://my919.github.io/2026/05/01/FFmpeg/FFmpeg/index.html">
 <meta property="og:site_name" content="my">
-<meta property="og:description" content="FFmpeg概念基础：FFmpeg 是什么&#x2F;为什么 音视频处理瑞士军刀：FFmpeg 是开源的转码、裁剪、截图、推流命令行工具集，几乎所有播放器、视频网站与转码服务背后都有它。 三大组件：ffmpeg（转码与处理）、ffprobe（查看媒体元信息）、ffplay（本地播放调试）。 命令结构固定：ffmpeg [全局选项] -i 输入 [输出选项] 输出，理解「输入 → 滤镜 → 编码 →">
+<meta property="og:description" content="第一章：FFmpeg 音视频处理入门概念基础：FFmpeg 是什么&#x2F;为什么 音视频处理瑞士军刀：FFmpeg 是开源的转码、裁剪、截图、推流命令行工具集，几乎所有播放器、视频网站与转码服务背后都有它（Chrome、VLC、OBS 均基于或依赖其底层库）。 三大组件：ffmpeg（转码与处理）、ffprobe（查看媒体元信息）、ffplay（本地播放调试）。底层是四大库 libavcode">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-05-01T05:41:59.000Z">
-<meta property="article:modified_time" content="2026-08-30T08:07:27.031Z">
+<meta property="article:modified_time" content="2026-08-31T14:12:15.722Z">
 <meta property="article:author" content="miracle">
 <meta property="article:tag" content="FFmpeg">
 <meta name="twitter:card" content="summary">
@@ -37,10 +37,10 @@
 <link rel="canonical" href="https://my919.github.io/2026/05/01/FFmpeg/FFmpeg/">
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://my919.github.io/2026/05/01/FFmpeg/FFmpeg/","path":"2026/05/01/FFmpeg/FFmpeg/","title":"FFmpeg"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://my919.github.io/2026/05/01/FFmpeg/FFmpeg/","path":"2026/05/01/FFmpeg/FFmpeg/","title":"第一章：FFmpeg 音视频处理入门"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>FFmpeg | my</title>
+<title>第一章：FFmpeg 音视频处理入门 | my</title>
   
 
 
@@ -161,7 +161,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#FFmpeg"><span class="nav-number">1.</span> <span class="nav-text">FFmpeg</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80%EF%BC%9AFFmpeg-%E6%98%AF%E4%BB%80%E4%B9%88-%E4%B8%BA%E4%BB%80%E4%B9%88"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础：FFmpeg 是什么&#x2F;为什么</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E5%91%BD%E4%BB%A4%E7%BB%93%E6%9E%84"><span class="nav-number">1.2.</span> <span class="nav-text">一、命令结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E8%BD%AC%E7%A0%81%E7%A4%BA%E4%BE%8B"><span class="nav-number">1.3.</span> <span class="nav-text">二、转码示例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E8%A3%81%E5%89%AA%E3%80%81%E6%88%AA%E5%9B%BE%E4%B8%8E-GIF"><span class="nav-number">1.4.</span> <span class="nav-text">三、裁剪、截图与 GIF</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E6%B5%81%E5%AA%92%E4%BD%93%EF%BC%88%E6%A6%82%E5%BF%B5%EF%BC%89"><span class="nav-number">1.5.</span> <span class="nav-text">四、流媒体（概念）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E6%BB%A4%E9%95%9C%E4%B8%8E%E7%A1%AC%E4%BB%B6%E5%8A%A0%E9%80%9F"><span class="nav-number">1.6.</span> <span class="nav-text">五、滤镜与硬件加速</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.7.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E7%AB%A0%EF%BC%9AFFmpeg-%E9%9F%B3%E8%A7%86%E9%A2%91%E5%A4%84%E7%90%86%E5%85%A5%E9%97%A8"><span class="nav-number">1.</span> <span class="nav-text">第一章：FFmpeg 音视频处理入门</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80%EF%BC%9AFFmpeg-%E6%98%AF%E4%BB%80%E4%B9%88-%E4%B8%BA%E4%BB%80%E4%B9%88"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础：FFmpeg 是什么&#x2F;为什么</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E4%B8%89%E5%A4%A7%E7%BB%84%E4%BB%B6"><span class="nav-number">1.2.</span> <span class="nav-text">一、三大组件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E5%91%BD%E4%BB%A4%E7%BB%93%E6%9E%84%E4%B8%8E%E6%89%A7%E8%A1%8C%E6%B5%81%E6%B0%B4%E7%BA%BF"><span class="nav-number">1.3.</span> <span class="nav-text">二、命令结构与执行流水线</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%85%A8%E5%B1%80%E9%80%89%E9%A1%B9%EF%BC%88%E6%94%BE%E5%9C%A8-i-%E4%B9%8B%E5%89%8D%EF%BC%89"><span class="nav-number">1.3.1.</span> <span class="nav-text">1. 全局选项（放在 -i 之前）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E6%97%B6%E9%97%B4%E6%A0%BC%E5%BC%8F"><span class="nav-number">1.3.2.</span> <span class="nav-text">2. 时间格式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E8%BE%93%E5%85%A5%E4%B8%8E%E5%A4%9A%E8%BE%93%E5%85%A5"><span class="nav-number">1.3.3.</span> <span class="nav-text">3. 输入与多输入</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E5%B8%B8%E7%94%A8%E8%BE%93%E5%87%BA%E9%80%89%E9%A1%B9%E9%80%9F%E6%9F%A5"><span class="nav-number">1.4.</span> <span class="nav-text">三、常用输出选项速查</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E6%9C%80%E5%B0%8F%E5%8F%AF%E7%94%A8%E7%A4%BA%E4%BE%8B"><span class="nav-number">1.5.</span> <span class="nav-text">四、最小可用示例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E4%BE%9D%E8%B5%96%E4%B8%8E%E5%BB%B6%E4%BC%B8%E9%98%85%E8%AF%BB"><span class="nav-number">1.6.</span> <span class="nav-text">五、依赖与延伸阅读</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%B3%BB%E5%88%97%E7%AB%A0%E8%8A%82"><span class="nav-number">1.6.1.</span> <span class="nav-text">系列章节</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.7.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -174,18 +174,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">218</span>
+          <span class="site-state-item-count">234</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">35</span>
+        <span class="site-state-item-count">36</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">119</span>
+        <span class="site-state-item-count">124</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -236,12 +236,12 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="FFmpeg | my">
+      <meta itemprop="name" content="第一章：FFmpeg 音视频处理入门 | my">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          FFmpeg
+          第一章：FFmpeg 音视频处理入门
         </h1>
 
         <div class="post-meta-container">
@@ -259,7 +259,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-08-30 16:07:27" itemprop="dateModified" datetime="2026-08-30T16:07:27+08:00">2026-08-30</time>
+      <time title="修改时间：2026-08-31 22:12:15" itemprop="dateModified" datetime="2026-08-31T22:12:15+08:00">2026-08-31</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -278,14 +278,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>684</span>
+      <span>1.5k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>2 分钟</span>
+      <span>5 分钟</span>
     </span>
 </div>
 
@@ -295,38 +295,169 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><h1 id="FFmpeg"><a href="#FFmpeg" class="headerlink" title="FFmpeg"></a>FFmpeg</h1><h2 id="概念基础：FFmpeg-是什么-为什么"><a href="#概念基础：FFmpeg-是什么-为什么" class="headerlink" title="概念基础：FFmpeg 是什么&#x2F;为什么"></a>概念基础：FFmpeg 是什么&#x2F;为什么</h2><ol>
-<li><strong>音视频处理瑞士军刀</strong>：FFmpeg 是开源的<strong>转码、裁剪、截图、推流</strong>命令行工具集，几乎所有播放器、视频网站与转码服务背后都有它。</li>
-<li><strong>三大组件</strong>：<strong>ffmpeg</strong>（转码与处理）、<strong>ffprobe</strong>（查看媒体元信息）、<strong>ffplay</strong>（本地播放调试）。</li>
+    <div class="post-body" itemprop="articleBody"><h1 id="第一章：FFmpeg-音视频处理入门"><a href="#第一章：FFmpeg-音视频处理入门" class="headerlink" title="第一章：FFmpeg 音视频处理入门"></a>第一章：FFmpeg 音视频处理入门</h1><h2 id="概念基础：FFmpeg-是什么-为什么"><a href="#概念基础：FFmpeg-是什么-为什么" class="headerlink" title="概念基础：FFmpeg 是什么&#x2F;为什么"></a>概念基础：FFmpeg 是什么&#x2F;为什么</h2><ol>
+<li><strong>音视频处理瑞士军刀</strong>：FFmpeg 是开源的<strong>转码、裁剪、截图、推流</strong>命令行工具集，几乎所有播放器、视频网站与转码服务背后都有它（Chrome、VLC、OBS 均基于或依赖其底层库）。</li>
+<li><strong>三大组件</strong>：<strong>ffmpeg</strong>（转码与处理）、<strong>ffprobe</strong>（查看媒体元信息）、<strong>ffplay</strong>（本地播放调试）。底层是四大库 <strong>libavcodec &#x2F; libavformat &#x2F; libavfilter &#x2F; libavutil</strong>。</li>
 <li><strong>命令结构固定</strong>：<code>ffmpeg [全局选项] -i 输入 [输出选项] 输出</code>，理解「输入 → 滤镜 → 编码 → 封装」流水线即可举一反三。</li>
 <li><strong>容器与编解码分离</strong>：<strong>MP4&#x2F;MKV</strong> 是封装容器，<strong>H.264&#x2F;AAC</strong> 是编码格式；<code>-c copy</code> 只换容器不重编码，速度极快。</li>
 <li><strong>应用广泛</strong>：视频网站转码、<strong>HLS&#x2F;RTMP</strong> 直播推流、GIF 生成、提取音频等日常需求一条命令搞定。</li>
 </ol>
-<h2 id="一、命令结构"><a href="#一、命令结构" class="headerlink" title="一、命令结构"></a>一、命令结构</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ffmpeg [全局选项] -i 输入 [输出选项] 输出</span><br><span class="line">ffprobe -show_format -show_streams input.mp4</span><br></pre></td></tr></table></figure>
+<hr>
+<h2 id="一、三大组件"><a href="#一、三大组件" class="headerlink" title="一、三大组件"></a>一、三大组件</h2><table>
+<thead>
+<tr>
+<th>组件</th>
+<th>作用</th>
+<th>典型用法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>ffmpeg</strong></td>
+<td>转码、裁剪、滤镜、推流等一切处理</td>
+<td><code>ffmpeg -i in.mp4 out.mp4</code></td>
+</tr>
+<tr>
+<td><strong>ffprobe</strong></td>
+<td>查看媒体元信息（容器、流、编码、时长、码率）</td>
+<td><code>ffprobe -show_format -show_streams in.mp4</code></td>
+</tr>
+<tr>
+<td><strong>ffplay</strong></td>
+<td>本地简易播放器，调试滤镜效果</td>
+<td><code>ffplay -vf &quot;scale=640:-2&quot; in.mp4</code></td>
+</tr>
+</tbody></table>
+<p>先用 <strong><code>ffprobe</code></strong> 摸清输入再动手，是排查问题的第一步——它告诉你容器格式、有几路流、各路编码&#x2F;分辨率&#x2F;码率&#x2F;时长。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 概要信息</span></span><br><span class="line">ffprobe in.mp4</span><br><span class="line"><span class="comment"># 详细：容器 + 每一路流（视频流 v、音频流 a、字幕流 s）</span></span><br><span class="line">ffprobe -hide_banner -show_format -show_streams in.mp4</span><br><span class="line"><span class="comment"># 只看视频流编码与分辨率</span></span><br><span class="line">ffprobe -v error -select_streams v:0 -show_entries stream=codec_name,width,height,r_frame_rate -of default=noprint_wrappers=1 in.mp4</span><br></pre></td></tr></table></figure>
 
+<hr>
+<h2 id="二、命令结构与执行流水线"><a href="#二、命令结构与执行流水线" class="headerlink" title="二、命令结构与执行流水线"></a>二、命令结构与执行流水线</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ffmpeg [全局选项] -i 输入 [输出选项] 输出</span><br></pre></td></tr></table></figure>
+
+<p>一条命令的内部流转：</p>
+<pre>
+<code class="mermaid">
+
+flowchart LR
+  IN[输入文件&#x2F;流 -i] --&gt; DEMUX[解封装 demux]
+  DEMUX --&gt; DEC[解码 decode]
+  DEC --&gt; FLT[滤镜 filter]
+  FLT --&gt; ENC[编码 encode]
+  ENC --&gt; MUX[封装 mux]
+  MUX --&gt; OUT[输出文件&#x2F;流]
+</code>
+</pre>
+
+<blockquote>
+<p><strong>关键</strong>：滤镜与重编码都需先<strong>解码到原始帧</strong>再处理。<code>-c copy</code> 跳过「解码→编码」，直接拷贝原始码流到新容器，故<strong>秒级完成</strong>但无法改编码&#x2F;分辨率&#x2F;滤镜。</p>
+</blockquote>
+<h3 id="1-全局选项（放在-i-之前）"><a href="#1-全局选项（放在-i-之前）" class="headerlink" title="1. 全局选项（放在 -i 之前）"></a>1. 全局选项（放在 -i 之前）</h3><table>
+<thead>
+<tr>
+<th>选项</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong><code>-y</code></strong></td>
+<td>覆盖输出文件不询问（脚本必备）</td>
+</tr>
+<tr>
+<td><strong><code>-n</code></strong></td>
+<td>输出已存在则报错退出（防误覆盖）</td>
+</tr>
+<tr>
+<td><strong><code>-hide_banner</code></strong></td>
+<td>隐藏启动 banner，输出更干净</td>
+</tr>
+<tr>
+<td><strong><code>-loglevel error</code></strong></td>
+<td>只打印错误（<code>quiet/error/warning/info/verbose/debug</code>）</td>
+</tr>
+<tr>
+<td><strong><code>-stats</code></strong></td>
+<td>打印进度（默认开，<code>-nostats</code> 关）</td>
+</tr>
+<tr>
+<td><strong><code>-progress url</code></strong></td>
+<td>输出机器可读进度（接管道或文件，监控用）</td>
+</tr>
+</tbody></table>
+<h3 id="2-时间格式"><a href="#2-时间格式" class="headerlink" title="2. 时间格式"></a>2. 时间格式</h3><p>FFmpeg 时间支持三种写法，到处通用（<code>-ss</code>、<code>-t</code>、<code>-to</code>、<code>trim</code> 滤镜等）：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[-]HH:MM:SS[.mmm]   如 01:02:03.500</span><br><span class="line">[-]SS[.mmm]         如 375.5（秒）</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-输入与多输入"><a href="#3-输入与多输入" class="headerlink" title="3. 输入与多输入"></a>3. 输入与多输入</h3><ul>
+<li><strong><code>-i</code></strong> 可出现多次，多文件拼接（配合 <code>-filter_complex</code> 见第四章）。</li>
+<li><strong><code>-ss</code> 放 <code>-i</code> 前</strong>：用输入解封装快速定位（快，但可能定位到最近关键帧，精度略低）。</li>
+<li><strong><code>-ss</code> 放 <code>-i</code> 后</strong>：逐帧解码到目标点（精确，但慢）。</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 快速定位（推荐用于大文件裁剪）</span></span><br><span class="line">ffmpeg -ss 00:01:00 -i in.mp4 -t 30 -c copy clip.mp4</span><br><span class="line"><span class="comment"># 精确解码定位（需重编码或逐帧时）</span></span><br><span class="line">ffmpeg -i in.mp4 -ss 00:01:00 -t 30 -c copy clip.mp4</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="三、常用输出选项速查"><a href="#三、常用输出选项速查" class="headerlink" title="三、常用输出选项速查"></a>三、常用输出选项速查</h2><table>
+<thead>
+<tr>
+<th>选项</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong><code>-c:v</code> &#x2F; <code>-c:a</code></strong></td>
+<td>视频&#x2F;音频编码器（<strong><code>copy</code></strong> 不重编码）</td>
+</tr>
+<tr>
+<td><strong><code>-b:v</code> &#x2F; <code>-b:a</code></strong></td>
+<td>视频&#x2F;音频目标码率，如 <code>-b:v 2M -b:a 128k</code></td>
+</tr>
+<tr>
+<td><strong><code>-f</code></strong></td>
+<td>强制输出格式，如 <code>-f flv</code> <code>-f hls</code> <code>-f mp4</code></td>
+</tr>
+<tr>
+<td><strong><code>-t</code></strong></td>
+<td>输出时长（从起点计）</td>
+</tr>
+<tr>
+<td><strong><code>-to</code></strong></td>
+<td>输出到指定时间点（与 <code>-t</code> 二选一）</td>
+</tr>
+<tr>
+<td><strong><code>-ss</code></strong>（输出侧）</td>
+<td>输出起始时间</td>
+</tr>
+<tr>
+<td><strong><code>-r</code></strong></td>
+<td>输出帧率</td>
+</tr>
+<tr>
+<td><strong><code>-s</code></strong></td>
+<td>输出分辨率，如 <code>-s 1280x720</code></td>
+</tr>
+<tr>
+<td><strong><code>-vn</code> &#x2F; <code>-an</code> &#x2F; <code>-sn</code></strong></td>
+<td>丢弃视频&#x2F;音频&#x2F;字幕流</td>
+</tr>
+<tr>
+<td><strong><code>-map</code></strong></td>
+<td>手动选流（多路流时指定取哪几路）</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="四、最小可用示例"><a href="#四、最小可用示例" class="headerlink" title="四、最小可用示例"></a>四、最小可用示例</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 转码：MOV → MP4，H.264 + AAC</span></span><br><span class="line">ffmpeg -i input.mov -c:v libx264 -crf 23 -c:a aac -b:a 128k output.mp4</span><br><span class="line"></span><br><span class="line"><span class="comment"># 仅换容器，不重编码（秒级完成）</span></span><br><span class="line">ffmpeg -i input.mkv -c copy output.mp4</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看媒体信息</span></span><br><span class="line">ffprobe -hide_banner input.mp4</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="五、依赖与延伸阅读"><a href="#五、依赖与延伸阅读" class="headerlink" title="五、依赖与延伸阅读"></a>五、依赖与延伸阅读</h2><p><strong>安装</strong>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Debian/Ubuntu</span></span><br><span class="line"><span class="built_in">sudo</span> apt install ffmpeg</span><br><span class="line"><span class="comment"># macOS</span></span><br><span class="line">brew install ffmpeg</span><br><span class="line"><span class="comment"># Windows：官网下载或 scoop install ffmpeg</span></span><br></pre></td></tr></table></figure>
+
+<p>官方文档：<strong><a target="_blank" rel="noopener external nofollow noreferrer" href="https://ffmpeg.org/documentation.html">https://ffmpeg.org/documentation.html</a></strong> · 中文社区：<strong><a target="_blank" rel="noopener external nofollow noreferrer" href="https://ezgoffmpeg.org/">https://ezgoffmpeg.org/</a></strong></p>
+<h3 id="系列章节"><a href="#系列章节" class="headerlink" title="系列章节"></a>系列章节</h3><p>本系列按「由浅入深」组织，从命令骨架到流媒体与调优：</p>
 <ul>
-<li><strong><code>-i</code></strong>：输入文件或流 URL。  </li>
-<li><strong><code>-c:v</code> &#x2F; <code>-c:a</code></strong>：视频&#x2F;音频编码器（<strong>copy</strong> 表示不重编码）。  </li>
-<li><strong><code>-f</code></strong>：强制输出格式。</li>
+<li><a href="/2026/05/01/FFmpeg/FFmpeg%E7%BC%96%E8%A7%A3%E7%A0%81/" title="第二章：编解码与转码">第二章：编解码与转码</a>——容器与编码分离、CRF/preset 质量控制、码率模式、硬件编码</li>
+<li><a href="/2026/05/01/FFmpeg/FFmpeg%E9%9F%B3%E8%A7%86%E9%A2%91%E5%A4%84%E7%90%86/" title="第三章：音视频编辑处理">第三章：音视频编辑处理</a>——裁剪/截图/GIF/提取音频/合并/变速</li>
+<li><a href="/2026/05/01/FFmpeg/FFmpeg%E6%BB%A4%E9%95%9C/" title="第四章：滤镜与滤镜图">第四章：滤镜与滤镜图</a>——滤镜图语法、常用视频/音频滤镜、复杂滤镜图</li>
+<li><a href="/2026/05/01/FFmpeg/FFmpeg%E6%B5%81%E5%AA%92%E4%BD%93/" title="第五章：流媒体与直播推流">第五章：流媒体与直播推流</a>——RTMP/HLS/DASH、拉流转发、低延迟方案</li>
+<li><a href="/2026/05/01/FFmpeg/FFmpeg%E9%AB%98%E7%BA%A7%E7%89%B9%E6%80%A7/" title="第六章：高级技巧与性能调优">第六章：高级技巧与性能调优</a>——硬件加速、多 pass、批处理、调优与陷阱</li>
 </ul>
-<hr>
-<h2 id="二、转码示例"><a href="#二、转码示例" class="headerlink" title="二、转码示例"></a>二、转码示例</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># H.264 + AAC，CRF 质量控制体积</span></span><br><span class="line">ffmpeg -i input.mov -c:v libx264 -crf 23 -preset medium -c:a aac -b:a 128k output.mp4</span><br><span class="line"></span><br><span class="line"><span class="comment"># 仅换容器，不重编码（快）</span></span><br><span class="line">ffmpeg -i input.mkv -c copy output.mp4</span><br><span class="line"></span><br><span class="line"><span class="comment"># 缩放分辨率</span></span><br><span class="line">ffmpeg -i input.mp4 -vf <span class="string">&quot;scale=1280:-2&quot;</span> -c:v libx264 -crf 23 out.mp4</span><br></pre></td></tr></table></figure>
-
-<p><strong>CRF</strong> 越小质量越高、文件越大；<strong>preset</strong> 越慢压缩率通常越好。</p>
-<hr>
-<h2 id="三、裁剪、截图与-GIF"><a href="#三、裁剪、截图与-GIF" class="headerlink" title="三、裁剪、截图与 GIF"></a>三、裁剪、截图与 GIF</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 截取 00:01:00 起 30 秒</span></span><br><span class="line">ffmpeg -ss 00:01:00 -i input.mp4 -t 30 -c copy clip.mp4</span><br><span class="line"></span><br><span class="line"><span class="comment"># 第 5 秒一帧</span></span><br><span class="line">ffmpeg -ss 00:00:05 -i input.mp4 -frames:v 1 frame.jpg</span><br><span class="line"></span><br><span class="line"><span class="comment"># 简单 GIF</span></span><br><span class="line">ffmpeg -i input.mp4 -vf <span class="string">&quot;fps=10,scale=480:-1&quot;</span> -t 5 demo.gif</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="四、流媒体（概念）"><a href="#四、流媒体（概念）" class="headerlink" title="四、流媒体（概念）"></a>四、流媒体（概念）</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 推 RTMP（示例，地址需替换）</span></span><br><span class="line">ffmpeg -re -i input.mp4 -c copy -f flv rtmp://live.example.com/app/stream</span><br><span class="line"></span><br><span class="line"><span class="comment"># HLS 切片</span></span><br><span class="line">ffmpeg -i input.mp4 -c:v libx264 -hls_time 6 -hls_list_size 0 -f hls index.m3u8</span><br></pre></td></tr></table></figure>
-
-<p>协议层见 <a href="/2026/05/01/Protocol/HTTP/" title="第二章：HTTP 详解：报文、方法、版本与 curl&#x2F;nc 示例">第二章：HTTP 详解：报文、方法、版本与 curl&#x2F;nc 示例</a>、<a href="/2026/05/01/Protocol/WebSocket/" title="第十一章：WebSocket 详解：握手、帧与 Python 示例">第十一章：WebSocket 详解：握手、帧与 Python 示例</a>；低延迟场景还有 <strong>WebRTC</strong>、<strong>SRT</strong> 等。</p>
-<hr>
-<h2 id="五、滤镜与硬件加速"><a href="#五、滤镜与硬件加速" class="headerlink" title="五、滤镜与硬件加速"></a>五、滤镜与硬件加速</h2><ul>
-<li><strong><code>-vf</code></strong> 视频滤镜链：<strong><code>crop</code></strong>、<strong><code>overlay</code></strong>、<strong><code>subtitles</code></strong>。  </li>
-<li><strong>硬件编码</strong>：<strong><code>-c:v h264_nvenc</code></strong>（NVIDIA）、<strong><code>h264_qsv</code></strong>（Intel）等，依驱动与编译选项。  </li>
-<li><strong>与 <a href="/2026/05/01/OpenCV/OpenCV/" title="OpenCV">OpenCV</a></strong>：OpenCV 可读帧做 CV；<strong>FFmpeg</strong> 负责编解码与封装，二者常组合使用。</li>
-</ul>
-<p>官方文档：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://ffmpeg.org/documentation.html">https://ffmpeg.org/documentation.html</a></p>
+<p>协议层基础见 <a href="/2026/05/01/Protocol/HTTP/" title="第二章：HTTP 详解：报文、方法、版本与 curl&#x2F;nc 示例">第二章：HTTP 详解：报文、方法、版本与 curl&#x2F;nc 示例</a>、<a href="/2026/05/01/Protocol/WebSocket/" title="第十一章：WebSocket 详解：握手、帧与 Python 示例">第十一章：WebSocket 详解：握手、帧与 Python 示例</a>；低延迟场景还有 <strong>WebRTC</strong>、<strong>SRT</strong> 等。与图像处理的关系见 <a href="/2026/05/01/OpenCV/OpenCV/" title="第一章：OpenCV 计算机视觉入门">第一章：OpenCV 计算机视觉入门</a>——OpenCV 读帧做 CV，FFmpeg 负责编解码与封装，二者常组合使用。</p>
 <h2 id="本章小结"><a href="#本章小结" class="headerlink" title="本章小结"></a>本章小结</h2><table>
 <thead>
 <tr>
@@ -335,26 +466,31 @@
 </tr>
 </thead>
 <tbody><tr>
+<td>三大组件</td>
+<td><strong>ffmpeg</strong> 处理、<strong>ffprobe</strong> 看信息、<strong>ffplay</strong> 调试；动手前先 <code>ffprobe</code> 摸清输入</td>
+</tr>
+<tr>
 <td>命令骨架</td>
-<td><strong>全局选项 → <code>-i</code> 输入 → 输出选项 → 输出</strong>，<code>ffprobe</code> 先看媒体信息</td>
+<td><strong>全局选项 → <code>-i</code> 输入 → 输出选项 → 输出</strong>，内部走「解封装→解码→滤镜→编码→封装」</td>
 </tr>
 <tr>
-<td>转码控体积</td>
-<td><strong><code>-crf</code></strong> 控质量、<strong><code>-preset</code></strong> 权衡速度；<code>-c copy</code> 只换容器秒完成</td>
+<td>容器 vs 编码</td>
+<td>MP4&#x2F;MKV 是容器，H.264&#x2F;AAC 是编码；<code>-c copy</code> 跳过编解码、秒级换容器</td>
 </tr>
 <tr>
-<td>裁剪截图</td>
-<td><strong><code>-ss</code> 起点＋<code>-t</code> 时长</strong>切片，<code>-frames:v 1</code> 抓帧，<code>fps+scale</code> 生成 GIF</td>
+<td>时间定位</td>
+<td><code>-ss</code> 在 <code>-i</code> 前快速（关键帧）、在后精确（逐帧）；时间支持 <code>HH:MM:SS</code> 与秒数</td>
 </tr>
 <tr>
-<td>流媒体</td>
-<td><strong>RTMP 推流</strong>（<code>-f flv</code>）与 <strong>HLS 切片</strong>（<code>-f hls</code>）是直播两大基础玩法</td>
+<td>全局选项</td>
+<td><code>-y</code> 覆盖、<code>-hide_banner</code>&#x2F;<code>-loglevel</code> 控输出、<code>-progress</code> 监控进度</td>
 </tr>
 <tr>
-<td>提速手段</td>
-<td><strong><code>-vf</code></strong> 滤镜链加工画面，<strong>nvenc&#x2F;qsv</strong> 硬件编码大幅降低 CPU 负担</td>
+<td>上手路径</td>
+<td>先跑通转码与 <code>-c copy</code> 换容器，再进入第二章深入编解码质量控制</td>
 </tr>
 </tbody></table>
+<p>进入 <a href="/2026/05/01/FFmpeg/FFmpeg%E7%BC%96%E8%A7%A3%E7%A0%81/" title="第二章：编解码与转码">第二章：编解码与转码</a>，深入编解码器选择与质量控制。</p>
 
     </div>
 
@@ -371,13 +507,13 @@
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2026/05/01/GraphQL/GraphQL/" rel="prev" title="GraphQL">
-                  <i class="fa fa-angle-left"></i> GraphQL
+                <a href="/2026/05/01/FFmpeg/FFmpeg%E6%B5%81%E5%AA%92%E4%BD%93/" rel="prev" title="第五章：流媒体与直播推流">
+                  <i class="fa fa-angle-left"></i> 第五章：流媒体与直播推流
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2026/05/01/OpenCV/OpenCV/" rel="next" title="OpenCV">
-                  OpenCV <i class="fa fa-angle-right"></i>
+                <a href="/2026/05/01/OpenCV/OpenCV%E7%89%B9%E5%BE%81%E4%B8%8E%E5%87%A0%E4%BD%95/" rel="next" title="第四章：特征与几何">
+                  第四章：特征与几何 <i class="fa fa-angle-right"></i>
                 </a>
             </div>
           </div>
@@ -409,13 +545,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">279k</span>
+    <span title="站点总字数">321k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">15:29</span>
+    <span title="站点阅读时长">17:52</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

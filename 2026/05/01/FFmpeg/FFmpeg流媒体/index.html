@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"my919.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="第五章：流媒体与直播推流概念基础：直播与点播的差异 点播（VOD）转码生成完整文件供下载&#x2F;拖拽；直播是持续产生的流，观众边产生边消费，时延与一致性是核心矛盾。 三大协议：RTMP（推流主流，低延迟、TCP）、HLS（拉流主流，切片+列表，高兼容、延迟高）、DASH（HLS 的国际版替代，类似机制）。WebRTC&#x2F;SRT 面向超低延迟。 推流与拉流：推流（push）把本地媒体送到">
+<meta property="og:type" content="article">
+<meta property="og:title" content="第五章：流媒体与直播推流">
+<meta property="og:url" content="https://my919.github.io/2026/05/01/FFmpeg/FFmpeg%E6%B5%81%E5%AA%92%E4%BD%93/index.html">
+<meta property="og:site_name" content="my">
+<meta property="og:description" content="第五章：流媒体与直播推流概念基础：直播与点播的差异 点播（VOD）转码生成完整文件供下载&#x2F;拖拽；直播是持续产生的流，观众边产生边消费，时延与一致性是核心矛盾。 三大协议：RTMP（推流主流，低延迟、TCP）、HLS（拉流主流，切片+列表，高兼容、延迟高）、DASH（HLS 的国际版替代，类似机制）。WebRTC&#x2F;SRT 面向超低延迟。 推流与拉流：推流（push）把本地媒体送到">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-05-01T05:41:59.000Z">
+<meta property="article:modified_time" content="2026-08-31T14:12:22.863Z">
+<meta property="article:author" content="miracle">
+<meta property="article:tag" content="FFmpeg">
+<meta property="article:tag" content="音视频">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://my919.github.io/2026/05/01/FFmpeg/FFmpeg%E6%B5%81%E5%AA%92%E4%BD%93/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://my919.github.io/2026/05/01/FFmpeg/FFmpeg%E6%B5%81%E5%AA%92%E4%BD%93/","path":"2026/05/01/FFmpeg/FFmpeg流媒体/","title":"第五章：流媒体与直播推流"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>第五章：流媒体与直播推流 | my</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.10.1/mermaid.min.js","integrity":"sha256-BmQmdWDS8X2OTbrwELWK366LV6escyWhHHe0XCTU/Hk="}}</script>
+  <script src="/js/third-party/tags/mermaid.js" defer></script>
+
+
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="my" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">my</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-service"><a href="/service/" rel="section"><i class="fa fa-server fa-fw"></i>服务</a></li><li class="menu-item menu-item-tool"><a href="/tool/" rel="section"><i class="fa fa-wrench fa-fw"></i>工具</a></li><li class="menu-item menu-item-project"><a href="/project/" rel="section"><i class="fa fa-folder-open fa-fw"></i>项目</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%BA%94%E7%AB%A0%EF%BC%9A%E6%B5%81%E5%AA%92%E4%BD%93%E4%B8%8E%E7%9B%B4%E6%92%AD%E6%8E%A8%E6%B5%81"><span class="nav-number">1.</span> <span class="nav-text">第五章：流媒体与直播推流</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80%EF%BC%9A%E7%9B%B4%E6%92%AD%E4%B8%8E%E7%82%B9%E6%92%AD%E7%9A%84%E5%B7%AE%E5%BC%82"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础：直播与点播的差异</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81RTMP-%E6%8E%A8%E6%B5%81"><span class="nav-number">1.2.</span> <span class="nav-text">一、RTMP 推流</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81HLS-%E5%88%87%E7%89%87"><span class="nav-number">1.3.</span> <span class="nav-text">二、HLS 切片</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81DASH-%E5%88%87%E7%89%87"><span class="nav-number">1.4.</span> <span class="nav-text">三、DASH 切片</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E6%8B%89%E6%B5%81%E4%B8%8E%E8%BD%AC%E5%8F%91"><span class="nav-number">1.5.</span> <span class="nav-text">四、拉流与转发</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E7%9B%B4%E6%92%AD%E5%8F%82%E6%95%B0%E8%B0%83%E4%BC%98%E6%B8%85%E5%8D%95"><span class="nav-number">1.6.</span> <span class="nav-text">五、直播参数调优清单</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E5%A4%9A%E7%A0%81%E7%8E%87%E9%80%82%E9%85%8D%EF%BC%88ABR%EF%BC%89"><span class="nav-number">1.7.</span> <span class="nav-text">六、多码率适配（ABR）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%83%E3%80%81%E4%BF%9D%E6%B4%BB%E4%B8%8E%E8%BF%90%E7%BB%B4"><span class="nav-number">1.8.</span> <span class="nav-text">七、保活与运维</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AB%E3%80%81%E5%B8%B8%E8%A7%81%E9%99%B7%E9%98%B1"><span class="nav-number">1.9.</span> <span class="nav-text">八、常见陷阱</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.10.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">miracle</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">234</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">36</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">124</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/my919" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;my919" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://gitee.com/my919" title="Gitee → https:&#x2F;&#x2F;gitee.com&#x2F;my919" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>Gitee</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:yeal166@163.com" title="E-Mail → mailto:yeal166@163.com" rel="noopener me external nofollow noreferrer" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://my919.github.io/2026/05/01/FFmpeg/FFmpeg%E6%B5%81%E5%AA%92%E4%BD%93/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="第五章：流媒体与直播推流 | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          第五章：流媒体与直播推流
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-05-01 13:41:59" itemprop="dateCreated datePublished" datetime="2026-05-01T13:41:59+08:00">2026-05-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-08-31 22:12:22" itemprop="dateModified" datetime="2026-08-31T22:12:22+08:00">2026-08-31</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/FFmpeg/" itemprop="url" rel="index"><span itemprop="name">FFmpeg</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>1.7k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>6 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="第五章：流媒体与直播推流"><a href="#第五章：流媒体与直播推流" class="headerlink" title="第五章：流媒体与直播推流"></a>第五章：流媒体与直播推流</h1><h2 id="概念基础：直播与点播的差异"><a href="#概念基础：直播与点播的差异" class="headerlink" title="概念基础：直播与点播的差异"></a>概念基础：直播与点播的差异</h2><ol>
+<li><strong>点播（VOD）转码</strong>生成完整文件供下载&#x2F;拖拽；<strong>直播</strong>是持续产生的流，观众<strong>边产生边消费</strong>，时延与一致性是核心矛盾。</li>
+<li><strong>三大协议</strong>：<strong>RTMP</strong>（推流主流，低延迟、TCP）、<strong>HLS</strong>（拉流主流，切片+列表，高兼容、延迟高）、<strong>DASH</strong>（HLS 的国际版替代，类似机制）。WebRTC&#x2F;SRT 面向超低延迟。</li>
+<li><strong>推流与拉流</strong>：<strong>推流</strong>（push）把本地媒体送到服务器，如 <code>ffmpeg → RTMP 服务器</code>；<strong>拉流</strong>（pull）从源拉取再转发，如 <code>ffmpeg 拉一路 RTSP → 推给 HLS 切片</code>。</li>
+<li><strong><code>-re</code> 是直播关键</strong>：按真实帧率读取输入，防止 ffmpeg 全速把文件瞬间推完，导致服务器缓冲溢出。</li>
+<li><strong>本章目标</strong>：掌握 RTMP 推流、HLS&#x2F;DASH 切片、拉流转发、直播参数调优，能搭起最小直播链路。</li>
+</ol>
+<blockquote>
+<p>本章承接 <a href="/2026/05/01/FFmpeg/FFmpeg%E6%BB%A4%E9%95%9C/" title="第四章：滤镜与滤镜图">第四章：滤镜与滤镜图</a>，面向实时场景。协议基础见 <a href="/2026/05/01/Protocol/HTTP/" title="第二章：HTTP 详解：报文、方法、版本与 curl&#x2F;nc 示例">第二章：HTTP 详解：报文、方法、版本与 curl&#x2F;nc 示例</a>、<a href="/2026/05/01/Protocol/WebSocket/" title="第十一章：WebSocket 详解：握手、帧与 Python 示例">第十一章：WebSocket 详解：握手、帧与 Python 示例</a>。</p>
+</blockquote>
+<hr>
+<h2 id="一、RTMP-推流"><a href="#一、RTMP-推流" class="headerlink" title="一、RTMP 推流"></a>一、RTMP 推流</h2><p>RTMP 基于 TCP，是推流到 B 站&#x2F;斗鱼&#x2F;自建 Nginx-RTMP 的主流协议：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 文件推流到 RTMP（-re 按真实帧率读，-c copy 不重编码）</span></span><br><span class="line">ffmpeg -re -i input.mp4 -c copy -f flv rtmp://live.example.com/app/stream</span><br><span class="line"></span><br><span class="line"><span class="comment"># 实时采集推流（摄像头+麦克风，需设备名）</span></span><br><span class="line">ffmpeg -re -f v4l2 -i /dev/video0 -f alsa -i hw:0 \</span><br><span class="line">  -c:v libx264 -preset ultrafast -tune zerolatency -b:v 2M \</span><br><span class="line">  -c:a aac -b:a 128k -f flv rtmp://live.example.com/app/stream</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong><code>-re</code></strong>：按帧率读取，直播必备（点播转 HLS 也常用）。</li>
+<li><strong><code>-f flv</code></strong>：RTMP 封装用 FLV。</li>
+<li><strong><code>-tune zerolatency</code></strong>：编码器零延迟模式，直播首选。</li>
+<li><strong><code>-preset ultrafast</code></strong>：实时编码优先速度。</li>
+<li><strong><code>-g</code></strong>：关键帧间隔，直播常设为帧率×2（如 60，对应 30fps 的 2 秒 GOP）。</li>
+</ul>
+<blockquote>
+<p>推流地址需替换为实际服务器；自建可用 <code>nginx-rtmp-module</code> 或 SRS。</p>
+</blockquote>
+<hr>
+<h2 id="二、HLS-切片"><a href="#二、HLS-切片" class="headerlink" title="二、HLS 切片"></a>二、HLS 切片</h2><p>HLS 把媒体切成小 <code>.ts</code> 片段 + <code>.m3u8</code> 播放列表，HTTP 分发，兼容性最好（iOS&#x2F;Safari 原生支持）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 文件转 HLS（点播）</span></span><br><span class="line">ffmpeg -i input.mp4 \</span><br><span class="line">  -c:v libx264 -c:a aac \</span><br><span class="line">  -hls_time 6 -hls_playlist_type vod \</span><br><span class="line">  -hls_segment_filename <span class="string">&quot;seg_%03d.ts&quot;</span> \</span><br><span class="line">  -f hls index.m3u8</span><br><span class="line"></span><br><span class="line"><span class="comment"># 直播切片（-re 持续产生）</span></span><br><span class="line">ffmpeg -re -i input.mp4 \</span><br><span class="line">  -c:v libx264 -tune zerolatency -c:a aac \</span><br><span class="line">  -hls_time 2 -hls_list_size 3 -hls_flags delete_segments \</span><br><span class="line">  -f hls index.m3u8</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong><code>-hls_time N</code></strong>：每段约 N 秒（实际按 GOP 对齐）。</li>
+<li><strong><code>-hls_list_size N</code></strong>：列表保留 N 段；<strong>直播设小值</strong>（如 3–6），旧段自动滚动。</li>
+<li><strong><code>-hls_flags delete_segments</code></strong>：直播自动删旧段，防磁盘爆满。</li>
+<li><strong><code>-hls_playlist_type vod</code></strong>：点播固定列表；直播用 event（累积）或不设。</li>
+<li><strong>延迟</strong>：HLS 延迟 ≈ <code>hls_time × (hls_list_size + 1)</code>，常 10–30 秒，<strong>不适合低延迟</strong>。</li>
+</ul>
+<hr>
+<h2 id="三、DASH-切片"><a href="#三、DASH-切片" class="headerlink" title="三、DASH 切片"></a>三、DASH 切片</h2><p>DASH 机制类似 HLS，输出 <code>.mpd</code> 清单 + <code>.m4s</code> 分片，国际标准、Web 兼容好：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ffmpeg -i input.mp4 \</span><br><span class="line">  -c:v libx264 -c:a aac \</span><br><span class="line">  -f dash -seg_duration 4 -window_size 5 \</span><br><span class="line">  manifest.mpd</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong><code>-seg_duration</code></strong>：分片时长。</li>
+<li><strong><code>-window_size</code></strong>：滑窗大小（直播用）。</li>
+<li>浏览器用 dash.js 播放；HLS 用 hls.js。</li>
+</ul>
+<hr>
+<h2 id="四、拉流与转发"><a href="#四、拉流与转发" class="headerlink" title="四、拉流与转发"></a>四、拉流与转发</h2><p>从一路源拉取，转码或不转码后推到另一路，常用于「监控 RTSP 转 HLS 给浏览器」「转码适配多端」：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 拉 RTSP 摄像头，转码推 RTMP（不改协议但降分辨率适配带宽）</span></span><br><span class="line">ffmpeg -rtsp_transport tcp -i rtsp://camera/stream \</span><br><span class="line">  -c:v libx264 -preset ultrafast -tune zerolatency -vf <span class="string">&quot;scale=1280:-2&quot;</span> \</span><br><span class="line">  -c:a aac -f flv rtmp://server/app/stream</span><br><span class="line"></span><br><span class="line"><span class="comment"># 拉一路 RTMP，转 HLS 给网页播放</span></span><br><span class="line">ffmpeg -i rtmp://source/app/stream \</span><br><span class="line">  -c copy -f hls -hls_time 2 -hls_list_size 3 -hls_flags delete_segments \</span><br><span class="line">  index.m3u8</span><br><span class="line"></span><br><span class="line"><span class="comment"># 拉 HLS 再推 RTMP（协议转换）</span></span><br><span class="line">ffmpeg -i https://source/index.m3u8 -c copy -f flv rtmp://server/app/stream</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong><code>-rtsp_transport tcp</code></strong>：RTSP 用 TCP 传，比 UDP 稳（防丢包花屏）。</li>
+<li><strong>拉流是「无限」的</strong>：源不断开，ffmpeg 不退出；运维需配合 <code>systemd</code> 或循环脚本保活。</li>
+</ul>
+<hr>
+<h2 id="五、直播参数调优清单"><a href="#五、直播参数调优清单" class="headerlink" title="五、直播参数调优清单"></a>五、直播参数调优清单</h2><table>
+<thead>
+<tr>
+<th>参数</th>
+<th>作用</th>
+<th>直播建议</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong><code>-re</code></strong></td>
+<td>按帧率读</td>
+<td>必加，否则瞬间推完</td>
+</tr>
+<tr>
+<td><strong><code>-tune zerolatency</code></strong></td>
+<td>零延迟编码</td>
+<td>直播首选</td>
+</tr>
+<tr>
+<td><strong><code>-preset ultrafast</code></strong></td>
+<td>编码最快</td>
+<td>实时优先速度</td>
+</tr>
+<tr>
+<td><strong><code>-g 60</code></strong></td>
+<td>关键帧间隔</td>
+<td>&#x3D; 帧率×2（30fps 设 60，即 2 秒 GOP）</td>
+</tr>
+<tr>
+<td><strong><code>-b:v</code> &#x2F; <code>-maxrate</code> &#x2F; <code>-bufsize</code></strong></td>
+<td>码率与峰值</td>
+<td>限码率防波动，<code>-maxrate</code> 略高于 <code>-b:v</code></td>
+</tr>
+<tr>
+<td><strong><code>-flush_packets 1</code></strong></td>
+<td>立即发包</td>
+<td>降低缓冲延迟</td>
+</tr>
+<tr>
+<td><strong><code>-fflags nobuffer</code></strong></td>
+<td>减少解封装缓冲</td>
+<td>低延迟</td>
+</tr>
+<tr>
+<td><strong><code>-tune zerolatency</code></strong> + 小 GOP</td>
+<td>端到端延迟</td>
+<td>RTMP 可降到 1–3 秒</td>
+</tr>
+</tbody></table>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 低延迟 RTMP 推流模板</span></span><br><span class="line">ffmpeg -re -i input.mp4 \</span><br><span class="line">  -c:v libx264 -preset ultrafast -tune zerolatency \</span><br><span class="line">  -b:v 2M -maxrate 2.5M -bufsize 1M -g 60 \</span><br><span class="line">  -c:a aac -b:a 128k \</span><br><span class="line">  -fflags nobuffer -flush_packets 1 \</span><br><span class="line">  -f flv rtmp://server/app/stream</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="六、多码率适配（ABR）"><a href="#六、多码率适配（ABR）" class="headerlink" title="六、多码率适配（ABR）"></a>六、多码率适配（ABR）</h2><p>直播&#x2F;点播常提供多档清晰度，HLS&#x2F;DASH 用主清单 + 子清单：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 生成 1080p + 720p + 480p 三档 HLS（需 variant 列表，较复杂，此处示意）</span></span><br><span class="line">ffmpeg -i input.mp4 \</span><br><span class="line">  -c:v:0 libx264 -b:v:0 5M -s:0 1920x1080 \</span><br><span class="line">  -c:v:1 libx264 -b:v:1 2.5M -s:1 1280x720 \</span><br><span class="line">  -c:v:2 libx264 -b:v:2 1M -s:2 854x480 \</span><br><span class="line">  -c:a aac -b:a 128k \</span><br><span class="line">  -map 0:v -map 0:a -map 0:v -map 0:a -map 0:v -map 0:a \</span><br><span class="line">  -f hls -hls_time 4 -master_pl_name master.m3u8 \</span><br><span class="line">  -var_stream_map <span class="string">&quot;v:0,a:0 v:1,a:1 v:2,a:2&quot;</span> \</span><br><span class="line">  stream_%v/playlist.m3u8</span><br></pre></td></tr></table></figure>
+
+<p>播放器按带宽自适应切换档位（HLS 标准行为）。</p>
+<hr>
+<h2 id="七、保活与运维"><a href="#七、保活与运维" class="headerlink" title="七、保活与运维"></a>七、保活与运维</h2><p>直播是长时进程，需保活与监控：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># systemd 服务：失败自动重启</span></span><br><span class="line"><span class="comment"># /etc/systemd/system/stream.service</span></span><br><span class="line"><span class="comment"># [Service]</span></span><br><span class="line"><span class="comment"># ExecStart=/usr/bin/ffmpeg -re -i ... -f flv rtmp://...</span></span><br><span class="line"><span class="comment"># Restart=always</span></span><br><span class="line"><span class="comment"># RestartSec=3</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 或 shell 循环保活</span></span><br><span class="line"><span class="keyword">while</span> <span class="literal">true</span>; <span class="keyword">do</span></span><br><span class="line">  ffmpeg -re -i input.mp4 -c copy -f flv rtmp://server/app/stream</span><br><span class="line">  <span class="built_in">echo</span> <span class="string">&quot;退出，3 秒后重连&quot;</span></span><br><span class="line">  <span class="built_in">sleep</span> 3</span><br><span class="line"><span class="keyword">done</span></span><br></pre></td></tr></table></figure>
+
+<p>监控：<code>-progress pipe:1</code> 输出进度，配合脚本统计码率&#x2F;丢帧；服务器侧看连接数与带宽。</p>
+<hr>
+<h2 id="八、常见陷阱"><a href="#八、常见陷阱" class="headerlink" title="八、常见陷阱"></a>八、常见陷阱</h2><table>
+<thead>
+<tr>
+<th>陷阱</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>漏 <code>-re</code></strong></td>
+<td>文件瞬间推完，服务器缓冲溢出、观众卡顿</td>
+</tr>
+<tr>
+<td><strong>HLS 延迟高</strong></td>
+<td><code>hls_time</code>×<code>list_size</code> 决定延迟，低延迟场景换 RTMP&#x2F;WebRTC</td>
+</tr>
+<tr>
+<td><strong><code>-c copy</code> 推流不兼容</strong></td>
+<td>源编码非 H.264&#x2F;AAC 时 RTMP 不支持，需重编码</td>
+</tr>
+<tr>
+<td><strong>GOP 不规律</strong></td>
+<td>关键帧间隔乱导致切片错位、花屏；直播固定 <code>-g</code></td>
+</tr>
+<tr>
+<td><strong>磁盘爆满</strong></td>
+<td>直播 HLS 不加 <code>delete_segments</code>，旧段不清理</td>
+</tr>
+<tr>
+<td><strong>RTSP 丢包花屏</strong></td>
+<td>UDP 拉流易丢包，加 <code>-rtsp_transport tcp</code></td>
+</tr>
+<tr>
+<td><strong>断流不重连</strong></td>
+<td>单次 ffmpeg 退出不自动恢复，需 systemd&#x2F;循环保活</td>
+</tr>
+<tr>
+<td><strong>音视频不同步</strong></td>
+<td>编码缓冲不一致；用 <code>-async 1</code>&#x2F;<code>-vsync 1</code> 或统一时间基</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="本章小结"><a href="#本章小结" class="headerlink" title="本章小结"></a>本章小结</h2><table>
+<thead>
+<tr>
+<th>要点</th>
+<th>结论</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>三协议</td>
+<td>RTMP 推流低延迟、HLS 拉流高兼容高延迟、DASH 国际版；超低延迟用 WebRTC&#x2F;SRT</td>
+</tr>
+<tr>
+<td><code>-re</code></td>
+<td>按帧率读，直播必备，防瞬间推完</td>
+</tr>
+<tr>
+<td>RTMP</td>
+<td><code>-f flv</code> + <code>libx264 -tune zerolatency -preset ultrafast</code>；源非 H.264&#x2F;AAC 需重编码</td>
+</tr>
+<tr>
+<td>HLS</td>
+<td><code>-hls_time</code> 段长 + <code>-hls_list_size</code> 滚窗 + <code>delete_segments</code> 直播清理；延迟 &#x3D; 段×窗</td>
+</tr>
+<tr>
+<td>拉流转发</td>
+<td>RTSP 用 <code>-rtsp_transport tcp</code>；协议转换 <code>-i 源 -c copy -f 目标</code></td>
+</tr>
+<tr>
+<td>低延迟</td>
+<td><code>zerolatency</code> + 小 GOP + <code>nobuffer</code> + <code>flush_packets</code>，RTMP 可 1–3 秒</td>
+</tr>
+<tr>
+<td>ABR</td>
+<td>多码率主清单，播放器按带宽自适应</td>
+</tr>
+<tr>
+<td>运维</td>
+<td>systemd&#x2F;循环保活 + <code>-progress</code> 监控；HLS 必清理旧段</td>
+</tr>
+</tbody></table>
+<p>进入 <a href="/2026/05/01/FFmpeg/FFmpeg%E9%AB%98%E7%BA%A7%E7%89%B9%E6%80%A7/" title="第六章：高级技巧与性能调优">第六章：高级技巧与性能调优</a>，学习硬件加速、批处理与生产级调优。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/FFmpeg/" rel="tag"># FFmpeg</a>
+              <a href="/tags/%E9%9F%B3%E8%A7%86%E9%A2%91/" rel="tag"># 音视频</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/05/01/FFmpeg/FFmpeg%E6%BB%A4%E9%95%9C/" rel="prev" title="第四章：滤镜与滤镜图">
+                  <i class="fa fa-angle-left"></i> 第四章：滤镜与滤镜图
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2026/05/01/FFmpeg/FFmpeg/" rel="next" title="第一章：FFmpeg 音视频处理入门">
+                  第一章：FFmpeg 音视频处理入门 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">miracle</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">321k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">17:52</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+<script>
+(function () {
+  function normalizeClipboard(s) {
+    return (s || '').replace(/\u00a0/g, ' ');
+  }
+
+  /** When innerText is empty, treat <br> as newlines (matches Hexo fenced + line_number HTML). */
+  function plainTextFromElement(el) {
+    if (!el) return '';
+    var t = el.innerText;
+    if (t != null && t !== '') return normalizeClipboard(t);
+    var clone = el.cloneNode(true);
+    clone.querySelectorAll('br').forEach(function (br) {
+      br.parentNode.replaceChild(document.createTextNode('\n'), br);
+    });
+    return normalizeClipboard(clone.textContent || '');
+  }
+
+  function extractFromFigure(fig) {
+    if (!fig) return '';
+    var cell = fig.querySelector('td.code') || fig.querySelector('.code');
+    if (cell) return plainTextFromElement(cell);
+    var pre = fig.querySelector('pre');
+    if (pre) return plainTextFromElement(pre);
+    var code = fig.querySelector('code');
+    return code ? plainTextFromElement(code) : '';
+  }
+
+  function extractForCopyBtn(btn) {
+    var fig = btn.closest('figure.highlight');
+    if (fig) return extractFromFigure(fig);
+    var wrap = btn.closest('.code-container');
+    if (wrap) {
+      var innerFig = wrap.querySelector('figure.highlight');
+      if (innerFig) return extractFromFigure(innerFig);
+      var preOnly = wrap.querySelector('pre');
+      if (preOnly) return plainTextFromElement(preOnly);
+    }
+    return '';
+  }
+
+  function setCopyIcon(btn, ok) {
+    var i = btn.querySelector('i');
+    if (i) i.className = ok ? 'fa fa-check-circle fa-fw' : 'fa fa-times-circle fa-fw';
+  }
+
+  function writeClipboard(text, btn) {
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(text).then(
+        function () { setCopyIcon(btn, true); },
+        function () { fallbackCopy(text, btn); }
+      );
+    }
+    fallbackCopy(text, btn);
+    return Promise.resolve();
+  }
+
+  function fallbackCopy(text, btn) {
+    try {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed';
+      ta.style.left = '-9999px';
+      document.body.appendChild(ta);
+      ta.select();
+      var ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      setCopyIcon(btn, ok);
+    } catch (e) {
+      setCopyIcon(btn, false);
+    }
+  }
+
+  document.addEventListener(
+    'click',
+    function (e) {
+      var btn = e.target.closest && e.target.closest('.copy-btn');
+      if (!btn) return;
+      if (!btn.closest('figure.highlight') && !btn.closest('.code-container')) return;
+      e.stopPropagation();
+      e.preventDefault();
+      var text = extractForCopyBtn(btn);
+      writeClipboard(text, btn);
+    },
+    true
+  );
+})();
+</script>
+
+</body>
+</html>
