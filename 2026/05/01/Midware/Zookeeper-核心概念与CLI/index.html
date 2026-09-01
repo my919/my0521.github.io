@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"my919.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="第一章：ZooKeeper 核心概念与 CLI 实战概念基础 分布式协调服务：ZooKeeper 为分布式系统提供配置管理、命名服务、分布式锁与选主等基础原语，是 Kafka、Hadoop 等大数据组件的经典协调底座。 数据模型像文件树：数据组织为 ZNode 树（如 &#x2F;app&#x2F;config），节点可存少量元数据（默认 1MB 上限），客户端可挂 Watcher 监听变化——读多写少是它的设计前提">
+<meta property="og:type" content="article">
+<meta property="og:title" content="第一章：ZooKeeper 核心概念与 CLI 实战">
+<meta property="og:url" content="https://my919.github.io/2026/05/01/Midware/Zookeeper-%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5%E4%B8%8ECLI/index.html">
+<meta property="og:site_name" content="my">
+<meta property="og:description" content="第一章：ZooKeeper 核心概念与 CLI 实战概念基础 分布式协调服务：ZooKeeper 为分布式系统提供配置管理、命名服务、分布式锁与选主等基础原语，是 Kafka、Hadoop 等大数据组件的经典协调底座。 数据模型像文件树：数据组织为 ZNode 树（如 &#x2F;app&#x2F;config），节点可存少量元数据（默认 1MB 上限），客户端可挂 Watcher 监听变化——读多写少是它的设计前提">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-05-01T12:35:16.000Z">
+<meta property="article:modified_time" content="2026-09-01T15:03:45.498Z">
+<meta property="article:author" content="miracle">
+<meta property="article:tag" content="ZooKeeper">
+<meta property="article:tag" content="分布式">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://my919.github.io/2026/05/01/Midware/Zookeeper-%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5%E4%B8%8ECLI/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://my919.github.io/2026/05/01/Midware/Zookeeper-%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5%E4%B8%8ECLI/","path":"2026/05/01/Midware/Zookeeper-核心概念与CLI/","title":"第一章：ZooKeeper 核心概念与 CLI 实战"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>第一章：ZooKeeper 核心概念与 CLI 实战 | my</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.10.1/mermaid.min.js","integrity":"sha256-BmQmdWDS8X2OTbrwELWK366LV6escyWhHHe0XCTU/Hk="}}</script>
+  <script src="/js/third-party/tags/mermaid.js" defer></script>
+
+
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="my" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">my</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-service"><a href="/service/" rel="section"><i class="fa fa-server fa-fw"></i>服务</a></li><li class="menu-item menu-item-tool"><a href="/tool/" rel="section"><i class="fa fa-wrench fa-fw"></i>工具</a></li><li class="menu-item menu-item-project"><a href="/project/" rel="section"><i class="fa fa-folder-open fa-fw"></i>项目</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E7%AB%A0%EF%BC%9AZooKeeper-%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5%E4%B8%8E-CLI-%E5%AE%9E%E6%88%98"><span class="nav-number">1.</span> <span class="nav-text">第一章：ZooKeeper 核心概念与 CLI 实战</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81ZNode-%E4%B8%8E%E8%8A%82%E7%82%B9%E7%B1%BB%E5%9E%8B"><span class="nav-number">1.2.</span> <span class="nav-text">一、ZNode 与节点类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81zkCli-%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4"><span class="nav-number">1.3.</span> <span class="nav-text">二、zkCli 常用命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81Watcher%EF%BC%9A%E4%B8%80%E6%AC%A1%E6%80%A7%E9%80%9A%E7%9F%A5"><span class="nav-number">1.4.</span> <span class="nav-text">三、Watcher：一次性通知</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E7%BB%8F%E5%85%B8%E9%85%8D%E6%96%B9%EF%BC%9A%E9%94%81%E4%B8%8E%E9%80%89%E4%B8%BB"><span class="nav-number">1.5.</span> <span class="nav-text">四、经典配方：锁与选主</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%EF%BC%88%E4%B8%B4%E6%97%B6%E9%A1%BA%E5%BA%8F%E8%8A%82%E7%82%B9%EF%BC%89"><span class="nav-number">1.5.1.</span> <span class="nav-text">1. 分布式锁（临时顺序节点）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E9%80%89%E4%B8%BB%EF%BC%88Master-Election%EF%BC%89"><span class="nav-number">1.5.2.</span> <span class="nav-text">2. 选主（Master Election）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81ZooKeeper-%E7%9A%84%E8%BE%B9%E7%95%8C"><span class="nav-number">1.6.</span> <span class="nav-text">五、ZooKeeper 的边界</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.7.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">miracle</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">257</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">36</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">156</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/my919" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;my919" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://gitee.com/my919" title="Gitee → https:&#x2F;&#x2F;gitee.com&#x2F;my919" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>Gitee</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:yeal166@163.com" title="E-Mail → mailto:yeal166@163.com" rel="noopener me external nofollow noreferrer" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://my919.github.io/2026/05/01/Midware/Zookeeper-%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5%E4%B8%8ECLI/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="第一章：ZooKeeper 核心概念与 CLI 实战 | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          第一章：ZooKeeper 核心概念与 CLI 实战
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-05-01 20:35:16" itemprop="dateCreated datePublished" datetime="2026-05-01T20:35:16+08:00">2026-05-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-09-01 23:03:45" itemprop="dateModified" datetime="2026-09-01T23:03:45+08:00">2026-09-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Middleware/" itemprop="url" rel="index"><span itemprop="name">Middleware</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>1.3k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>4 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="第一章：ZooKeeper-核心概念与-CLI-实战"><a href="#第一章：ZooKeeper-核心概念与-CLI-实战" class="headerlink" title="第一章：ZooKeeper 核心概念与 CLI 实战"></a>第一章：ZooKeeper 核心概念与 CLI 实战</h1><h2 id="概念基础"><a href="#概念基础" class="headerlink" title="概念基础"></a>概念基础</h2><ol>
+<li><strong>分布式协调服务</strong>：ZooKeeper 为分布式系统提供<strong>配置管理、命名服务、分布式锁与选主</strong>等基础原语，是 Kafka、Hadoop 等大数据组件的经典协调底座。</li>
+<li><strong>数据模型像文件树</strong>：数据组织为 <strong>ZNode 树</strong>（如 <code>/app/config</code>），节点可存少量元数据（默认 1MB 上限），客户端可挂 <strong>Watcher</strong> 监听变化——<strong>读多写少</strong>是它的设计前提。</li>
+<li><strong>强一致靠多数派</strong>：基于 <strong>ZAB 协议</strong>，写请求需<strong>过半节点</strong>确认；集群必须<strong>奇数个节点</strong>（3 节点容忍 1 故障，5 节点容忍 2）。</li>
+<li><strong>四种节点类型</strong>：持久、持久顺序、临时、临时顺序——临时节点随会话消失，是「服务注册与故障感知」的基石。</li>
+<li><strong>Client 用 zkCli 上手</strong>：官方脚本 <code>zkCli.sh</code> 覆盖增删改查与监听，本地理解语义后再看 Java&#x2F;Go 客户端；部署见 <a href="/2026/05/01/Midware/Zookeeper-Docker/" title="第二章：Docker 部署 ZooKeeper 实践">第二章：Docker 部署 ZooKeeper 实践</a>。</li>
+</ol>
+<blockquote>
+<p>本章命令基于 ZooKeeper 3.9 官方 CLI 语法书写（沙箱无实例，未逐条运行验证）。</p>
+</blockquote>
+<hr>
+<h2 id="一、ZNode-与节点类型"><a href="#一、ZNode-与节点类型" class="headerlink" title="一、ZNode 与节点类型"></a>一、ZNode 与节点类型</h2><pre>
+<code class="mermaid">
+
+flowchart TD
+  R[&#x2F;] --&gt; A[app]
+  A --&gt; C[config]
+  A --&gt; L[leader   &lt;临时顺序&gt;]
+  A --&gt; W[workers   &lt;临时&gt;]
+</code>
+</pre>
+
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>特性</th>
+<th>典型用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>持久节点</td>
+<td>显式删除才消失</td>
+<td>配置、元数据</td>
+</tr>
+<tr>
+<td>持久顺序节点</td>
+<td>名字自动追加单调序号</td>
+<td>全局队列、任务编号</td>
+</tr>
+<tr>
+<td>临时节点（ephemeral）</td>
+<td><strong>会话断开即删除</strong></td>
+<td>服务注册、存活探针</td>
+</tr>
+<tr>
+<td>临时顺序节点</td>
+<td>临时 + 自增序号</td>
+<td><strong>分布式锁、选主</strong></td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>顺序节点序号由 ZK 保证单调递增（<code>/lock-0000000012</code>），这是「谁序号小谁持锁」这类算法的正确性来源。</p>
+</blockquote>
+<hr>
+<h2 id="二、zkCli-常用命令"><a href="#二、zkCli-常用命令" class="headerlink" title="二、zkCli 常用命令"></a>二、zkCli 常用命令</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 连接（部署方式见第二章）</span></span><br><span class="line">zkCli.sh -server 127.0.0.1:2181</span><br><span class="line"></span><br><span class="line">create /app <span class="string">&quot;demo&quot;</span>                 <span class="comment"># 创建持久节点</span></span><br><span class="line">create /app/workers <span class="string">&quot;&quot;</span>             <span class="comment"># 空数据节点</span></span><br><span class="line">create -e /app/worker-1 <span class="string">&quot;&quot;</span>         <span class="comment"># -e 临时节点</span></span><br><span class="line">create -s /app/task- <span class="string">&quot;&quot;</span>            <span class="comment"># -s 顺序节点（自动追加序号）</span></span><br><span class="line">create -e -s /app/lock- <span class="string">&quot;&quot;</span>         <span class="comment"># 临时顺序：锁与选主的原料</span></span><br><span class="line"></span><br><span class="line">get /app                           <span class="comment"># 读节点数据与元信息</span></span><br><span class="line"><span class="built_in">ls</span> /app                            <span class="comment"># 列子节点</span></span><br><span class="line"><span class="built_in">stat</span> /app                          <span class="comment"># 只看元信息（版本号、zxid）</span></span><br><span class="line"><span class="built_in">set</span> /app/config <span class="string">&quot;v2&quot;</span>               <span class="comment"># 更新（CAS 语义见下）</span></span><br><span class="line">delete /app/task-0000000001        <span class="comment"># 删除叶子节点</span></span><br><span class="line">deleteall /app/old                 <span class="comment"># 递归删除</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>stat 关注三个字段</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>dataVersion</code></td>
+<td>数据版本号，<code>set -v &lt;期望版本&gt;</code> 实现乐观锁</td>
+</tr>
+<tr>
+<td><code>ephemeralOwner</code></td>
+<td>非 0 表示临时节点（及所属会话）</td>
+</tr>
+<tr>
+<td><code>pzxid / czxid</code></td>
+<td>子节点&#x2F;节点变更的事务 ID，排障时判断变更顺序</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="三、Watcher：一次性通知"><a href="#三、Watcher：一次性通知" class="headerlink" title="三、Watcher：一次性通知"></a>三、Watcher：一次性通知</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 在 shell A 监听（3.9 的 CLI 用 -w，监听后退出等待）</span></span><br><span class="line">get -w /app/config</span><br><span class="line"></span><br><span class="line"><span class="comment"># 在 shell B 修改</span></span><br><span class="line"><span class="built_in">set</span> /app/config <span class="string">&quot;v3&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># shell A 立即输出：</span></span><br><span class="line"><span class="comment"># WATCHER:: WatchedEvent state:SyncConnected type:NodeDataChanged path:/app/config</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>关键语义</strong>：</p>
+<ul>
+<li>Watcher 是<strong>一次性</strong>的——触发一次即失效，客户端 SDK 需重新注册（Curator 的 Cache 帮你做了）。</li>
+<li>通知的是**「事件发生了」<strong>，不带新数据；收到通知后要</strong>自己再读一次**，避免丢增量。</li>
+<li>会话断开期间的事件不会补发，重连后应主动全量拉取对齐。</li>
+</ul>
+<hr>
+<h2 id="四、经典配方：锁与选主"><a href="#四、经典配方：锁与选主" class="headerlink" title="四、经典配方：锁与选主"></a>四、经典配方：锁与选主</h2><h3 id="1-分布式锁（临时顺序节点）"><a href="#1-分布式锁（临时顺序节点）" class="headerlink" title="1. 分布式锁（临时顺序节点）"></a>1. 分布式锁（临时顺序节点）</h3><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">1. 所有竞争者 create -e -s /locks/task-lock-，得到各自序号</span><br><span class="line">2. ls /locks 取最小序号：是自己 → 获得锁</span><br><span class="line">                     不是 → 对「比自己小的最近节点」挂 Watcher 等通知</span><br><span class="line">3. 释放：delete 自己的节点；被通知者回到第 2 步</span><br></pre></td></tr></table></figure>
+
+<p>只监听<strong>前一个节点</strong>而非所有节点（羊群效应规避），通知风暴从 N 降到 1。</p>
+<h3 id="2-选主（Master-Election）"><a href="#2-选主（Master-Election）" class="headerlink" title="2. 选主（Master Election）"></a>2. 选主（Master Election）</h3><p>与锁同理：<code>/election/node-</code> 最小序号为 leader；leader 会话断开（进程崩溃）后临时节点消失，次小序号自动上位——<strong>故障感知由会话心跳完成</strong>，无需额外探活。</p>
+<blockquote>
+<p>生产不手写这些协议：Java 用 <strong>Apache Curator</strong>（封装好 <code>InterProcessMutex</code>、<code>LeaderLatch</code>），Kafka 2.8+ 更是用 KRaft 替代了 ZK——理解原理是为了看懂你正在用的库。</p>
+</blockquote>
+<hr>
+<h2 id="五、ZooKeeper-的边界"><a href="#五、ZooKeeper-的边界" class="headerlink" title="五、ZooKeeper 的边界"></a>五、ZooKeeper 的边界</h2><table>
+<thead>
+<tr>
+<th>适合</th>
+<th>不适合</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>元数据、配置、注册表（小数据）</td>
+<td>业务数据存储（1MB 上限、写吞吐有限）</td>
+</tr>
+<tr>
+<td>选主、锁、分布式队列等协调原语</td>
+<td>高频计数器&#x2F;实时指标（写多场景）</td>
+</tr>
+<tr>
+<td>强一致的少量关键状态</td>
+<td>最终一致可接受的大流量场景（用 MQ&#x2F;Redis 更合适）</td>
+</tr>
+</tbody></table>
+<p><strong>会话参数</strong>：<code>tickTime</code>（心跳单位）、<code>sessionTimeout = 2~20 × tickTime</code>；网络抖动超过 sessionTimeout 临时节点即消失——服务注册场景要把它与业务健康检查区分开。</p>
+<hr>
+<h2 id="本章小结"><a href="#本章小结" class="headerlink" title="本章小结"></a>本章小结</h2><table>
+<thead>
+<tr>
+<th>要点</th>
+<th>结论</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>数据模型</td>
+<td>ZNode 树 + 1MB 限制 + Watcher，读多写少的协调定位</td>
+</tr>
+<tr>
+<td>节点类型</td>
+<td>临时节点管存活感知，顺序序号保证全局有序，二者组合出锁与选主</td>
+</tr>
+<tr>
+<td>CLI</td>
+<td>create 的 <code>-e</code>&#x2F;<code>-s</code>、<code>get -w</code> 监听、<code>set -v</code> 乐观锁</td>
+</tr>
+<tr>
+<td>Watcher</td>
+<td>一次性、只报事件不报数据、重连后需全量对齐</td>
+</tr>
+<tr>
+<td>配方</td>
+<td>锁&#x2F;选主 &#x3D; 临时顺序节点 + 只监听前驱；生产用 Curator 不手写</td>
+</tr>
+</tbody></table>
+<hr>
+<p>理解语义之后动手部署：<a href="/2026/05/01/Midware/Zookeeper-Docker/" title="第二章：Docker 部署 ZooKeeper 实践">第二章：Docker 部署 ZooKeeper 实践</a>，从单容器到 Compose 与 K8s 清单。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/ZooKeeper/" rel="tag"># ZooKeeper</a>
+              <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/" rel="tag"># 分布式</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/05/01/openssl-kdf-rand/" rel="prev" title="第七章：OpenSSL 密钥派生与随机数：PBKDF2、rand 与推荐用法">
+                  <i class="fa fa-angle-left"></i> 第七章：OpenSSL 密钥派生与随机数：PBKDF2、rand 与推荐用法
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2026/05/01/Redis/Redis-Docker/" rel="next" title="第二章：Docker 部署 Redis 实践">
+                  第二章：Docker 部署 Redis 实践 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">miracle</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">362k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">20:07</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+<script>
+(function () {
+  function normalizeClipboard(s) {
+    return (s || '').replace(/\u00a0/g, ' ');
+  }
+
+  /** When innerText is empty, treat <br> as newlines (matches Hexo fenced + line_number HTML). */
+  function plainTextFromElement(el) {
+    if (!el) return '';
+    var t = el.innerText;
+    if (t != null && t !== '') return normalizeClipboard(t);
+    var clone = el.cloneNode(true);
+    clone.querySelectorAll('br').forEach(function (br) {
+      br.parentNode.replaceChild(document.createTextNode('\n'), br);
+    });
+    return normalizeClipboard(clone.textContent || '');
+  }
+
+  function extractFromFigure(fig) {
+    if (!fig) return '';
+    var cell = fig.querySelector('td.code') || fig.querySelector('.code');
+    if (cell) return plainTextFromElement(cell);
+    var pre = fig.querySelector('pre');
+    if (pre) return plainTextFromElement(pre);
+    var code = fig.querySelector('code');
+    return code ? plainTextFromElement(code) : '';
+  }
+
+  function extractForCopyBtn(btn) {
+    var fig = btn.closest('figure.highlight');
+    if (fig) return extractFromFigure(fig);
+    var wrap = btn.closest('.code-container');
+    if (wrap) {
+      var innerFig = wrap.querySelector('figure.highlight');
+      if (innerFig) return extractFromFigure(innerFig);
+      var preOnly = wrap.querySelector('pre');
+      if (preOnly) return plainTextFromElement(preOnly);
+    }
+    return '';
+  }
+
+  function setCopyIcon(btn, ok) {
+    var i = btn.querySelector('i');
+    if (i) i.className = ok ? 'fa fa-check-circle fa-fw' : 'fa fa-times-circle fa-fw';
+  }
+
+  function writeClipboard(text, btn) {
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(text).then(
+        function () { setCopyIcon(btn, true); },
+        function () { fallbackCopy(text, btn); }
+      );
+    }
+    fallbackCopy(text, btn);
+    return Promise.resolve();
+  }
+
+  function fallbackCopy(text, btn) {
+    try {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed';
+      ta.style.left = '-9999px';
+      document.body.appendChild(ta);
+      ta.select();
+      var ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      setCopyIcon(btn, ok);
+    } catch (e) {
+      setCopyIcon(btn, false);
+    }
+  }
+
+  document.addEventListener(
+    'click',
+    function (e) {
+      var btn = e.target.closest && e.target.closest('.copy-btn');
+      if (!btn) return;
+      if (!btn.closest('figure.highlight') && !btn.closest('.code-container')) return;
+      e.stopPropagation();
+      e.preventDefault();
+      var text = extractForCopyBtn(btn);
+      writeClipboard(text, btn);
+    },
+    true
+  );
+})();
+</script>
+
+</body>
+</html>

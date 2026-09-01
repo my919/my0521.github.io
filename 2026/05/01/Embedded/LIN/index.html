@@ -20,15 +20,15 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"my919.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
 
-    <meta name="description" content="第十章：LIN 总线：单主多从与调度表概念基础：LIN 是什么 LIN（Local Interconnect Network，局部互联网络）是低成本的单主多从串行总线：一根总线挂一个 Master 与若干 Slave，常见于车窗、座椅、雨刮等车身电子。 为什么便宜：基于普通 UART 硬件即可实现，物理层常用单线、12V 电平，收发器（如 TJA1021）远比 CAN 便宜，从节点甚至可用廉价 8">
+    <meta name="description" content="第十章：LIN 总线：单主多从与调度表概念基础 LIN（Local Interconnect Network，局部互联网络）是低成本的单主多从串行总线：一根总线挂一个 Master 与若干 Slave，常见于车窗、座椅、雨刮等车身电子。 为什么便宜：基于普通 UART 硬件即可实现，物理层常用单线、12V 电平，收发器（如 TJA1021）远比 CAN 便宜，从节点甚至可用廉价 8 位 MCU——">
 <meta property="og:type" content="article">
 <meta property="og:title" content="第十章：LIN 总线：单主多从与调度表">
 <meta property="og:url" content="https://my919.github.io/2026/05/01/Embedded/LIN/index.html">
 <meta property="og:site_name" content="my">
-<meta property="og:description" content="第十章：LIN 总线：单主多从与调度表概念基础：LIN 是什么 LIN（Local Interconnect Network，局部互联网络）是低成本的单主多从串行总线：一根总线挂一个 Master 与若干 Slave，常见于车窗、座椅、雨刮等车身电子。 为什么便宜：基于普通 UART 硬件即可实现，物理层常用单线、12V 电平，收发器（如 TJA1021）远比 CAN 便宜，从节点甚至可用廉价 8">
+<meta property="og:description" content="第十章：LIN 总线：单主多从与调度表概念基础 LIN（Local Interconnect Network，局部互联网络）是低成本的单主多从串行总线：一根总线挂一个 Master 与若干 Slave，常见于车窗、座椅、雨刮等车身电子。 为什么便宜：基于普通 UART 硬件即可实现，物理层常用单线、12V 电平，收发器（如 TJA1021）远比 CAN 便宜，从节点甚至可用廉价 8 位 MCU——">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-05-01T05:12:56.000Z">
-<meta property="article:modified_time" content="2026-08-30T09:10:05.255Z">
+<meta property="article:modified_time" content="2026-09-01T13:56:38.256Z">
 <meta property="article:author" content="miracle">
 <meta property="article:tag" content="Embedded">
 <meta name="twitter:card" content="summary">
@@ -161,7 +161,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E5%8D%81%E7%AB%A0%EF%BC%9ALIN-%E6%80%BB%E7%BA%BF%EF%BC%9A%E5%8D%95%E4%B8%BB%E5%A4%9A%E4%BB%8E%E4%B8%8E%E8%B0%83%E5%BA%A6%E8%A1%A8"><span class="nav-number">1.</span> <span class="nav-text">第十章：LIN 总线：单主多从与调度表</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80%EF%BC%9ALIN-%E6%98%AF%E4%BB%80%E4%B9%88"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础：LIN 是什么</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%95%E4%B8%BB%E5%A4%9A%E4%BB%8E%E6%8B%93%E6%89%91"><span class="nav-number">1.2.</span> <span class="nav-text">单主多从拓扑</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E8%A7%92%E8%89%B2"><span class="nav-number">1.3.</span> <span class="nav-text">一、角色</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E5%B8%A7%E7%BB%93%E6%9E%84%EF%BC%88%E7%AE%80%E5%8C%96%EF%BC%89"><span class="nav-number">1.4.</span> <span class="nav-text">二、帧结构（简化）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E8%B0%83%E5%BA%A6%E8%A1%A8%EF%BC%88Schedule-Table%EF%BC%89"><span class="nav-number">1.5.</span> <span class="nav-text">三、调度表（Schedule Table）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E4%B8%8E-CAN"><span class="nav-number">1.6.</span> <span class="nav-text">四、与 CAN</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E7%A1%AC%E4%BB%B6%E4%B8%8E%E8%B0%83%E8%AF%95"><span class="nav-number">1.7.</span> <span class="nav-text">五、硬件与调试</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.8.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E5%8D%81%E7%AB%A0%EF%BC%9ALIN-%E6%80%BB%E7%BA%BF%EF%BC%9A%E5%8D%95%E4%B8%BB%E5%A4%9A%E4%BB%8E%E4%B8%8E%E8%B0%83%E5%BA%A6%E8%A1%A8"><span class="nav-number">1.</span> <span class="nav-text">第十章：LIN 总线：单主多从与调度表</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%95%E4%B8%BB%E5%A4%9A%E4%BB%8E%E6%8B%93%E6%89%91"><span class="nav-number">1.2.</span> <span class="nav-text">单主多从拓扑</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E8%A7%92%E8%89%B2"><span class="nav-number">1.3.</span> <span class="nav-text">一、角色</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E5%B8%A7%E7%BB%93%E6%9E%84%EF%BC%88%E7%AE%80%E5%8C%96%EF%BC%89"><span class="nav-number">1.4.</span> <span class="nav-text">二、帧结构（简化）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E8%B0%83%E5%BA%A6%E8%A1%A8%EF%BC%88Schedule-Table%EF%BC%89"><span class="nav-number">1.5.</span> <span class="nav-text">三、调度表（Schedule Table）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E4%B8%8E-CAN"><span class="nav-number">1.6.</span> <span class="nav-text">四、与 CAN</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E7%A1%AC%E4%BB%B6%E4%B8%8E%E8%B0%83%E8%AF%95"><span class="nav-number">1.7.</span> <span class="nav-text">五、硬件与调试</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.8.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -174,7 +174,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">234</span>
+          <span class="site-state-item-count">257</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -185,7 +185,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">124</span>
+        <span class="site-state-item-count">156</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -259,7 +259,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-08-30 17:10:05" itemprop="dateModified" datetime="2026-08-30T17:10:05+08:00">2026-08-30</time>
+      <time title="修改时间：2026-09-01 21:56:38" itemprop="dateModified" datetime="2026-09-01T21:56:38+08:00">2026-09-01</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -278,7 +278,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>636</span>
+      <span>632</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -295,7 +295,7 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><h1 id="第十章：LIN-总线：单主多从与调度表"><a href="#第十章：LIN-总线：单主多从与调度表" class="headerlink" title="第十章：LIN 总线：单主多从与调度表"></a>第十章：LIN 总线：单主多从与调度表</h1><h2 id="概念基础：LIN-是什么"><a href="#概念基础：LIN-是什么" class="headerlink" title="概念基础：LIN 是什么"></a>概念基础：LIN 是什么</h2><ol>
+    <div class="post-body" itemprop="articleBody"><h1 id="第十章：LIN-总线：单主多从与调度表"><a href="#第十章：LIN-总线：单主多从与调度表" class="headerlink" title="第十章：LIN 总线：单主多从与调度表"></a>第十章：LIN 总线：单主多从与调度表</h1><h2 id="概念基础"><a href="#概念基础" class="headerlink" title="概念基础"></a>概念基础</h2><ol>
 <li><strong>LIN</strong>（<strong>Local Interconnect Network</strong>，局部互联网络）是<strong>低成本</strong>的<strong>单主多从</strong>串行总线：一根总线挂一个 <strong>Master</strong> 与若干 <strong>Slave</strong>，常见于<strong>车窗、座椅、雨刮</strong>等车身电子。</li>
 <li><strong>为什么便宜</strong>：基于普通 <strong>UART 硬件</strong>即可实现，物理层常用<strong>单线</strong>、<strong>12V</strong> 电平，收发器（如 <strong>TJA1021</strong>）远比 CAN 便宜，从节点甚至可用<strong>廉价 8 位 MCU</strong>——它就是 CAN 的「经济版补充」。</li>
 <li><strong>无仲裁、靠调度</strong>：与 CAN 的竞争仲裁不同，LIN <strong>由 Master 固定调度</strong>：Master 发 <strong>Header（含 PID）</strong>，对应 Slave 填 <strong>Response</strong>，时序确定、天然无冲突。</li>
@@ -448,13 +448,13 @@ flowchart LR
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">321k</span>
+    <span title="站点总字数">362k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">17:52</span>
+    <span title="站点阅读时长">20:07</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

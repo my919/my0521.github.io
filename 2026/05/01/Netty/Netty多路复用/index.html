@@ -20,15 +20,15 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"my919.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
 
-    <meta name="description" content="第二章：IO 多路复用与 Netty 线程模型概念基础：IO 多路复用是什么&#x2F;为什么 I&#x2F;O 多路复用在干什么：一条线程调用 Selector.select() 阻塞等待，直到一批 Channel 上有就绪的 I&#x2F;O 事件（可读、可写等），再依次分发处理——一条线程可以注册并监视成千上万个连接，而不是为每个连接各开一条阻塞线程。 「很多连接」≠「每条连接占满一条线程」">
+    <meta name="description" content="第二章：IO 多路复用与 Netty 线程模型概念基础 I&#x2F;O 多路复用在干什么：一条线程调用 Selector.select() 阻塞等待，直到一批 Channel 上有就绪的 I&#x2F;O 事件（可读、可写等），再依次分发处理——一条线程可以注册并监视成千上万个连接，而不是为每个连接各开一条阻塞线程。 「很多连接」≠「每条连接占满一条线程」：大量长连接（推送、网关、IM 在线）中">
 <meta property="og:type" content="article">
 <meta property="og:title" content="第二章：IO 多路复用与 Netty 线程模型">
 <meta property="og:url" content="https://my919.github.io/2026/05/01/Netty/Netty%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8/index.html">
 <meta property="og:site_name" content="my">
-<meta property="og:description" content="第二章：IO 多路复用与 Netty 线程模型概念基础：IO 多路复用是什么&#x2F;为什么 I&#x2F;O 多路复用在干什么：一条线程调用 Selector.select() 阻塞等待，直到一批 Channel 上有就绪的 I&#x2F;O 事件（可读、可写等），再依次分发处理——一条线程可以注册并监视成千上万个连接，而不是为每个连接各开一条阻塞线程。 「很多连接」≠「每条连接占满一条线程」">
+<meta property="og:description" content="第二章：IO 多路复用与 Netty 线程模型概念基础 I&#x2F;O 多路复用在干什么：一条线程调用 Selector.select() 阻塞等待，直到一批 Channel 上有就绪的 I&#x2F;O 事件（可读、可写等），再依次分发处理——一条线程可以注册并监视成千上万个连接，而不是为每个连接各开一条阻塞线程。 「很多连接」≠「每条连接占满一条线程」：大量长连接（推送、网关、IM 在线）中">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-05-01T04:33:20.000Z">
-<meta property="article:modified_time" content="2026-08-31T13:44:22.065Z">
+<meta property="article:modified_time" content="2026-09-01T13:56:38.232Z">
 <meta property="article:author" content="miracle">
 <meta property="article:tag" content="Java">
 <meta property="article:tag" content="Netty">
@@ -162,7 +162,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%9AIO-%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8%E4%B8%8E-Netty-%E7%BA%BF%E7%A8%8B%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.</span> <span class="nav-text">第二章：IO 多路复用与 Netty 线程模型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80%EF%BC%9AIO-%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8%E6%98%AF%E4%BB%80%E4%B9%88-%E4%B8%BA%E4%BB%80%E4%B9%88"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础：IO 多路复用是什么&#x2F;为什么</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BE%9D%E8%B5%96%E7%A4%BA%E4%BE%8B%EF%BC%88Maven-Gradle%EF%BC%89"><span class="nav-number">1.2.</span> <span class="nav-text">依赖示例（Maven &#x2F; Gradle）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-Maven%EF%BC%88pom-xml%EF%BC%89"><span class="nav-number">1.2.1.</span> <span class="nav-text">1. Maven（pom.xml）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-Gradle%EF%BC%88Groovy%EF%BC%8Cbuild-gradle%EF%BC%89"><span class="nav-number">1.2.2.</span> <span class="nav-text">2. Gradle（Groovy，build.gradle）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-Gradle%EF%BC%88Kotlin-DSL%EF%BC%8Cbuild-gradle-kts%EF%BC%89"><span class="nav-number">1.2.3.</span> <span class="nav-text">3. Gradle（Kotlin DSL，build.gradle.kts）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Netty-%E5%B8%B8%E8%A7%81%E7%BA%BF%E7%A8%8B%E6%A8%A1%E5%9E%8B%EF%BC%88Boss-Worker%EF%BC%89"><span class="nav-number">1.3.</span> <span class="nav-text">Netty 常见线程模型（Boss &#x2F; Worker）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%85%B8%E5%9E%8B%E6%9C%8D%E5%8A%A1%E7%AB%AF%E5%86%99%E6%B3%95%EF%BC%88%E6%A6%82%E5%BF%B5%EF%BC%89"><span class="nav-number">1.3.1.</span> <span class="nav-text">1. 典型服务端写法（概念）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E4%B8%80%E5%BC%A0%E9%80%BB%E8%BE%91%E5%85%B3%E7%B3%BB%EF%BC%88%E6%96%87%E5%AD%97%E7%89%88%EF%BC%89"><span class="nav-number">1.3.2.</span> <span class="nav-text">2. 一张逻辑关系（文字版）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A4%BA%E4%BE%8B%E4%BB%A3%E7%A0%81%EF%BC%9A%E6%9C%80%E5%B0%8F-Echo-%E6%9C%8D%E5%8A%A1%E7%AB%AF%EF%BC%88%E5%8F%AF%E8%BF%90%E8%A1%8C%EF%BC%89"><span class="nav-number">1.4.</span> <span class="nav-text">示例代码：最小 Echo 服务端（可运行）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-EchoServer-java"><span class="nav-number">1.4.1.</span> <span class="nav-text">1. EchoServer.java</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E7%94%A8-nc-%E6%88%96-Netty-%E5%AE%A2%E6%88%B7%E7%AB%AF%E8%87%AA%E6%B5%8B"><span class="nav-number">1.4.2.</span> <span class="nav-text">2. 用 nc 或 Netty 客户端自测</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E5%8F%AF%E9%80%89%EF%BC%9AEchoClient-java%EF%BC%88%E6%9C%AC%E6%9C%BA%E8%BF%9E%E6%9C%AC%E6%9C%BA%EF%BC%89"><span class="nav-number">1.4.3.</span> <span class="nav-text">3. 可选：EchoClient.java（本机连本机）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%A7%E9%87%8F%E8%BF%9E%E6%8E%A5%E4%B8%8B%E7%9A%84%E7%B3%BB%E7%BB%9F%E4%BE%A7%EF%BC%88%E7%AE%80%E8%BF%B0%EF%BC%89"><span class="nav-number">1.5.</span> <span class="nav-text">大量连接下的系统侧（简述）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.6.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%9AIO-%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8%E4%B8%8E-Netty-%E7%BA%BF%E7%A8%8B%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.</span> <span class="nav-text">第二章：IO 多路复用与 Netty 线程模型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BE%9D%E8%B5%96%E7%A4%BA%E4%BE%8B%EF%BC%88Maven-Gradle%EF%BC%89"><span class="nav-number">1.2.</span> <span class="nav-text">依赖示例（Maven &#x2F; Gradle）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-Maven%EF%BC%88pom-xml%EF%BC%89"><span class="nav-number">1.2.1.</span> <span class="nav-text">1. Maven（pom.xml）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-Gradle%EF%BC%88Groovy%EF%BC%8Cbuild-gradle%EF%BC%89"><span class="nav-number">1.2.2.</span> <span class="nav-text">2. Gradle（Groovy，build.gradle）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-Gradle%EF%BC%88Kotlin-DSL%EF%BC%8Cbuild-gradle-kts%EF%BC%89"><span class="nav-number">1.2.3.</span> <span class="nav-text">3. Gradle（Kotlin DSL，build.gradle.kts）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Netty-%E5%B8%B8%E8%A7%81%E7%BA%BF%E7%A8%8B%E6%A8%A1%E5%9E%8B%EF%BC%88Boss-Worker%EF%BC%89"><span class="nav-number">1.3.</span> <span class="nav-text">Netty 常见线程模型（Boss &#x2F; Worker）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%85%B8%E5%9E%8B%E6%9C%8D%E5%8A%A1%E7%AB%AF%E5%86%99%E6%B3%95%EF%BC%88%E6%A6%82%E5%BF%B5%EF%BC%89"><span class="nav-number">1.3.1.</span> <span class="nav-text">1. 典型服务端写法（概念）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E4%B8%80%E5%BC%A0%E9%80%BB%E8%BE%91%E5%85%B3%E7%B3%BB%EF%BC%88%E6%96%87%E5%AD%97%E7%89%88%EF%BC%89"><span class="nav-number">1.3.2.</span> <span class="nav-text">2. 一张逻辑关系（文字版）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A4%BA%E4%BE%8B%E4%BB%A3%E7%A0%81%EF%BC%9A%E6%9C%80%E5%B0%8F-Echo-%E6%9C%8D%E5%8A%A1%E7%AB%AF%EF%BC%88%E5%8F%AF%E8%BF%90%E8%A1%8C%EF%BC%89"><span class="nav-number">1.4.</span> <span class="nav-text">示例代码：最小 Echo 服务端（可运行）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-EchoServer-java"><span class="nav-number">1.4.1.</span> <span class="nav-text">1. EchoServer.java</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E7%94%A8-nc-%E6%88%96-Netty-%E5%AE%A2%E6%88%B7%E7%AB%AF%E8%87%AA%E6%B5%8B"><span class="nav-number">1.4.2.</span> <span class="nav-text">2. 用 nc 或 Netty 客户端自测</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E5%8F%AF%E9%80%89%EF%BC%9AEchoClient-java%EF%BC%88%E6%9C%AC%E6%9C%BA%E8%BF%9E%E6%9C%AC%E6%9C%BA%EF%BC%89"><span class="nav-number">1.4.3.</span> <span class="nav-text">3. 可选：EchoClient.java（本机连本机）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%A7%E9%87%8F%E8%BF%9E%E6%8E%A5%E4%B8%8B%E7%9A%84%E7%B3%BB%E7%BB%9F%E4%BE%A7%EF%BC%88%E7%AE%80%E8%BF%B0%EF%BC%89"><span class="nav-number">1.5.</span> <span class="nav-text">大量连接下的系统侧（简述）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.6.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -175,7 +175,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">234</span>
+          <span class="site-state-item-count">257</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -186,7 +186,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">124</span>
+        <span class="site-state-item-count">156</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -260,7 +260,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-08-31 21:44:22" itemprop="dateModified" datetime="2026-08-31T21:44:22+08:00">2026-08-31</time>
+      <time title="修改时间：2026-09-01 21:56:38" itemprop="dateModified" datetime="2026-09-01T21:56:38+08:00">2026-09-01</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -296,7 +296,7 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><h1 id="第二章：IO-多路复用与-Netty-线程模型"><a href="#第二章：IO-多路复用与-Netty-线程模型" class="headerlink" title="第二章：IO 多路复用与 Netty 线程模型"></a>第二章：IO 多路复用与 Netty 线程模型</h1><h2 id="概念基础：IO-多路复用是什么-为什么"><a href="#概念基础：IO-多路复用是什么-为什么" class="headerlink" title="概念基础：IO 多路复用是什么&#x2F;为什么"></a>概念基础：IO 多路复用是什么&#x2F;为什么</h2><ol>
+    <div class="post-body" itemprop="articleBody"><h1 id="第二章：IO-多路复用与-Netty-线程模型"><a href="#第二章：IO-多路复用与-Netty-线程模型" class="headerlink" title="第二章：IO 多路复用与 Netty 线程模型"></a>第二章：IO 多路复用与 Netty 线程模型</h1><h2 id="概念基础"><a href="#概念基础" class="headerlink" title="概念基础"></a>概念基础</h2><ol>
 <li><strong>I&#x2F;O 多路复用</strong>在干什么：一条线程调用 <strong><code>Selector.select()</code></strong> 阻塞等待，直到<strong>一批</strong> <strong>Channel</strong> 上<strong>有就绪的 I&#x2F;O 事件</strong>（可读、可写等），再<strong>依次分发</strong>处理——<strong>一条线程可以注册并监视成千上万个连接</strong>，而不是为每个连接各开一条阻塞线程。</li>
 <li><strong>「很多连接」≠「每条连接占满一条线程」</strong>：<strong>大量长连接</strong>（推送、网关、<strong>IM</strong> 在线）中许多连接<strong>长时间无读写</strong>，适合交给<strong>一个 <code>Selector</code></strong> 统一等就绪；<strong>高 QPS 短连接</strong>的瓶颈常在 <strong>CPU</strong>、<strong>GC</strong>、<strong>协议栈</strong>，与「单 <code>Selector</code> 挂很多空闲连接」<strong>不是同一维度的问题</strong>。</li>
 <li><strong>Netty 扮演的角色</strong>：在 <strong>Java NIO &#x2F; Epoll（Linux）</strong> 之上封装了 <strong>Reactor</strong> 风格的 <strong><code>EventLoop</code></strong>、<strong><code>Pipeline</code></strong>、内存与缓冲策略，让你用<strong>少量 <code>EventLoop</code> 线程</strong>管理<strong>大量 <code>Channel</code></strong>，并把编解码、业务入 <strong><code>ChannelPipeline</code></strong>。</li>
@@ -445,13 +445,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">321k</span>
+    <span title="站点总字数">362k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">17:52</span>
+    <span title="站点阅读时长">20:07</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

@@ -20,15 +20,15 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"my919.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
 
-    <meta name="description" content="第十二章：异步线程池概念基础：异步线程池是什么、为什么Spring Boot 默认的 spring.task.execution 与本项目自定义线程池参数分离，避免重复注册；自定义池供 @Async 及按需注入 TaskExecutor 使用（如异步写操作日志）。  异步（@Async）：把耗时操作（写审计日志、发通知、导出报表）交给后台线程执行，主线程立即返回，提升接口响应速度与吞吐。 为什么要">
+    <meta name="description" content="第十二章：异步线程池概念基础Spring Boot 默认的 spring.task.execution 与本项目自定义线程池参数分离，避免重复注册；自定义池供 @Async 及按需注入 TaskExecutor 使用（如异步写操作日志）。  异步（@Async）：把耗时操作（写审计日志、发通知、导出报表）交给后台线程执行，主线程立即返回，提升接口响应速度与吞吐。 为什么要自定义线程池：Boot 默">
 <meta property="og:type" content="article">
 <meta property="og:title" content="第十二章：异步线程池">
 <meta property="og:url" content="https://my919.github.io/2026/05/16/SpringBoot/%E5%BC%82%E6%AD%A5%E7%BA%BF%E7%A8%8B%E6%B1%A0/index.html">
 <meta property="og:site_name" content="my">
-<meta property="og:description" content="第十二章：异步线程池概念基础：异步线程池是什么、为什么Spring Boot 默认的 spring.task.execution 与本项目自定义线程池参数分离，避免重复注册；自定义池供 @Async 及按需注入 TaskExecutor 使用（如异步写操作日志）。  异步（@Async）：把耗时操作（写审计日志、发通知、导出报表）交给后台线程执行，主线程立即返回，提升接口响应速度与吞吐。 为什么要">
+<meta property="og:description" content="第十二章：异步线程池概念基础Spring Boot 默认的 spring.task.execution 与本项目自定义线程池参数分离，避免重复注册；自定义池供 @Async 及按需注入 TaskExecutor 使用（如异步写操作日志）。  异步（@Async）：把耗时操作（写审计日志、发通知、导出报表）交给后台线程执行，主线程立即返回，提升接口响应速度与吞吐。 为什么要自定义线程池：Boot 默">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-05-16T02:55:00.000Z">
-<meta property="article:modified_time" content="2026-08-30T09:10:05.182Z">
+<meta property="article:modified_time" content="2026-09-01T13:56:38.196Z">
 <meta property="article:author" content="miracle">
 <meta property="article:tag" content="SpringBoot">
 <meta name="twitter:card" content="summary">
@@ -161,7 +161,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E5%8D%81%E4%BA%8C%E7%AB%A0%EF%BC%9A%E5%BC%82%E6%AD%A5%E7%BA%BF%E7%A8%8B%E6%B1%A0"><span class="nav-number">1.</span> <span class="nav-text">第十二章：异步线程池</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80%EF%BC%9A%E5%BC%82%E6%AD%A5%E7%BA%BF%E7%A8%8B%E6%B1%A0%E6%98%AF%E4%BB%80%E4%B9%88%E3%80%81%E4%B8%BA%E4%BB%80%E4%B9%88"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础：异步线程池是什么、为什么</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%82%E6%AD%A5%E8%B0%83%E7%94%A8%E6%B5%81%E7%A8%8B"><span class="nav-number">1.2.</span> <span class="nav-text">异步调用流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%90%AD%E5%BB%BA%E6%AD%A5%E9%AA%A4"><span class="nav-number">1.3.</span> <span class="nav-text">搭建步骤</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%85%B3%E9%97%AD-Boot-%E9%BB%98%E8%AE%A4-TaskExecution-%E8%87%AA%E5%8A%A8%E9%85%8D%E7%BD%AE"><span class="nav-number">1.3.1.</span> <span class="nav-text">1. 关闭 Boot 默认 TaskExecution 自动配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E9%85%8D%E7%BD%AE%E5%B1%9E%E6%80%A7"><span class="nav-number">1.3.2.</span> <span class="nav-text">2. 配置属性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E6%B3%A8%E5%86%8C-Bean"><span class="nav-number">1.3.3.</span> <span class="nav-text">3. 注册 Bean</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E4%BD%BF%E7%94%A8%E7%A4%BA%E4%BE%8B"><span class="nav-number">1.3.4.</span> <span class="nav-text">4. 使用示例</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B0%83%E4%BC%98%E5%BB%BA%E8%AE%AE"><span class="nav-number">1.4.</span> <span class="nav-text">调优建议</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%B8%E5%85%B3%E6%96%87%E4%BB%B6"><span class="nav-number">1.5.</span> <span class="nav-text">相关文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.6.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E5%8D%81%E4%BA%8C%E7%AB%A0%EF%BC%9A%E5%BC%82%E6%AD%A5%E7%BA%BF%E7%A8%8B%E6%B1%A0"><span class="nav-number">1.</span> <span class="nav-text">第十二章：异步线程池</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%82%E6%AD%A5%E8%B0%83%E7%94%A8%E6%B5%81%E7%A8%8B"><span class="nav-number">1.2.</span> <span class="nav-text">异步调用流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%90%AD%E5%BB%BA%E6%AD%A5%E9%AA%A4"><span class="nav-number">1.3.</span> <span class="nav-text">搭建步骤</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%85%B3%E9%97%AD-Boot-%E9%BB%98%E8%AE%A4-TaskExecution-%E8%87%AA%E5%8A%A8%E9%85%8D%E7%BD%AE"><span class="nav-number">1.3.1.</span> <span class="nav-text">1. 关闭 Boot 默认 TaskExecution 自动配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E9%85%8D%E7%BD%AE%E5%B1%9E%E6%80%A7"><span class="nav-number">1.3.2.</span> <span class="nav-text">2. 配置属性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E6%B3%A8%E5%86%8C-Bean"><span class="nav-number">1.3.3.</span> <span class="nav-text">3. 注册 Bean</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E4%BD%BF%E7%94%A8%E7%A4%BA%E4%BE%8B"><span class="nav-number">1.3.4.</span> <span class="nav-text">4. 使用示例</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B0%83%E4%BC%98%E5%BB%BA%E8%AE%AE"><span class="nav-number">1.4.</span> <span class="nav-text">调优建议</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%B8%E5%85%B3%E6%96%87%E4%BB%B6"><span class="nav-number">1.5.</span> <span class="nav-text">相关文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.6.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -174,7 +174,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">234</span>
+          <span class="site-state-item-count">257</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -185,7 +185,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">124</span>
+        <span class="site-state-item-count">156</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -259,7 +259,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-08-30 17:10:05" itemprop="dateModified" datetime="2026-08-30T17:10:05+08:00">2026-08-30</time>
+      <time title="修改时间：2026-09-01 21:56:38" itemprop="dateModified" datetime="2026-09-01T21:56:38+08:00">2026-09-01</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -278,7 +278,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>730</span>
+      <span>719</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -295,7 +295,7 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><h1 id="第十二章：异步线程池"><a href="#第十二章：异步线程池" class="headerlink" title="第十二章：异步线程池"></a>第十二章：异步线程池</h1><h2 id="概念基础：异步线程池是什么、为什么"><a href="#概念基础：异步线程池是什么、为什么" class="headerlink" title="概念基础：异步线程池是什么、为什么"></a>概念基础：异步线程池是什么、为什么</h2><p>Spring Boot 默认的 <code>spring.task.execution</code> 与本项目自定义线程池参数分离，避免重复注册；自定义池供 <strong><code>@Async</code></strong> 及按需注入 <code>TaskExecutor</code> 使用（如异步写操作日志）。</p>
+    <div class="post-body" itemprop="articleBody"><h1 id="第十二章：异步线程池"><a href="#第十二章：异步线程池" class="headerlink" title="第十二章：异步线程池"></a>第十二章：异步线程池</h1><h2 id="概念基础"><a href="#概念基础" class="headerlink" title="概念基础"></a>概念基础</h2><p>Spring Boot 默认的 <code>spring.task.execution</code> 与本项目自定义线程池参数分离，避免重复注册；自定义池供 <strong><code>@Async</code></strong> 及按需注入 <code>TaskExecutor</code> 使用（如异步写操作日志）。</p>
 <ol>
 <li><strong>异步（<code>@Async</code>）</strong>：把耗时操作（<strong>写审计日志、发通知、导出报表</strong>）交给<strong>后台线程</strong>执行，主线程<strong>立即返回</strong>，提升接口响应速度与吞吐。</li>
 <li><strong>为什么要自定义线程池</strong>：Boot 默认池参数保守，且与本工程<strong>配置体系脱节</strong>；自定义 <code>app.async.executor.*</code> + <strong><code>ThreadPoolTaskExecutor</code></strong>，让<strong>核心线程数、队列容量、拒绝策略、关闭策略</strong>全部可控。</li>
@@ -442,13 +442,13 @@ sequenceDiagram
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">321k</span>
+    <span title="站点总字数">362k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">17:52</span>
+    <span title="站点阅读时长">20:07</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

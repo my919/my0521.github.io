@@ -20,15 +20,15 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"my919.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
 
-    <meta name="description" content="第五章：Docker 部署 RocketMQ 实践概念基础：容器化部署 RocketMQ 的四个要点 没有「单容器一体」形态：NameServer 与 Broker 是两个独立进程（5.x 还有一个可选的 Proxy），最小栈就是两个容器——这与 Kafka 的 KRaft 单进程不同，下文用「网络 → NameServer → Broker」三步完成最小栈。 brokerIP1 是第一坑：Bro">
+    <meta name="description" content="第五章：Docker 部署 RocketMQ 实践概念基础 没有「单容器一体」形态：NameServer 与 Broker 是两个独立进程（5.x 还有一个可选的 Proxy），最小栈就是两个容器——这与 Kafka 的 KRaft 单进程不同，下文用「网络 → NameServer → Broker」三步完成最小栈。 brokerIP1 是第一坑：Broker 启动时把自己注册到 NameSer">
 <meta property="og:type" content="article">
 <meta property="og:title" content="第五章：Docker 部署 RocketMQ 实践">
 <meta property="og:url" content="https://my919.github.io/2026/05/01/MQ/RocketMQ-Docker/index.html">
 <meta property="og:site_name" content="my">
-<meta property="og:description" content="第五章：Docker 部署 RocketMQ 实践概念基础：容器化部署 RocketMQ 的四个要点 没有「单容器一体」形态：NameServer 与 Broker 是两个独立进程（5.x 还有一个可选的 Proxy），最小栈就是两个容器——这与 Kafka 的 KRaft 单进程不同，下文用「网络 → NameServer → Broker」三步完成最小栈。 brokerIP1 是第一坑：Bro">
+<meta property="og:description" content="第五章：Docker 部署 RocketMQ 实践概念基础 没有「单容器一体」形态：NameServer 与 Broker 是两个独立进程（5.x 还有一个可选的 Proxy），最小栈就是两个容器——这与 Kafka 的 KRaft 单进程不同，下文用「网络 → NameServer → Broker」三步完成最小栈。 brokerIP1 是第一坑：Broker 启动时把自己注册到 NameSer">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-05-01T14:06:51.000Z">
-<meta property="article:modified_time" content="2026-08-30T09:10:05.270Z">
+<meta property="article:modified_time" content="2026-09-01T13:56:38.267Z">
 <meta property="article:author" content="miracle">
 <meta property="article:tag" content="Docker">
 <meta property="article:tag" content="Docker Compose">
@@ -164,7 +164,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%BA%94%E7%AB%A0%EF%BC%9ADocker-%E9%83%A8%E7%BD%B2-RocketMQ-%E5%AE%9E%E8%B7%B5"><span class="nav-number">1.</span> <span class="nav-text">第五章：Docker 部署 RocketMQ 实践</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80%EF%BC%9A%E5%AE%B9%E5%99%A8%E5%8C%96%E9%83%A8%E7%BD%B2-RocketMQ-%E7%9A%84%E5%9B%9B%E4%B8%AA%E8%A6%81%E7%82%B9"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础：容器化部署 RocketMQ 的四个要点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E7%BD%AE%E6%9D%A1%E4%BB%B6"><span class="nav-number">1.2.</span> <span class="nav-text">前置条件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RocketMQ-%E9%95%9C%E5%83%8F%E9%80%89%E6%8B%A9"><span class="nav-number">1.3.</span> <span class="nav-text">RocketMQ 镜像选择</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%AE%98%E6%96%B9%E9%95%9C%E5%83%8F%EF%BC%88%E6%8E%A8%E8%8D%90%EF%BC%89"><span class="nav-number">1.3.1.</span> <span class="nav-text">1. 官方镜像（推荐）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E8%A7%92%E8%89%B2%E4%B8%8E%E7%AB%AF%E5%8F%A3%EF%BC%88%E5%BC%80%E5%8F%91%E5%B8%B8%E7%94%A8%EF%BC%89"><span class="nav-number">1.3.2.</span> <span class="nav-text">2. 角色与端口（开发常用）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E4%B8%8E%E5%AE%98%E6%96%B9%E3%80%8CBroker-Proxy%E3%80%8D%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="nav-number">1.3.3.</span> <span class="nav-text">3. 与官方「Broker + Proxy」快速入门的关系</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E8%B5%84%E6%BA%90%E4%B8%8E%E6%8C%81%E4%B9%85%E5%8C%96"><span class="nav-number">1.3.4.</span> <span class="nav-text">4. 资源与持久化</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%80%E5%B0%91%E5%91%BD%E4%BB%A4%E5%90%AF%E5%8A%A8%EF%BC%88NameServer-Broker%EF%BC%89"><span class="nav-number">1.4.</span> <span class="nav-text">最少命令启动（NameServer + Broker）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%87%86%E5%A4%87%E7%BD%91%E7%BB%9C%E4%B8%8E-broker-conf%EF%BC%88%E5%BD%93%E5%89%8D%E7%9B%AE%E5%BD%95%EF%BC%89"><span class="nav-number">1.4.1.</span> <span class="nav-text">1. 准备网络与 broker.conf（当前目录）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E5%90%AF%E5%8A%A8-NameServer"><span class="nav-number">1.4.2.</span> <span class="nav-text">2. 启动 NameServer</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E5%90%AF%E5%8A%A8-Broker%EF%BC%88%E5%90%AB-Proxy%EF%BC%8C%E6%8C%82%E8%BD%BD-broker-conf%EF%BC%89"><span class="nav-number">1.4.3.</span> <span class="nav-text">3. 启动 Broker（含 Proxy，挂载 broker.conf）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Docker-Compose-%E4%B8%80%E9%94%AE%E9%83%A8%E7%BD%B2"><span class="nav-number">1.5.</span> <span class="nav-text">Docker Compose 一键部署</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Kubernetes-%E4%B8%80%E9%94%AE%E9%83%A8%E7%BD%B2%EF%BC%88%E5%8D%95%E6%96%87%E4%BB%B6%E5%AE%8C%E6%95%B4%E6%B8%85%E5%8D%95%EF%BC%89"><span class="nav-number">1.6.</span> <span class="nav-text">Kubernetes 一键部署（单文件完整清单）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.7.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%BA%94%E7%AB%A0%EF%BC%9ADocker-%E9%83%A8%E7%BD%B2-RocketMQ-%E5%AE%9E%E8%B7%B5"><span class="nav-number">1.</span> <span class="nav-text">第五章：Docker 部署 RocketMQ 实践</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E7%BD%AE%E6%9D%A1%E4%BB%B6"><span class="nav-number">1.2.</span> <span class="nav-text">前置条件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RocketMQ-%E9%95%9C%E5%83%8F%E9%80%89%E6%8B%A9"><span class="nav-number">1.3.</span> <span class="nav-text">RocketMQ 镜像选择</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%AE%98%E6%96%B9%E9%95%9C%E5%83%8F%EF%BC%88%E6%8E%A8%E8%8D%90%EF%BC%89"><span class="nav-number">1.3.1.</span> <span class="nav-text">1. 官方镜像（推荐）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E8%A7%92%E8%89%B2%E4%B8%8E%E7%AB%AF%E5%8F%A3%EF%BC%88%E5%BC%80%E5%8F%91%E5%B8%B8%E7%94%A8%EF%BC%89"><span class="nav-number">1.3.2.</span> <span class="nav-text">2. 角色与端口（开发常用）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E4%B8%8E%E5%AE%98%E6%96%B9%E3%80%8CBroker-Proxy%E3%80%8D%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="nav-number">1.3.3.</span> <span class="nav-text">3. 与官方「Broker + Proxy」快速入门的关系</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E8%B5%84%E6%BA%90%E4%B8%8E%E6%8C%81%E4%B9%85%E5%8C%96"><span class="nav-number">1.3.4.</span> <span class="nav-text">4. 资源与持久化</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%80%E5%B0%91%E5%91%BD%E4%BB%A4%E5%90%AF%E5%8A%A8%EF%BC%88NameServer-Broker%EF%BC%89"><span class="nav-number">1.4.</span> <span class="nav-text">最少命令启动（NameServer + Broker）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%87%86%E5%A4%87%E7%BD%91%E7%BB%9C%E4%B8%8E-broker-conf%EF%BC%88%E5%BD%93%E5%89%8D%E7%9B%AE%E5%BD%95%EF%BC%89"><span class="nav-number">1.4.1.</span> <span class="nav-text">1. 准备网络与 broker.conf（当前目录）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E5%90%AF%E5%8A%A8-NameServer"><span class="nav-number">1.4.2.</span> <span class="nav-text">2. 启动 NameServer</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E5%90%AF%E5%8A%A8-Broker%EF%BC%88%E5%90%AB-Proxy%EF%BC%8C%E6%8C%82%E8%BD%BD-broker-conf%EF%BC%89"><span class="nav-number">1.4.3.</span> <span class="nav-text">3. 启动 Broker（含 Proxy，挂载 broker.conf）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Docker-Compose-%E4%B8%80%E9%94%AE%E9%83%A8%E7%BD%B2"><span class="nav-number">1.5.</span> <span class="nav-text">Docker Compose 一键部署</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Kubernetes-%E4%B8%80%E9%94%AE%E9%83%A8%E7%BD%B2%EF%BC%88%E5%8D%95%E6%96%87%E4%BB%B6%E5%AE%8C%E6%95%B4%E6%B8%85%E5%8D%95%EF%BC%89"><span class="nav-number">1.6.</span> <span class="nav-text">Kubernetes 一键部署（单文件完整清单）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.7.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -177,7 +177,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">234</span>
+          <span class="site-state-item-count">257</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -188,7 +188,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">124</span>
+        <span class="site-state-item-count">156</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -262,7 +262,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-08-30 17:10:05" itemprop="dateModified" datetime="2026-08-30T17:10:05+08:00">2026-08-30</time>
+      <time title="修改时间：2026-09-01 21:56:38" itemprop="dateModified" datetime="2026-09-01T21:56:38+08:00">2026-09-01</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -298,7 +298,7 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><h1 id="第五章：Docker-部署-RocketMQ-实践"><a href="#第五章：Docker-部署-RocketMQ-实践" class="headerlink" title="第五章：Docker 部署 RocketMQ 实践"></a>第五章：Docker 部署 RocketMQ 实践</h1><h2 id="概念基础：容器化部署-RocketMQ-的四个要点"><a href="#概念基础：容器化部署-RocketMQ-的四个要点" class="headerlink" title="概念基础：容器化部署 RocketMQ 的四个要点"></a>概念基础：容器化部署 RocketMQ 的四个要点</h2><ol>
+    <div class="post-body" itemprop="articleBody"><h1 id="第五章：Docker-部署-RocketMQ-实践"><a href="#第五章：Docker-部署-RocketMQ-实践" class="headerlink" title="第五章：Docker 部署 RocketMQ 实践"></a>第五章：Docker 部署 RocketMQ 实践</h1><h2 id="概念基础"><a href="#概念基础" class="headerlink" title="概念基础"></a>概念基础</h2><ol>
 <li><strong>没有「单容器一体」形态</strong>：<strong>NameServer</strong> 与 <strong>Broker</strong> 是两个独立进程（<strong>5.x</strong> 还有一个可选的 <strong>Proxy</strong>），最小栈就是<strong>两个容器</strong>——这与 Kafka 的 KRaft 单进程不同，下文用「网络 → NameServer → Broker」三步完成最小栈。</li>
 <li><strong><code>brokerIP1</code> 是第一坑</strong>：Broker 启动时把自己注册到 NameServer 的地址就是 <strong><code>brokerIP1</code></strong>，客户端拿这个地址<strong>直连 Broker</strong>——容器内不显式指定时往往是内网容器 IP，宿主机客户端会「能拿到路由却连不上」。<strong>本机访问写 <code>127.0.0.1</code>、跨机写宿主机可达 IP</strong>（对照 Kafka 的 <code>advertised.listeners</code>）。</li>
 <li><strong>端口按角色记忆</strong>：<strong><code>9876</code></strong> NameServer；<strong><code>10909 / 10911 / 10912</code></strong> 分别是 Broker 的 VIP &#x2F; 主 &#x2F; HA 端口；<strong><code>8080 / 8081</code></strong> 是 <strong>5.x Proxy</strong> 的 gRPC 端口——只用经典 Remoting 客户端时，Proxy 端口可以不映射。</li>
@@ -427,8 +427,8 @@
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2026/05/01/ClickHouse/ClickHouse-Docker/" rel="prev" title="第二章：Docker 部署 ClickHouse 实践">
-                  <i class="fa fa-angle-left"></i> 第二章：Docker 部署 ClickHouse 实践
+                <a href="/2026/05/01/ClickHouse/ClickHouse-%E6%9F%A5%E8%AF%A2%E4%B8%8E%E8%B0%83%E4%BC%98/" rel="prev" title="第三章：ClickHouse 查询与性能调优">
+                  <i class="fa fa-angle-left"></i> 第三章：ClickHouse 查询与性能调优
                 </a>
             </div>
             <div class="post-nav-item">
@@ -465,13 +465,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">321k</span>
+    <span title="站点总字数">362k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">17:52</span>
+    <span title="站点阅读时长">20:07</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

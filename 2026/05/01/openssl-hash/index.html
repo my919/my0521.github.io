@@ -20,15 +20,15 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"my919.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
 
-    <meta name="description" content="第三章：OpenSSL 哈希算法：SHA-256、SHA-3 与推荐用法概念基础：哈希是什么、为什么需要 哈希（Hash）是单向函数：任意长度输入 → 固定长度摘要（SHA-256 输出 256 bit），不可逆——无法从摘要还原原文。 三大特性：确定性（同输入必得同输出）、雪崩效应（改动 1 bit，摘要面目全非）、抗碰撞性（极难找到两个不同输入对应同一摘要）。 为什么需要：完整性校验（下载包比">
+    <meta name="description" content="第三章：OpenSSL 哈希算法：SHA-256、SHA-3 与推荐用法概念基础 哈希（Hash）是单向函数：任意长度输入 → 固定长度摘要（SHA-256 输出 256 bit），不可逆——无法从摘要还原原文。 三大特性：确定性（同输入必得同输出）、雪崩效应（改动 1 bit，摘要面目全非）、抗碰撞性（极难找到两个不同输入对应同一摘要）。 为什么需要：完整性校验（下载包比对、防篡改）、签名输入（">
 <meta property="og:type" content="article">
 <meta property="og:title" content="第三章：OpenSSL 哈希算法：SHA-256、SHA-3 与推荐用法">
 <meta property="og:url" content="https://my919.github.io/2026/05/01/openssl-hash/index.html">
 <meta property="og:site_name" content="my">
-<meta property="og:description" content="第三章：OpenSSL 哈希算法：SHA-256、SHA-3 与推荐用法概念基础：哈希是什么、为什么需要 哈希（Hash）是单向函数：任意长度输入 → 固定长度摘要（SHA-256 输出 256 bit），不可逆——无法从摘要还原原文。 三大特性：确定性（同输入必得同输出）、雪崩效应（改动 1 bit，摘要面目全非）、抗碰撞性（极难找到两个不同输入对应同一摘要）。 为什么需要：完整性校验（下载包比">
+<meta property="og:description" content="第三章：OpenSSL 哈希算法：SHA-256、SHA-3 与推荐用法概念基础 哈希（Hash）是单向函数：任意长度输入 → 固定长度摘要（SHA-256 输出 256 bit），不可逆——无法从摘要还原原文。 三大特性：确定性（同输入必得同输出）、雪崩效应（改动 1 bit，摘要面目全非）、抗碰撞性（极难找到两个不同输入对应同一摘要）。 为什么需要：完整性校验（下载包比对、防篡改）、签名输入（">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-05-01T06:00:00.000Z">
-<meta property="article:modified_time" content="2026-08-30T09:10:05.276Z">
+<meta property="article:modified_time" content="2026-09-01T13:56:38.278Z">
 <meta property="article:author" content="miracle">
 <meta property="article:tag" content="OpenSSL">
 <meta name="twitter:card" content="summary">
@@ -161,7 +161,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%B8%89%E7%AB%A0%EF%BC%9AOpenSSL-%E5%93%88%E5%B8%8C%E7%AE%97%E6%B3%95%EF%BC%9ASHA-256%E3%80%81SHA-3-%E4%B8%8E%E6%8E%A8%E8%8D%90%E7%94%A8%E6%B3%95"><span class="nav-number">1.</span> <span class="nav-text">第三章：OpenSSL 哈希算法：SHA-256、SHA-3 与推荐用法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80%EF%BC%9A%E5%93%88%E5%B8%8C%E6%98%AF%E4%BB%80%E4%B9%88%E3%80%81%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础：哈希是什么、为什么需要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%97%E6%B3%95%E9%80%89%E5%9E%8B%EF%BC%88%E6%8E%A8%E8%8D%90%EF%BC%89"><span class="nav-number">1.2.</span> <span class="nav-text">算法选型（推荐）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E5%B8%B8%E8%A7%81%E7%AE%97%E6%B3%95%E7%89%B9%E7%82%B9"><span class="nav-number">1.3.</span> <span class="nav-text">一、常见算法特点</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-SHA-2-%E7%B3%BB%E5%88%97%EF%BC%88%E9%A6%96%E9%80%89%EF%BC%89"><span class="nav-number">1.3.1.</span> <span class="nav-text">1. SHA-2 系列（首选）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-SHA-3-%E7%B3%BB%E5%88%97"><span class="nav-number">1.3.2.</span> <span class="nav-text">2. SHA-3 系列</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-SHA-1-MD5%EF%BC%88%E4%BB%85%E5%85%BC%E5%AE%B9%EF%BC%89"><span class="nav-number">1.3.3.</span> <span class="nav-text">3. SHA-1 &#x2F; MD5（仅兼容）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-BLAKE2%EF%BC%88OpenSSL-3-x%EF%BC%89"><span class="nav-number">1.3.4.</span> <span class="nav-text">4. BLAKE2（OpenSSL 3.x）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E6%8E%A8%E8%8D%90%E7%94%A8%E6%B3%95"><span class="nav-number">1.4.</span> <span class="nav-text">二、推荐用法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E6%A0%A1%E9%AA%8C%E4%B8%8B%E8%BD%BD%E5%8C%85"><span class="nav-number">1.4.1.</span> <span class="nav-text">1. 校验下载包</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E7%AE%A1%E9%81%93-%E5%AD%97%E7%AC%A6%E4%B8%B2%EF%BC%88%E6%B3%A8%E6%84%8F%E6%8D%A2%E8%A1%8C%EF%BC%89"><span class="nav-number">1.4.2.</span> <span class="nav-text">2. 管道 &#x2F; 字符串（注意换行）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E9%85%8D%E5%90%88%E6%95%B0%E5%AD%97%E7%AD%BE%E5%90%8D"><span class="nav-number">1.4.3.</span> <span class="nav-text">3. 配合数字签名</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E6%9F%A5%E7%9C%8B%E6%9C%AC%E6%9C%BA%E6%94%AF%E6%8C%81"><span class="nav-number">1.4.4.</span> <span class="nav-text">4. 查看本机支持</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E4%B8%8E%E3%80%8C%E5%8A%A0%E5%AF%86%E3%80%8D%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">1.5.</span> <span class="nav-text">三、与「加密」的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BB%B6%E4%BC%B8%E9%98%85%E8%AF%BB"><span class="nav-number">1.6.</span> <span class="nav-text">延伸阅读</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.7.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%B8%89%E7%AB%A0%EF%BC%9AOpenSSL-%E5%93%88%E5%B8%8C%E7%AE%97%E6%B3%95%EF%BC%9ASHA-256%E3%80%81SHA-3-%E4%B8%8E%E6%8E%A8%E8%8D%90%E7%94%A8%E6%B3%95"><span class="nav-number">1.</span> <span class="nav-text">第三章：OpenSSL 哈希算法：SHA-256、SHA-3 与推荐用法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%97%E6%B3%95%E9%80%89%E5%9E%8B%EF%BC%88%E6%8E%A8%E8%8D%90%EF%BC%89"><span class="nav-number">1.2.</span> <span class="nav-text">算法选型（推荐）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E5%B8%B8%E8%A7%81%E7%AE%97%E6%B3%95%E7%89%B9%E7%82%B9"><span class="nav-number">1.3.</span> <span class="nav-text">一、常见算法特点</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-SHA-2-%E7%B3%BB%E5%88%97%EF%BC%88%E9%A6%96%E9%80%89%EF%BC%89"><span class="nav-number">1.3.1.</span> <span class="nav-text">1. SHA-2 系列（首选）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-SHA-3-%E7%B3%BB%E5%88%97"><span class="nav-number">1.3.2.</span> <span class="nav-text">2. SHA-3 系列</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-SHA-1-MD5%EF%BC%88%E4%BB%85%E5%85%BC%E5%AE%B9%EF%BC%89"><span class="nav-number">1.3.3.</span> <span class="nav-text">3. SHA-1 &#x2F; MD5（仅兼容）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-BLAKE2%EF%BC%88OpenSSL-3-x%EF%BC%89"><span class="nav-number">1.3.4.</span> <span class="nav-text">4. BLAKE2（OpenSSL 3.x）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E6%8E%A8%E8%8D%90%E7%94%A8%E6%B3%95"><span class="nav-number">1.4.</span> <span class="nav-text">二、推荐用法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E6%A0%A1%E9%AA%8C%E4%B8%8B%E8%BD%BD%E5%8C%85"><span class="nav-number">1.4.1.</span> <span class="nav-text">1. 校验下载包</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E7%AE%A1%E9%81%93-%E5%AD%97%E7%AC%A6%E4%B8%B2%EF%BC%88%E6%B3%A8%E6%84%8F%E6%8D%A2%E8%A1%8C%EF%BC%89"><span class="nav-number">1.4.2.</span> <span class="nav-text">2. 管道 &#x2F; 字符串（注意换行）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E9%85%8D%E5%90%88%E6%95%B0%E5%AD%97%E7%AD%BE%E5%90%8D"><span class="nav-number">1.4.3.</span> <span class="nav-text">3. 配合数字签名</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E6%9F%A5%E7%9C%8B%E6%9C%AC%E6%9C%BA%E6%94%AF%E6%8C%81"><span class="nav-number">1.4.4.</span> <span class="nav-text">4. 查看本机支持</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E4%B8%8E%E3%80%8C%E5%8A%A0%E5%AF%86%E3%80%8D%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">1.5.</span> <span class="nav-text">三、与「加密」的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BB%B6%E4%BC%B8%E9%98%85%E8%AF%BB"><span class="nav-number">1.6.</span> <span class="nav-text">延伸阅读</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.7.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -174,7 +174,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">234</span>
+          <span class="site-state-item-count">257</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -185,7 +185,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">124</span>
+        <span class="site-state-item-count">156</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -259,7 +259,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-08-30 17:10:05" itemprop="dateModified" datetime="2026-08-30T17:10:05+08:00">2026-08-30</time>
+      <time title="修改时间：2026-09-01 21:56:38" itemprop="dateModified" datetime="2026-09-01T21:56:38+08:00">2026-09-01</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -295,7 +295,7 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><h1 id="第三章：OpenSSL-哈希算法：SHA-256、SHA-3-与推荐用法"><a href="#第三章：OpenSSL-哈希算法：SHA-256、SHA-3-与推荐用法" class="headerlink" title="第三章：OpenSSL 哈希算法：SHA-256、SHA-3 与推荐用法"></a>第三章：OpenSSL 哈希算法：SHA-256、SHA-3 与推荐用法</h1><h2 id="概念基础：哈希是什么、为什么需要"><a href="#概念基础：哈希是什么、为什么需要" class="headerlink" title="概念基础：哈希是什么、为什么需要"></a>概念基础：哈希是什么、为什么需要</h2><ol>
+    <div class="post-body" itemprop="articleBody"><h1 id="第三章：OpenSSL-哈希算法：SHA-256、SHA-3-与推荐用法"><a href="#第三章：OpenSSL-哈希算法：SHA-256、SHA-3-与推荐用法" class="headerlink" title="第三章：OpenSSL 哈希算法：SHA-256、SHA-3 与推荐用法"></a>第三章：OpenSSL 哈希算法：SHA-256、SHA-3 与推荐用法</h1><h2 id="概念基础"><a href="#概念基础" class="headerlink" title="概念基础"></a>概念基础</h2><ol>
 <li><strong>哈希（Hash）是单向函数</strong>：任意长度输入 → <strong>固定长度摘要</strong>（SHA-256 输出 256 bit），<strong>不可逆</strong>——无法从摘要还原原文。</li>
 <li><strong>三大特性</strong>：<strong>确定性</strong>（同输入必得同输出）、<strong>雪崩效应</strong>（改动 1 bit，摘要面目全非）、<strong>抗碰撞性</strong>（极难找到两个不同输入对应同一摘要）。</li>
 <li><strong>为什么需要</strong>：<strong>完整性校验</strong>（下载包比对、防篡改）、<strong>签名输入</strong>（先哈希再签名，见第六章）、<strong>口令派生</strong>（加盐迭代，见第七章）、区块链 Merkle 树等。</li>
@@ -538,13 +538,13 @@ flowchart LR
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">321k</span>
+    <span title="站点总字数">362k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">17:52</span>
+    <span title="站点阅读时长">20:07</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

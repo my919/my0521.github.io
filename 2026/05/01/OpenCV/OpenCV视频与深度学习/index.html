@@ -20,15 +20,15 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"my919.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
 
-    <meta name="description" content="第五章：视频与深度学习概念基础：从单图到时序与推理 视频 &#x3D; 时序帧序列：在单图处理之上多了「帧间关系」——运动检测、光流、跟踪都依赖相邻帧对比，是视频理解的核心。 背景建模分离运动：固定摄像头下，建立背景模型后，当前帧与背景之差即运动前景，是安防检测的经典思路。 cv2.dnn 是推理不是训练：OpenCV 能加载 ONNX&#x2F;Caffe&#x2F;部分 TF 模型做前向推理，">
+    <meta name="description" content="第五章：视频与深度学习概念基础 视频 &#x3D; 时序帧序列：在单图处理之上多了「帧间关系」——运动检测、光流、跟踪都依赖相邻帧对比，是视频理解的核心。 背景建模分离运动：固定摄像头下，建立背景模型后，当前帧与背景之差即运动前景，是安防检测的经典思路。 cv2.dnn 是推理不是训练：OpenCV 能加载 ONNX&#x2F;Caffe&#x2F;部分 TF 模型做前向推理，跨平台部署轻量模型；">
 <meta property="og:type" content="article">
 <meta property="og:title" content="第五章：视频与深度学习">
 <meta property="og:url" content="https://my919.github.io/2026/05/01/OpenCV/OpenCV%E8%A7%86%E9%A2%91%E4%B8%8E%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/index.html">
 <meta property="og:site_name" content="my">
-<meta property="og:description" content="第五章：视频与深度学习概念基础：从单图到时序与推理 视频 &#x3D; 时序帧序列：在单图处理之上多了「帧间关系」——运动检测、光流、跟踪都依赖相邻帧对比，是视频理解的核心。 背景建模分离运动：固定摄像头下，建立背景模型后，当前帧与背景之差即运动前景，是安防检测的经典思路。 cv2.dnn 是推理不是训练：OpenCV 能加载 ONNX&#x2F;Caffe&#x2F;部分 TF 模型做前向推理，">
+<meta property="og:description" content="第五章：视频与深度学习概念基础 视频 &#x3D; 时序帧序列：在单图处理之上多了「帧间关系」——运动检测、光流、跟踪都依赖相邻帧对比，是视频理解的核心。 背景建模分离运动：固定摄像头下，建立背景模型后，当前帧与背景之差即运动前景，是安防检测的经典思路。 cv2.dnn 是推理不是训练：OpenCV 能加载 ONNX&#x2F;Caffe&#x2F;部分 TF 模型做前向推理，跨平台部署轻量模型；">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-05-01T05:42:38.000Z">
-<meta property="article:modified_time" content="2026-08-31T14:11:12.933Z">
+<meta property="article:modified_time" content="2026-09-01T14:51:49.647Z">
 <meta property="article:author" content="miracle">
 <meta property="article:tag" content="OpenCV">
 <meta property="article:tag" content="Python">
@@ -162,7 +162,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%BA%94%E7%AB%A0%EF%BC%9A%E8%A7%86%E9%A2%91%E4%B8%8E%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0"><span class="nav-number">1.</span> <span class="nav-text">第五章：视频与深度学习</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E5%8D%95%E5%9B%BE%E5%88%B0%E6%97%B6%E5%BA%8F%E4%B8%8E%E6%8E%A8%E7%90%86"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础：从单图到时序与推理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E8%A7%86%E9%A2%91%E8%AF%BB%E5%86%99"><span class="nav-number">1.2.</span> <span class="nav-text">一、视频读写</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-VideoCapture-%E8%AF%BB%E5%8F%96"><span class="nav-number">1.2.1.</span> <span class="nav-text">1. VideoCapture 读取</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-VideoWriter-%E5%86%99%E5%87%BA"><span class="nav-number">1.2.2.</span> <span class="nav-text">2. VideoWriter 写出</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E5%B8%A7%E5%B7%AE%E6%B3%95%E4%B8%8E%E8%83%8C%E6%99%AF%E5%87%8F%E9%99%A4%EF%BC%88%E8%BF%90%E5%8A%A8%E6%A3%80%E6%B5%8B%EF%BC%89"><span class="nav-number">1.3.</span> <span class="nav-text">二、帧差法与背景减除（运动检测）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E5%85%89%E6%B5%81%EF%BC%88%E5%AF%86%E9%9B%86%E4%B8%8E%E7%A8%80%E7%96%8F%EF%BC%89"><span class="nav-number">1.4.</span> <span class="nav-text">三、光流（密集与稀疏）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81cv2-dnn-%E6%8E%A8%E7%90%86%EF%BC%88%E5%8A%A0%E8%BD%BD-ONNX%EF%BC%89"><span class="nav-number">1.5.</span> <span class="nav-text">四、cv2.dnn 推理（加载 ONNX）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%8A%A0%E8%BD%BD%E6%A8%A1%E5%9E%8B%E4%B8%8E%E9%A2%84%E5%A4%84%E7%90%86"><span class="nav-number">1.5.1.</span> <span class="nav-text">1. 加载模型与预处理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-YOLO-%E9%A3%8E%E6%A0%BC%E5%90%8E%E5%A4%84%E7%90%86%EF%BC%88NMS%EF%BC%89"><span class="nav-number">1.5.2.</span> <span class="nav-text">2. YOLO 风格后处理（NMS）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E5%A4%9A%E7%9B%AE%E6%A0%87%E8%B7%9F%E8%B8%AA%EF%BC%9AByteTrack-%E6%80%9D%E8%B7%AF%EF%BC%88%E7%AE%80%E8%BF%B0%EF%BC%89"><span class="nav-number">1.6.</span> <span class="nav-text">五、多目标跟踪：ByteTrack 思路（简述）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E5%AE%8C%E6%95%B4%E6%B5%81%E6%B0%B4%E7%BA%BF%EF%BC%9A%E8%A7%86%E9%A2%91%E6%A3%80%E6%B5%8B%E5%8F%AF%E8%A7%86%E5%8C%96"><span class="nav-number">1.7.</span> <span class="nav-text">六、完整流水线：视频检测可视化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%83%E3%80%81%E5%B8%B8%E8%A7%81%E9%99%B7%E9%98%B1"><span class="nav-number">1.8.</span> <span class="nav-text">七、常见陷阱</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.9.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%BA%94%E7%AB%A0%EF%BC%9A%E8%A7%86%E9%A2%91%E4%B8%8E%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0"><span class="nav-number">1.</span> <span class="nav-text">第五章：视频与深度学习</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E8%A7%86%E9%A2%91%E8%AF%BB%E5%86%99"><span class="nav-number">1.2.</span> <span class="nav-text">一、视频读写</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-VideoCapture-%E8%AF%BB%E5%8F%96"><span class="nav-number">1.2.1.</span> <span class="nav-text">1. VideoCapture 读取</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-VideoWriter-%E5%86%99%E5%87%BA"><span class="nav-number">1.2.2.</span> <span class="nav-text">2. VideoWriter 写出</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E5%B8%A7%E5%B7%AE%E6%B3%95%E4%B8%8E%E8%83%8C%E6%99%AF%E5%87%8F%E9%99%A4%EF%BC%88%E8%BF%90%E5%8A%A8%E6%A3%80%E6%B5%8B%EF%BC%89"><span class="nav-number">1.3.</span> <span class="nav-text">二、帧差法与背景减除（运动检测）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E5%85%89%E6%B5%81%EF%BC%88%E5%AF%86%E9%9B%86%E4%B8%8E%E7%A8%80%E7%96%8F%EF%BC%89"><span class="nav-number">1.4.</span> <span class="nav-text">三、光流（密集与稀疏）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81cv2-dnn-%E6%8E%A8%E7%90%86%EF%BC%88%E5%8A%A0%E8%BD%BD-ONNX%EF%BC%89"><span class="nav-number">1.5.</span> <span class="nav-text">四、cv2.dnn 推理（加载 ONNX）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%8A%A0%E8%BD%BD%E6%A8%A1%E5%9E%8B%E4%B8%8E%E9%A2%84%E5%A4%84%E7%90%86"><span class="nav-number">1.5.1.</span> <span class="nav-text">1. 加载模型与预处理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-YOLO-%E9%A3%8E%E6%A0%BC%E5%90%8E%E5%A4%84%E7%90%86%EF%BC%88NMS%EF%BC%89"><span class="nav-number">1.5.2.</span> <span class="nav-text">2. YOLO 风格后处理（NMS）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E5%A4%9A%E7%9B%AE%E6%A0%87%E8%B7%9F%E8%B8%AA%EF%BC%9AByteTrack-%E6%80%9D%E8%B7%AF%EF%BC%88%E7%AE%80%E8%BF%B0%EF%BC%89"><span class="nav-number">1.6.</span> <span class="nav-text">五、多目标跟踪：ByteTrack 思路（简述）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E5%AE%8C%E6%95%B4%E6%B5%81%E6%B0%B4%E7%BA%BF%EF%BC%9A%E8%A7%86%E9%A2%91%E6%A3%80%E6%B5%8B%E5%8F%AF%E8%A7%86%E5%8C%96"><span class="nav-number">1.7.</span> <span class="nav-text">六、完整流水线：视频检测可视化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%83%E3%80%81%E5%B8%B8%E8%A7%81%E9%99%B7%E9%98%B1"><span class="nav-number">1.8.</span> <span class="nav-text">七、常见陷阱</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.9.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -175,7 +175,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">234</span>
+          <span class="site-state-item-count">257</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -186,7 +186,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">124</span>
+        <span class="site-state-item-count">156</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -260,7 +260,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-08-31 22:11:12" itemprop="dateModified" datetime="2026-08-31T22:11:12+08:00">2026-08-31</time>
+      <time title="修改时间：2026-09-01 22:51:49" itemprop="dateModified" datetime="2026-09-01T22:51:49+08:00">2026-09-01</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -296,7 +296,7 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><h1 id="第五章：视频与深度学习"><a href="#第五章：视频与深度学习" class="headerlink" title="第五章：视频与深度学习"></a>第五章：视频与深度学习</h1><h2 id="概念基础：从单图到时序与推理"><a href="#概念基础：从单图到时序与推理" class="headerlink" title="概念基础：从单图到时序与推理"></a>概念基础：从单图到时序与推理</h2><ol>
+    <div class="post-body" itemprop="articleBody"><h1 id="第五章：视频与深度学习"><a href="#第五章：视频与深度学习" class="headerlink" title="第五章：视频与深度学习"></a>第五章：视频与深度学习</h1><h2 id="概念基础"><a href="#概念基础" class="headerlink" title="概念基础"></a>概念基础</h2><ol>
 <li><strong>视频 &#x3D; 时序帧序列</strong>：在单图处理之上多了「帧间关系」——运动检测、光流、跟踪都依赖相邻帧对比，是视频理解的核心。</li>
 <li><strong>背景建模分离运动</strong>：固定摄像头下，建立背景模型后，当前帧与背景之差即运动前景，是安防检测的经典思路。</li>
 <li><strong><code>cv2.dnn</code> 是推理不是训练</strong>：OpenCV 能加载 ONNX&#x2F;Caffe&#x2F;部分 TF 模型做前向推理，跨平台部署轻量模型；训练仍在 PyTorch 等框架完成。</li>
@@ -348,7 +348,7 @@
 
 <ul>
 <li><strong>NMS（非极大值抑制）</strong>：重叠框只保留置信度最高的，<code>0.4</code> 是 IoU 阈值。</li>
-<li>训练用 <a href="/2026/05/01/PyTorch/PyTorch/" title="PyTorch">PyTorch</a>，导出 ONNX 后用 OpenCV 部署，是常见的轻量推理链路。</li>
+<li>训练用 <a href="/2026/05/01/PyTorch/PyTorch/" title="第一章：PyTorch 入门与张量">第一章：PyTorch 入门与张量</a>，导出 ONNX 后用 OpenCV 部署，是常见的轻量推理链路。</li>
 </ul>
 <hr>
 <h2 id="五、多目标跟踪：ByteTrack-思路（简述）"><a href="#五、多目标跟踪：ByteTrack-思路（简述）" class="headerlink" title="五、多目标跟踪：ByteTrack 思路（简述）"></a>五、多目标跟踪：ByteTrack 思路（简述）</h2><p>检测 + 关联是跟踪的通用框架：</p>
@@ -456,7 +456,7 @@
 <li><a href="/2026/05/01/OpenCV/OpenCV%E7%89%B9%E5%BE%81%E4%B8%8E%E5%87%A0%E4%BD%95/" title="第四章：特征与几何">第四章：特征与几何</a></li>
 <li><a href="/2026/05/01/OpenCV/OpenCV%E8%A7%86%E9%A2%91%E4%B8%8E%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" title="第五章：视频与深度学习">第五章：视频与深度学习</a></li>
 </ol>
-<p>视频编解码延伸到 <a href="/2026/05/01/FFmpeg/FFmpeg/" title="第一章：FFmpeg 音视频处理入门">第一章：FFmpeg 音视频处理入门</a> 系列；深度学习原理与训练见 <a href="/2026/05/01/PyTorch/PyTorch/" title="PyTorch">PyTorch</a> 与 <a href="/2026/05/01/AI/DL/" title="第二章：DL 深度学习基础">第二章：DL 深度学习基础</a>。进阶推荐官方教程与《Learning OpenCV》。</p>
+<p>视频编解码延伸到 <a href="/2026/05/01/FFmpeg/FFmpeg/" title="第一章：FFmpeg 音视频处理入门">第一章：FFmpeg 音视频处理入门</a> 系列；深度学习原理与训练见 <a href="/2026/05/01/PyTorch/PyTorch/" title="第一章：PyTorch 入门与张量">第一章：PyTorch 入门与张量</a> 与 <a href="/2026/05/01/AI/DL/" title="第二章：DL 深度学习基础">第二章：DL 深度学习基础</a>。进阶推荐官方教程与《Learning OpenCV》。</p>
 
     </div>
 
@@ -474,13 +474,13 @@
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2026/05/01/OpenCV/OpenCV%E7%89%B9%E5%BE%81%E4%B8%8E%E5%87%A0%E4%BD%95/" rel="prev" title="第四章：特征与几何">
-                  <i class="fa fa-angle-left"></i> 第四章：特征与几何
+                <a href="/2026/05/01/FFmpeg/FFmpeg/" rel="prev" title="第一章：FFmpeg 音视频处理入门">
+                  <i class="fa fa-angle-left"></i> 第一章：FFmpeg 音视频处理入门
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2026/05/01/OpenCV/OpenCV%E6%BB%A4%E6%B3%A2%E4%B8%8E%E5%8F%98%E6%8D%A2/" rel="next" title="第三章：滤波与几何变换">
-                  第三章：滤波与几何变换 <i class="fa fa-angle-right"></i>
+                <a href="/2026/05/01/OpenCV/OpenCV%E7%89%B9%E5%BE%81%E4%B8%8E%E5%87%A0%E4%BD%95/" rel="next" title="第四章：特征与几何">
+                  第四章：特征与几何 <i class="fa fa-angle-right"></i>
                 </a>
             </div>
           </div>
@@ -512,13 +512,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">321k</span>
+    <span title="站点总字数">362k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">17:52</span>
+    <span title="站点阅读时长">20:07</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

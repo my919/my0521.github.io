@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"my919.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="第三章：字符串与常用标准库概念基础 字符串即约定：C 没有字符串类型，只有「以 &#39;\0&#39; 结尾的 char 数组」这一约定——所有 str* 函数都依赖这个约定，长度信息不存在于类型中，越界由此而生。 安全边界是第一课：strcpy&#x2F;sprintf&#x2F;gets 不检查边界，是缓冲区溢出漏洞的历史源头；现代代码一律 snprintf&#x2F;strncat（小心）">
+<meta property="og:type" content="article">
+<meta property="og:title" content="第三章：字符串与常用标准库">
+<meta property="og:url" content="https://my919.github.io/2026/05/01/C/C%E5%AD%97%E7%AC%A6%E4%B8%B2%E4%B8%8E%E6%A0%87%E5%87%86%E5%BA%93/index.html">
+<meta property="og:site_name" content="my">
+<meta property="og:description" content="第三章：字符串与常用标准库概念基础 字符串即约定：C 没有字符串类型，只有「以 &#39;\0&#39; 结尾的 char 数组」这一约定——所有 str* 函数都依赖这个约定，长度信息不存在于类型中，越界由此而生。 安全边界是第一课：strcpy&#x2F;sprintf&#x2F;gets 不检查边界，是缓冲区溢出漏洞的历史源头；现代代码一律 snprintf&#x2F;strncat（小心）">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-05-01T04:37:19.000Z">
+<meta property="article:modified_time" content="2026-09-01T14:22:29.381Z">
+<meta property="article:author" content="miracle">
+<meta property="article:tag" content="C">
+<meta property="article:tag" content="标准库">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://my919.github.io/2026/05/01/C/C%E5%AD%97%E7%AC%A6%E4%B8%B2%E4%B8%8E%E6%A0%87%E5%87%86%E5%BA%93/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://my919.github.io/2026/05/01/C/C%E5%AD%97%E7%AC%A6%E4%B8%B2%E4%B8%8E%E6%A0%87%E5%87%86%E5%BA%93/","path":"2026/05/01/C/C字符串与标准库/","title":"第三章：字符串与常用标准库"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>第三章：字符串与常用标准库 | my</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.10.1/mermaid.min.js","integrity":"sha256-BmQmdWDS8X2OTbrwELWK366LV6escyWhHHe0XCTU/Hk="}}</script>
+  <script src="/js/third-party/tags/mermaid.js" defer></script>
+
+
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="my" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">my</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-service"><a href="/service/" rel="section"><i class="fa fa-server fa-fw"></i>服务</a></li><li class="menu-item menu-item-tool"><a href="/tool/" rel="section"><i class="fa fa-wrench fa-fw"></i>工具</a></li><li class="menu-item menu-item-project"><a href="/project/" rel="section"><i class="fa fa-folder-open fa-fw"></i>项目</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%B8%89%E7%AB%A0%EF%BC%9A%E5%AD%97%E7%AC%A6%E4%B8%B2%E4%B8%8E%E5%B8%B8%E7%94%A8%E6%A0%87%E5%87%86%E5%BA%93"><span class="nav-number">1.</span> <span class="nav-text">第三章：字符串与常用标准库</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81string-h%EF%BC%9A%E5%AD%97%E7%AC%A6%E4%B8%B2%E4%B8%8E%E5%86%85%E5%AD%98"><span class="nav-number">1.2.</span> <span class="nav-text">一、string.h：字符串与内存</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%B8%B8%E7%94%A8%E5%87%BD%E6%95%B0%E9%80%9F%E6%9F%A5"><span class="nav-number">1.2.1.</span> <span class="nav-text">1. 常用函数速查</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E5%AE%89%E5%85%A8%E6%8B%B7%E8%B4%9D%E7%9A%84%E6%8E%A8%E8%8D%90%E5%A7%BF%E5%8A%BF"><span class="nav-number">1.2.2.</span> <span class="nav-text">2. 安全拷贝的推荐姿势</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-memmove-vs-memcpy"><span class="nav-number">1.2.3.</span> <span class="nav-text">3. memmove vs memcpy</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81stdio-h%EF%BC%9A%E8%BE%93%E5%85%A5%E8%BE%93%E5%87%BA%E4%B8%8E%E6%A0%BC%E5%BC%8F%E5%8C%96"><span class="nav-number">1.3.</span> <span class="nav-text">二、stdio.h：输入输出与格式化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-printf-%E6%A0%BC%E5%BC%8F%E7%AC%A6%E9%80%9F%E6%9F%A5"><span class="nav-number">1.3.1.</span> <span class="nav-text">1. printf 格式符速查</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E6%96%87%E4%BB%B6-IO-%E5%9B%9B%E4%BB%B6%E5%A5%97"><span class="nav-number">1.3.2.</span> <span class="nav-text">2. 文件 IO 四件套</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E4%BA%8C%E8%BF%9B%E5%88%B6-IO-%E4%B8%8E%E5%AE%9A%E4%BD%8D"><span class="nav-number">1.3.3.</span> <span class="nav-text">3. 二进制 IO 与定位</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81stdlib-h%EF%BC%9A%E5%88%86%E9%85%8D%E3%80%81%E8%BD%AC%E6%8D%A2%E4%B8%8E%E9%80%80%E5%87%BA"><span class="nav-number">1.4.</span> <span class="nav-text">三、stdlib.h：分配、转换与退出</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81time-h%EF%BC%9A%E6%97%B6%E9%97%B4%E5%A4%84%E7%90%86"><span class="nav-number">1.5.</span> <span class="nav-text">四、time.h：时间处理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81math-h-%E4%B8%8E%E5%AD%97%E7%AC%A6%E5%A4%84%E7%90%86"><span class="nav-number">1.6.</span> <span class="nav-text">五、math.h 与字符处理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E5%B8%B8%E8%A7%81%E9%99%B7%E9%98%B1"><span class="nav-number">1.7.</span> <span class="nav-text">六、常见陷阱</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.8.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">miracle</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">257</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">36</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">156</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/my919" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;my919" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://gitee.com/my919" title="Gitee → https:&#x2F;&#x2F;gitee.com&#x2F;my919" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>Gitee</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:yeal166@163.com" title="E-Mail → mailto:yeal166@163.com" rel="noopener me external nofollow noreferrer" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://my919.github.io/2026/05/01/C/C%E5%AD%97%E7%AC%A6%E4%B8%B2%E4%B8%8E%E6%A0%87%E5%87%86%E5%BA%93/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="第三章：字符串与常用标准库 | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          第三章：字符串与常用标准库
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-05-01 12:37:19" itemprop="dateCreated datePublished" datetime="2026-05-01T12:37:19+08:00">2026-05-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-09-01 22:22:29" itemprop="dateModified" datetime="2026-09-01T22:22:29+08:00">2026-09-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/C/" itemprop="url" rel="index"><span itemprop="name">C</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>1.9k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>6 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="第三章：字符串与常用标准库"><a href="#第三章：字符串与常用标准库" class="headerlink" title="第三章：字符串与常用标准库"></a>第三章：字符串与常用标准库</h1><h2 id="概念基础"><a href="#概念基础" class="headerlink" title="概念基础"></a>概念基础</h2><ol>
+<li><strong>字符串即约定</strong>：C 没有字符串类型，只有「以 <code>&#39;\0&#39;</code> 结尾的 char 数组」这一约定——所有 <code>str*</code> 函数都依赖这个约定，<strong>长度信息不存在于类型中</strong>，越界由此而生。</li>
+<li><strong>安全边界是第一课</strong>：<code>strcpy</code>&#x2F;<code>sprintf</code>&#x2F;<code>gets</code> 不检查边界，是缓冲区溢出漏洞的历史源头；现代代码一律 <strong><code>snprintf</code>&#x2F;<code>strncat</code>（小心）&#x2F;长度校验</strong>。</li>
+<li><strong>标准库分层清晰</strong>：<code>stdio.h</code>（IO）、<code>string.h</code>（内存&#x2F;串）、<code>stdlib.h</code>（分配&#x2F;转换&#x2F;退出）、<code>time.h</code>（时间）、<code>math.h</code>（数学）覆盖 80% 日常需求。</li>
+<li><strong>格式串即契约</strong>：<code>printf</code>&#x2F;<code>scanf</code> 的格式符必须与实参类型严格匹配（<code>%zu</code> 对 <code>size_t</code>、<code>%lld</code> 对 <code>long long</code>），不匹配是 UB；gcc <code>-Wformat</code> 能查出大半。</li>
+<li><strong>本章目标</strong>：把日常高频库函数串成速查手册，每个函数标注安全用法与替代方案。</li>
+</ol>
+<blockquote>
+<p>本章承接 <a href="/2026/05/01/C/C%E6%8C%87%E9%92%88%E4%B8%8E%E5%86%85%E5%AD%98/" title="第二章：指针、数组与内存管理">第二章：指针、数组与内存管理</a>。示例在 gcc 14 下编译运行验证。</p>
+</blockquote>
+<hr>
+<h2 id="一、string-h：字符串与内存"><a href="#一、string-h：字符串与内存" class="headerlink" title="一、string.h：字符串与内存"></a>一、string.h：字符串与内存</h2><h3 id="1-常用函数速查"><a href="#1-常用函数速查" class="headerlink" title="1. 常用函数速查"></a>1. 常用函数速查</h3><table>
+<thead>
+<tr>
+<th>函数</th>
+<th>作用</th>
+<th>安全提示</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong><code>strlen(s)</code></strong></td>
+<td>长度（不含 <code>&#39;\0&#39;</code>）</td>
+<td>O(n)；传非 NUL 结尾缓冲是 UB</td>
+</tr>
+<tr>
+<td><strong><code>strcmp(s1,s2)</code></strong></td>
+<td>字典序比较</td>
+<td>返回 &lt;0&#x2F;0&#x2F;&gt;0，<strong>勿当布尔用</strong></td>
+</tr>
+<tr>
+<td><strong><code>strncmp(s1,s2,n)</code></strong></td>
+<td>前 n 字符比较</td>
+<td>前缀匹配首选</td>
+</tr>
+<tr>
+<td><strong><code>strcpy(dst,src)</code></strong></td>
+<td>拷贝</td>
+<td><strong>不查边界，弃用</strong>→<code>snprintf</code></td>
+</tr>
+<tr>
+<td><strong><code>strncpy(dst,src,n)</code></strong></td>
+<td>最多 n 字符</td>
+<td><strong>不保证 NUL 结尾</strong>，坑；见下方</td>
+</tr>
+<tr>
+<td><strong><code>strcat/strncat</code></strong></td>
+<td>追加</td>
+<td><code>strncat</code> 追加后<strong>总是补 NUL</strong>（与 strncpy 不同）</td>
+</tr>
+<tr>
+<td><strong><code>strstr(h,nd)</code></strong></td>
+<td>子串查找</td>
+<td>返回首地址，找不到 NULL</td>
+</tr>
+<tr>
+<td><strong><code>strchr/strrchr</code></strong></td>
+<td>查字符</td>
+<td>首次&#x2F;末次出现</td>
+</tr>
+<tr>
+<td><strong><code>strtok(s,delim)</code></strong></td>
+<td>分词</td>
+<td><strong>内部静态状态，非线程安全</strong></td>
+</tr>
+<tr>
+<td><strong><code>memcpy/memmove</code></strong></td>
+<td>内存拷贝</td>
+<td>区间重叠<strong>必须 memmove</strong></td>
+</tr>
+<tr>
+<td><strong><code>memset</code></strong></td>
+<td>填充字节</td>
+<td>只适合 0&#x2F;-1 等按字节模式</td>
+</tr>
+</tbody></table>
+<h3 id="2-安全拷贝的推荐姿势"><a href="#2-安全拷贝的推荐姿势" class="headerlink" title="2. 安全拷贝的推荐姿势"></a>2. 安全拷贝的推荐姿势</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">void</span>)</span> &#123;</span><br><span class="line">    <span class="type">char</span> dst[<span class="number">16</span>];</span><br><span class="line">    <span class="type">const</span> <span class="type">char</span> *src = <span class="string">&quot;hello, world, long string&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* 首选 snprintf：保证 NUL 结尾 + 返回「本应写入的长度」可检测截断 */</span></span><br><span class="line">    <span class="type">int</span> need = <span class="built_in">snprintf</span>(dst, <span class="keyword">sizeof</span> dst, <span class="string">&quot;%s&quot;</span>, src);</span><br><span class="line">    <span class="keyword">if</span> (need &lt; <span class="number">0</span>) <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">if</span> ((<span class="type">size_t</span>)need &gt;= <span class="keyword">sizeof</span> dst) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;truncated: need=%d\n&quot;</span>, need);   <span class="comment">/* 24 &gt; 15 */</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%s\n&quot;</span>, dst);                        <span class="comment">/* hello, world, l */</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">/* strncpy 的坑：src 前 n 字符不含 NUL 时，dst 无 NUL 结尾 */</span></span><br><span class="line">    <span class="type">char</span> bad[<span class="number">5</span>];</span><br><span class="line">    <span class="built_in">strncpy</span>(bad, <span class="string">&quot;abcdefg&quot;</span>, <span class="keyword">sizeof</span> bad);        <span class="comment">/* bad 无 NUL！ */</span></span><br><span class="line">    bad[<span class="keyword">sizeof</span> bad - <span class="number">1</span>] = <span class="string">&#x27;\0&#x27;</span>;                 <span class="comment">/* 手动补丁（strncpy 必跟） */</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">/* strncat 反而总是补 NUL：n 是「最多追加」的字符数 */</span></span><br><span class="line">    <span class="type">char</span> cat[<span class="number">16</span>] = <span class="string">&quot;ab&quot;</span>;</span><br><span class="line">    <span class="built_in">strncat</span>(cat, <span class="string">&quot;cdefghijklmn&quot;</span>, <span class="keyword">sizeof</span> cat - <span class="built_in">strlen</span>(cat) - <span class="number">1</span>);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%s\n&quot;</span>, cat);                        <span class="comment">/* abcdefghijklmn */</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong><code>strncpy</code> 从不安全</strong>：要么截断不补 NUL、要么补零填满缓冲。新代码用 <code>snprintf</code>；接旧代码时记住「strncpy 后手动补 <code>&#39;\0&#39;</code>」。</p>
+</blockquote>
+<h3 id="3-memmove-vs-memcpy"><a href="#3-memmove-vs-memcpy" class="headerlink" title="3. memmove vs memcpy"></a>3. memmove vs memcpy</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">char</span> buf[<span class="number">10</span>] = <span class="string">&quot;123456789&quot;</span>;</span><br><span class="line">memmove(buf, buf + <span class="number">2</span>, <span class="number">5</span>);   <span class="comment">/* 区间重叠：必须 memmove → &quot;3456789&quot; */</span></span><br><span class="line"><span class="comment">/* memcpy 处理重叠区间是 UB，性能差异微乎其微，拿不准就 memmove */</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="二、stdio-h：输入输出与格式化"><a href="#二、stdio-h：输入输出与格式化" class="headerlink" title="二、stdio.h：输入输出与格式化"></a>二、stdio.h：输入输出与格式化</h2><h3 id="1-printf-格式符速查"><a href="#1-printf-格式符速查" class="headerlink" title="1. printf 格式符速查"></a>1. printf 格式符速查</h3><table>
+<thead>
+<tr>
+<th>格式符</th>
+<th>类型</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong><code>%d</code></strong></td>
+<td>int</td>
+<td><code>42</code></td>
+</tr>
+<tr>
+<td><strong><code>%u</code></strong></td>
+<td>unsigned int</td>
+<td><code>42</code></td>
+</tr>
+<tr>
+<td><strong><code>%zu</code></strong></td>
+<td>size_t</td>
+<td><code>sizeof(int)</code></td>
+</tr>
+<tr>
+<td><strong><code>%ld</code> &#x2F; <code>%lld</code></strong></td>
+<td>long &#x2F; long long</td>
+<td><code>9223372036854775807</code></td>
+</tr>
+<tr>
+<td><strong><code>%x</code> &#x2F; <code>%o</code></strong></td>
+<td>十六&#x2F;八进制</td>
+<td><code>ff</code> &#x2F; <code>377</code></td>
+</tr>
+<tr>
+<td><strong><code>%f</code> &#x2F; <code>%e</code> &#x2F; <code>%g</code></strong></td>
+<td>double</td>
+<td><code>3.141593</code> &#x2F; <code>3.14e+00</code> &#x2F; <code>3.14159</code></td>
+</tr>
+<tr>
+<td><strong><code>%c</code> &#x2F; <code>%s</code></strong></td>
+<td>字符 &#x2F; 字符串</td>
+<td><code>A</code> &#x2F; <code>hi</code></td>
+</tr>
+<tr>
+<td><strong><code>%p</code></strong></td>
+<td>指针</td>
+<td><code>0x7ffd...</code></td>
+</tr>
+<tr>
+<td><strong><code>%%</code></strong></td>
+<td>百分号本身</td>
+<td><code>%</code></td>
+</tr>
+</tbody></table>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">printf</span>(<span class="string">&quot;%5d|%-5d|%05d\n&quot;</span>, <span class="number">42</span>, <span class="number">42</span>, <span class="number">42</span>);   <span class="comment">/*    42|42   |00042 */</span></span><br><span class="line"><span class="built_in">printf</span>(<span class="string">&quot;%.2f\n&quot;</span>, <span class="number">3.14159</span>);               <span class="comment">/* 3.14 */</span></span><br><span class="line"><span class="built_in">printf</span>(<span class="string">&quot;%s\n&quot;</span>, <span class="string">&quot;hi&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-文件-IO-四件套"><a href="#2-文件-IO-四件套" class="headerlink" title="2. 文件 IO 四件套"></a>2. 文件 IO 四件套</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">void</span>)</span> &#123;</span><br><span class="line">    <span class="comment">/* 写 */</span></span><br><span class="line">    FILE *out = fopen(<span class="string">&quot;data.txt&quot;</span>, <span class="string">&quot;w&quot;</span>);</span><br><span class="line">    <span class="keyword">if</span> (!out) &#123; perror(<span class="string">&quot;fopen&quot;</span>); <span class="keyword">return</span> <span class="number">1</span>; &#125;</span><br><span class="line">    <span class="built_in">fprintf</span>(out, <span class="string">&quot;id=%d score=%.1f\n&quot;</span>, <span class="number">1</span>, <span class="number">98.5</span>);</span><br><span class="line">    fclose(out);                          <span class="comment">/* 打开必关闭；fclose 返回值也应检查 */</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">/* 读：逐字符 / 逐行 / 二进制 */</span></span><br><span class="line">    FILE *in = fopen(<span class="string">&quot;data.txt&quot;</span>, <span class="string">&quot;r&quot;</span>);</span><br><span class="line">    <span class="keyword">if</span> (!in) &#123; perror(<span class="string">&quot;fopen&quot;</span>); <span class="keyword">return</span> <span class="number">1</span>; &#125;</span><br><span class="line"></span><br><span class="line">    <span class="type">char</span> line[<span class="number">64</span>];</span><br><span class="line">    <span class="keyword">while</span> (fgets(line, <span class="keyword">sizeof</span> line, in))   <span class="comment">/* fgets 读到换行或 n-1 字节，总是 NUL 结尾 */</span></span><br><span class="line">        <span class="built_in">fputs</span>(line, <span class="built_in">stdout</span>);               <span class="comment">/* 原样输出 */</span></span><br><span class="line"></span><br><span class="line">    fclose(in);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* scanf 安全用法：域宽限定 + 检查返回值 */</span></span><br><span class="line"><span class="type">int</span> id;</span><br><span class="line"><span class="type">char</span> name[<span class="number">32</span>];</span><br><span class="line"><span class="keyword">if</span> (<span class="built_in">scanf</span>(<span class="string">&quot;%d %31s&quot;</span>, &amp;id, name) == <span class="number">2</span>) &#123;   <span class="comment">/* %31s 最多读 31 字符并补 NUL */</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%d %s\n&quot;</span>, id, name);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong><code>fgets</code> 换 <code>gets</code>（后者已从标准删除）</strong>；<code>scanf(&quot;%s&quot;)</code> 必须域宽限定；<strong>行尾换行残留</strong>是 scanf 经典坑（<code>getchar()</code> 吃掉或统一 fgets+sscanf）。</p>
+</blockquote>
+<h3 id="3-二进制-IO-与定位"><a href="#3-二进制-IO-与定位" class="headerlink" title="3. 二进制 IO 与定位"></a>3. 二进制 IO 与定位</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">FILE *f = fopen(<span class="string">&quot;bin.dat&quot;</span>, <span class="string">&quot;wb&quot;</span>);</span><br><span class="line"><span class="type">int</span> v = <span class="number">0x12345678</span>;</span><br><span class="line">fwrite(&amp;v, <span class="keyword">sizeof</span> v, <span class="number">1</span>, f);</span><br><span class="line">fclose(f);</span><br><span class="line"></span><br><span class="line">f = fopen(<span class="string">&quot;bin.dat&quot;</span>, <span class="string">&quot;rb&quot;</span>);</span><br><span class="line">fseek(f, <span class="number">0</span>, SEEK_END);</span><br><span class="line"><span class="type">long</span> size = ftell(f);        <span class="comment">/* 文件大小 */</span></span><br><span class="line">rewind(f);</span><br><span class="line"><span class="type">int</span> r;</span><br><span class="line"><span class="keyword">if</span> (fread(&amp;r, <span class="keyword">sizeof</span> r, <span class="number">1</span>, f) != <span class="number">1</span>) &#123; <span class="comment">/* 返回成功项数 */</span> &#125;</span><br><span class="line">fclose(f);</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="三、stdlib-h：分配、转换与退出"><a href="#三、stdlib-h：分配、转换与退出" class="headerlink" title="三、stdlib.h：分配、转换与退出"></a>三、stdlib.h：分配、转换与退出</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;errno.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;limits.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">void</span>)</span> &#123;</span><br><span class="line">    <span class="comment">/* 字符串→数字：strtol 带错误检测（atoi 无检测，弃用） */</span></span><br><span class="line">    <span class="type">const</span> <span class="type">char</span> *s = <span class="string">&quot;42abc&quot;</span>;</span><br><span class="line">    <span class="type">char</span> *end;</span><br><span class="line">    errno = <span class="number">0</span>;</span><br><span class="line">    <span class="type">long</span> v = strtol(s, &amp;end, <span class="number">10</span>);      <span class="comment">/* 基数 10；end 指向首个未转换字符 */</span></span><br><span class="line">    <span class="keyword">if</span> (errno == ERANGE) &#123; <span class="comment">/* 溢出 */</span> &#125;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%ld, rest=%s\n&quot;</span>, v, end);  <span class="comment">/* 42, rest=abc */</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">/* 数字→字符串 */</span></span><br><span class="line">    <span class="type">char</span> buf[<span class="number">32</span>];</span><br><span class="line">    <span class="built_in">snprintf</span>(buf, <span class="keyword">sizeof</span> buf, <span class="string">&quot;%d&quot;</span>, <span class="number">123</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* 随机数：srand 播种一次；rand 范围 [0, RAND_MAX] */</span></span><br><span class="line">    srand(<span class="number">42u</span>);</span><br><span class="line">    <span class="type">int</span> dice = rand() % <span class="number">6</span> + <span class="number">1</span>;</span><br><span class="line">    (<span class="type">void</span>)dice;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* 退出码与清理钩子：atexit 注册的函数在 exit/return 时 LIFO 执行 */</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* atexit 正确示例 */</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">void</span> <span class="title function_">cleanup</span><span class="params">(<span class="type">void</span>)</span> &#123; <span class="built_in">printf</span>(<span class="string">&quot;cleanup\n&quot;</span>); &#125;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">void</span>)</span> &#123;</span><br><span class="line">    atexit(cleanup);          <span class="comment">/* 注册：exit/return 时 LIFO 执行 */</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;                 <span class="comment">/* 输出 cleanup */</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th>函数</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong><code>strtol/strtod</code></strong></td>
+<td>带错误检测的转换，<strong>替代 atoi&#x2F;atof</strong></td>
+</tr>
+<tr>
+<td><strong><code>qsort/bsearch</code></strong></td>
+<td>通用排序&#x2F;二分（见第二章函数指针）</td>
+</tr>
+<tr>
+<td><strong><code>abs/labs</code></strong></td>
+<td>绝对值</td>
+</tr>
+<tr>
+<td><strong><code>exit/abort/atexit</code></strong></td>
+<td>受控退出 &#x2F; 立即终止 &#x2F; 清理钩子</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="四、time-h：时间处理"><a href="#四、time-h：时间处理" class="headerlink" title="四、time.h：时间处理"></a>四、time.h：时间处理</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;time.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">void</span>)</span> &#123;</span><br><span class="line">    <span class="comment">/* 墙钟（秒级）与高精度 */</span></span><br><span class="line">    <span class="type">time_t</span> now = time(<span class="literal">NULL</span>);</span><br><span class="line">    <span class="type">clock_t</span> cpu = clock();               <span class="comment">/* CPU 时间（进程运行时间） */</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">/* 格式化：先 localtime 再 strftime（可移植、线程安全的写法） */</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">tm</span> <span class="title">tmv</span>;</span></span><br><span class="line"><span class="meta">#<span class="keyword">if</span> defined(_WIN32)</span></span><br><span class="line">    localtime_s(&amp;tmv, &amp;now);</span><br><span class="line"><span class="meta">#<span class="keyword">else</span></span></span><br><span class="line">    localtime_r(&amp;now, &amp;tmv);             <span class="comment">/* POSIX；_r 版线程安全 */</span></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line">    <span class="type">char</span> buf[<span class="number">64</span>];</span><br><span class="line">    strftime(buf, <span class="keyword">sizeof</span> buf, <span class="string">&quot;%Y-%m-%d %H:%M:%S&quot;</span>, &amp;tmv);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%s\n&quot;</span>, buf);                 <span class="comment">/* 2026-09-01 22:30:15 */</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">/* 时间差与延时 */</span></span><br><span class="line">    <span class="type">double</span> used = (<span class="type">double</span>)(clock() - cpu) / CLOCKS_PER_SEC;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;cpu=%.3fs\n&quot;</span>, used);</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">timespec</span> <span class="title">req</span> =</span> &#123; .tv_sec = <span class="number">0</span>, .tv_nsec = <span class="number">100</span> * <span class="number">1000</span> * <span class="number">1000</span> &#125;;</span><br><span class="line">    nanosleep(&amp;req, <span class="literal">NULL</span>);               <span class="comment">/* 睡 100ms（POSIX） */</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong>time_t 是秒、clock_t 是 CPU 滴答</strong>，单位随实现——测量耗时用 <code>clock()/CLOCKS_PER_SEC</code>（CPU 时间）或 POSIX <code>clock_gettime(CLOCK_MONOTONIC)</code>（墙钟，测性能首选单调钟）。</p>
+</blockquote>
+<hr>
+<h2 id="五、math-h-与字符处理"><a href="#五、math-h-与字符处理" class="headerlink" title="五、math.h 与字符处理"></a>五、math.h 与字符处理</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;math.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;ctype.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">void</span>)</span> &#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%.4f %.4f\n&quot;</span>, <span class="built_in">sqrt</span>(<span class="number">2.0</span>), <span class="built_in">pow</span>(<span class="number">2.0</span>, <span class="number">10</span>));   <span class="comment">/* 1.4142 1024.0000 */</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%d\n&quot;</span>, isfinite(<span class="built_in">sqrt</span>(<span class="number">-1.0</span>)) == <span class="number">0</span>);        <span class="comment">/* NaN 检测 */</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">/* ctype：判类/转换（参数须为 unsigned char 或 EOF） */</span></span><br><span class="line">    <span class="type">char</span> c = <span class="string">&#x27;A&#x27;</span>;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%d %c\n&quot;</span>, <span class="built_in">isalpha</span>(c) != <span class="number">0</span>, (<span class="type">char</span>)<span class="built_in">tolower</span>(c)); <span class="comment">/* 1 a */</span></span><br><span class="line">    <span class="keyword">if</span> (<span class="built_in">isdigit</span>(<span class="string">&#x27;7&#x27;</span>)) <span class="built_in">printf</span>(<span class="string">&quot;digit\n&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* 浮点比较：误差域而非 == */</span></span><br><span class="line">    <span class="type">double</span> a = <span class="number">0.1</span> + <span class="number">0.2</span>;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%d\n&quot;</span>, <span class="built_in">fabs</span>(a - <span class="number">0.3</span>) &lt; <span class="number">1e-9</span>);             <span class="comment">/* 1 */</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong><code>isdigit(c)</code> 的 c 必须是 <code>unsigned char</code> 值或 EOF</strong>——传 <code>char</code>（可能为负）是 UB，惯用 <code>isdigit((unsigned char)c)</code>。链接 math.h 需 <code>-lm</code>。</p>
+</blockquote>
+<hr>
+<h2 id="六、常见陷阱"><a href="#六、常见陷阱" class="headerlink" title="六、常见陷阱"></a>六、常见陷阱</h2><table>
+<thead>
+<tr>
+<th>陷阱</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong><code>scanf(&quot;%s&quot;)</code> 无边界</strong></td>
+<td>缓冲区溢出，用 <code>%31s</code> 域宽</td>
+</tr>
+<tr>
+<td><strong><code>strncpy</code> 不补 NUL</strong></td>
+<td>截断时无结尾，手动补丁或改 snprintf</td>
+</tr>
+<tr>
+<td><strong>格式符不匹配</strong></td>
+<td><code>%d</code> 打印 size_t 等为 UB，用 <code>%zu</code>&#x2F;<code>%lld</code> 对应</td>
+</tr>
+<tr>
+<td><strong><code>gets</code> 类无界读</strong></td>
+<td>已删标；一律 fgets</td>
+</tr>
+<tr>
+<td><strong>atoi 无错误检测</strong></td>
+<td>改 strtol 检查 errno&#x2F;endptr</td>
+</tr>
+<tr>
+<td><strong>memcpy 重叠区间</strong></td>
+<td>UB，改 memmove</td>
+</tr>
+<tr>
+<td><strong>strtok 非线程安全</strong></td>
+<td>多线程用 strtok_r（POSIX）或手写分词</td>
+</tr>
+<tr>
+<td><strong>ctype 传负 char</strong></td>
+<td>UB，<code>(unsigned char)c</code></td>
+</tr>
+<tr>
+<td><strong>浮点 <code>==</code></strong></td>
+<td>用误差域 <code>fabs(a-b) &lt; eps</code></td>
+</tr>
+<tr>
+<td><strong>忘 fclose&#x2F;检查</strong></td>
+<td>资源泄漏；fclose 返回值也应检查</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="本章小结"><a href="#本章小结" class="headerlink" title="本章小结"></a>本章小结</h2><table>
+<thead>
+<tr>
+<th>要点</th>
+<th>结论</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>字符串</td>
+<td>NUL 结尾约定贯穿一切；strlen O(n)、无长度内建</td>
+</tr>
+<tr>
+<td>安全拷贝</td>
+<td>snprintf 首选；strncpy 必补 NUL；strncat 反而总补</td>
+</tr>
+<tr>
+<td>格式化</td>
+<td>格式符与类型严格匹配：<code>%zu</code>&#x2F;<code>%lld</code>；gcc <code>-Wformat</code> 把关</td>
+</tr>
+<tr>
+<td>文件 IO</td>
+<td>fopen 判空 + fclose 成对；fgets 替代 gets；二进制读写查返回值</td>
+</tr>
+<tr>
+<td>转换</td>
+<td>strtol&#x2F;strtod 带 errno+endptr，弃用 atoi</td>
+</tr>
+<tr>
+<td>时间</td>
+<td>time_t 秒 &#x2F; clock CPU；localtime_r 线程安全；性能测单调钟</td>
+</tr>
+<tr>
+<td>数学字符</td>
+<td><code>-lm</code>；ctype 参数转 unsigned char；浮点误差域比较</td>
+</tr>
+</tbody></table>
+<p>进入 <a href="/2026/05/01/C/C%E6%9E%84%E5%BB%BA%E4%B8%8E%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5/" title="第四章：构建与工程实践">第四章：构建与工程实践</a>，学习 gcc 工具链、Makefile、静态&#x2F;动态库与调试分析。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/C/" rel="tag"># C</a>
+              <a href="/tags/%E6%A0%87%E5%87%86%E5%BA%93/" rel="tag"># 标准库</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/05/01/C/C%E6%8C%87%E9%92%88%E4%B8%8E%E5%86%85%E5%AD%98/" rel="prev" title="第二章：指针、数组与内存管理">
+                  <i class="fa fa-angle-left"></i> 第二章：指针、数组与内存管理
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2026/05/01/C/C%E6%9E%84%E5%BB%BA%E4%B8%8E%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5/" rel="next" title="第四章：构建与工程实践">
+                  第四章：构建与工程实践 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">miracle</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">362k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">20:07</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+<script>
+(function () {
+  function normalizeClipboard(s) {
+    return (s || '').replace(/\u00a0/g, ' ');
+  }
+
+  /** When innerText is empty, treat <br> as newlines (matches Hexo fenced + line_number HTML). */
+  function plainTextFromElement(el) {
+    if (!el) return '';
+    var t = el.innerText;
+    if (t != null && t !== '') return normalizeClipboard(t);
+    var clone = el.cloneNode(true);
+    clone.querySelectorAll('br').forEach(function (br) {
+      br.parentNode.replaceChild(document.createTextNode('\n'), br);
+    });
+    return normalizeClipboard(clone.textContent || '');
+  }
+
+  function extractFromFigure(fig) {
+    if (!fig) return '';
+    var cell = fig.querySelector('td.code') || fig.querySelector('.code');
+    if (cell) return plainTextFromElement(cell);
+    var pre = fig.querySelector('pre');
+    if (pre) return plainTextFromElement(pre);
+    var code = fig.querySelector('code');
+    return code ? plainTextFromElement(code) : '';
+  }
+
+  function extractForCopyBtn(btn) {
+    var fig = btn.closest('figure.highlight');
+    if (fig) return extractFromFigure(fig);
+    var wrap = btn.closest('.code-container');
+    if (wrap) {
+      var innerFig = wrap.querySelector('figure.highlight');
+      if (innerFig) return extractFromFigure(innerFig);
+      var preOnly = wrap.querySelector('pre');
+      if (preOnly) return plainTextFromElement(preOnly);
+    }
+    return '';
+  }
+
+  function setCopyIcon(btn, ok) {
+    var i = btn.querySelector('i');
+    if (i) i.className = ok ? 'fa fa-check-circle fa-fw' : 'fa fa-times-circle fa-fw';
+  }
+
+  function writeClipboard(text, btn) {
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(text).then(
+        function () { setCopyIcon(btn, true); },
+        function () { fallbackCopy(text, btn); }
+      );
+    }
+    fallbackCopy(text, btn);
+    return Promise.resolve();
+  }
+
+  function fallbackCopy(text, btn) {
+    try {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed';
+      ta.style.left = '-9999px';
+      document.body.appendChild(ta);
+      ta.select();
+      var ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      setCopyIcon(btn, ok);
+    } catch (e) {
+      setCopyIcon(btn, false);
+    }
+  }
+
+  document.addEventListener(
+    'click',
+    function (e) {
+      var btn = e.target.closest && e.target.closest('.copy-btn');
+      if (!btn) return;
+      if (!btn.closest('figure.highlight') && !btn.closest('.code-container')) return;
+      e.stopPropagation();
+      e.preventDefault();
+      var text = extractForCopyBtn(btn);
+      writeClipboard(text, btn);
+    },
+    true
+  );
+})();
+</script>
+
+</body>
+</html>

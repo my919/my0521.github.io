@@ -20,15 +20,15 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"my919.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
 
-    <meta name="description" content="第二章：Docker 部署 MySQL 实践概念基础：为什么用 Docker 部署 MySQL容器化是「把 MySQL 实例连同版本、配置、账号一次性描述清楚」的部署方式：  环境一致、随起随删：一条命令拉起带指定版本、字符集、账号密码的实例，不污染宿主机；卸载即删容器，重装零成本——这正是第一章建好表结构之后最需要的环境。 数据与容器分离：容器可随时销毁，数据必须落在卷（volume）；命名卷">
+    <meta name="description" content="第二章：Docker 部署 MySQL 实践概念基础容器化是「把 MySQL 实例连同版本、配置、账号一次性描述清楚」的部署方式：  环境一致、随起随删：一条命令拉起带指定版本、字符集、账号密码的实例，不污染宿主机；卸载即删容器，重装零成本——这正是第一章建好表结构之后最需要的环境。 数据与容器分离：容器可随时销毁，数据必须落在卷（volume）；命名卷 mysql-data 持久化 &#x2F;var&#x2F;l">
 <meta property="og:type" content="article">
 <meta property="og:title" content="第二章：Docker 部署 MySQL 实践">
 <meta property="og:url" content="https://my919.github.io/2026/05/01/MySQL/MySQL-Docker/index.html">
 <meta property="og:site_name" content="my">
-<meta property="og:description" content="第二章：Docker 部署 MySQL 实践概念基础：为什么用 Docker 部署 MySQL容器化是「把 MySQL 实例连同版本、配置、账号一次性描述清楚」的部署方式：  环境一致、随起随删：一条命令拉起带指定版本、字符集、账号密码的实例，不污染宿主机；卸载即删容器，重装零成本——这正是第一章建好表结构之后最需要的环境。 数据与容器分离：容器可随时销毁，数据必须落在卷（volume）；命名卷">
+<meta property="og:description" content="第二章：Docker 部署 MySQL 实践概念基础容器化是「把 MySQL 实例连同版本、配置、账号一次性描述清楚」的部署方式：  环境一致、随起随删：一条命令拉起带指定版本、字符集、账号密码的实例，不污染宿主机；卸载即删容器，重装零成本——这正是第一章建好表结构之后最需要的环境。 数据与容器分离：容器可随时销毁，数据必须落在卷（volume）；命名卷 mysql-data 持久化 &#x2F;var&#x2F;l">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-05-01T12:35:17.000Z">
-<meta property="article:modified_time" content="2026-08-30T09:10:05.213Z">
+<meta property="article:modified_time" content="2026-09-01T13:56:38.219Z">
 <meta property="article:author" content="miracle">
 <meta property="article:tag" content="Docker">
 <meta property="article:tag" content="Docker Compose">
@@ -164,7 +164,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%9ADocker-%E9%83%A8%E7%BD%B2-MySQL-%E5%AE%9E%E8%B7%B5"><span class="nav-number">1.</span> <span class="nav-text">第二章：Docker 部署 MySQL 实践</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%B8%BA%E4%BB%80%E4%B9%88%E7%94%A8-Docker-%E9%83%A8%E7%BD%B2-MySQL"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础：为什么用 Docker 部署 MySQL</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E5%89%8D%E7%BD%AE%E6%9D%A1%E4%BB%B6"><span class="nav-number">1.2.</span> <span class="nav-text">一、前置条件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81MySQL-%E9%95%9C%E5%83%8F%E9%80%89%E6%8B%A9"><span class="nav-number">1.3.</span> <span class="nav-text">二、MySQL 镜像选择</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%AE%98%E6%96%B9%E9%95%9C%E5%83%8F%EF%BC%88%E6%8E%A8%E8%8D%90%EF%BC%89"><span class="nav-number">1.3.1.</span> <span class="nav-text">1. 官方镜像（推荐）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E5%8F%98%E4%BD%93%E8%AF%B4%E6%98%8E"><span class="nav-number">1.3.2.</span> <span class="nav-text">2. 变体说明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E5%AD%97%E7%AC%A6%E9%9B%86%E4%B8%8E%E6%8E%92%E5%BA%8F%E8%A7%84%E5%88%99"><span class="nav-number">1.3.3.</span> <span class="nav-text">3. 字符集与排序规则</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E5%8D%95%E5%AE%B9%E5%99%A8%E4%B8%80%E9%94%AE%E9%83%A8%E7%BD%B2%EF%BC%88docker-run%EF%BC%89"><span class="nav-number">1.4.</span> <span class="nav-text">三、单容器一键部署（docker run）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Linux-macOS-Git-Bash%EF%BC%88-%E7%BB%AD%E8%A1%8C%EF%BC%89"><span class="nav-number">1.4.1.</span> <span class="nav-text">Linux &#x2F; macOS &#x2F; Git Bash（\ 续行）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Windows-CMD%EF%BC%88-%E7%BB%AD%E8%A1%8C%EF%BC%89"><span class="nav-number">1.4.2.</span> <span class="nav-text">Windows CMD（^ 续行）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81Docker-Compose-%E4%B8%80%E9%94%AE%E9%83%A8%E7%BD%B2"><span class="nav-number">1.5.</span> <span class="nav-text">四、Docker Compose 一键部署</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81Kubernetes-%E4%B8%80%E9%94%AE%E9%83%A8%E7%BD%B2%EF%BC%88%E5%8D%95%E6%96%87%E4%BB%B6%E5%AE%8C%E6%95%B4%E6%B8%85%E5%8D%95%EF%BC%89"><span class="nav-number">1.6.</span> <span class="nav-text">五、Kubernetes 一键部署（单文件完整清单）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E5%B0%8F%E7%BB%93"><span class="nav-number">1.7.</span> <span class="nav-text">六、小结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.8.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%9ADocker-%E9%83%A8%E7%BD%B2-MySQL-%E5%AE%9E%E8%B7%B5"><span class="nav-number">1.</span> <span class="nav-text">第二章：Docker 部署 MySQL 实践</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E5%89%8D%E7%BD%AE%E6%9D%A1%E4%BB%B6"><span class="nav-number">1.2.</span> <span class="nav-text">一、前置条件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81MySQL-%E9%95%9C%E5%83%8F%E9%80%89%E6%8B%A9"><span class="nav-number">1.3.</span> <span class="nav-text">二、MySQL 镜像选择</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%AE%98%E6%96%B9%E9%95%9C%E5%83%8F%EF%BC%88%E6%8E%A8%E8%8D%90%EF%BC%89"><span class="nav-number">1.3.1.</span> <span class="nav-text">1. 官方镜像（推荐）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E5%8F%98%E4%BD%93%E8%AF%B4%E6%98%8E"><span class="nav-number">1.3.2.</span> <span class="nav-text">2. 变体说明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E5%AD%97%E7%AC%A6%E9%9B%86%E4%B8%8E%E6%8E%92%E5%BA%8F%E8%A7%84%E5%88%99"><span class="nav-number">1.3.3.</span> <span class="nav-text">3. 字符集与排序规则</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E5%8D%95%E5%AE%B9%E5%99%A8%E4%B8%80%E9%94%AE%E9%83%A8%E7%BD%B2%EF%BC%88docker-run%EF%BC%89"><span class="nav-number">1.4.</span> <span class="nav-text">三、单容器一键部署（docker run）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Linux-macOS-Git-Bash%EF%BC%88-%E7%BB%AD%E8%A1%8C%EF%BC%89"><span class="nav-number">1.4.1.</span> <span class="nav-text">Linux &#x2F; macOS &#x2F; Git Bash（\ 续行）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Windows-CMD%EF%BC%88-%E7%BB%AD%E8%A1%8C%EF%BC%89"><span class="nav-number">1.4.2.</span> <span class="nav-text">Windows CMD（^ 续行）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81Docker-Compose-%E4%B8%80%E9%94%AE%E9%83%A8%E7%BD%B2"><span class="nav-number">1.5.</span> <span class="nav-text">四、Docker Compose 一键部署</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81Kubernetes-%E4%B8%80%E9%94%AE%E9%83%A8%E7%BD%B2%EF%BC%88%E5%8D%95%E6%96%87%E4%BB%B6%E5%AE%8C%E6%95%B4%E6%B8%85%E5%8D%95%EF%BC%89"><span class="nav-number">1.6.</span> <span class="nav-text">五、Kubernetes 一键部署（单文件完整清单）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E5%B0%8F%E7%BB%93"><span class="nav-number">1.7.</span> <span class="nav-text">六、小结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.8.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -177,7 +177,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">234</span>
+          <span class="site-state-item-count">257</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -188,7 +188,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">124</span>
+        <span class="site-state-item-count">156</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -262,7 +262,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-08-30 17:10:05" itemprop="dateModified" datetime="2026-08-30T17:10:05+08:00">2026-08-30</time>
+      <time title="修改时间：2026-09-01 21:56:38" itemprop="dateModified" datetime="2026-09-01T21:56:38+08:00">2026-09-01</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -298,7 +298,7 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><h1 id="第二章：Docker-部署-MySQL-实践"><a href="#第二章：Docker-部署-MySQL-实践" class="headerlink" title="第二章：Docker 部署 MySQL 实践"></a>第二章：Docker 部署 MySQL 实践</h1><h2 id="概念基础：为什么用-Docker-部署-MySQL"><a href="#概念基础：为什么用-Docker-部署-MySQL" class="headerlink" title="概念基础：为什么用 Docker 部署 MySQL"></a>概念基础：为什么用 Docker 部署 MySQL</h2><p><strong>容器化</strong>是「把 MySQL 实例连同版本、配置、账号一次性描述清楚」的部署方式：</p>
+    <div class="post-body" itemprop="articleBody"><h1 id="第二章：Docker-部署-MySQL-实践"><a href="#第二章：Docker-部署-MySQL-实践" class="headerlink" title="第二章：Docker 部署 MySQL 实践"></a>第二章：Docker 部署 MySQL 实践</h1><h2 id="概念基础"><a href="#概念基础" class="headerlink" title="概念基础"></a>概念基础</h2><p><strong>容器化</strong>是「把 MySQL 实例连同版本、配置、账号一次性描述清楚」的部署方式：</p>
 <ol>
 <li><strong>环境一致、随起随删</strong>：一条命令拉起带指定<strong>版本、字符集、账号密码</strong>的实例，不污染宿主机；卸载即删容器，重装零成本——这正是第一章建好表结构之后最需要的环境。</li>
 <li><strong>数据与容器分离</strong>：容器可随时销毁，<strong>数据必须落在卷（volume）</strong>；命名卷 <strong><code>mysql-data</code></strong> 持久化 <strong><code>/var/lib/mysql</code></strong>，删容器不丢数据，但<strong>删卷等于删库</strong>，这是容器数据库的第一铁律。</li>
@@ -527,13 +527,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">321k</span>
+    <span title="站点总字数">362k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">17:52</span>
+    <span title="站点阅读时长">20:07</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

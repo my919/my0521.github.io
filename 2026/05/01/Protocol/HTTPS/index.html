@@ -20,15 +20,15 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"my919.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
 
-    <meta name="description" content="第四章：HTTPS 详解：TLS 握手、证书与 openssl&#x2F;curl 示例概念基础：HTTPS 是什么 HTTP + TLS，不是新协议：HTTPS 就是先经 TLS 加密、再传输 第二章：HTTP 详解：报文、方法、版本与 curl&#x2F;nc 示例 报文——URL 以 https:&#x2F;&#x2F; 开头，默认端口 443（明文 HTTP 为 80）。 TLS 提供三件事：机密性（对称加密">
+    <meta name="description" content="第四章：HTTPS 详解：TLS 握手、证书与 openssl&#x2F;curl 示例概念基础 HTTP + TLS，不是新协议：HTTPS 就是先经 TLS 加密、再传输 第二章：HTTP 详解：报文、方法、版本与 curl&#x2F;nc 示例 报文——URL 以 https:&#x2F;&#x2F; 开头，默认端口 443（明文 HTTP 为 80）。 TLS 提供三件事：机密性（对称加密防窃听）、完整性（M">
 <meta property="og:type" content="article">
 <meta property="og:title" content="第四章：HTTPS 详解：TLS 握手、证书与 openssl&#x2F;curl 示例">
 <meta property="og:url" content="https://my919.github.io/2026/05/01/Protocol/HTTPS/index.html">
 <meta property="og:site_name" content="my">
-<meta property="og:description" content="第四章：HTTPS 详解：TLS 握手、证书与 openssl&#x2F;curl 示例概念基础：HTTPS 是什么 HTTP + TLS，不是新协议：HTTPS 就是先经 TLS 加密、再传输 第二章：HTTP 详解：报文、方法、版本与 curl&#x2F;nc 示例 报文——URL 以 https:&#x2F;&#x2F; 开头，默认端口 443（明文 HTTP 为 80）。 TLS 提供三件事：机密性（对称加密">
+<meta property="og:description" content="第四章：HTTPS 详解：TLS 握手、证书与 openssl&#x2F;curl 示例概念基础 HTTP + TLS，不是新协议：HTTPS 就是先经 TLS 加密、再传输 第二章：HTTP 详解：报文、方法、版本与 curl&#x2F;nc 示例 报文——URL 以 https:&#x2F;&#x2F; 开头，默认端口 443（明文 HTTP 为 80）。 TLS 提供三件事：机密性（对称加密防窃听）、完整性（M">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-05-01T04:47:22.000Z">
-<meta property="article:modified_time" content="2026-08-30T09:10:05.240Z">
+<meta property="article:modified_time" content="2026-09-01T13:56:38.244Z">
 <meta property="article:author" content="miracle">
 <meta property="article:tag" content="HTTP">
 <meta property="article:tag" content="Protocol">
@@ -162,7 +162,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%9AHTTPS-%E8%AF%A6%E8%A7%A3%EF%BC%9ATLS-%E6%8F%A1%E6%89%8B%E3%80%81%E8%AF%81%E4%B9%A6%E4%B8%8E-openssl-curl-%E7%A4%BA%E4%BE%8B"><span class="nav-number">1.</span> <span class="nav-text">第四章：HTTPS 详解：TLS 握手、证书与 openssl&#x2F;curl 示例</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80%EF%BC%9AHTTPS-%E6%98%AF%E4%BB%80%E4%B9%88"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础：HTTPS 是什么</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TLS-%E6%8F%A1%E6%89%8B%EF%BC%88%E7%AE%80%E5%8C%96%EF%BC%89"><span class="nav-number">1.2.</span> <span class="nav-text">TLS 握手（简化）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%9C%E7%94%A8%E4%B8%8E%E5%A8%81%E8%83%81%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.3.</span> <span class="nav-text">作用与威胁模型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-TLS-%E6%8F%90%E4%BE%9B%E4%BB%80%E4%B9%88"><span class="nav-number">1.3.1.</span> <span class="nav-text">1. TLS 提供什么</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E4%B8%8D%E8%A7%A3%E5%86%B3%E4%BB%80%E4%B9%88"><span class="nav-number">1.3.2.</span> <span class="nav-text">2. 不解决什么</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TLS-1-2-1-3-%E6%8F%A1%E6%89%8B%EF%BC%88%E5%8E%9F%E7%90%86%E7%AE%80%E8%BF%B0%EF%BC%89"><span class="nav-number">1.4.</span> <span class="nav-text">TLS 1.2 &#x2F; 1.3 握手（原理简述）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%85%B1%E5%90%8C%E7%9B%AE%E6%A0%87"><span class="nav-number">1.4.1.</span> <span class="nav-text">1. 共同目标</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-TLS-1-3-%E7%89%B9%E7%82%B9%EF%BC%88%E7%9B%B8%E5%AF%B9-1-2%EF%BC%89"><span class="nav-number">1.4.2.</span> <span class="nav-text">2. TLS 1.3 特点（相对 1.2）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AF%81%E4%B9%A6%E9%93%BE%E4%B8%8E%E4%B8%BB%E6%9C%BA%E5%90%8D%EF%BC%88%E4%BD%9C%E7%94%A8%EF%BC%89"><span class="nav-number">1.5.</span> <span class="nav-text">证书链与主机名（作用）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ALPN"><span class="nav-number">1.6.</span> <span class="nav-text">ALPN</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%91%BD%E4%BB%A4%E7%A4%BA%E4%BE%8B%EF%BC%9Aopenssl-s-client"><span class="nav-number">1.7.</span> <span class="nav-text">命令示例：openssl s_client</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%91%BD%E4%BB%A4%E7%A4%BA%E4%BE%8B%EF%BC%9Acurl-%E4%B8%8E-TLS-%E7%89%88%E6%9C%AC"><span class="nav-number">1.8.</span> <span class="nav-text">命令示例：curl 与 TLS 版本</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A4%BA%E4%BE%8B%EF%BC%9APython-%E5%8F%91%E8%B5%B7-HTTPS-%E5%B9%B6%E6%A0%A1%E9%AA%8C%E8%AF%81%E4%B9%A6%EF%BC%88%E9%BB%98%E8%AE%A4%E6%A0%A1%E9%AA%8C%EF%BC%89"><span class="nav-number">1.9.</span> <span class="nav-text">示例：Python 发起 HTTPS 并校验证书（默认校验）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.10.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%9AHTTPS-%E8%AF%A6%E8%A7%A3%EF%BC%9ATLS-%E6%8F%A1%E6%89%8B%E3%80%81%E8%AF%81%E4%B9%A6%E4%B8%8E-openssl-curl-%E7%A4%BA%E4%BE%8B"><span class="nav-number">1.</span> <span class="nav-text">第四章：HTTPS 详解：TLS 握手、证书与 openssl&#x2F;curl 示例</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TLS-%E6%8F%A1%E6%89%8B%EF%BC%88%E7%AE%80%E5%8C%96%EF%BC%89"><span class="nav-number">1.2.</span> <span class="nav-text">TLS 握手（简化）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%9C%E7%94%A8%E4%B8%8E%E5%A8%81%E8%83%81%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.3.</span> <span class="nav-text">作用与威胁模型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-TLS-%E6%8F%90%E4%BE%9B%E4%BB%80%E4%B9%88"><span class="nav-number">1.3.1.</span> <span class="nav-text">1. TLS 提供什么</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E4%B8%8D%E8%A7%A3%E5%86%B3%E4%BB%80%E4%B9%88"><span class="nav-number">1.3.2.</span> <span class="nav-text">2. 不解决什么</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TLS-1-2-1-3-%E6%8F%A1%E6%89%8B%EF%BC%88%E5%8E%9F%E7%90%86%E7%AE%80%E8%BF%B0%EF%BC%89"><span class="nav-number">1.4.</span> <span class="nav-text">TLS 1.2 &#x2F; 1.3 握手（原理简述）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%85%B1%E5%90%8C%E7%9B%AE%E6%A0%87"><span class="nav-number">1.4.1.</span> <span class="nav-text">1. 共同目标</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-TLS-1-3-%E7%89%B9%E7%82%B9%EF%BC%88%E7%9B%B8%E5%AF%B9-1-2%EF%BC%89"><span class="nav-number">1.4.2.</span> <span class="nav-text">2. TLS 1.3 特点（相对 1.2）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AF%81%E4%B9%A6%E9%93%BE%E4%B8%8E%E4%B8%BB%E6%9C%BA%E5%90%8D%EF%BC%88%E4%BD%9C%E7%94%A8%EF%BC%89"><span class="nav-number">1.5.</span> <span class="nav-text">证书链与主机名（作用）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ALPN"><span class="nav-number">1.6.</span> <span class="nav-text">ALPN</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%91%BD%E4%BB%A4%E7%A4%BA%E4%BE%8B%EF%BC%9Aopenssl-s-client"><span class="nav-number">1.7.</span> <span class="nav-text">命令示例：openssl s_client</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%91%BD%E4%BB%A4%E7%A4%BA%E4%BE%8B%EF%BC%9Acurl-%E4%B8%8E-TLS-%E7%89%88%E6%9C%AC"><span class="nav-number">1.8.</span> <span class="nav-text">命令示例：curl 与 TLS 版本</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A4%BA%E4%BE%8B%EF%BC%9APython-%E5%8F%91%E8%B5%B7-HTTPS-%E5%B9%B6%E6%A0%A1%E9%AA%8C%E8%AF%81%E4%B9%A6%EF%BC%88%E9%BB%98%E8%AE%A4%E6%A0%A1%E9%AA%8C%EF%BC%89"><span class="nav-number">1.9.</span> <span class="nav-text">示例：Python 发起 HTTPS 并校验证书（默认校验）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.10.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -175,7 +175,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">234</span>
+          <span class="site-state-item-count">257</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -186,7 +186,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">124</span>
+        <span class="site-state-item-count">156</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -260,7 +260,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-08-30 17:10:05" itemprop="dateModified" datetime="2026-08-30T17:10:05+08:00">2026-08-30</time>
+      <time title="修改时间：2026-09-01 21:56:38" itemprop="dateModified" datetime="2026-09-01T21:56:38+08:00">2026-09-01</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -279,7 +279,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>917</span>
+      <span>913</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -296,7 +296,7 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><h1 id="第四章：HTTPS-详解：TLS-握手、证书与-openssl-curl-示例"><a href="#第四章：HTTPS-详解：TLS-握手、证书与-openssl-curl-示例" class="headerlink" title="第四章：HTTPS 详解：TLS 握手、证书与 openssl&#x2F;curl 示例"></a>第四章：HTTPS 详解：TLS 握手、证书与 openssl&#x2F;curl 示例</h1><h2 id="概念基础：HTTPS-是什么"><a href="#概念基础：HTTPS-是什么" class="headerlink" title="概念基础：HTTPS 是什么"></a>概念基础：HTTPS 是什么</h2><ol>
+    <div class="post-body" itemprop="articleBody"><h1 id="第四章：HTTPS-详解：TLS-握手、证书与-openssl-curl-示例"><a href="#第四章：HTTPS-详解：TLS-握手、证书与-openssl-curl-示例" class="headerlink" title="第四章：HTTPS 详解：TLS 握手、证书与 openssl&#x2F;curl 示例"></a>第四章：HTTPS 详解：TLS 握手、证书与 openssl&#x2F;curl 示例</h1><h2 id="概念基础"><a href="#概念基础" class="headerlink" title="概念基础"></a>概念基础</h2><ol>
 <li><strong>HTTP + TLS，不是新协议</strong>：<strong>HTTPS</strong> 就是先经 <strong>TLS</strong> 加密、再传输 <a href="/2026/05/01/Protocol/HTTP/" title="第二章：HTTP 详解：报文、方法、版本与 curl&#x2F;nc 示例">第二章：HTTP 详解：报文、方法、版本与 curl&#x2F;nc 示例</a> 报文——URL 以 <strong><code>https://</code></strong> 开头，默认端口 <strong>443</strong>（明文 HTTP 为 80）。</li>
 <li><strong>TLS 提供三件事</strong>：<strong>机密性</strong>（对称加密防窃听）、<strong>完整性</strong>（<strong>MAC</strong> &#x2F; <strong>AEAD</strong> 防篡改）、<strong>身份认证</strong>（<strong>X.509 证书链</strong>证明「服务器是它声称的那个」，可选客户端认证）。</li>
 <li><strong>握手定密钥，传输用对称</strong>：<strong>TLS 握手</strong>（<strong>1.3</strong> 常 <strong>1-RTT</strong>）协商出<strong>对称会话密钥</strong>，之后 HTTP 记录用对称算法加密以获得性能。</li>
@@ -431,13 +431,13 @@ sequenceDiagram
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">321k</span>
+    <span title="站点总字数">362k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">17:52</span>
+    <span title="站点阅读时长">20:07</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

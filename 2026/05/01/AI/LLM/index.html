@@ -20,15 +20,15 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"my919.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
 
-    <meta name="description" content="第三章：LLM 大语言模型基础概念基础：大语言模型是什么 大语言模型（LLM）是在海量文本语料上以自监督方式预训练的超大 Transformer 网络，能理解与生成自然语言。 训练三阶段：预训练（下一词预测，学通用语言与知识）→ 监督微调（SFT） 对齐「助手」行为 → RLHF &#x2F; DPO 对齐人类偏好。 交互单位是 Token：模型受上下文窗口（Context Window）限制，一">
+    <meta name="description" content="第三章：LLM 大语言模型基础概念基础 大语言模型（LLM）是在海量文本语料上以自监督方式预训练的超大 Transformer 网络，能理解与生成自然语言。 训练三阶段：预训练（下一词预测，学通用语言与知识）→ 监督微调（SFT） 对齐「助手」行为 → RLHF &#x2F; DPO 对齐人类偏好。 交互单位是 Token：模型受上下文窗口（Context Window）限制，一次只能处理有限的">
 <meta property="og:type" content="article">
 <meta property="og:title" content="第三章：LLM 大语言模型基础">
 <meta property="og:url" content="https://my919.github.io/2026/05/01/AI/LLM/index.html">
 <meta property="og:site_name" content="my">
-<meta property="og:description" content="第三章：LLM 大语言模型基础概念基础：大语言模型是什么 大语言模型（LLM）是在海量文本语料上以自监督方式预训练的超大 Transformer 网络，能理解与生成自然语言。 训练三阶段：预训练（下一词预测，学通用语言与知识）→ 监督微调（SFT） 对齐「助手」行为 → RLHF &#x2F; DPO 对齐人类偏好。 交互单位是 Token：模型受上下文窗口（Context Window）限制，一">
+<meta property="og:description" content="第三章：LLM 大语言模型基础概念基础 大语言模型（LLM）是在海量文本语料上以自监督方式预训练的超大 Transformer 网络，能理解与生成自然语言。 训练三阶段：预训练（下一词预测，学通用语言与知识）→ 监督微调（SFT） 对齐「助手」行为 → RLHF &#x2F; DPO 对齐人类偏好。 交互单位是 Token：模型受上下文窗口（Context Window）限制，一次只能处理有限的">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-05-01T05:23:27.000Z">
-<meta property="article:modified_time" content="2026-08-30T09:10:05.264Z">
+<meta property="article:modified_time" content="2026-09-01T15:06:16.338Z">
 <meta property="article:author" content="miracle">
 <meta property="article:tag" content="LLM">
 <meta name="twitter:card" content="summary">
@@ -161,7 +161,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%B8%89%E7%AB%A0%EF%BC%9ALLM-%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80"><span class="nav-number">1.</span> <span class="nav-text">第三章：LLM 大语言模型基础</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80%EF%BC%9A%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E6%98%AF%E4%BB%80%E4%B9%88"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础：大语言模型是什么</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F"><span class="nav-number">1.2.</span> <span class="nav-text">生命周期</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Prompt-%E4%B8%8E%E4%B8%8A%E4%B8%8B%E6%96%87%E7%AA%97%E5%8F%A3"><span class="nav-number">1.3.</span> <span class="nav-text">Prompt 与上下文窗口</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RAG-%E4%B8%8E-Agent"><span class="nav-number">1.4.</span> <span class="nav-text">RAG 与 Agent</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-RAG%EF%BC%88%E6%A3%80%E7%B4%A2%E5%A2%9E%E5%BC%BA%E7%94%9F%E6%88%90%EF%BC%89"><span class="nav-number">1.4.1.</span> <span class="nav-text">1. RAG（检索增强生成）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E5%B7%A5%E5%85%B7%E8%B0%83%E7%94%A8%EF%BC%88Function-Calling%EF%BC%89"><span class="nav-number">1.4.2.</span> <span class="nav-text">2. 工具调用（Function Calling）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BE%AE%E8%B0%83%E6%96%B9%E5%BC%8F"><span class="nav-number">1.5.</span> <span class="nav-text">微调方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AF%84%E4%BC%B0%E4%B8%8E%E5%AE%89%E5%85%A8"><span class="nav-number">1.6.</span> <span class="nav-text">评估与安全</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.7.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%B8%89%E7%AB%A0%EF%BC%9ALLM-%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80"><span class="nav-number">1.</span> <span class="nav-text">第三章：LLM 大语言模型基础</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F"><span class="nav-number">1.2.</span> <span class="nav-text">生命周期</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Prompt-%E4%B8%8E%E4%B8%8A%E4%B8%8B%E6%96%87%E7%AA%97%E5%8F%A3"><span class="nav-number">1.3.</span> <span class="nav-text">Prompt 与上下文窗口</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RAG-%E4%B8%8E-Agent"><span class="nav-number">1.4.</span> <span class="nav-text">RAG 与 Agent</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-RAG%EF%BC%88%E6%A3%80%E7%B4%A2%E5%A2%9E%E5%BC%BA%E7%94%9F%E6%88%90%EF%BC%89"><span class="nav-number">1.4.1.</span> <span class="nav-text">1. RAG（检索增强生成）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E5%B7%A5%E5%85%B7%E8%B0%83%E7%94%A8%EF%BC%88Function-Calling%EF%BC%89"><span class="nav-number">1.4.2.</span> <span class="nav-text">2. 工具调用（Function Calling）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BE%AE%E8%B0%83%E6%96%B9%E5%BC%8F"><span class="nav-number">1.5.</span> <span class="nav-text">微调方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AF%84%E4%BC%B0%E4%B8%8E%E5%AE%89%E5%85%A8"><span class="nav-number">1.6.</span> <span class="nav-text">评估与安全</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.7.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -174,7 +174,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">234</span>
+          <span class="site-state-item-count">257</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -185,7 +185,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">124</span>
+        <span class="site-state-item-count">156</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -259,7 +259,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-08-30 17:10:05" itemprop="dateModified" datetime="2026-08-30T17:10:05+08:00">2026-08-30</time>
+      <time title="修改时间：2026-09-01 23:06:16" itemprop="dateModified" datetime="2026-09-01T23:06:16+08:00">2026-09-01</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -278,7 +278,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>909</span>
+      <span>930</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -295,7 +295,7 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><h1 id="第三章：LLM-大语言模型基础"><a href="#第三章：LLM-大语言模型基础" class="headerlink" title="第三章：LLM 大语言模型基础"></a>第三章：LLM 大语言模型基础</h1><h2 id="概念基础：大语言模型是什么"><a href="#概念基础：大语言模型是什么" class="headerlink" title="概念基础：大语言模型是什么"></a>概念基础：大语言模型是什么</h2><ol>
+    <div class="post-body" itemprop="articleBody"><h1 id="第三章：LLM-大语言模型基础"><a href="#第三章：LLM-大语言模型基础" class="headerlink" title="第三章：LLM 大语言模型基础"></a>第三章：LLM 大语言模型基础</h1><h2 id="概念基础"><a href="#概念基础" class="headerlink" title="概念基础"></a>概念基础</h2><ol>
 <li><strong>大语言模型</strong>（<strong>LLM</strong>）是在海量<strong>文本语料</strong>上以<strong>自监督</strong>方式预训练的超大 <strong>Transformer</strong> 网络，能理解与生成<strong>自然语言</strong>。</li>
 <li><strong>训练三阶段</strong>：<strong>预训练</strong>（下一词预测，学通用语言与知识）→ <strong>监督微调（SFT）</strong> 对齐「助手」行为 → <strong>RLHF &#x2F; DPO</strong> 对齐人类偏好。</li>
 <li><strong>交互单位是 Token</strong>：模型受<strong>上下文窗口</strong>（Context Window）限制，一次只能处理有限的 <strong>Token</strong>；长文档需<strong>分块</strong>或 <strong>RAG</strong>。</li>
@@ -370,7 +370,7 @@ flowchart LR
 <td>领域语料增强行业知识</td>
 </tr>
 </tbody></table>
-<p>训练栈常基于 <a href="/2026/05/01/PyTorch/PyTorch/" title="PyTorch">PyTorch</a> + <strong>Hugging Face Transformers</strong> &#x2F; <strong>PEFT</strong>。</p>
+<p>训练栈常基于 <a href="/2026/05/01/PyTorch/PyTorch/" title="第一章：PyTorch 入门与张量">第一章：PyTorch 入门与张量</a> + <strong>Hugging Face Transformers</strong> &#x2F; <strong>PEFT</strong>。</p>
 <h2 id="评估与安全"><a href="#评估与安全" class="headerlink" title="评估与安全"></a>评估与安全</h2><ul>
 <li><strong>基准</strong>：MMLU、HumanEval（代码）等（仅作参考）。  </li>
 <li><strong>业务指标</strong>：任务成功率、人工抽检、延迟与成本。  </li>
@@ -406,7 +406,7 @@ flowchart LR
 </tr>
 </tbody></table>
 <hr>
-<p>至此 AI 目录三章完结：<strong>ML</strong> 打好数据与算法基础，<strong>DL</strong> 掌握神经网络与训练工程，<strong>LLM</strong> 把这些能力放大到语言智能与应用落地。实践建议：表格数据用传统 ML、复杂表示用 DL、语言任务用 LLM + RAG，并配合本站 <a href="/2026/05/01/PyTorch/PyTorch/" title="PyTorch">PyTorch</a> 等章节动手实验。</p>
+<p>至此语言模型主线完成：<strong>ML</strong> 打好数据与算法基础，<strong>DL</strong> 掌握神经网络与训练工程，<strong>LLM</strong> 把这些能力放大到语言智能与应用落地。RAG 的完整工程实现（切块、向量库、检索评估）见 <a href="/2026/05/01/AI/AI-RAG%E4%B8%8E%E5%90%91%E9%87%8F%E6%A3%80%E7%B4%A2/" title="第四章：RAG 与向量检索实战">第四章：RAG 与向量检索实战</a>；动手实验配合本站 <a href="/2026/05/01/PyTorch/PyTorch/" title="第一章：PyTorch 入门与张量">第一章：PyTorch 入门与张量</a> 等章节。</p>
 
     </div>
 
@@ -428,8 +428,8 @@ flowchart LR
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2026/05/01/PyTorch/PyTorch/" rel="next" title="PyTorch">
-                  PyTorch <i class="fa fa-angle-right"></i>
+                <a href="/2026/05/01/PyTorch/PyTorch/" rel="next" title="第一章：PyTorch 入门与张量">
+                  第一章：PyTorch 入门与张量 <i class="fa fa-angle-right"></i>
                 </a>
             </div>
           </div>
@@ -461,13 +461,13 @@ flowchart LR
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">321k</span>
+    <span title="站点总字数">362k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">17:52</span>
+    <span title="站点阅读时长">20:07</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

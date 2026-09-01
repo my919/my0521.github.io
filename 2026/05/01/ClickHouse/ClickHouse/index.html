@@ -20,15 +20,15 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"my919.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
 
-    <meta name="description" content="第一章：ClickHouse 列式存储入门概念基础：ClickHouse 是什么 列式存储：ClickHouse 按列组织数据，SELECT avg(price) 只读 price 一列，IO 远小于行存全表扫描——这是它分析查询快的根源。 向量化执行：数据按列块批量进入对 CPU 缓存友好的计算路径，充分利用批量计算，吞吐远高于逐行解释执行。 专为 OLAP 而生：适合大规模聚合、日志与事件分析">
+    <meta name="description" content="第一章：ClickHouse 列式存储入门概念基础 列式存储：ClickHouse 按列组织数据，SELECT avg(price) 只读 price 一列，IO 远小于行存全表扫描——这是它分析查询快的根源。 向量化执行：数据按列块批量进入对 CPU 缓存友好的计算路径，充分利用批量计算，吞吐远高于逐行解释执行。 专为 OLAP 而生：适合大规模聚合、日志与事件分析；不适合高并发单行点查、频繁小">
 <meta property="og:type" content="article">
 <meta property="og:title" content="第一章：ClickHouse 列式存储入门">
 <meta property="og:url" content="https://my919.github.io/2026/05/01/ClickHouse/ClickHouse/index.html">
 <meta property="og:site_name" content="my">
-<meta property="og:description" content="第一章：ClickHouse 列式存储入门概念基础：ClickHouse 是什么 列式存储：ClickHouse 按列组织数据，SELECT avg(price) 只读 price 一列，IO 远小于行存全表扫描——这是它分析查询快的根源。 向量化执行：数据按列块批量进入对 CPU 缓存友好的计算路径，充分利用批量计算，吞吐远高于逐行解释执行。 专为 OLAP 而生：适合大规模聚合、日志与事件分析">
+<meta property="og:description" content="第一章：ClickHouse 列式存储入门概念基础 列式存储：ClickHouse 按列组织数据，SELECT avg(price) 只读 price 一列，IO 远小于行存全表扫描——这是它分析查询快的根源。 向量化执行：数据按列块批量进入对 CPU 缓存友好的计算路径，充分利用批量计算，吞吐远高于逐行解释执行。 专为 OLAP 而生：适合大规模聚合、日志与事件分析；不适合高并发单行点查、频繁小">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-05-01T04:27:43.000Z">
-<meta property="article:modified_time" content="2026-08-30T09:10:05.225Z">
+<meta property="article:modified_time" content="2026-09-01T13:56:38.230Z">
 <meta property="article:author" content="miracle">
 <meta property="article:tag" content="ClickHouse">
 <meta name="twitter:card" content="summary">
@@ -161,7 +161,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E7%AB%A0%EF%BC%9AClickHouse-%E5%88%97%E5%BC%8F%E5%AD%98%E5%82%A8%E5%85%A5%E9%97%A8"><span class="nav-number">1.</span> <span class="nav-text">第一章：ClickHouse 列式存储入门</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80%EF%BC%9AClickHouse-%E6%98%AF%E4%BB%80%E4%B9%88"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础：ClickHouse 是什么</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%97%E5%AD%98%E4%B8%8E%E5%AE%9A%E4%BD%8D"><span class="nav-number">1.2.</span> <span class="nav-text">列存与定位</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%97%E5%AD%98%E6%9F%A5%E8%AF%A2%E8%B7%AF%E5%BE%84"><span class="nav-number">1.2.1.</span> <span class="nav-text">列存查询路径</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E4%B8%BA%E4%BD%95%E5%88%97%E5%AD%98%E9%80%82%E5%90%88%E5%88%86%E6%9E%90"><span class="nav-number">1.2.2.</span> <span class="nav-text">1. 为何列存适合分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E5%8D%8F%E8%AE%AE%E4%B8%8E%E7%AB%AF%E5%8F%A3"><span class="nav-number">1.2.3.</span> <span class="nav-text">2. 协议与端口</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BF%AB%E9%80%9F%E4%B8%8A%E6%89%8B"><span class="nav-number">1.3.</span> <span class="nav-text">快速上手</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%AE%A2%E6%88%B7%E7%AB%AF"><span class="nav-number">1.3.1.</span> <span class="nav-text">1. 客户端</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E5%BB%BA%E5%BA%93%E5%BB%BA%E8%A1%A8"><span class="nav-number">1.3.2.</span> <span class="nav-text">2. 建库建表</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B8%B8%E7%94%A8%E6%9F%A5%E8%AF%A2"><span class="nav-number">1.4.</span> <span class="nav-text">常用查询</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MergeTree-%E5%BC%95%E6%93%8E%E5%AE%B6%E6%97%8F%EF%BC%88%E6%A6%82%E5%BF%B5%EF%BC%89"><span class="nav-number">1.5.</span> <span class="nav-text">MergeTree 引擎家族（概念）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8E%E5%91%A8%E8%BE%B9%E7%B3%BB%E7%BB%9F%E5%88%86%E5%B7%A5"><span class="nav-number">1.6.</span> <span class="nav-text">与周边系统分工</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%94%9F%E4%BA%A7%E6%B3%A8%E6%84%8F"><span class="nav-number">1.7.</span> <span class="nav-text">生产注意</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.8.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E7%AB%A0%EF%BC%9AClickHouse-%E5%88%97%E5%BC%8F%E5%AD%98%E5%82%A8%E5%85%A5%E9%97%A8"><span class="nav-number">1.</span> <span class="nav-text">第一章：ClickHouse 列式存储入门</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%97%E5%AD%98%E4%B8%8E%E5%AE%9A%E4%BD%8D"><span class="nav-number">1.2.</span> <span class="nav-text">列存与定位</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%97%E5%AD%98%E6%9F%A5%E8%AF%A2%E8%B7%AF%E5%BE%84"><span class="nav-number">1.2.1.</span> <span class="nav-text">列存查询路径</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E4%B8%BA%E4%BD%95%E5%88%97%E5%AD%98%E9%80%82%E5%90%88%E5%88%86%E6%9E%90"><span class="nav-number">1.2.2.</span> <span class="nav-text">1. 为何列存适合分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E5%8D%8F%E8%AE%AE%E4%B8%8E%E7%AB%AF%E5%8F%A3"><span class="nav-number">1.2.3.</span> <span class="nav-text">2. 协议与端口</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BF%AB%E9%80%9F%E4%B8%8A%E6%89%8B"><span class="nav-number">1.3.</span> <span class="nav-text">快速上手</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%AE%A2%E6%88%B7%E7%AB%AF"><span class="nav-number">1.3.1.</span> <span class="nav-text">1. 客户端</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E5%BB%BA%E5%BA%93%E5%BB%BA%E8%A1%A8"><span class="nav-number">1.3.2.</span> <span class="nav-text">2. 建库建表</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B8%B8%E7%94%A8%E6%9F%A5%E8%AF%A2"><span class="nav-number">1.4.</span> <span class="nav-text">常用查询</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MergeTree-%E5%BC%95%E6%93%8E%E5%AE%B6%E6%97%8F%EF%BC%88%E6%A6%82%E5%BF%B5%EF%BC%89"><span class="nav-number">1.5.</span> <span class="nav-text">MergeTree 引擎家族（概念）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8E%E5%91%A8%E8%BE%B9%E7%B3%BB%E7%BB%9F%E5%88%86%E5%B7%A5"><span class="nav-number">1.6.</span> <span class="nav-text">与周边系统分工</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%94%9F%E4%BA%A7%E6%B3%A8%E6%84%8F"><span class="nav-number">1.7.</span> <span class="nav-text">生产注意</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.8.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -174,7 +174,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">234</span>
+          <span class="site-state-item-count">257</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -185,7 +185,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">124</span>
+        <span class="site-state-item-count">156</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -259,7 +259,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-08-30 17:10:05" itemprop="dateModified" datetime="2026-08-30T17:10:05+08:00">2026-08-30</time>
+      <time title="修改时间：2026-09-01 21:56:38" itemprop="dateModified" datetime="2026-09-01T21:56:38+08:00">2026-09-01</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -278,7 +278,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>912</span>
+      <span>908</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -295,7 +295,7 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><h1 id="第一章：ClickHouse-列式存储入门"><a href="#第一章：ClickHouse-列式存储入门" class="headerlink" title="第一章：ClickHouse 列式存储入门"></a>第一章：ClickHouse 列式存储入门</h1><h2 id="概念基础：ClickHouse-是什么"><a href="#概念基础：ClickHouse-是什么" class="headerlink" title="概念基础：ClickHouse 是什么"></a>概念基础：ClickHouse 是什么</h2><ol>
+    <div class="post-body" itemprop="articleBody"><h1 id="第一章：ClickHouse-列式存储入门"><a href="#第一章：ClickHouse-列式存储入门" class="headerlink" title="第一章：ClickHouse 列式存储入门"></a>第一章：ClickHouse 列式存储入门</h1><h2 id="概念基础"><a href="#概念基础" class="headerlink" title="概念基础"></a>概念基础</h2><ol>
 <li><strong>列式存储</strong>：<strong>ClickHouse</strong> 按<strong>列</strong>组织数据，<code>SELECT avg(price)</code> 只读 <strong><code>price</code></strong> 一列，IO 远小于行存全表扫描——这是它分析查询快的根源。</li>
 <li><strong>向量化执行</strong>：数据按<strong>列块</strong>批量进入对 CPU 缓存友好的计算路径，充分利用批量计算，吞吐远高于逐行解释执行。</li>
 <li><strong>专为 OLAP 而生</strong>：适合<strong>大规模聚合、日志与事件分析</strong>；不适合高并发单行点查、频繁小事务更新（OLTP 仍用 <a href="/2026/05/01/MySQL/MySQL/" title="第一章：MySQL DDL 语句与表设计入门">第一章：MySQL DDL 语句与表设计入门</a> 等）。</li>
@@ -470,13 +470,13 @@ flowchart LR
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">321k</span>
+    <span title="站点总字数">362k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">17:52</span>
+    <span title="站点阅读时长">20:07</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

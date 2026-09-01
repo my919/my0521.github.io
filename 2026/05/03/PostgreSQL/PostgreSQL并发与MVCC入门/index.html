@@ -20,15 +20,15 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"my919.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
 
-    <meta name="description" content="第六章：PostgreSQL 并发与 MVCC 入门概念基础：并发与 MVCC 是什么 并发问题：多个事务同时读写同一批行时，会出现脏读、不可重复读、幻读与丢失更新；数据库必须给出确定性的答案——这就是隔离级别要解决的问题。 MVCC（多版本并发控制）：每行保留多个版本，行头部的 xmin &#x2F; xmax 记录创建与删除它的事务；读按快照判断可见性，做到读写互不阻塞。 隔离级别决定快照粒度">
+    <meta name="description" content="第六章：PostgreSQL 并发与 MVCC 入门概念基础 并发问题：多个事务同时读写同一批行时，会出现脏读、不可重复读、幻读与丢失更新；数据库必须给出确定性的答案——这就是隔离级别要解决的问题。 MVCC（多版本并发控制）：每行保留多个版本，行头部的 xmin &#x2F; xmax 记录创建与删除它的事务；读按快照判断可见性，做到读写互不阻塞。 隔离级别决定快照粒度：默认 READ COMM">
 <meta property="og:type" content="article">
 <meta property="og:title" content="第六章：PostgreSQL 并发与 MVCC 入门">
 <meta property="og:url" content="https://my919.github.io/2026/05/03/PostgreSQL/PostgreSQL%E5%B9%B6%E5%8F%91%E4%B8%8EMVCC%E5%85%A5%E9%97%A8/index.html">
 <meta property="og:site_name" content="my">
-<meta property="og:description" content="第六章：PostgreSQL 并发与 MVCC 入门概念基础：并发与 MVCC 是什么 并发问题：多个事务同时读写同一批行时，会出现脏读、不可重复读、幻读与丢失更新；数据库必须给出确定性的答案——这就是隔离级别要解决的问题。 MVCC（多版本并发控制）：每行保留多个版本，行头部的 xmin &#x2F; xmax 记录创建与删除它的事务；读按快照判断可见性，做到读写互不阻塞。 隔离级别决定快照粒度">
+<meta property="og:description" content="第六章：PostgreSQL 并发与 MVCC 入门概念基础 并发问题：多个事务同时读写同一批行时，会出现脏读、不可重复读、幻读与丢失更新；数据库必须给出确定性的答案——这就是隔离级别要解决的问题。 MVCC（多版本并发控制）：每行保留多个版本，行头部的 xmin &#x2F; xmax 记录创建与删除它的事务；读按快照判断可见性，做到读写互不阻塞。 隔离级别决定快照粒度：默认 READ COMM">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-05-03T09:10:00.000Z">
-<meta property="article:modified_time" content="2026-08-30T09:10:05.221Z">
+<meta property="article:modified_time" content="2026-09-01T13:56:38.224Z">
 <meta property="article:author" content="miracle">
 <meta property="article:tag" content="MVCC">
 <meta property="article:tag" content="PostgreSQL">
@@ -164,7 +164,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E5%85%AD%E7%AB%A0%EF%BC%9APostgreSQL-%E5%B9%B6%E5%8F%91%E4%B8%8E-MVCC-%E5%85%A5%E9%97%A8"><span class="nav-number">1.</span> <span class="nav-text">第六章：PostgreSQL 并发与 MVCC 入门</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80%EF%BC%9A%E5%B9%B6%E5%8F%91%E4%B8%8E-MVCC-%E6%98%AF%E4%BB%80%E4%B9%88"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础：并发与 MVCC 是什么</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BF%AB%E7%85%A7%E8%AF%BB%EF%BC%88%E6%A6%82%E5%BF%B5%EF%BC%89"><span class="nav-number">1.2.</span> <span class="nav-text">快照读（概念）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E5%BF%AB%E7%85%A7%E4%B8%8E%E9%BB%98%E8%AE%A4%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB"><span class="nav-number">1.3.</span> <span class="nav-text">一、快照与默认隔离级别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E6%98%BE%E5%BC%8F%E8%A1%8C%E9%94%81%EF%BC%9AFOR-UPDATE-FOR-SHARE"><span class="nav-number">1.4.</span> <span class="nav-text">二、显式行锁：FOR UPDATE &#x2F; FOR SHARE</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81SKIP-LOCKED-%E4%B8%8E-NOWAIT%EF%BC%88%E9%98%9F%E5%88%97%E4%B8%8E%E6%8A%A2%E9%94%81%EF%BC%89"><span class="nav-number">1.5.</span> <span class="nav-text">三、SKIP LOCKED 与 NOWAIT（队列与抢锁）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E6%AD%BB%E9%94%81%EF%BC%88deadlock-detected%EF%BC%89"><span class="nav-number">1.6.</span> <span class="nav-text">四、死锁（deadlock detected）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E4%B8%8E-MySQL-InnoDB-%E7%9A%84%E7%B2%97%E5%AF%B9%E7%85%A7%EF%BC%88%E9%98%B2%E6%B7%B7%EF%BC%89"><span class="nav-number">1.7.</span> <span class="nav-text">五、与 MySQL InnoDB 的粗对照（防混）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E5%BB%B6%E4%BC%B8%E9%98%85%E8%AF%BB"><span class="nav-number">1.8.</span> <span class="nav-text">六、延伸阅读</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.9.</span> <span class="nav-text">本章小结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%93%E8%AF%AD"><span class="nav-number">1.10.</span> <span class="nav-text">结语</span></a></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E5%85%AD%E7%AB%A0%EF%BC%9APostgreSQL-%E5%B9%B6%E5%8F%91%E4%B8%8E-MVCC-%E5%85%A5%E9%97%A8"><span class="nav-number">1.</span> <span class="nav-text">第六章：PostgreSQL 并发与 MVCC 入门</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BF%AB%E7%85%A7%E8%AF%BB%EF%BC%88%E6%A6%82%E5%BF%B5%EF%BC%89"><span class="nav-number">1.2.</span> <span class="nav-text">快照读（概念）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E5%BF%AB%E7%85%A7%E4%B8%8E%E9%BB%98%E8%AE%A4%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB"><span class="nav-number">1.3.</span> <span class="nav-text">一、快照与默认隔离级别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E6%98%BE%E5%BC%8F%E8%A1%8C%E9%94%81%EF%BC%9AFOR-UPDATE-FOR-SHARE"><span class="nav-number">1.4.</span> <span class="nav-text">二、显式行锁：FOR UPDATE &#x2F; FOR SHARE</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81SKIP-LOCKED-%E4%B8%8E-NOWAIT%EF%BC%88%E9%98%9F%E5%88%97%E4%B8%8E%E6%8A%A2%E9%94%81%EF%BC%89"><span class="nav-number">1.5.</span> <span class="nav-text">三、SKIP LOCKED 与 NOWAIT（队列与抢锁）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E6%AD%BB%E9%94%81%EF%BC%88deadlock-detected%EF%BC%89"><span class="nav-number">1.6.</span> <span class="nav-text">四、死锁（deadlock detected）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E4%B8%8E-MySQL-InnoDB-%E7%9A%84%E7%B2%97%E5%AF%B9%E7%85%A7%EF%BC%88%E9%98%B2%E6%B7%B7%EF%BC%89"><span class="nav-number">1.7.</span> <span class="nav-text">五、与 MySQL InnoDB 的粗对照（防混）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E5%BB%B6%E4%BC%B8%E9%98%85%E8%AF%BB"><span class="nav-number">1.8.</span> <span class="nav-text">六、延伸阅读</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.9.</span> <span class="nav-text">本章小结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%93%E8%AF%AD"><span class="nav-number">1.10.</span> <span class="nav-text">结语</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -177,7 +177,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">234</span>
+          <span class="site-state-item-count">257</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -188,7 +188,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">124</span>
+        <span class="site-state-item-count">156</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -262,7 +262,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-08-30 17:10:05" itemprop="dateModified" datetime="2026-08-30T17:10:05+08:00">2026-08-30</time>
+      <time title="修改时间：2026-09-01 21:56:38" itemprop="dateModified" datetime="2026-09-01T21:56:38+08:00">2026-09-01</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -298,7 +298,7 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><h1 id="第六章：PostgreSQL-并发与-MVCC-入门"><a href="#第六章：PostgreSQL-并发与-MVCC-入门" class="headerlink" title="第六章：PostgreSQL 并发与 MVCC 入门"></a>第六章：PostgreSQL 并发与 MVCC 入门</h1><h2 id="概念基础：并发与-MVCC-是什么"><a href="#概念基础：并发与-MVCC-是什么" class="headerlink" title="概念基础：并发与 MVCC 是什么"></a>概念基础：并发与 MVCC 是什么</h2><ol>
+    <div class="post-body" itemprop="articleBody"><h1 id="第六章：PostgreSQL-并发与-MVCC-入门"><a href="#第六章：PostgreSQL-并发与-MVCC-入门" class="headerlink" title="第六章：PostgreSQL 并发与 MVCC 入门"></a>第六章：PostgreSQL 并发与 MVCC 入门</h1><h2 id="概念基础"><a href="#概念基础" class="headerlink" title="概念基础"></a>概念基础</h2><ol>
 <li><strong>并发问题</strong>：多个事务同时读写同一批行时，会出现<strong>脏读、不可重复读、幻读</strong>与<strong>丢失更新</strong>；数据库必须给出确定性的答案——这就是<strong>隔离级别</strong>要解决的问题。</li>
 <li><strong>MVCC（多版本并发控制）</strong>：每行保留<strong>多个版本</strong>，行头部的 <strong><code>xmin</code> &#x2F; <code>xmax</code></strong> 记录创建与删除它的事务；读按<strong>快照</strong>判断可见性，做到<strong>读写互不阻塞</strong>。</li>
 <li><strong>隔离级别决定快照粒度</strong>：默认 <strong><code>READ COMMITTED</code></strong> 每条语句一个快照；<strong><code>REPEATABLE READ</code></strong> 整个事务一个快照；<strong><code>SERIALIZABLE</code></strong> 进一步检测读写冲突，冲突时需应用<strong>重试</strong>。</li>
@@ -454,13 +454,13 @@ flowchart LR
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">321k</span>
+    <span title="站点总字数">362k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">17:52</span>
+    <span title="站点阅读时长">20:07</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

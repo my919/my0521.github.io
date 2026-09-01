@@ -20,15 +20,15 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"my919.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
 
-    <meta name="description" content="第二章：Vite 工程化构建与部署概念基础：Vite 是什么&#x2F;为什么 下一代前端工具链：开发态用原生 ESM 按需编译（不打包整图），生产态用 Rollup 打包，一套配置覆盖 dev &#x2F; build。 为什么快：依赖用 esbuild（Go 实现）预构建，比 JS 工具链快一个量级；HMR 速度与项目规模解耦。 约定优于配置：零配置即可启动，vite.config.ts 按需">
+    <meta name="description" content="第二章：Vite 工程化构建与部署概念基础 下一代前端工具链：开发态用原生 ESM 按需编译（不打包整图），生产态用 Rollup 打包，一套配置覆盖 dev &#x2F; build。 为什么快：依赖用 esbuild（Go 实现）预构建，比 JS 工具链快一个量级；HMR 速度与项目规模解耦。 约定优于配置：零配置即可启动，vite.config.ts 按需增强（别名、代理、插件）。 框架无关">
 <meta property="og:type" content="article">
 <meta property="og:title" content="第二章：Vite 工程化构建与部署">
 <meta property="og:url" content="https://my919.github.io/2026/05/01/Frontend/Vite/index.html">
 <meta property="og:site_name" content="my">
-<meta property="og:description" content="第二章：Vite 工程化构建与部署概念基础：Vite 是什么&#x2F;为什么 下一代前端工具链：开发态用原生 ESM 按需编译（不打包整图），生产态用 Rollup 打包，一套配置覆盖 dev &#x2F; build。 为什么快：依赖用 esbuild（Go 实现）预构建，比 JS 工具链快一个量级；HMR 速度与项目规模解耦。 约定优于配置：零配置即可启动，vite.config.ts 按需">
+<meta property="og:description" content="第二章：Vite 工程化构建与部署概念基础 下一代前端工具链：开发态用原生 ESM 按需编译（不打包整图），生产态用 Rollup 打包，一套配置覆盖 dev &#x2F; build。 为什么快：依赖用 esbuild（Go 实现）预构建，比 JS 工具链快一个量级；HMR 速度与项目规模解耦。 约定优于配置：零配置即可启动，vite.config.ts 按需增强（别名、代理、插件）。 框架无关">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-05-01T04:53:57.000Z">
-<meta property="article:modified_time" content="2026-08-30T09:10:05.249Z">
+<meta property="article:modified_time" content="2026-09-01T14:46:41.549Z">
 <meta property="article:author" content="miracle">
 <meta property="article:tag" content="Frontend">
 <meta property="article:tag" content="Vite">
@@ -163,7 +163,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%9AVite-%E5%B7%A5%E7%A8%8B%E5%8C%96%E6%9E%84%E5%BB%BA%E4%B8%8E%E9%83%A8%E7%BD%B2"><span class="nav-number">1.</span> <span class="nav-text">第二章：Vite 工程化构建与部署</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80%EF%BC%9AVite-%E6%98%AF%E4%BB%80%E4%B9%88-%E4%B8%BA%E4%BB%80%E4%B9%88"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础：Vite 是什么&#x2F;为什么</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E4%B8%BA%E4%BD%95%E5%BF%AB%EF%BC%9ADev-%E4%B8%8E-Build-%E7%9A%84%E5%88%86%E5%B7%A5"><span class="nav-number">1.2.</span> <span class="nav-text">一、为何快：Dev 与 Build 的分工</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E5%88%9B%E5%BB%BA%E9%A1%B9%E7%9B%AE%E4%B8%8E%E5%B8%B8%E7%94%A8%E8%84%9A%E6%9C%AC"><span class="nav-number">1.3.</span> <span class="nav-text">二、创建项目与常用脚本</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81vite-config-ts-%E6%A0%B8%E5%BF%83%E9%85%8D%E7%BD%AE"><span class="nav-number">1.4.</span> <span class="nav-text">三、vite.config.ts 核心配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F%E4%B8%8E%E6%A8%A1%E5%BC%8F"><span class="nav-number">1.5.</span> <span class="nav-text">四、环境变量与模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E6%8F%92%E4%BB%B6%E7%94%9F%E6%80%81"><span class="nav-number">1.6.</span> <span class="nav-text">五、插件生态</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E7%94%9F%E4%BA%A7%E6%9E%84%E5%BB%BA%E4%B8%8E%E9%83%A8%E7%BD%B2"><span class="nav-number">1.7.</span> <span class="nav-text">六、生产构建与部署</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.8.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%9AVite-%E5%B7%A5%E7%A8%8B%E5%8C%96%E6%9E%84%E5%BB%BA%E4%B8%8E%E9%83%A8%E7%BD%B2"><span class="nav-number">1.</span> <span class="nav-text">第二章：Vite 工程化构建与部署</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E4%B8%BA%E4%BD%95%E5%BF%AB%EF%BC%9ADev-%E4%B8%8E-Build-%E7%9A%84%E5%88%86%E5%B7%A5"><span class="nav-number">1.2.</span> <span class="nav-text">一、为何快：Dev 与 Build 的分工</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E5%88%9B%E5%BB%BA%E9%A1%B9%E7%9B%AE%E4%B8%8E%E5%B8%B8%E7%94%A8%E8%84%9A%E6%9C%AC"><span class="nav-number">1.3.</span> <span class="nav-text">二、创建项目与常用脚本</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81vite-config-ts-%E6%A0%B8%E5%BF%83%E9%85%8D%E7%BD%AE"><span class="nav-number">1.4.</span> <span class="nav-text">三、vite.config.ts 核心配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F%E4%B8%8E%E6%A8%A1%E5%BC%8F"><span class="nav-number">1.5.</span> <span class="nav-text">四、环境变量与模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E6%8F%92%E4%BB%B6%E7%94%9F%E6%80%81"><span class="nav-number">1.6.</span> <span class="nav-text">五、插件生态</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E7%94%9F%E4%BA%A7%E6%9E%84%E5%BB%BA%E4%B8%8E%E9%83%A8%E7%BD%B2"><span class="nav-number">1.7.</span> <span class="nav-text">六、生产构建与部署</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.8.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -176,7 +176,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">234</span>
+          <span class="site-state-item-count">257</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -187,7 +187,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">124</span>
+        <span class="site-state-item-count">156</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -261,7 +261,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-08-30 17:10:05" itemprop="dateModified" datetime="2026-08-30T17:10:05+08:00">2026-08-30</time>
+      <time title="修改时间：2026-09-01 22:46:41" itemprop="dateModified" datetime="2026-09-01T22:46:41+08:00">2026-09-01</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -280,7 +280,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>779</span>
+      <span>782</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -297,7 +297,7 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><h1 id="第二章：Vite-工程化构建与部署"><a href="#第二章：Vite-工程化构建与部署" class="headerlink" title="第二章：Vite 工程化构建与部署"></a>第二章：Vite 工程化构建与部署</h1><h2 id="概念基础：Vite-是什么-为什么"><a href="#概念基础：Vite-是什么-为什么" class="headerlink" title="概念基础：Vite 是什么&#x2F;为什么"></a>概念基础：Vite 是什么&#x2F;为什么</h2><ol>
+    <div class="post-body" itemprop="articleBody"><h1 id="第二章：Vite-工程化构建与部署"><a href="#第二章：Vite-工程化构建与部署" class="headerlink" title="第二章：Vite 工程化构建与部署"></a>第二章：Vite 工程化构建与部署</h1><h2 id="概念基础"><a href="#概念基础" class="headerlink" title="概念基础"></a>概念基础</h2><ol>
 <li><strong>下一代前端工具链</strong>：开发态用<strong>原生 ESM 按需编译</strong>（不打包整图），生产态用 <strong>Rollup</strong> 打包，一套配置覆盖 dev &#x2F; build。</li>
 <li><strong>为什么快</strong>：依赖用 <strong>esbuild</strong>（Go 实现）预构建，比 JS 工具链快一个量级；HMR 速度与项目规模<strong>解耦</strong>。</li>
 <li><strong>约定优于配置</strong>：零配置即可启动，<strong><code>vite.config.ts</code></strong> 按需增强（别名、代理、插件）。</li>
@@ -365,7 +365,7 @@ flowchart LR
 <p><strong>SSR</strong>：<strong><code>vite-plugin-ssr</code></strong> 或框架内置方案（Nuxt 3 等基于 Vite）。</p>
 <h2 id="六、生产构建与部署"><a href="#六、生产构建与部署" class="headerlink" title="六、生产构建与部署"></a>六、生产构建与部署</h2><ul>
 <li><a href="/2026/05/01/Frontend/VUE3/" title="第一章：Vue 3 核心概念与组件开发">第一章：Vue 3 核心概念与组件开发</a> 官方推荐 **Vite** 作为默认脚手架。  </li>
-<li>生产 <strong><code>dist</code></strong> 为静态文件，由 <a href="/2026/05/01/Nginx/Nginx/" title="Nginx">Nginx</a> 或 CDN 托管；<strong><code>try_files</code></strong> 支持 SPA history 路由。  </li>
+<li>生产 <strong><code>dist</code></strong> 为静态文件，由 <a href="/2026/05/01/Nginx/Nginx/" title="第一章：Nginx 入门与静态服务">第一章：Nginx 入门与静态服务</a> 或 CDN 托管；<strong><code>try_files</code></strong> 支持 SPA history 路由。  </li>
 <li><strong><code>base</code></strong>：部署在子路径（如 <strong><code>/blog/</code></strong>）时需设置，资源引用前缀随之改变。</li>
 </ul>
 <p>官方文档：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://vite.dev/">https://vite.dev/</a></p>
@@ -420,8 +420,8 @@ flowchart LR
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2026/05/01/Embedded/ModbusRTU/" rel="next" title="第一章：Modbus RTU">
-                  第一章：Modbus RTU <i class="fa fa-angle-right"></i>
+                <a href="/2026/05/01/AI/AI-RAG%E4%B8%8E%E5%90%91%E9%87%8F%E6%A3%80%E7%B4%A2/" rel="next" title="第四章：RAG 与向量检索实战">
+                  第四章：RAG 与向量检索实战 <i class="fa fa-angle-right"></i>
                 </a>
             </div>
           </div>
@@ -453,13 +453,13 @@ flowchart LR
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">321k</span>
+    <span title="站点总字数">362k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">17:52</span>
+    <span title="站点阅读时长">20:07</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

@@ -20,15 +20,15 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"my919.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
 
-    <meta name="description" content="第七章：I2C概念基础：I2C 是什么&#x2F;为什么 I2C（Inter-Integrated Circuit）是 Philips 发明的两线同步总线：SCL 时钟 + SDA 数据，是板级互联传感器&#x2F;存储器等外设的事实标准。 地址寻址多从：每个从设备有 7 位地址（0x00~0x7F），主设备以地址帧寻址——两根线即可挂多个器件，扩展外设几乎不加线。 开漏 + 上拉：SDA&amp;#x2">
+    <meta name="description" content="第七章：I2C概念基础 I2C（Inter-Integrated Circuit）是 Philips 发明的两线同步总线：SCL 时钟 + SDA 数据，是板级互联传感器&#x2F;存储器等外设的事实标准。 地址寻址多从：每个从设备有 7 位地址（0x00~0x7F），主设备以地址帧寻址——两根线即可挂多个器件，扩展外设几乎不加线。 开漏 + 上拉：SDA&#x2F;SCL 均为开漏输出加上拉电阻">
 <meta property="og:type" content="article">
 <meta property="og:title" content="第七章：I2C">
 <meta property="og:url" content="https://my919.github.io/2026/05/01/Embedded/I2C/index.html">
 <meta property="og:site_name" content="my">
-<meta property="og:description" content="第七章：I2C概念基础：I2C 是什么&#x2F;为什么 I2C（Inter-Integrated Circuit）是 Philips 发明的两线同步总线：SCL 时钟 + SDA 数据，是板级互联传感器&#x2F;存储器等外设的事实标准。 地址寻址多从：每个从设备有 7 位地址（0x00~0x7F），主设备以地址帧寻址——两根线即可挂多个器件，扩展外设几乎不加线。 开漏 + 上拉：SDA&amp;#x2">
+<meta property="og:description" content="第七章：I2C概念基础 I2C（Inter-Integrated Circuit）是 Philips 发明的两线同步总线：SCL 时钟 + SDA 数据，是板级互联传感器&#x2F;存储器等外设的事实标准。 地址寻址多从：每个从设备有 7 位地址（0x00~0x7F），主设备以地址帧寻址——两根线即可挂多个器件，扩展外设几乎不加线。 开漏 + 上拉：SDA&#x2F;SCL 均为开漏输出加上拉电阻">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-05-01T05:11:31.000Z">
-<meta property="article:modified_time" content="2026-08-30T09:10:05.253Z">
+<meta property="article:modified_time" content="2026-09-01T13:56:38.254Z">
 <meta property="article:author" content="miracle">
 <meta property="article:tag" content="Embedded">
 <meta name="twitter:card" content="summary">
@@ -161,7 +161,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%B8%83%E7%AB%A0%EF%BC%9AI2C"><span class="nav-number">1.</span> <span class="nav-text">第七章：I2C</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80%EF%BC%9AI2C-%E6%98%AF%E4%BB%80%E4%B9%88-%E4%B8%BA%E4%BB%80%E4%B9%88"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础：I2C 是什么&#x2F;为什么</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BA%BF%E6%8B%93%E6%89%91"><span class="nav-number">1.2.</span> <span class="nav-text">总线拓扑</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E4%BF%A1%E5%8F%B7%E4%B8%8E%E8%B5%B7%E5%A7%8B-%E5%81%9C%E6%AD%A2"><span class="nav-number">1.3.</span> <span class="nav-text">一、信号与起始&#x2F;停止</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%817-%E4%BD%8D%E5%9C%B0%E5%9D%80%E5%B8%A7%EF%BC%88%E5%86%99%EF%BC%89"><span class="nav-number">1.4.</span> <span class="nav-text">二、7 位地址帧（写）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E9%80%9F%E7%8E%87%E6%A8%A1%E5%BC%8F"><span class="nav-number">1.5.</span> <span class="nav-text">三、速率模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E5%85%B8%E5%9E%8B%E8%AE%BE%E5%A4%87"><span class="nav-number">1.6.</span> <span class="nav-text">四、典型设备</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E4%B8%8E-SPI%E3%80%81UART"><span class="nav-number">1.7.</span> <span class="nav-text">五、与 SPI、UART</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.8.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%B8%83%E7%AB%A0%EF%BC%9AI2C"><span class="nav-number">1.</span> <span class="nav-text">第七章：I2C</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BA%BF%E6%8B%93%E6%89%91"><span class="nav-number">1.2.</span> <span class="nav-text">总线拓扑</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E4%BF%A1%E5%8F%B7%E4%B8%8E%E8%B5%B7%E5%A7%8B-%E5%81%9C%E6%AD%A2"><span class="nav-number">1.3.</span> <span class="nav-text">一、信号与起始&#x2F;停止</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%817-%E4%BD%8D%E5%9C%B0%E5%9D%80%E5%B8%A7%EF%BC%88%E5%86%99%EF%BC%89"><span class="nav-number">1.4.</span> <span class="nav-text">二、7 位地址帧（写）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E9%80%9F%E7%8E%87%E6%A8%A1%E5%BC%8F"><span class="nav-number">1.5.</span> <span class="nav-text">三、速率模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E5%85%B8%E5%9E%8B%E8%AE%BE%E5%A4%87"><span class="nav-number">1.6.</span> <span class="nav-text">四、典型设备</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E4%B8%8E-SPI%E3%80%81UART"><span class="nav-number">1.7.</span> <span class="nav-text">五、与 SPI、UART</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.8.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -174,7 +174,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">234</span>
+          <span class="site-state-item-count">257</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -185,7 +185,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">124</span>
+        <span class="site-state-item-count">156</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -259,7 +259,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-08-30 17:10:05" itemprop="dateModified" datetime="2026-08-30T17:10:05+08:00">2026-08-30</time>
+      <time title="修改时间：2026-09-01 21:56:38" itemprop="dateModified" datetime="2026-09-01T21:56:38+08:00">2026-09-01</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -278,7 +278,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>683</span>
+      <span>676</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -295,7 +295,7 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><h1 id="第七章：I2C"><a href="#第七章：I2C" class="headerlink" title="第七章：I2C"></a>第七章：I2C</h1><h2 id="概念基础：I2C-是什么-为什么"><a href="#概念基础：I2C-是什么-为什么" class="headerlink" title="概念基础：I2C 是什么&#x2F;为什么"></a>概念基础：I2C 是什么&#x2F;为什么</h2><ol>
+    <div class="post-body" itemprop="articleBody"><h1 id="第七章：I2C"><a href="#第七章：I2C" class="headerlink" title="第七章：I2C"></a>第七章：I2C</h1><h2 id="概念基础"><a href="#概念基础" class="headerlink" title="概念基础"></a>概念基础</h2><ol>
 <li><strong>I2C</strong>（Inter-Integrated Circuit）是 <strong>Philips 发明的两线同步总线</strong>：<strong>SCL 时钟 + SDA 数据</strong>，是板级互联传感器&#x2F;存储器等外设的事实标准。</li>
 <li><strong>地址寻址多从</strong>：每个从设备有 <strong>7 位地址</strong>（0x00~0x7F），主设备以<strong>地址帧</strong>寻址——两根线即可挂多个器件，扩展外设几乎不加线。</li>
 <li><strong>开漏 + 上拉</strong>：SDA&#x2F;SCL 均为<strong>开漏输出加上拉电阻</strong>，天然支持<strong>多主仲裁与时钟同步</strong>，也决定了速率上限（100k&#x2F;400k&#x2F;1M&#x2F;3.4M）。</li>
@@ -472,13 +472,13 @@ flowchart TB
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">321k</span>
+    <span title="站点总字数">362k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">17:52</span>
+    <span title="站点阅读时长">20:07</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

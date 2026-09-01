@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"my919.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="第三章：MongoDB 索引、聚合与模式设计概念基础 MongoDB 慢查询九成是索引问题：无索引的 find 是全集合扫描（COLLSCAN）；建对索引变成 IXSCAN，与关系库的「先看执行计划」哲学一致。 ESR 原则定复合索引字段序：Equality（等值）→ Sort（排序）→ Range（范围），顺序排对一条复合索引能同时服务过滤与排序。 聚合管道是 MongoDB 的「SQL+ETL">
+<meta property="og:type" content="article">
+<meta property="og:title" content="第三章：MongoDB 索引、聚合与模式设计">
+<meta property="og:url" content="https://my919.github.io/2026/05/01/MongoDB/MongoDB-%E7%B4%A2%E5%BC%95%E8%81%9A%E5%90%88%E4%B8%8E%E6%A8%A1%E5%BC%8F%E8%AE%BE%E8%AE%A1/index.html">
+<meta property="og:site_name" content="my">
+<meta property="og:description" content="第三章：MongoDB 索引、聚合与模式设计概念基础 MongoDB 慢查询九成是索引问题：无索引的 find 是全集合扫描（COLLSCAN）；建对索引变成 IXSCAN，与关系库的「先看执行计划」哲学一致。 ESR 原则定复合索引字段序：Equality（等值）→ Sort（排序）→ Range（范围），顺序排对一条复合索引能同时服务过滤与排序。 聚合管道是 MongoDB 的「SQL+ETL">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-05-01T04:25:02.000Z">
+<meta property="article:modified_time" content="2026-09-01T14:55:32.711Z">
+<meta property="article:author" content="miracle">
+<meta property="article:tag" content="MongoDB">
+<meta property="article:tag" content="索引">
+<meta property="article:tag" content="聚合">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://my919.github.io/2026/05/01/MongoDB/MongoDB-%E7%B4%A2%E5%BC%95%E8%81%9A%E5%90%88%E4%B8%8E%E6%A8%A1%E5%BC%8F%E8%AE%BE%E8%AE%A1/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://my919.github.io/2026/05/01/MongoDB/MongoDB-%E7%B4%A2%E5%BC%95%E8%81%9A%E5%90%88%E4%B8%8E%E6%A8%A1%E5%BC%8F%E8%AE%BE%E8%AE%A1/","path":"2026/05/01/MongoDB/MongoDB-索引聚合与模式设计/","title":"第三章：MongoDB 索引、聚合与模式设计"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>第三章：MongoDB 索引、聚合与模式设计 | my</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.10.1/mermaid.min.js","integrity":"sha256-BmQmdWDS8X2OTbrwELWK366LV6escyWhHHe0XCTU/Hk="}}</script>
+  <script src="/js/third-party/tags/mermaid.js" defer></script>
+
+
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="my" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">my</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-service"><a href="/service/" rel="section"><i class="fa fa-server fa-fw"></i>服务</a></li><li class="menu-item menu-item-tool"><a href="/tool/" rel="section"><i class="fa fa-wrench fa-fw"></i>工具</a></li><li class="menu-item menu-item-project"><a href="/project/" rel="section"><i class="fa fa-folder-open fa-fw"></i>项目</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%B8%89%E7%AB%A0%EF%BC%9AMongoDB-%E7%B4%A2%E5%BC%95%E3%80%81%E8%81%9A%E5%90%88%E4%B8%8E%E6%A8%A1%E5%BC%8F%E8%AE%BE%E8%AE%A1"><span class="nav-number">1.</span> <span class="nav-text">第三章：MongoDB 索引、聚合与模式设计</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81explain%EF%BC%9A%E8%AF%8A%E6%96%AD%E6%9F%A5%E8%AF%A2"><span class="nav-number">1.2.</span> <span class="nav-text">一、explain：诊断查询</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E7%B4%A2%E5%BC%95%E4%BD%93%E7%B3%BB"><span class="nav-number">1.3.</span> <span class="nav-text">二、索引体系</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E8%81%9A%E5%90%88%E7%AE%A1%E9%81%93%E8%BF%9B%E9%98%B6"><span class="nav-number">1.4.</span> <span class="nav-text">三、聚合管道进阶</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E6%A8%A1%E5%BC%8F%E8%AE%BE%E8%AE%A1%EF%BC%9A%E5%86%85%E5%B5%8C%E8%BF%98%E6%98%AF%E5%BC%95%E7%94%A8"><span class="nav-number">1.5.</span> <span class="nav-text">四、模式设计：内嵌还是引用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E4%BA%8B%E5%8A%A1%E4%B8%8E%E6%89%B9%E9%87%8F%E5%86%99%E5%85%A5"><span class="nav-number">1.6.</span> <span class="nav-text">五、事务与批量写入</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.7.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">miracle</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">257</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">36</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">156</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/my919" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;my919" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://gitee.com/my919" title="Gitee → https:&#x2F;&#x2F;gitee.com&#x2F;my919" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>Gitee</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:yeal166@163.com" title="E-Mail → mailto:yeal166@163.com" rel="noopener me external nofollow noreferrer" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://my919.github.io/2026/05/01/MongoDB/MongoDB-%E7%B4%A2%E5%BC%95%E8%81%9A%E5%90%88%E4%B8%8E%E6%A8%A1%E5%BC%8F%E8%AE%BE%E8%AE%A1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="第三章：MongoDB 索引、聚合与模式设计 | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          第三章：MongoDB 索引、聚合与模式设计
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-05-01 12:25:02" itemprop="dateCreated datePublished" datetime="2026-05-01T12:25:02+08:00">2026-05-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-09-01 22:55:32" itemprop="dateModified" datetime="2026-09-01T22:55:32+08:00">2026-09-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/MongoDB/" itemprop="url" rel="index"><span itemprop="name">MongoDB</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>1.4k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>5 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="第三章：MongoDB-索引、聚合与模式设计"><a href="#第三章：MongoDB-索引、聚合与模式设计" class="headerlink" title="第三章：MongoDB 索引、聚合与模式设计"></a>第三章：MongoDB 索引、聚合与模式设计</h1><h2 id="概念基础"><a href="#概念基础" class="headerlink" title="概念基础"></a>概念基础</h2><ol>
+<li><strong>MongoDB 慢查询九成是索引问题</strong>：无索引的 <code>find</code> 是全集合扫描（COLLSCAN）；建对索引变成 IXSCAN，与关系库的「先看执行计划」哲学一致。</li>
+<li><strong>ESR 原则定复合索引字段序</strong>：<strong>Equality（等值）→ Sort（排序）→ Range（范围）</strong>，顺序排对一条复合索引能同时服务过滤与排序。</li>
+<li><strong>聚合管道是 MongoDB 的「SQL+ETL」</strong>：<code>$match → $group → $sort → $project ...</code> 流水线处理，能下推的尽量下推（先 <code>$match</code> 后 <code>$group</code>）。</li>
+<li><strong>模式设计决定性能上限</strong>：文档模型核心取舍是<strong>内嵌（embed）还是引用（reference）</strong>——按「一起读写就内嵌、各自更新就引用」判断。</li>
+<li><strong>explain 是证据不是感觉</strong>：<code>executionStats</code> 里的 <code>totalKeysExamined</code> &#x2F; <code>totalDocsExamined</code> &#x2F; <code>nReturned</code> 三值关系直接给出诊断。</li>
+</ol>
+<blockquote>
+<p>本章承接 <a href="/2026/05/01/MongoDB/MongoDB/" title="第一章：MongoDB 概述与入门">第一章：MongoDB 概述与入门</a> 的 CRUD 与 <a href="/2026/05/01/MongoDB/MongoDB-Docker/" title="第二章：Docker 部署 MongoDB 实践">第二章：Docker 部署 MongoDB 实践</a> 的环境；mongosh 语法按 MongoDB 7.x 官方文档书写（沙箱无实例，未逐条运行验证）。</p>
+</blockquote>
+<hr>
+<h2 id="一、explain：诊断查询"><a href="#一、explain：诊断查询" class="headerlink" title="一、explain：诊断查询"></a>一、explain：诊断查询</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">db.<span class="property">orders</span>.<span class="title function_">find</span>(&#123; <span class="attr">userId</span>: <span class="number">42</span>, <span class="attr">status</span>: <span class="string">&quot;paid&quot;</span> &#125;).<span class="title function_">sort</span>(&#123; <span class="attr">createdAt</span>: -<span class="number">1</span> &#125;)</span><br><span class="line">  .<span class="title function_">explain</span>(<span class="string">&quot;executionStats&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p><strong>三个关键数字</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>含义</th>
+<th>健康标准</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>nReturned</code></td>
+<td>实际返回条数</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>totalKeysExamined</code></td>
+<td>扫过的索引条目</td>
+<td>接近 nReturned</td>
+</tr>
+<tr>
+<td><code>totalDocsExamined</code></td>
+<td>扫过的文档数</td>
+<td>接近 nReturned（远大&#x3D;回表浪费）</td>
+</tr>
+</tbody></table>
+<p>同时确认 <code>winningPlan</code> 里是 <strong><code>IXSCAN</code></strong> 而非 <strong><code>COLLSCAN</code></strong>；<code>SORT_STAGE</code> 出现说明排序没吃到索引（内存排序 32MB 上限会直接报错）。</p>
+<hr>
+<h2 id="二、索引体系"><a href="#二、索引体系" class="headerlink" title="二、索引体系"></a>二、索引体系</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 复合索引：ESR 顺序 —— 等值(userId,status) → 排序(createdAt)</span></span><br><span class="line">db.<span class="property">orders</span>.<span class="title function_">createIndex</span>(&#123; <span class="attr">userId</span>: <span class="number">1</span>, <span class="attr">status</span>: <span class="number">1</span>, <span class="attr">createdAt</span>: -<span class="number">1</span> &#125;)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 多键索引：数组字段自动支持</span></span><br><span class="line">db.<span class="property">products</span>.<span class="title function_">createIndex</span>(&#123; <span class="attr">tags</span>: <span class="number">1</span> &#125;)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 文本索引（简单搜索；生产搜索用 ES 更合适）</span></span><br><span class="line">db.<span class="property">articles</span>.<span class="title function_">createIndex</span>(&#123; <span class="attr">title</span>: <span class="string">&quot;text&quot;</span>, <span class="attr">body</span>: <span class="string">&quot;text&quot;</span> &#125;)</span><br><span class="line"></span><br><span class="line"><span class="comment">// TTL 索引：会话/日志类数据自动过期（秒级精度）</span></span><br><span class="line">db.<span class="property">sessions</span>.<span class="title function_">createIndex</span>(&#123; <span class="attr">createdAt</span>: <span class="number">1</span> &#125;, &#123; <span class="attr">expireAfterSeconds</span>: <span class="number">3600</span> &#125;)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 部分索引：只索引活跃订单，省空间提速</span></span><br><span class="line">db.<span class="property">orders</span>.<span class="title function_">createIndex</span>(</span><br><span class="line">  &#123; <span class="attr">createdAt</span>: <span class="number">1</span> &#125;,</span><br><span class="line">  &#123; <span class="attr">partialFilterExpression</span>: &#123; <span class="attr">status</span>: &#123; <span class="attr">$in</span>: [<span class="string">&quot;paid&quot;</span>, <span class="string">&quot;shipping&quot;</span>] &#125; &#125; &#125;</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p><strong>实践要点</strong>：</p>
+<ul>
+<li>每个额外索引都拖慢写入——<strong>索引不是越多越好</strong>，按真实查询建。</li>
+<li><code>db.orders.getIndexes()</code> 盘点存量；低效索引用 <code>dropIndex</code> 清理。</li>
+<li>大集合建索引用<strong>后台滚动构建</strong>（4.2+ 默认后台方式），避开写入高峰。</li>
+<li>最左前缀同样适用：<code>&#123; userId, status, createdAt &#125;</code> 可服务 <code>userId</code> 与 <code>userId+status</code> 的查询。</li>
+</ul>
+<hr>
+<h2 id="三、聚合管道进阶"><a href="#三、聚合管道进阶" class="headerlink" title="三、聚合管道进阶"></a>三、聚合管道进阶</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">db.<span class="property">orders</span>.<span class="title function_">aggregate</span>([</span><br><span class="line">  <span class="comment">// 1. 尽早过滤：减少进入管道的数据量（有索引时走 IXSCAN）</span></span><br><span class="line">  &#123; <span class="attr">$match</span>: &#123; <span class="attr">createdAt</span>: &#123; <span class="attr">$gte</span>: <span class="title class_">ISODate</span>(<span class="string">&quot;2026-01-01&quot;</span>) &#125;, <span class="attr">status</span>: <span class="string">&quot;paid&quot;</span> &#125; &#125;,</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 2. 按用户聚合</span></span><br><span class="line">  &#123; <span class="attr">$group</span>: &#123;</span><br><span class="line">      <span class="attr">_id</span>: <span class="string">&quot;$userId&quot;</span>,</span><br><span class="line">      <span class="attr">totalAmount</span>: &#123; <span class="attr">$sum</span>: <span class="string">&quot;$amount&quot;</span> &#125;,</span><br><span class="line">      <span class="attr">orderCount</span>:  &#123; <span class="attr">$sum</span>: <span class="number">1</span> &#125;,</span><br><span class="line">      <span class="attr">avgAmount</span>:   &#123; <span class="attr">$avg</span>: <span class="string">&quot;$amount&quot;</span> &#125;</span><br><span class="line">  &#125;&#125;,</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 3. 过滤聚合结果（HAVING）</span></span><br><span class="line">  &#123; <span class="attr">$match</span>: &#123; <span class="attr">totalAmount</span>: &#123; <span class="attr">$gt</span>: <span class="number">1000</span> &#125; &#125; &#125;,</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 4. 关联用户表（$lookup = LEFT JOIN；对被关联表 _id 走索引）</span></span><br><span class="line">  &#123; <span class="attr">$lookup</span>: &#123;</span><br><span class="line">      <span class="attr">from</span>: <span class="string">&quot;users&quot;</span>,</span><br><span class="line">      <span class="attr">localField</span>: <span class="string">&quot;_id&quot;</span>,</span><br><span class="line">      <span class="attr">foreignField</span>: <span class="string">&quot;_id&quot;</span>,</span><br><span class="line">      <span class="attr">as</span>: <span class="string">&quot;user&quot;</span></span><br><span class="line">  &#125;&#125;,</span><br><span class="line">  &#123; <span class="attr">$unwind</span>: <span class="string">&quot;$user&quot;</span> &#125;,</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 5. 投影出需要的字段</span></span><br><span class="line">  &#123; <span class="attr">$project</span>: &#123;</span><br><span class="line">      <span class="attr">_id</span>: <span class="number">0</span>,</span><br><span class="line">      <span class="attr">userId</span>: <span class="string">&quot;$_id&quot;</span>,</span><br><span class="line">      <span class="attr">name</span>: <span class="string">&quot;$user.name&quot;</span>,</span><br><span class="line">      <span class="attr">totalAmount</span>: <span class="number">1</span>, <span class="attr">orderCount</span>: <span class="number">1</span></span><br><span class="line">  &#125;&#125;,</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 6. 排序取前 10</span></span><br><span class="line">  &#123; <span class="attr">$sort</span>: &#123; <span class="attr">totalAmount</span>: -<span class="number">1</span> &#125; &#125;,</span><br><span class="line">  &#123; <span class="attr">$limit</span>: <span class="number">10</span> &#125;</span><br><span class="line">])</span><br></pre></td></tr></table></figure>
+
+<p><strong>管道优化口诀</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>原则</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>$match</code>&#x2F;<code>$limit</code> 放最前</td>
+<td>能被索引下推，后面的阶段数据越少越好</td>
+</tr>
+<tr>
+<td><code>$project</code> 砍字段</td>
+<td>减少内存与网络传输</td>
+</tr>
+<tr>
+<td><code>$group</code> 用 <code>_id: null</code></td>
+<td>全表聚合（配合 <code>$facet</code> 一次算多组指标）</td>
+</tr>
+<tr>
+<td>允许近似</td>
+<td>超大集合统计可接受秒级误差时用 <code>$sample</code> 或预聚合</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="四、模式设计：内嵌还是引用"><a href="#四、模式设计：内嵌还是引用" class="headerlink" title="四、模式设计：内嵌还是引用"></a>四、模式设计：内嵌还是引用</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 内嵌（Embed）：订单 + 明细行一起读写 → 一个文档搞定，一次读取</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">_id</span>: <span class="title class_">ObjectId</span>(<span class="string">&quot;...&quot;</span>),</span><br><span class="line">  <span class="attr">userId</span>: <span class="number">42</span>,</span><br><span class="line">  <span class="attr">status</span>: <span class="string">&quot;paid&quot;</span>,</span><br><span class="line">  <span class="attr">items</span>: [                          <span class="comment">// 明细天然属于订单，生命周期一致</span></span><br><span class="line">    &#123; <span class="attr">sku</span>: <span class="string">&quot;KB-01&quot;</span>, <span class="attr">name</span>: <span class="string">&quot;键盘&quot;</span>, <span class="attr">qty</span>: <span class="number">1</span>, <span class="attr">price</span>: <span class="number">299</span> &#125;,</span><br><span class="line">    &#123; <span class="attr">sku</span>: <span class="string">&quot;MS-02&quot;</span>, <span class="attr">name</span>: <span class="string">&quot;鼠标&quot;</span>, <span class="attr">qty</span>: <span class="number">2</span>, <span class="attr">price</span>: <span class="number">129</span> &#125;</span><br><span class="line">  ],</span><br><span class="line">  <span class="attr">totalAmount</span>: <span class="number">428</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 引用（Reference）：用户 ↔ 订单，两边独立增长与更新 → 分集合 + 关联</span></span><br><span class="line"><span class="comment">// users 集合</span></span><br><span class="line">&#123; <span class="attr">_id</span>: <span class="number">42</span>, <span class="attr">name</span>: <span class="string">&quot;tom&quot;</span>, <span class="attr">level</span>: <span class="string">&quot;vip&quot;</span> &#125;</span><br><span class="line"><span class="comment">// orders 集合只存 userId</span></span><br><span class="line">&#123; <span class="attr">_id</span>: <span class="title class_">ObjectId</span>(<span class="string">&quot;...&quot;</span>), <span class="attr">userId</span>: <span class="number">42</span>, <span class="attr">status</span>: <span class="string">&quot;paid&quot;</span> &#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>判断口诀</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>场景</th>
+<th>选择</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1:1 或 1:少量（生命周期一致）</td>
+<td>内嵌</td>
+</tr>
+<tr>
+<td>1:多且子文档无限增长（评论、日志）</td>
+<td>引用（或「内嵌最近 N 条 + 冷数据独立集合」）</td>
+</tr>
+<tr>
+<td>多对多</td>
+<td>引用</td>
+</tr>
+<tr>
+<td>内嵌文档 <strong>16MB 上限</strong></td>
+<td>逼近上限必须拆</td>
+</tr>
+</tbody></table>
+<p><strong>常见增强</strong>：<code>$lookup</code> 慢的高频关联可冗余一份 <code>userName</code> 到订单文档（写入时双写），用读时免 JOIN 换写时多一步——文档模型下的「反范式」是常规操作。</p>
+<hr>
+<h2 id="五、事务与批量写入"><a href="#五、事务与批量写入" class="headerlink" title="五、事务与批量写入"></a>五、事务与批量写入</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 多文档事务（复制集 4.0+；写多读少的关键路径慎用，性能远低于单文档原子性）</span></span><br><span class="line"><span class="keyword">const</span> session = db.<span class="title function_">getMongo</span>().<span class="title function_">startSession</span>();</span><br><span class="line">session.<span class="title function_">startTransaction</span>();</span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">  session.<span class="title function_">getDatabase</span>(<span class="string">&quot;shop&quot;</span>).<span class="property">accounts</span>.<span class="title function_">updateOne</span>(</span><br><span class="line">    &#123; <span class="attr">_id</span>: <span class="number">1</span> &#125;, &#123; <span class="attr">$inc</span>: &#123; <span class="attr">balance</span>: -<span class="number">100</span> &#125; &#125;);</span><br><span class="line">  session.<span class="title function_">getDatabase</span>(<span class="string">&quot;shop&quot;</span>).<span class="property">accounts</span>.<span class="title function_">updateOne</span>(</span><br><span class="line">    &#123; <span class="attr">_id</span>: <span class="number">2</span> &#125;, &#123; <span class="attr">$inc</span>: &#123; <span class="attr">balance</span>: <span class="number">100</span> &#125; &#125;);</span><br><span class="line">  session.<span class="title function_">commitTransaction</span>();</span><br><span class="line">&#125; <span class="keyword">catch</span> (e) &#123;</span><br><span class="line">  session.<span class="title function_">abortTransaction</span>();</span><br><span class="line">&#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">  session.<span class="title function_">endSession</span>();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 批量写入：导入/迁移走 bulkWrite，比循环单条快一个数量级</span></span><br><span class="line">db.<span class="property">orders</span>.<span class="title function_">bulkWrite</span>([</span><br><span class="line">  &#123; <span class="attr">insertOne</span>: &#123; <span class="attr">document</span>: &#123; <span class="attr">userId</span>: <span class="number">1</span>, <span class="attr">amount</span>: <span class="number">9.9</span>, <span class="attr">status</span>: <span class="string">&quot;paid&quot;</span> &#125; &#125; &#125;,</span><br><span class="line">  &#123; <span class="attr">updateOne</span>: &#123; <span class="attr">filter</span>: &#123; <span class="attr">userId</span>: <span class="number">2</span> &#125;, <span class="attr">update</span>: &#123; <span class="attr">$inc</span>: &#123; <span class="attr">amount</span>: <span class="number">5</span> &#125; &#125; &#125; &#125;,</span><br><span class="line">  &#123; <span class="attr">deleteOne</span>: &#123; <span class="attr">filter</span>: &#123; <span class="attr">userId</span>: <span class="number">3</span>, <span class="attr">status</span>: <span class="string">&quot;draft&quot;</span> &#125; &#125; &#125;</span><br><span class="line">], &#123; <span class="attr">ordered</span>: <span class="literal">false</span> &#125;);   <span class="comment">// 无序批量：失败不中断，吞吐更高</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong>单文档天然原子</strong>：把需要原子性的关联数据内嵌进同一文档，很多「事务需求」就直接消失了——这是文档建模的隐藏红利。</p>
+</blockquote>
+<hr>
+<h2 id="本章小结"><a href="#本章小结" class="headerlink" title="本章小结"></a>本章小结</h2><table>
+<thead>
+<tr>
+<th>要点</th>
+<th>结论</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>explain</td>
+<td>看 COLLSCAN→IXSCAN；<code>DocsExamined ≈ nReturned</code> 才健康</td>
+</tr>
+<tr>
+<td>复合索引</td>
+<td>ESR（等值→排序→范围）定字段序；索引数量克制</td>
+</tr>
+<tr>
+<td>特殊索引</td>
+<td>TTL 管过期数据、partialFilterExpression 省空间、多键自动支持数组</td>
+</tr>
+<tr>
+<td>聚合</td>
+<td><code>$match</code> 尽早、<code>$project</code> 砍字段、<code>$lookup</code> 对方 _id 要有索引</td>
+</tr>
+<tr>
+<td>模式设计</td>
+<td>一起读写就内嵌，独立增长就引用；单文档原子性替代小事务</td>
+</tr>
+</tbody></table>
+<hr>
+<p>至此 MongoDB 系列三章完结：<a href="/2026/05/01/MongoDB/MongoDB/" title="第一章：MongoDB 概述与入门">第一章：MongoDB 概述与入门</a> 建立文档模型认知，<a href="/2026/05/01/MongoDB/MongoDB-Docker/" title="第二章：Docker 部署 MongoDB 实践">第二章：Docker 部署 MongoDB 实践</a> 落地环境，本章补齐索引、聚合与模式设计。复杂分析场景的列存方案见 <a href="/2026/05/01/ClickHouse/ClickHouse-%E6%9F%A5%E8%AF%A2%E4%B8%8E%E8%B0%83%E4%BC%98/" title="第三章：ClickHouse 查询与性能调优">第三章：ClickHouse 查询与性能调优</a>。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/MongoDB/" rel="tag"># MongoDB</a>
+              <a href="/tags/%E7%B4%A2%E5%BC%95/" rel="tag"># 索引</a>
+              <a href="/tags/%E8%81%9A%E5%90%88/" rel="tag"># 聚合</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/05/01/MongoDB/MongoDB/" rel="prev" title="第一章：MongoDB 概述与入门">
+                  <i class="fa fa-angle-left"></i> 第一章：MongoDB 概述与入门
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2026/05/01/Oracle/Oracle/" rel="next" title="第一章：Oracle 数据库入门">
+                  第一章：Oracle 数据库入门 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">miracle</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">362k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">20:07</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+<script>
+(function () {
+  function normalizeClipboard(s) {
+    return (s || '').replace(/\u00a0/g, ' ');
+  }
+
+  /** When innerText is empty, treat <br> as newlines (matches Hexo fenced + line_number HTML). */
+  function plainTextFromElement(el) {
+    if (!el) return '';
+    var t = el.innerText;
+    if (t != null && t !== '') return normalizeClipboard(t);
+    var clone = el.cloneNode(true);
+    clone.querySelectorAll('br').forEach(function (br) {
+      br.parentNode.replaceChild(document.createTextNode('\n'), br);
+    });
+    return normalizeClipboard(clone.textContent || '');
+  }
+
+  function extractFromFigure(fig) {
+    if (!fig) return '';
+    var cell = fig.querySelector('td.code') || fig.querySelector('.code');
+    if (cell) return plainTextFromElement(cell);
+    var pre = fig.querySelector('pre');
+    if (pre) return plainTextFromElement(pre);
+    var code = fig.querySelector('code');
+    return code ? plainTextFromElement(code) : '';
+  }
+
+  function extractForCopyBtn(btn) {
+    var fig = btn.closest('figure.highlight');
+    if (fig) return extractFromFigure(fig);
+    var wrap = btn.closest('.code-container');
+    if (wrap) {
+      var innerFig = wrap.querySelector('figure.highlight');
+      if (innerFig) return extractFromFigure(innerFig);
+      var preOnly = wrap.querySelector('pre');
+      if (preOnly) return plainTextFromElement(preOnly);
+    }
+    return '';
+  }
+
+  function setCopyIcon(btn, ok) {
+    var i = btn.querySelector('i');
+    if (i) i.className = ok ? 'fa fa-check-circle fa-fw' : 'fa fa-times-circle fa-fw';
+  }
+
+  function writeClipboard(text, btn) {
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(text).then(
+        function () { setCopyIcon(btn, true); },
+        function () { fallbackCopy(text, btn); }
+      );
+    }
+    fallbackCopy(text, btn);
+    return Promise.resolve();
+  }
+
+  function fallbackCopy(text, btn) {
+    try {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed';
+      ta.style.left = '-9999px';
+      document.body.appendChild(ta);
+      ta.select();
+      var ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      setCopyIcon(btn, ok);
+    } catch (e) {
+      setCopyIcon(btn, false);
+    }
+  }
+
+  document.addEventListener(
+    'click',
+    function (e) {
+      var btn = e.target.closest && e.target.closest('.copy-btn');
+      if (!btn) return;
+      if (!btn.closest('figure.highlight') && !btn.closest('.code-container')) return;
+      e.stopPropagation();
+      e.preventDefault();
+      var text = extractForCopyBtn(btn);
+      writeClipboard(text, btn);
+    },
+    true
+  );
+})();
+</script>
+
+</body>
+</html>

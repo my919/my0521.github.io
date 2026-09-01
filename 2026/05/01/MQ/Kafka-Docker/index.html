@@ -20,15 +20,15 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"my919.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
 
-    <meta name="description" content="第二章：Docker 部署 Kafka 实践概念基础：容器化部署 Kafka 的四个要点 KRaft 让单进程成为可能：旧版 Kafka 需要 ZooKeeper + Kafka 两个进程；KRaft 模式下一个容器同时扮演 controller + broker，单机一条命令即可起集群（本章单容器示例的核心）。 监听器与 advertised.listeners 是第一坑：Kafka 会把 ad">
+    <meta name="description" content="第二章：Docker 部署 Kafka 实践概念基础 KRaft 让单进程成为可能：旧版 Kafka 需要 ZooKeeper + Kafka 两个进程；KRaft 模式下一个容器同时扮演 controller + broker，单机一条命令即可起集群（本章单容器示例的核心）。 监听器与 advertised.listeners 是第一坑：Kafka 会把 advertised.listeners">
 <meta property="og:type" content="article">
 <meta property="og:title" content="第二章：Docker 部署 Kafka 实践">
 <meta property="og:url" content="https://my919.github.io/2026/05/01/MQ/Kafka-Docker/index.html">
 <meta property="og:site_name" content="my">
-<meta property="og:description" content="第二章：Docker 部署 Kafka 实践概念基础：容器化部署 Kafka 的四个要点 KRaft 让单进程成为可能：旧版 Kafka 需要 ZooKeeper + Kafka 两个进程；KRaft 模式下一个容器同时扮演 controller + broker，单机一条命令即可起集群（本章单容器示例的核心）。 监听器与 advertised.listeners 是第一坑：Kafka 会把 ad">
+<meta property="og:description" content="第二章：Docker 部署 Kafka 实践概念基础 KRaft 让单进程成为可能：旧版 Kafka 需要 ZooKeeper + Kafka 两个进程；KRaft 模式下一个容器同时扮演 controller + broker，单机一条命令即可起集群（本章单容器示例的核心）。 监听器与 advertised.listeners 是第一坑：Kafka 会把 advertised.listeners">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-05-01T12:35:17.000Z">
-<meta property="article:modified_time" content="2026-08-30T09:10:05.269Z">
+<meta property="article:modified_time" content="2026-09-01T13:56:38.267Z">
 <meta property="article:author" content="miracle">
 <meta property="article:tag" content="Docker">
 <meta property="article:tag" content="Docker Compose">
@@ -164,7 +164,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%9ADocker-%E9%83%A8%E7%BD%B2-Kafka-%E5%AE%9E%E8%B7%B5"><span class="nav-number">1.</span> <span class="nav-text">第二章：Docker 部署 Kafka 实践</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80%EF%BC%9A%E5%AE%B9%E5%99%A8%E5%8C%96%E9%83%A8%E7%BD%B2-Kafka-%E7%9A%84%E5%9B%9B%E4%B8%AA%E8%A6%81%E7%82%B9"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础：容器化部署 Kafka 的四个要点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E7%BD%AE%E6%9D%A1%E4%BB%B6"><span class="nav-number">1.2.</span> <span class="nav-text">前置条件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Kafka-%E9%95%9C%E5%83%8F%E9%80%89%E6%8B%A9"><span class="nav-number">1.3.</span> <span class="nav-text">Kafka 镜像选择</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%B8%B8%E7%94%A8%E9%95%9C%E5%83%8F"><span class="nav-number">1.3.1.</span> <span class="nav-text">1. 常用镜像</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E7%89%88%E6%9C%AC%E4%B8%8E%E6%A0%87%E7%AD%BE"><span class="nav-number">1.3.2.</span> <span class="nav-text">2. 版本与标签</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E7%9B%91%E5%90%AC%E5%99%A8%E4%B8%8E-ADVERTISED-LISTENERS"><span class="nav-number">1.3.3.</span> <span class="nav-text">3. 监听器与 ADVERTISED_LISTENERS</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E8%B5%84%E6%BA%90%E4%B8%8E%E6%8C%81%E4%B9%85%E5%8C%96"><span class="nav-number">1.3.4.</span> <span class="nav-text">4. 资源与持久化</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%95%E5%AE%B9%E5%99%A8%E4%B8%80%E9%94%AE%E9%83%A8%E7%BD%B2%EF%BC%88docker-run%EF%BC%89"><span class="nav-number">1.4.</span> <span class="nav-text">单容器一键部署（docker run）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Docker-Compose-%E4%B8%80%E9%94%AE%E9%83%A8%E7%BD%B2"><span class="nav-number">1.5.</span> <span class="nav-text">Docker Compose 一键部署</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Kubernetes-%E4%B8%80%E9%94%AE%E9%83%A8%E7%BD%B2%EF%BC%88%E5%8D%95%E6%96%87%E4%BB%B6%E5%AE%8C%E6%95%B4%E6%B8%85%E5%8D%95%EF%BC%89"><span class="nav-number">1.6.</span> <span class="nav-text">Kubernetes 一键部署（单文件完整清单）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.7.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%9ADocker-%E9%83%A8%E7%BD%B2-Kafka-%E5%AE%9E%E8%B7%B5"><span class="nav-number">1.</span> <span class="nav-text">第二章：Docker 部署 Kafka 实践</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E7%BD%AE%E6%9D%A1%E4%BB%B6"><span class="nav-number">1.2.</span> <span class="nav-text">前置条件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Kafka-%E9%95%9C%E5%83%8F%E9%80%89%E6%8B%A9"><span class="nav-number">1.3.</span> <span class="nav-text">Kafka 镜像选择</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%B8%B8%E7%94%A8%E9%95%9C%E5%83%8F"><span class="nav-number">1.3.1.</span> <span class="nav-text">1. 常用镜像</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E7%89%88%E6%9C%AC%E4%B8%8E%E6%A0%87%E7%AD%BE"><span class="nav-number">1.3.2.</span> <span class="nav-text">2. 版本与标签</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E7%9B%91%E5%90%AC%E5%99%A8%E4%B8%8E-ADVERTISED-LISTENERS"><span class="nav-number">1.3.3.</span> <span class="nav-text">3. 监听器与 ADVERTISED_LISTENERS</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E8%B5%84%E6%BA%90%E4%B8%8E%E6%8C%81%E4%B9%85%E5%8C%96"><span class="nav-number">1.3.4.</span> <span class="nav-text">4. 资源与持久化</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%95%E5%AE%B9%E5%99%A8%E4%B8%80%E9%94%AE%E9%83%A8%E7%BD%B2%EF%BC%88docker-run%EF%BC%89"><span class="nav-number">1.4.</span> <span class="nav-text">单容器一键部署（docker run）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Docker-Compose-%E4%B8%80%E9%94%AE%E9%83%A8%E7%BD%B2"><span class="nav-number">1.5.</span> <span class="nav-text">Docker Compose 一键部署</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Kubernetes-%E4%B8%80%E9%94%AE%E9%83%A8%E7%BD%B2%EF%BC%88%E5%8D%95%E6%96%87%E4%BB%B6%E5%AE%8C%E6%95%B4%E6%B8%85%E5%8D%95%EF%BC%89"><span class="nav-number">1.6.</span> <span class="nav-text">Kubernetes 一键部署（单文件完整清单）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.7.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -177,7 +177,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">234</span>
+          <span class="site-state-item-count">257</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -188,7 +188,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">124</span>
+        <span class="site-state-item-count">156</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -262,7 +262,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-08-30 17:10:05" itemprop="dateModified" datetime="2026-08-30T17:10:05+08:00">2026-08-30</time>
+      <time title="修改时间：2026-09-01 21:56:38" itemprop="dateModified" datetime="2026-09-01T21:56:38+08:00">2026-09-01</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -298,7 +298,7 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><h1 id="第二章：Docker-部署-Kafka-实践"><a href="#第二章：Docker-部署-Kafka-实践" class="headerlink" title="第二章：Docker 部署 Kafka 实践"></a>第二章：Docker 部署 Kafka 实践</h1><h2 id="概念基础：容器化部署-Kafka-的四个要点"><a href="#概念基础：容器化部署-Kafka-的四个要点" class="headerlink" title="概念基础：容器化部署 Kafka 的四个要点"></a>概念基础：容器化部署 Kafka 的四个要点</h2><ol>
+    <div class="post-body" itemprop="articleBody"><h1 id="第二章：Docker-部署-Kafka-实践"><a href="#第二章：Docker-部署-Kafka-实践" class="headerlink" title="第二章：Docker 部署 Kafka 实践"></a>第二章：Docker 部署 Kafka 实践</h1><h2 id="概念基础"><a href="#概念基础" class="headerlink" title="概念基础"></a>概念基础</h2><ol>
 <li><strong>KRaft 让单进程成为可能</strong>：旧版 Kafka 需要 ZooKeeper + Kafka 两个进程；<strong>KRaft 模式</strong>下一个容器同时扮演 <strong>controller + broker</strong>，单机一条命令即可起集群（本章单容器示例的核心）。</li>
 <li><strong>监听器与 advertised.listeners 是第一坑</strong>：Kafka 会把 <strong><code>advertised.listeners</code></strong> 里的地址<strong>返回给客户端</strong>——容器内监听 <code>0.0.0.0</code> 没用，客户端拿到的是这个「广告地址」。<strong>本机访问写 <code>127.0.0.1</code>、Compose 内服务访问写服务名、跨网段要双监听</strong>，本章三种部署形态的差异全在这一个参数上。</li>
 <li><strong>数据目录与 page cache</strong>：数据在 <strong><code>/bitnami/kafka</code></strong>（Bitnami 镜像），必须挂卷；Kafka 依赖磁盘顺序写与 page cache，内存不宜压得过低。</li>
@@ -419,8 +419,8 @@
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2026/05/01/Midware/Zookeeper-Docker/" rel="prev" title="Docker 部署 ZooKeeper">
-                  <i class="fa fa-angle-left"></i> Docker 部署 ZooKeeper
+                <a href="/2026/05/01/Midware/Zookeeper-Docker/" rel="prev" title="第二章：Docker 部署 ZooKeeper 实践">
+                  <i class="fa fa-angle-left"></i> 第二章：Docker 部署 ZooKeeper 实践
                 </a>
             </div>
             <div class="post-nav-item">
@@ -457,13 +457,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">321k</span>
+    <span title="站点总字数">362k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">17:52</span>
+    <span title="站点阅读时长">20:07</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

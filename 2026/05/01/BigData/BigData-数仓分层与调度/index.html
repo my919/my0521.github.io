@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"my919.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="第四章：数仓分层与数据管道调度概念基础 数仓分层的目的是治理复杂度：ODS 贴源、DWD 明细、DIM 维度、DWS 汇总、ADS 应用——每层职责单一，下游依赖上游，坏数据能定位到层。 批流一体靠统一模型：Spark（第一章：Spark 大数据批处理入门）跑离线重算，Flink（第二章：Flink 流式计算入门）跑实时增量，两边共用口径才能「T+1 准确、实时大致对」互为校验。 Kafka 是管">
+<meta property="og:type" content="article">
+<meta property="og:title" content="第四章：数仓分层与数据管道调度">
+<meta property="og:url" content="https://my919.github.io/2026/05/01/BigData/BigData-%E6%95%B0%E4%BB%93%E5%88%86%E5%B1%82%E4%B8%8E%E8%B0%83%E5%BA%A6/index.html">
+<meta property="og:site_name" content="my">
+<meta property="og:description" content="第四章：数仓分层与数据管道调度概念基础 数仓分层的目的是治理复杂度：ODS 贴源、DWD 明细、DIM 维度、DWS 汇总、ADS 应用——每层职责单一，下游依赖上游，坏数据能定位到层。 批流一体靠统一模型：Spark（第一章：Spark 大数据批处理入门）跑离线重算，Flink（第二章：Flink 流式计算入门）跑实时增量，两边共用口径才能「T+1 准确、实时大致对」互为校验。 Kafka 是管">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-05-01T05:00:01.000Z">
+<meta property="article:modified_time" content="2026-09-01T15:07:49.120Z">
+<meta property="article:author" content="miracle">
+<meta property="article:tag" content="Airflow">
+<meta property="article:tag" content="数仓">
+<meta property="article:tag" content="数据管道">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://my919.github.io/2026/05/01/BigData/BigData-%E6%95%B0%E4%BB%93%E5%88%86%E5%B1%82%E4%B8%8E%E8%B0%83%E5%BA%A6/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://my919.github.io/2026/05/01/BigData/BigData-%E6%95%B0%E4%BB%93%E5%88%86%E5%B1%82%E4%B8%8E%E8%B0%83%E5%BA%A6/","path":"2026/05/01/BigData/BigData-数仓分层与调度/","title":"第四章：数仓分层与数据管道调度"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>第四章：数仓分层与数据管道调度 | my</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.10.1/mermaid.min.js","integrity":"sha256-BmQmdWDS8X2OTbrwELWK366LV6escyWhHHe0XCTU/Hk="}}</script>
+  <script src="/js/third-party/tags/mermaid.js" defer></script>
+
+
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="my" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">my</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-service"><a href="/service/" rel="section"><i class="fa fa-server fa-fw"></i>服务</a></li><li class="menu-item menu-item-tool"><a href="/tool/" rel="section"><i class="fa fa-wrench fa-fw"></i>工具</a></li><li class="menu-item menu-item-project"><a href="/project/" rel="section"><i class="fa fa-folder-open fa-fw"></i>项目</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%9A%E6%95%B0%E4%BB%93%E5%88%86%E5%B1%82%E4%B8%8E%E6%95%B0%E6%8D%AE%E7%AE%A1%E9%81%93%E8%B0%83%E5%BA%A6"><span class="nav-number">1.</span> <span class="nav-text">第四章：数仓分层与数据管道调度</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E5%88%86%E5%B1%82%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.2.</span> <span class="nav-text">一、分层模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81CDC-%E9%87%87%E9%9B%86%EF%BC%9A%E4%B8%9A%E5%8A%A1%E5%BA%93%E5%8F%98%E6%9B%B4%E5%85%A5%E4%BB%93"><span class="nav-number">1.3.</span> <span class="nav-text">二、CDC 采集：业务库变更入仓</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81Airflow%EF%BC%9A%E6%8A%8A%E6%89%B9%E5%A4%84%E7%90%86%E7%BC%96%E6%8E%92%E6%88%90-DAG"><span class="nav-number">1.4.</span> <span class="nav-text">三、Airflow：把批处理编排成 DAG</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E6%89%B9%E6%B5%81%E5%8F%8C%E8%B7%91%E4%B8%8E%E4%B8%80%E8%87%B4%E6%80%A7"><span class="nav-number">1.5.</span> <span class="nav-text">四、批流双跑与一致性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E6%95%B0%E6%8D%AE%E8%B4%A8%E9%87%8F%E9%97%A8%E7%A6%81"><span class="nav-number">1.6.</span> <span class="nav-text">五、数据质量门禁</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.7.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">miracle</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">257</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">36</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">156</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/my919" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;my919" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://gitee.com/my919" title="Gitee → https:&#x2F;&#x2F;gitee.com&#x2F;my919" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>Gitee</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:yeal166@163.com" title="E-Mail → mailto:yeal166@163.com" rel="noopener me external nofollow noreferrer" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://my919.github.io/2026/05/01/BigData/BigData-%E6%95%B0%E4%BB%93%E5%88%86%E5%B1%82%E4%B8%8E%E8%B0%83%E5%BA%A6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="第四章：数仓分层与数据管道调度 | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          第四章：数仓分层与数据管道调度
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-05-01 13:00:01" itemprop="dateCreated datePublished" datetime="2026-05-01T13:00:01+08:00">2026-05-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-09-01 23:07:49" itemprop="dateModified" datetime="2026-09-01T23:07:49+08:00">2026-09-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/BigData/" itemprop="url" rel="index"><span itemprop="name">BigData</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>1.5k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>5 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="第四章：数仓分层与数据管道调度"><a href="#第四章：数仓分层与数据管道调度" class="headerlink" title="第四章：数仓分层与数据管道调度"></a>第四章：数仓分层与数据管道调度</h1><h2 id="概念基础"><a href="#概念基础" class="headerlink" title="概念基础"></a>概念基础</h2><ol>
+<li><strong>数仓分层的目的是治理复杂度</strong>：ODS 贴源、DWD 明细、DIM 维度、DWS 汇总、ADS 应用——每层职责单一，下游依赖上游，坏数据能定位到层。</li>
+<li><strong>批流一体靠统一模型</strong>：Spark（<a href="/2026/05/01/BigData/Spark/" title="第一章：Spark 大数据批处理入门">第一章：Spark 大数据批处理入门</a>）跑离线重算，Flink（<a href="/2026/05/01/BigData/Flink/" title="第二章：Flink 流式计算入门">第二章：Flink 流式计算入门</a>）跑实时增量，两边共用口径才能「T+1 准确、实时大致对」互为校验。</li>
+<li><strong>Kafka 是管道骨架</strong>：CDC 与日志先进 Kafka（<a href="/2026/05/01/kafka-bigdata/" title="第三章：Kafka 大数据数据总线">第三章：Kafka 大数据数据总线</a>）缓冲解耦，再分流到批&#x2F;流&#x2F;OLAP 各消费者。</li>
+<li><strong>调度是数据可靠性核心</strong>：Airflow&#x2F;DolphinScheduler 把「每天 2 点跑批」变成<strong>有依赖、可重试、有告警</strong>的 DAG，而不是一堆 crontab。</li>
+<li><strong>ClickHouse 承接分析层</strong>：DWS&#x2F;ADS 汇总结果落到列存引擎供 BI 查询，见 <a href="/2026/05/01/ClickHouse/ClickHouse-%E6%9F%A5%E8%AF%A2%E4%B8%8E%E8%B0%83%E4%BC%98/" title="第三章：ClickHouse 查询与性能调优">第三章：ClickHouse 查询与性能调优</a>。</li>
+</ol>
+<blockquote>
+<p>本章聚焦管道编排与分层建模方法论；沙箱无 Airflow&#x2F;Spark 集群，代码按 <strong>Airflow 2.x 官方语法</strong>书写未逐条运行验证。</p>
+</blockquote>
+<hr>
+<h2 id="一、分层模型"><a href="#一、分层模型" class="headerlink" title="一、分层模型"></a>一、分层模型</h2><pre>
+<code class="mermaid">
+
+flowchart LR
+  S[(业务库&#x2F;日志)] --&gt;|CDC&#x2F;采集| O[ODS 贴源层]
+  O --&gt; W[DWD 明细层]
+  DIM[(维度表)] --&gt; W
+  W --&gt; S2[DWS 汇总层]
+  S2 --&gt; A[ADS 应用层]
+  A --&gt; BI[BI&#x2F;报表&#x2F;API]
+</code>
+</pre>
+
+<table>
+<thead>
+<tr>
+<th>层</th>
+<th>职责</th>
+<th>关键约束</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>ODS</strong></td>
+<td>原样落地，不做加工</td>
+<td>保留原始格式；按天分区快照</td>
+</tr>
+<tr>
+<td><strong>DWD</strong></td>
+<td>清洗、去重、脱敏、拆平明细</td>
+<td>一行一件事务&#x2F;事件；只依赖 ODS</td>
+</tr>
+<tr>
+<td><strong>DIM</strong></td>
+<td>维度表（用户、商品、地区）</td>
+<td>缓慢变化维（SCD2）记录历史</td>
+</tr>
+<tr>
+<td><strong>DWS</strong></td>
+<td>按主题预聚合（日&#x2F;用户粒度）</td>
+<td>口径唯一，重算成本可控</td>
+</tr>
+<tr>
+<td><strong>ADS</strong></td>
+<td>面向报表&#x2F;大屏&#x2F;接口的最终宽表</td>
+<td>只依赖 DWS+DIM，不碰 ODS</td>
+</tr>
+</tbody></table>
+<p><strong>分层价值</strong>：重复计算下沉、口径收敛（改一处全局生效）、问题定位快（ADS 错 → 查 DWS → 查 DWD）。</p>
+<hr>
+<h2 id="二、CDC-采集：业务库变更入仓"><a href="#二、CDC-采集：业务库变更入仓" class="headerlink" title="二、CDC 采集：业务库变更入仓"></a>二、CDC 采集：业务库变更入仓</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Debezium 把 MySQL binlog 变更流入 Kafka（详见第三章 Connect 部分）</span></span><br><span class="line"><span class="comment"># Topic: dbz.shop.orders —— 每条消息是一行变更（before/after/op）</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- Flink SQL：消费 CDC，upsert 到 ODS 明细表</span></span><br><span class="line"><span class="keyword">CREATE TABLE</span> ods_orders (</span><br><span class="line">    id          <span class="type">BIGINT</span>,</span><br><span class="line">    user_id     <span class="type">BIGINT</span>,</span><br><span class="line">    amount      <span class="type">DECIMAL</span>(<span class="number">18</span>, <span class="number">2</span>),</span><br><span class="line">    status      STRING,</span><br><span class="line">    updated_at  <span class="type">TIMESTAMP</span>(<span class="number">3</span>),</span><br><span class="line">    <span class="keyword">PRIMARY KEY</span> (id) <span class="keyword">NOT</span> ENFORCED</span><br><span class="line">) <span class="keyword">WITH</span> (</span><br><span class="line">    <span class="string">&#x27;connector&#x27;</span> <span class="operator">=</span> <span class="string">&#x27;kafka&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;topic&#x27;</span> <span class="operator">=</span> <span class="string">&#x27;dbz.shop.orders&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;properties.bootstrap.servers&#x27;</span> <span class="operator">=</span> <span class="string">&#x27;kafka:9092&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;scan.startup.mode&#x27;</span> <span class="operator">=</span> <span class="string">&#x27;latest-offset&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;value.format&#x27;</span> <span class="operator">=</span> <span class="string">&#x27;debezium-json&#x27;</span></span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<p><strong>ODS 两种落地形态</strong>：每天全量快照（简单、可回溯）与增量 upsert（省存储、需主键合并）——中小规模优先全量快照 + 关键表才做增量。</p>
+<hr>
+<h2 id="三、Airflow：把批处理编排成-DAG"><a href="#三、Airflow：把批处理编排成-DAG" class="headerlink" title="三、Airflow：把批处理编排成 DAG"></a>三、Airflow：把批处理编排成 DAG</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># dags/daily_warehouse.py</span></span><br><span class="line"><span class="keyword">from</span> airflow <span class="keyword">import</span> DAG</span><br><span class="line"><span class="keyword">from</span> airflow.providers.apache.spark.operators.spark_submit <span class="keyword">import</span> SparkSubmitOperator</span><br><span class="line"><span class="keyword">from</span> airflow.operators.empty <span class="keyword">import</span> EmptyOperator</span><br><span class="line"><span class="keyword">from</span> airflow.utils.trigger_rule <span class="keyword">import</span> TriggerRule</span><br><span class="line"><span class="keyword">from</span> datetime <span class="keyword">import</span> datetime, timedelta</span><br><span class="line"></span><br><span class="line">default_args = &#123;</span><br><span class="line">    <span class="string">&quot;owner&quot;</span>: <span class="string">&quot;data&quot;</span>,</span><br><span class="line">    <span class="string">&quot;retries&quot;</span>: <span class="number">2</span>,                       <span class="comment"># 失败自动重试</span></span><br><span class="line">    <span class="string">&quot;retry_delay&quot;</span>: timedelta(minutes=<span class="number">5</span>),</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">with</span> DAG(</span><br><span class="line">    dag_id=<span class="string">&quot;daily_warehouse&quot;</span>,</span><br><span class="line">    schedule=<span class="string">&quot;0 2 * * *&quot;</span>,               <span class="comment"># 每天 02:00</span></span><br><span class="line">    start_date=datetime(<span class="number">2026</span>, <span class="number">1</span>, <span class="number">1</span>),</span><br><span class="line">    catchup=<span class="literal">False</span>,                      <span class="comment"># 不补历史（如需回刷再手动触发）</span></span><br><span class="line">    default_args=default_args,</span><br><span class="line">    tags=[<span class="string">&quot;warehouse&quot;</span>],</span><br><span class="line">) <span class="keyword">as</span> dag:</span><br><span class="line">    done = EmptyOperator(task_id=<span class="string">&quot;wait_source_data&quot;</span>)</span><br><span class="line">    dwd = SparkSubmitOperator(</span><br><span class="line">        task_id=<span class="string">&quot;dwd_orders&quot;</span>,</span><br><span class="line">        application=<span class="string">&quot;/opt/jobs/dwd_orders.py&quot;</span>,   <span class="comment"># 洗 ODS → DWD</span></span><br><span class="line">        conf=&#123;<span class="string">&quot;spark.executor.memory&quot;</span>: <span class="string">&quot;4g&quot;</span>&#125;,</span><br><span class="line">    )</span><br><span class="line">    dws = SparkSubmitOperator(</span><br><span class="line">        task_id=<span class="string">&quot;dws_user_daily&quot;</span>,</span><br><span class="line">        application=<span class="string">&quot;/opt/jobs/dws_user_daily.py&quot;</span>,  <span class="comment"># DWD → DWS</span></span><br><span class="line">    )</span><br><span class="line">    ads = SparkSubmitOperator(</span><br><span class="line">        task_id=<span class="string">&quot;ads_dashboard&quot;</span>,</span><br><span class="line">        application=<span class="string">&quot;/opt/jobs/ads_dashboard.py&quot;</span>,   <span class="comment"># DWS → ADS → ClickHouse</span></span><br><span class="line">    )</span><br><span class="line">    alert = EmptyOperator(task_id=<span class="string">&quot;on_failure&quot;</span>, trigger_rule=TriggerRule.ONE_FAILED)</span><br><span class="line"></span><br><span class="line">    done &gt;&gt; dwd &gt;&gt; dws &gt;&gt; ads           <span class="comment"># 依赖链：上游成功才跑下游</span></span><br><span class="line">    [dwd, dws, ads] &gt;&gt; alert            <span class="comment"># 任一失败触发告警分支</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>调度实践要点</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>实践</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>数据就绪探测</td>
+<td>用 Sensor 等「源表分区就绪」（<code>/data/ods/dt=2026-05-01/_SUCCESS</code>）再开跑</td>
+</tr>
+<tr>
+<td>幂等设计</td>
+<td>所有任务以 <code>dt=日期分区</code> 覆盖写，重跑不产生重复</td>
+</tr>
+<tr>
+<td>回刷</td>
+<td>补数 &#x3D; 对历史日期重放 DAG；幂等是回刷安全的前提</td>
+</tr>
+<tr>
+<td>分区约定</td>
+<td>全公司统一 <code>dt/hh</code> 分区字段，下游依赖检查分区存在性</td>
+</tr>
+<tr>
+<td>SLA 与告警</td>
+<td>任务超过预期时长告警；失败走 IM webhook（见 <a href="/2026/05/01/Linux/Linux-%E8%BF%90%E7%BB%B4%E8%BF%9B%E9%98%B6/" title="第五章：系统运维进阶">第五章：系统运维进阶</a> 的日志与监控）</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="四、批流双跑与一致性"><a href="#四、批流双跑与一致性" class="headerlink" title="四、批流双跑与一致性"></a>四、批流双跑与一致性</h2><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">实时链路：Kafka(CDC) → Flink → ClickHouse(实时大屏，分钟级误差)</span><br><span class="line">离线链路：ODS 快照 → Spark 重算 → 覆盖当天结果(准确口径)</span><br><span class="line">一致性：  以离线为准；对账任务每天比对实时/离线差额，超阈值告警并触发重算</span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th>问题</th>
+<th>方案</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>实时与离线口径不一致</td>
+<td>统一 DWS 层 SQL 口径，代码同源（或用 Flink 批模式跑离线）</td>
+</tr>
+<tr>
+<td>迟到数据</td>
+<td>Flink 水位线 + allowed lateness；离线重算兜底</td>
+</tr>
+<tr>
+<td>重复写入</td>
+<td>Kafka 事务 + 幂等 sink（主键去重），见第三章「精确一次」</td>
+</tr>
+<tr>
+<td>大宽表爆炸</td>
+<td>ADS 只建高频查询宽表，长尾需求走即席查询</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="五、数据质量门禁"><a href="#五、数据质量门禁" class="headerlink" title="五、数据质量门禁"></a>五、数据质量门禁</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 每日跑批前先做体检，不过检就阻断下游（Airflow 里做成前置任务）</span></span><br><span class="line"><span class="comment">-- 1. 主键唯一</span></span><br><span class="line"><span class="keyword">SELECT</span> id, <span class="built_in">count</span>(<span class="number">1</span>) <span class="keyword">FROM</span> dwd_orders <span class="keyword">WHERE</span> dt <span class="operator">=</span> <span class="string">&#x27;&#123;&#123; ds &#125;&#125;&#x27;</span> <span class="keyword">GROUP</span> <span class="keyword">BY</span> id <span class="keyword">HAVING</span> <span class="built_in">count</span>(<span class="number">1</span>) <span class="operator">&gt;</span> <span class="number">1</span>;</span><br><span class="line"><span class="comment">-- 2. 关键字段非空率</span></span><br><span class="line"><span class="keyword">SELECT</span> countIf(user_id <span class="keyword">IS</span> <span class="keyword">NULL</span>) <span class="operator">/</span> <span class="built_in">count</span>(<span class="number">1</span>) <span class="keyword">AS</span> null_ratio</span><br><span class="line"><span class="keyword">FROM</span> dwd_orders <span class="keyword">WHERE</span> dt <span class="operator">=</span> <span class="string">&#x27;&#123;&#123; ds &#125;&#125;&#x27;</span>;</span><br><span class="line"><span class="comment">-- 3. 波动率：今日行数与上周环比超 ±30% 告警</span></span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th>检查</th>
+<th>时机</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>表行数&#x2F;波动率</td>
+<td>ODS 就绪后</td>
+</tr>
+<tr>
+<td>主键唯一、非空</td>
+<td>DWD 产出后</td>
+</tr>
+<tr>
+<td>口径对账（批 vs 流）</td>
+<td>ADS 产出后</td>
+</tr>
+<tr>
+<td>下游新鲜度</td>
+<td>报表侧每天首次访问校验数据日期</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="本章小结"><a href="#本章小结" class="headerlink" title="本章小结"></a>本章小结</h2><table>
+<thead>
+<tr>
+<th>要点</th>
+<th>结论</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>分层</td>
+<td>ODS 贴源 → DWD 明细 → DIM 维度 → DWS 汇总 → ADS 应用；坏数据逐层定位</td>
+</tr>
+<tr>
+<td>采集</td>
+<td>CDC 入 Kafka；ODS 用「全量快照 + 关键表增量」起步</td>
+</tr>
+<tr>
+<td>调度</td>
+<td>Airflow DAG + 数据就绪 Sensor + 幂等分区写，重跑回刷才安全</td>
+</tr>
+<tr>
+<td>批流</td>
+<td>实时求快、离线求准；每日对账，超阈值重算</td>
+</tr>
+<tr>
+<td>质量</td>
+<td>唯一性&#x2F;非空率&#x2F;波动率做成门禁任务，不过检不放行下游</td>
+</tr>
+</tbody></table>
+<hr>
+<p>至此 BigData 系列四章完结：<a href="/2026/05/01/BigData/Spark/" title="第一章：Spark 大数据批处理入门">第一章：Spark 大数据批处理入门</a> 负责离线、<a href="/2026/05/01/BigData/Flink/" title="第二章：Flink 流式计算入门">第二章：Flink 流式计算入门</a> 负责实时、<a href="/2026/05/01/kafka-bigdata/" title="第三章：Kafka 大数据数据总线">第三章：Kafka 大数据数据总线</a> 串管道，本章给管道加上分层与调度。分析层落地见 <a href="/2026/05/01/ClickHouse/ClickHouse-%E6%9F%A5%E8%AF%A2%E4%B8%8E%E8%B0%83%E4%BC%98/" title="第三章：ClickHouse 查询与性能调优">第三章：ClickHouse 查询与性能调优</a>。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%95%B0%E4%BB%93/" rel="tag"># 数仓</a>
+              <a href="/tags/%E6%95%B0%E6%8D%AE%E7%AE%A1%E9%81%93/" rel="tag"># 数据管道</a>
+              <a href="/tags/Airflow/" rel="tag"># Airflow</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/05/01/AI/AI-RAG%E4%B8%8E%E5%90%91%E9%87%8F%E6%A3%80%E7%B4%A2/" rel="prev" title="第四章：RAG 与向量检索实战">
+                  <i class="fa fa-angle-left"></i> 第四章：RAG 与向量检索实战
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2026/05/01/Embedded/ModbusRTU/" rel="next" title="第一章：Modbus RTU">
+                  第一章：Modbus RTU <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">miracle</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">362k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">20:07</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+<script>
+(function () {
+  function normalizeClipboard(s) {
+    return (s || '').replace(/\u00a0/g, ' ');
+  }
+
+  /** When innerText is empty, treat <br> as newlines (matches Hexo fenced + line_number HTML). */
+  function plainTextFromElement(el) {
+    if (!el) return '';
+    var t = el.innerText;
+    if (t != null && t !== '') return normalizeClipboard(t);
+    var clone = el.cloneNode(true);
+    clone.querySelectorAll('br').forEach(function (br) {
+      br.parentNode.replaceChild(document.createTextNode('\n'), br);
+    });
+    return normalizeClipboard(clone.textContent || '');
+  }
+
+  function extractFromFigure(fig) {
+    if (!fig) return '';
+    var cell = fig.querySelector('td.code') || fig.querySelector('.code');
+    if (cell) return plainTextFromElement(cell);
+    var pre = fig.querySelector('pre');
+    if (pre) return plainTextFromElement(pre);
+    var code = fig.querySelector('code');
+    return code ? plainTextFromElement(code) : '';
+  }
+
+  function extractForCopyBtn(btn) {
+    var fig = btn.closest('figure.highlight');
+    if (fig) return extractFromFigure(fig);
+    var wrap = btn.closest('.code-container');
+    if (wrap) {
+      var innerFig = wrap.querySelector('figure.highlight');
+      if (innerFig) return extractFromFigure(innerFig);
+      var preOnly = wrap.querySelector('pre');
+      if (preOnly) return plainTextFromElement(preOnly);
+    }
+    return '';
+  }
+
+  function setCopyIcon(btn, ok) {
+    var i = btn.querySelector('i');
+    if (i) i.className = ok ? 'fa fa-check-circle fa-fw' : 'fa fa-times-circle fa-fw';
+  }
+
+  function writeClipboard(text, btn) {
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(text).then(
+        function () { setCopyIcon(btn, true); },
+        function () { fallbackCopy(text, btn); }
+      );
+    }
+    fallbackCopy(text, btn);
+    return Promise.resolve();
+  }
+
+  function fallbackCopy(text, btn) {
+    try {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed';
+      ta.style.left = '-9999px';
+      document.body.appendChild(ta);
+      ta.select();
+      var ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      setCopyIcon(btn, ok);
+    } catch (e) {
+      setCopyIcon(btn, false);
+    }
+  }
+
+  document.addEventListener(
+    'click',
+    function (e) {
+      var btn = e.target.closest && e.target.closest('.copy-btn');
+      if (!btn) return;
+      if (!btn.closest('figure.highlight') && !btn.closest('.code-container')) return;
+      e.stopPropagation();
+      e.preventDefault();
+      var text = extractForCopyBtn(btn);
+      writeClipboard(text, btn);
+    },
+    true
+  );
+})();
+</script>
+
+</body>
+</html>

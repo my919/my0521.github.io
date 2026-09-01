@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"my919.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="第四章：RAG 与向量检索实战概念基础 RAG &#x3D; 检索增强生成：把私有知识向量化入库，提问时先检索最相关的片段塞进上下文，再让 LLM 作答——不用重训模型就能注入领域知识，是 LLM 落地性价比最高的路线。 Embedding 是语义坐标系：文本被编码为高维向量（如 1024 维），语义相近的文本距离相近；「检索」从关键词匹配升级为最近邻搜索。 向量库专管 ANN：Milvus&amp;#x">
+<meta property="og:type" content="article">
+<meta property="og:title" content="第四章：RAG 与向量检索实战">
+<meta property="og:url" content="https://my919.github.io/2026/05/01/AI/AI-RAG%E4%B8%8E%E5%90%91%E9%87%8F%E6%A3%80%E7%B4%A2/index.html">
+<meta property="og:site_name" content="my">
+<meta property="og:description" content="第四章：RAG 与向量检索实战概念基础 RAG &#x3D; 检索增强生成：把私有知识向量化入库，提问时先检索最相关的片段塞进上下文，再让 LLM 作答——不用重训模型就能注入领域知识，是 LLM 落地性价比最高的路线。 Embedding 是语义坐标系：文本被编码为高维向量（如 1024 维），语义相近的文本距离相近；「检索」从关键词匹配升级为最近邻搜索。 向量库专管 ANN：Milvus&amp;#x">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-05-01T05:00:00.000Z">
+<meta property="article:modified_time" content="2026-09-01T15:06:07.354Z">
+<meta property="article:author" content="miracle">
+<meta property="article:tag" content="Embedding">
+<meta property="article:tag" content="RAG">
+<meta property="article:tag" content="向量数据库">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://my919.github.io/2026/05/01/AI/AI-RAG%E4%B8%8E%E5%90%91%E9%87%8F%E6%A3%80%E7%B4%A2/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://my919.github.io/2026/05/01/AI/AI-RAG%E4%B8%8E%E5%90%91%E9%87%8F%E6%A3%80%E7%B4%A2/","path":"2026/05/01/AI/AI-RAG与向量检索/","title":"第四章：RAG 与向量检索实战"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>第四章：RAG 与向量检索实战 | my</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.10.1/mermaid.min.js","integrity":"sha256-BmQmdWDS8X2OTbrwELWK366LV6escyWhHHe0XCTU/Hk="}}</script>
+  <script src="/js/third-party/tags/mermaid.js" defer></script>
+
+
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="my" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">my</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-service"><a href="/service/" rel="section"><i class="fa fa-server fa-fw"></i>服务</a></li><li class="menu-item menu-item-tool"><a href="/tool/" rel="section"><i class="fa fa-wrench fa-fw"></i>工具</a></li><li class="menu-item menu-item-project"><a href="/project/" rel="section"><i class="fa fa-folder-open fa-fw"></i>项目</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%9ARAG-%E4%B8%8E%E5%90%91%E9%87%8F%E6%A3%80%E7%B4%A2%E5%AE%9E%E6%88%98"><span class="nav-number">1.</span> <span class="nav-text">第四章：RAG 与向量检索实战</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81RAG-%E5%85%A8%E9%93%BE%E8%B7%AF"><span class="nav-number">1.2.</span> <span class="nav-text">一、RAG 全链路</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E7%A6%BB%E7%BA%BF%E7%B4%A2%E5%BC%95%EF%BC%9A%E5%88%87%E5%9D%97%E4%B8%8E%E5%90%91%E9%87%8F%E5%8C%96"><span class="nav-number">1.3.</span> <span class="nav-text">二、离线索引：切块与向量化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E5%9C%A8%E7%BA%BF%E6%A3%80%E7%B4%A2%E4%B8%8E%E7%94%9F%E6%88%90"><span class="nav-number">1.4.</span> <span class="nav-text">三、在线检索与生成</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E5%90%91%E9%87%8F%E5%BA%93%E9%80%89%E5%9E%8B"><span class="nav-number">1.5.</span> <span class="nav-text">四、向量库选型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E8%AF%84%E4%BC%B0%E4%B8%8E%E8%BF%AD%E4%BB%A3"><span class="nav-number">1.6.</span> <span class="nav-text">五、评估与迭代</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.7.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">miracle</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">257</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">36</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">156</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/my919" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;my919" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://gitee.com/my919" title="Gitee → https:&#x2F;&#x2F;gitee.com&#x2F;my919" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>Gitee</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:yeal166@163.com" title="E-Mail → mailto:yeal166@163.com" rel="noopener me external nofollow noreferrer" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://my919.github.io/2026/05/01/AI/AI-RAG%E4%B8%8E%E5%90%91%E9%87%8F%E6%A3%80%E7%B4%A2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="第四章：RAG 与向量检索实战 | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          第四章：RAG 与向量检索实战
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-05-01 13:00:00" itemprop="dateCreated datePublished" datetime="2026-05-01T13:00:00+08:00">2026-05-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-09-01 23:06:07" itemprop="dateModified" datetime="2026-09-01T23:06:07+08:00">2026-09-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>1.3k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>4 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="第四章：RAG-与向量检索实战"><a href="#第四章：RAG-与向量检索实战" class="headerlink" title="第四章：RAG 与向量检索实战"></a>第四章：RAG 与向量检索实战</h1><h2 id="概念基础"><a href="#概念基础" class="headerlink" title="概念基础"></a>概念基础</h2><ol>
+<li><strong>RAG &#x3D; 检索增强生成</strong>：把私有知识<strong>向量化入库</strong>，提问时先检索最相关的片段塞进上下文，再让 LLM 作答——<strong>不用重训模型就能注入领域知识</strong>，是 LLM 落地性价比最高的路线。</li>
+<li><strong>Embedding 是语义坐标系</strong>：文本被编码为高维向量（如 1024 维），<strong>语义相近的文本距离相近</strong>；「检索」从关键词匹配升级为<strong>最近邻搜索</strong>。</li>
+<li><strong>向量库专管 ANN</strong>：Milvus&#x2F;Qdrant&#x2F;pgvector 用 HNSW 等索引做<strong>近似最近邻</strong>查询，毫秒级从千万级向量里捞 Top-K；小规模用 Redis&#x2F;Postgres 也能起步。</li>
+<li><strong>效果好坏在数据管道</strong>：切块（chunking）粒度、检索 Top-K、重排序（rerank）三件事对答案质量的影响大于换模型。</li>
+<li><strong>评估要有 ground truth</strong>：召回率（该找的找没找到）与答案忠实度（说的对不对）分开评，肉眼抽查不可持续。</li>
+</ol>
+<blockquote>
+<p>本章承接 <a href="/2026/05/01/AI/LLM/" title="第三章：LLM 大语言模型基础">第三章：LLM 大语言模型基础</a> 的 RAG 概念，落到工程实现。代码按 <strong>LangChain 0.3 &#x2F; OpenAI SDK 官方 API</strong> 风格书写（沙箱未装依赖，未逐条运行验证）。</p>
+</blockquote>
+<hr>
+<h2 id="一、RAG-全链路"><a href="#一、RAG-全链路" class="headerlink" title="一、RAG 全链路"></a>一、RAG 全链路</h2><pre>
+<code class="mermaid">
+
+flowchart LR
+  D[文档] --&gt; C[切块 Chunking]
+  C --&gt; E[Embedding 向量化]
+  E --&gt; V[(向量库)]
+  Q[用户提问] --&gt; QE[问题向量化]
+  QE --&gt; V
+  V --&gt; R[Top-K 检索 + Rerank]
+  R --&gt; P[拼装 Prompt]
+  P --&gt; LLM[LLM 生成]
+  LLM --&gt; A[带引用的答案]
+</code>
+</pre>
+
+<p><strong>两条管道</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>管道</th>
+<th>内容</th>
+<th>执行时机</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>离线索引</strong></td>
+<td>文档 → 清洗 → 切块 → 向量化 → 入库</td>
+<td>文档新增&#x2F;变更时</td>
+</tr>
+<tr>
+<td><strong>在线问答</strong></td>
+<td>问题向量化 → 检索 → 拼 Prompt → LLM</td>
+<td>每次提问</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="二、离线索引：切块与向量化"><a href="#二、离线索引：切块与向量化" class="headerlink" title="二、离线索引：切块与向量化"></a>二、离线索引：切块与向量化</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># pip install langchain langchain-community langchain-openai qdrant-client</span></span><br><span class="line"><span class="keyword">from</span> langchain_community.document_loaders <span class="keyword">import</span> TextLoader</span><br><span class="line"><span class="keyword">from</span> langchain_text_splitters <span class="keyword">import</span> RecursiveCharacterTextSplitter</span><br><span class="line"><span class="keyword">from</span> langchain_openai <span class="keyword">import</span> OpenAIEmbeddings</span><br><span class="line"><span class="keyword">from</span> langchain_qdrant <span class="keyword">import</span> QdrantVectorStore</span><br><span class="line"></span><br><span class="line"><span class="comment"># 1. 加载与切块</span></span><br><span class="line">docs = TextLoader(<span class="string">&quot;handbook.md&quot;</span>, encoding=<span class="string">&quot;utf-8&quot;</span>).load()</span><br><span class="line">splitter = RecursiveCharacterTextSplitter(</span><br><span class="line">    chunk_size=<span class="number">500</span>,          <span class="comment"># 每块约 500 字符</span></span><br><span class="line">    chunk_overlap=<span class="number">50</span>,        <span class="comment"># 相邻块重叠，避免句子被切半丢失语义</span></span><br><span class="line">    separators=[<span class="string">&quot;\n\n&quot;</span>, <span class="string">&quot;\n&quot;</span>, <span class="string">&quot;。&quot;</span>, <span class="string">&quot; &quot;</span>, <span class="string">&quot;&quot;</span>],   <span class="comment"># 中文按句号优先切</span></span><br><span class="line">)</span><br><span class="line">chunks = splitter.split_documents(docs)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. 向量化入库</span></span><br><span class="line">vs = QdrantVectorStore.from_documents(</span><br><span class="line">    chunks,</span><br><span class="line">    embedding=OpenAIEmbeddings(model=<span class="string">&quot;text-embedding-3-small&quot;</span>),</span><br><span class="line">    url=<span class="string">&quot;http://localhost:6333&quot;</span>,</span><br><span class="line">    collection_name=<span class="string">&quot;handbook&quot;</span>,</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p><strong>切块经验值</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>建议</th>
+<th>理由</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>chunk_size</code></td>
+<td>300~800 字符</td>
+<td>太小丢上下文，太大稀释相关性</td>
+</tr>
+<tr>
+<td><code>chunk_overlap</code></td>
+<td>10%~20%</td>
+<td>保住跨界句子</td>
+</tr>
+<tr>
+<td>元数据</td>
+<td>给每块挂 <code>&#123;&quot;source&quot;: 文件名, &quot;section&quot;: 标题&#125;</code></td>
+<td>答案引用与按来源过滤都靠它</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="三、在线检索与生成"><a href="#三、在线检索与生成" class="headerlink" title="三、在线检索与生成"></a>三、在线检索与生成</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> langchain_openai <span class="keyword">import</span> ChatOpenAI</span><br><span class="line"><span class="keyword">from</span> langchain_core.prompts <span class="keyword">import</span> ChatPromptTemplate</span><br><span class="line"><span class="keyword">from</span> langchain_core.runnables <span class="keyword">import</span> RunnableParallel, RunnablePassthrough</span><br><span class="line"></span><br><span class="line"><span class="comment"># 向量库检索器：Top-4 + 元数据过滤</span></span><br><span class="line">retriever = vs.as_retriever(search_kwargs=&#123;<span class="string">&quot;k&quot;</span>: <span class="number">4</span>&#125;)</span><br><span class="line"></span><br><span class="line">prompt = ChatPromptTemplate.from_template(<span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">仅依据以下资料回答问题，资料中没有的信息请回答「资料中未提及」。</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">资料：</span></span><br><span class="line"><span class="string">&#123;context&#125;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">问题：&#123;question&#125;</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">format_docs</span>(<span class="params">docs</span>):</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;\n\n&quot;</span>.join(</span><br><span class="line">        <span class="string">f&quot;[<span class="subst">&#123;d.metadata.get(<span class="string">&#x27;source&#x27;</span>, <span class="string">&#x27;?&#x27;</span>)&#125;</span>] <span class="subst">&#123;d.page_content&#125;</span>&quot;</span> <span class="keyword">for</span> d <span class="keyword">in</span> docs</span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">rag_chain = (</span><br><span class="line">    RunnableParallel(context=retriever | format_docs, question=RunnablePassthrough())</span><br><span class="line">    | prompt</span><br><span class="line">    | ChatOpenAI(model=<span class="string">&quot;gpt-4o-mini&quot;</span>, temperature=<span class="number">0</span>)</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">answer = rag_chain.invoke(<span class="string">&quot;如何配置 Nginx 限流？&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p><strong>Prompt 三原则</strong>：明确告知「只依据资料」、资料带来源标记（答案可引用）、<code>temperature=0</code> 降低发挥。</p>
+<hr>
+<h2 id="四、向量库选型"><a href="#四、向量库选型" class="headerlink" title="四、向量库选型"></a>四、向量库选型</h2><table>
+<thead>
+<tr>
+<th>方案</th>
+<th>定位</th>
+<th>适用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Qdrant &#x2F; Milvus</strong></td>
+<td>专用向量库，HNSW&#x2F;量化，十亿级</td>
+<td>独立检索服务</td>
+</tr>
+<tr>
+<td><strong>pgvector</strong></td>
+<td>Postgres 扩展</td>
+<td>已有 PG、千万级以内（运维最省）</td>
+</tr>
+<tr>
+<td><strong>Redis</strong></td>
+<td>向量检索 + 缓存一体</td>
+<td>热点数据、低延迟</td>
+</tr>
+<tr>
+<td><strong>Elasticsearch</strong></td>
+<td>BM25 + 向量混合检索</td>
+<td>已有 ES、关键词+语义混合</td>
+</tr>
+<tr>
+<td><strong>FAISS</strong></td>
+<td>进程内库</td>
+<td>原型、单机实验</td>
+</tr>
+</tbody></table>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 混合检索思路：BM25（精确关键词）与向量（语义）各取 Top-K，合并去重再 rerank</span></span><br><span class="line">results_bm25 = bm25_search(query, k=<span class="number">10</span>)</span><br><span class="line">results_vec  = vs.similarity_search(query, k=<span class="number">10</span>)</span><br><span class="line">merged = dedup_by_id(results_bm25, results_vec)     <span class="comment"># RRF 融合排序</span></span><br><span class="line">top = rerank(query, merged, top_n=<span class="number">4</span>)                <span class="comment"># 精排模型打分</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="五、评估与迭代"><a href="#五、评估与迭代" class="headerlink" title="五、评估与迭代"></a>五、评估与迭代</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 建小型评测集：问题 → 期望命中的文档 id</span></span><br><span class="line">eval_set = [</span><br><span class="line">    &#123;<span class="string">&quot;q&quot;</span>: <span class="string">&quot;限流怎么配？&quot;</span>, <span class="string">&quot;expect_ids&quot;</span>: &#123;<span class="string">&quot;nginx-limit.md&quot;</span>&#125;&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;q&quot;</span>: <span class="string">&quot;备份脚本保留几份？&quot;</span>, <span class="string">&quot;expect_ids&quot;</span>: &#123;<span class="string">&quot;backup.md&quot;</span>&#125;&#125;,</span><br><span class="line">]</span><br><span class="line"></span><br><span class="line">hits = misses = <span class="number">0</span></span><br><span class="line"><span class="keyword">for</span> <span class="keyword">case</span> <span class="keyword">in</span> eval_set:</span><br><span class="line">    retrieved = &#123;d.metadata[<span class="string">&quot;source&quot;</span>] <span class="keyword">for</span> d <span class="keyword">in</span> retriever.invoke(<span class="keyword">case</span>[<span class="string">&quot;q&quot;</span>])&#125;</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">case</span>[<span class="string">&quot;expect_ids&quot;</span>] &amp; retrieved:</span><br><span class="line">        hits += <span class="number">1</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        misses += <span class="number">1</span></span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;召回率: <span class="subst">&#123;hits / (hits + misses):<span class="number">.0</span>%&#125;</span>&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p><strong>调优顺序</strong>（从便宜到贵）：</p>
+<ol>
+<li><strong>切块参数</strong>：调 <code>chunk_size</code>&#x2F;<code>separators</code>，对结构化文档用标题感知切块</li>
+<li><strong>检索深度</strong>：先取 Top-20 再 rerank 到 Top-4（召回与精排分工）</li>
+<li><strong>混合检索</strong>：加 BM25，专治型号、代码、专有名词</li>
+<li><strong>换 Embedding 模型</strong>：领域强的换领域微调模型（中文场景 BGE 系列常用）</li>
+<li><strong>最后才动 LLM</strong>：检索对了答案基本就对了</li>
+</ol>
+<hr>
+<h2 id="本章小结"><a href="#本章小结" class="headerlink" title="本章小结"></a>本章小结</h2><table>
+<thead>
+<tr>
+<th>要点</th>
+<th>结论</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>RAG 本质</td>
+<td>检索注入上下文而非重训模型；离线索引 + 在线问答两条管道</td>
+</tr>
+<tr>
+<td>切块</td>
+<td>300~800 字符 + 重叠 + 标题感知；每块挂 source&#x2F;section 元数据</td>
+</tr>
+<tr>
+<td>检索</td>
+<td>向量 ANN 打底；BM25 混合治专有名词；rerank 精排</td>
+</tr>
+<tr>
+<td>选型</td>
+<td>有 PG 用 pgvector、独立大规模用 Qdrant&#x2F;Milvus、原型用 FAISS</td>
+</tr>
+<tr>
+<td>评估</td>
+<td>召回率与忠实度分开评；调优先动切块与检索，最后动模型</td>
+</tr>
+</tbody></table>
+<hr>
+<p>至此 AI 系列四章完结：<a href="/2026/05/01/AI/ML/" title="第一章：ML 机器学习基础">第一章：ML 机器学习基础</a> 打数据与算法底子，<a href="/2026/05/01/AI/DL/" title="第二章：DL 深度学习基础">第二章：DL 深度学习基础</a> 讲透神经网络，<a href="/2026/05/01/AI/LLM/" title="第三章：LLM 大语言模型基础">第三章：LLM 大语言模型基础</a> 引入大模型，本章把 RAG 落成可上线的工程。训练框架实操见 <a href="/2026/05/01/PyTorch/PyTorch/" title="第一章：PyTorch 入门与张量">第一章：PyTorch 入门与张量</a> 系列。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/RAG/" rel="tag"># RAG</a>
+              <a href="/tags/%E5%90%91%E9%87%8F%E6%95%B0%E6%8D%AE%E5%BA%93/" rel="tag"># 向量数据库</a>
+              <a href="/tags/Embedding/" rel="tag"># Embedding</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/05/01/Frontend/Vite/" rel="prev" title="第二章：Vite 工程化构建与部署">
+                  <i class="fa fa-angle-left"></i> 第二章：Vite 工程化构建与部署
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2026/05/01/BigData/BigData-%E6%95%B0%E4%BB%93%E5%88%86%E5%B1%82%E4%B8%8E%E8%B0%83%E5%BA%A6/" rel="next" title="第四章：数仓分层与数据管道调度">
+                  第四章：数仓分层与数据管道调度 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">miracle</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">362k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">20:07</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+<script>
+(function () {
+  function normalizeClipboard(s) {
+    return (s || '').replace(/\u00a0/g, ' ');
+  }
+
+  /** When innerText is empty, treat <br> as newlines (matches Hexo fenced + line_number HTML). */
+  function plainTextFromElement(el) {
+    if (!el) return '';
+    var t = el.innerText;
+    if (t != null && t !== '') return normalizeClipboard(t);
+    var clone = el.cloneNode(true);
+    clone.querySelectorAll('br').forEach(function (br) {
+      br.parentNode.replaceChild(document.createTextNode('\n'), br);
+    });
+    return normalizeClipboard(clone.textContent || '');
+  }
+
+  function extractFromFigure(fig) {
+    if (!fig) return '';
+    var cell = fig.querySelector('td.code') || fig.querySelector('.code');
+    if (cell) return plainTextFromElement(cell);
+    var pre = fig.querySelector('pre');
+    if (pre) return plainTextFromElement(pre);
+    var code = fig.querySelector('code');
+    return code ? plainTextFromElement(code) : '';
+  }
+
+  function extractForCopyBtn(btn) {
+    var fig = btn.closest('figure.highlight');
+    if (fig) return extractFromFigure(fig);
+    var wrap = btn.closest('.code-container');
+    if (wrap) {
+      var innerFig = wrap.querySelector('figure.highlight');
+      if (innerFig) return extractFromFigure(innerFig);
+      var preOnly = wrap.querySelector('pre');
+      if (preOnly) return plainTextFromElement(preOnly);
+    }
+    return '';
+  }
+
+  function setCopyIcon(btn, ok) {
+    var i = btn.querySelector('i');
+    if (i) i.className = ok ? 'fa fa-check-circle fa-fw' : 'fa fa-times-circle fa-fw';
+  }
+
+  function writeClipboard(text, btn) {
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(text).then(
+        function () { setCopyIcon(btn, true); },
+        function () { fallbackCopy(text, btn); }
+      );
+    }
+    fallbackCopy(text, btn);
+    return Promise.resolve();
+  }
+
+  function fallbackCopy(text, btn) {
+    try {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed';
+      ta.style.left = '-9999px';
+      document.body.appendChild(ta);
+      ta.select();
+      var ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      setCopyIcon(btn, ok);
+    } catch (e) {
+      setCopyIcon(btn, false);
+    }
+  }
+
+  document.addEventListener(
+    'click',
+    function (e) {
+      var btn = e.target.closest && e.target.closest('.copy-btn');
+      if (!btn) return;
+      if (!btn.closest('figure.highlight') && !btn.closest('.code-container')) return;
+      e.stopPropagation();
+      e.preventDefault();
+      var text = extractForCopyBtn(btn);
+      writeClipboard(text, btn);
+    },
+    true
+  );
+})();
+</script>
+
+</body>
+</html>

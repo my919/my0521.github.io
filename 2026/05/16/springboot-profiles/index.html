@@ -20,15 +20,15 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"my919.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
 
-    <meta name="description" content="第二章：SpringBoot 多环境配置：Profile 激活与优先级概念基础：多环境配置是什么多环境配置让同一份代码在开发、测试、生产之间只切换配置、不改代码：  Profile 机制：Spring 用 Profile 在 dev &#x2F; test &#x2F; prod 之间切换配置；本仓库（springboot）以 application.yaml 承载公共配置，各环境文件只写差异项；">
+    <meta name="description" content="第二章：SpringBoot 多环境配置：Profile 激活与优先级概念基础多环境配置让同一份代码在开发、测试、生产之间只切换配置、不改代码：  Profile 机制：Spring 用 Profile 在 dev &#x2F; test &#x2F; prod 之间切换配置；本仓库（springboot）以 application.yaml 承载公共配置，各环境文件只写差异项；相同 key 时环">
 <meta property="og:type" content="article">
 <meta property="og:title" content="第二章：SpringBoot 多环境配置：Profile 激活与优先级">
 <meta property="og:url" content="https://my919.github.io/2026/05/16/springboot-profiles/index.html">
 <meta property="og:site_name" content="my">
-<meta property="og:description" content="第二章：SpringBoot 多环境配置：Profile 激活与优先级概念基础：多环境配置是什么多环境配置让同一份代码在开发、测试、生产之间只切换配置、不改代码：  Profile 机制：Spring 用 Profile 在 dev &#x2F; test &#x2F; prod 之间切换配置；本仓库（springboot）以 application.yaml 承载公共配置，各环境文件只写差异项；">
+<meta property="og:description" content="第二章：SpringBoot 多环境配置：Profile 激活与优先级概念基础多环境配置让同一份代码在开发、测试、生产之间只切换配置、不改代码：  Profile 机制：Spring 用 Profile 在 dev &#x2F; test &#x2F; prod 之间切换配置；本仓库（springboot）以 application.yaml 承载公共配置，各环境文件只写差异项；相同 key 时环">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-05-16T02:05:00.000Z">
-<meta property="article:modified_time" content="2026-08-30T09:10:05.184Z">
+<meta property="article:modified_time" content="2026-09-01T13:56:38.197Z">
 <meta property="article:author" content="miracle">
 <meta property="article:tag" content="SpringBoot">
 <meta name="twitter:card" content="summary">
@@ -161,7 +161,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%9ASpringBoot-%E5%A4%9A%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE%EF%BC%9AProfile-%E6%BF%80%E6%B4%BB%E4%B8%8E%E4%BC%98%E5%85%88%E7%BA%A7"><span class="nav-number">1.</span> <span class="nav-text">第二章：SpringBoot 多环境配置：Profile 激活与优先级</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80%EF%BC%9A%E5%A4%9A%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE%E6%98%AF%E4%BB%80%E4%B9%88"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础：多环境配置是什么</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E5%8A%A0%E8%BD%BD%E6%B5%81%E7%A8%8B"><span class="nav-number">1.2.</span> <span class="nav-text">配置加载流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E9%A1%B9%E7%9B%AE%E7%9A%84%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84"><span class="nav-number">1.3.</span> <span class="nav-text">本项目的文件结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%BF%80%E6%B4%BB%E6%96%B9%E5%BC%8F"><span class="nav-number">1.4.</span> <span class="nav-text">激活方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E4%BC%98%E5%85%88%E7%BA%A7%EF%BC%88%E4%BB%8E%E4%BD%8E%E5%88%B0%E9%AB%98%EF%BC%89"><span class="nav-number">1.5.</span> <span class="nav-text">配置优先级（从低到高）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%84%E7%8E%AF%E5%A2%83%E5%B7%AE%E5%BC%82"><span class="nav-number">1.6.</span> <span class="nav-text">各环境差异</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#dev"><span class="nav-number">1.6.1.</span> <span class="nav-text">dev</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#test"><span class="nav-number">1.6.2.</span> <span class="nav-text">test</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#prod"><span class="nav-number">1.6.3.</span> <span class="nav-text">prod</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%8F%E6%84%9F%E4%BF%A1%E6%81%AF"><span class="nav-number">1.7.</span> <span class="nav-text">敏感信息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%AF%E9%80%89%EF%BC%9ANacos-%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83"><span class="nav-number">1.8.</span> <span class="nav-text">可选：Nacos 配置中心</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83%EF%BC%88%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95%EF%BC%89"><span class="nav-number">1.9.</span> <span class="nav-text">测试环境（单元测试）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%B8%E5%85%B3%E6%96%87%E4%BB%B6"><span class="nav-number">1.10.</span> <span class="nav-text">相关文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.11.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%9ASpringBoot-%E5%A4%9A%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE%EF%BC%9AProfile-%E6%BF%80%E6%B4%BB%E4%B8%8E%E4%BC%98%E5%85%88%E7%BA%A7"><span class="nav-number">1.</span> <span class="nav-text">第二章：SpringBoot 多环境配置：Profile 激活与优先级</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E5%8A%A0%E8%BD%BD%E6%B5%81%E7%A8%8B"><span class="nav-number">1.2.</span> <span class="nav-text">配置加载流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E9%A1%B9%E7%9B%AE%E7%9A%84%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84"><span class="nav-number">1.3.</span> <span class="nav-text">本项目的文件结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%BF%80%E6%B4%BB%E6%96%B9%E5%BC%8F"><span class="nav-number">1.4.</span> <span class="nav-text">激活方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E4%BC%98%E5%85%88%E7%BA%A7%EF%BC%88%E4%BB%8E%E4%BD%8E%E5%88%B0%E9%AB%98%EF%BC%89"><span class="nav-number">1.5.</span> <span class="nav-text">配置优先级（从低到高）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%84%E7%8E%AF%E5%A2%83%E5%B7%AE%E5%BC%82"><span class="nav-number">1.6.</span> <span class="nav-text">各环境差异</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#dev"><span class="nav-number">1.6.1.</span> <span class="nav-text">dev</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#test"><span class="nav-number">1.6.2.</span> <span class="nav-text">test</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#prod"><span class="nav-number">1.6.3.</span> <span class="nav-text">prod</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%8F%E6%84%9F%E4%BF%A1%E6%81%AF"><span class="nav-number">1.7.</span> <span class="nav-text">敏感信息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%AF%E9%80%89%EF%BC%9ANacos-%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83"><span class="nav-number">1.8.</span> <span class="nav-text">可选：Nacos 配置中心</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83%EF%BC%88%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95%EF%BC%89"><span class="nav-number">1.9.</span> <span class="nav-text">测试环境（单元测试）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%B8%E5%85%B3%E6%96%87%E4%BB%B6"><span class="nav-number">1.10.</span> <span class="nav-text">相关文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.11.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -174,7 +174,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">234</span>
+          <span class="site-state-item-count">257</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -185,7 +185,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">124</span>
+        <span class="site-state-item-count">156</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -259,7 +259,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-08-30 17:10:05" itemprop="dateModified" datetime="2026-08-30T17:10:05+08:00">2026-08-30</time>
+      <time title="修改时间：2026-09-01 21:56:38" itemprop="dateModified" datetime="2026-09-01T21:56:38+08:00">2026-09-01</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -278,7 +278,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>935</span>
+      <span>927</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -295,7 +295,7 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><h1 id="第二章：SpringBoot-多环境配置：Profile-激活与优先级"><a href="#第二章：SpringBoot-多环境配置：Profile-激活与优先级" class="headerlink" title="第二章：SpringBoot 多环境配置：Profile 激活与优先级"></a>第二章：SpringBoot 多环境配置：Profile 激活与优先级</h1><h2 id="概念基础：多环境配置是什么"><a href="#概念基础：多环境配置是什么" class="headerlink" title="概念基础：多环境配置是什么"></a>概念基础：多环境配置是什么</h2><p><strong>多环境配置</strong>让同一份代码在开发、测试、生产之间只切换配置、不改代码：</p>
+    <div class="post-body" itemprop="articleBody"><h1 id="第二章：SpringBoot-多环境配置：Profile-激活与优先级"><a href="#第二章：SpringBoot-多环境配置：Profile-激活与优先级" class="headerlink" title="第二章：SpringBoot 多环境配置：Profile 激活与优先级"></a>第二章：SpringBoot 多环境配置：Profile 激活与优先级</h1><h2 id="概念基础"><a href="#概念基础" class="headerlink" title="概念基础"></a>概念基础</h2><p><strong>多环境配置</strong>让同一份代码在开发、测试、生产之间只切换配置、不改代码：</p>
 <ol>
 <li><strong>Profile 机制</strong>：Spring 用 <strong>Profile</strong> 在 dev &#x2F; test &#x2F; prod 之间切换配置；本仓库（<a target="_blank" rel="noopener" href="https://gitee.com/my919/springboot">springboot</a>）以 <strong><code>application.yaml</code> 承载公共配置</strong>，各环境文件只写差异项；相同 key 时<strong>环境文件覆盖公共配置</strong>。</li>
 <li><strong>激活方式多样</strong>：配置文件 <code>spring.profiles.active</code>、环境变量 <code>SPRING_PROFILES_ACTIVE</code>、启动参数 <code>--spring.profiles.active=prod</code>，本项目默认 <strong><code>dev</code></strong>。</li>
@@ -514,13 +514,13 @@ flowchart TD
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">321k</span>
+    <span title="站点总字数">362k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">17:52</span>
+    <span title="站点阅读时长">20:07</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

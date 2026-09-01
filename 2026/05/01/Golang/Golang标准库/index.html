@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"my919.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="第三章：Golang 标准库概念基础 标准库即生产力：Go 的口号是「 batteries included」——HTTP 服务端&#x2F;客户端、JSON、加密、IO、测试全部内置，多数 Web 服务零第三方依赖即可上线。 接口驱动设计：标准库围绕 io.Reader&#x2F;io.Writer 等小接口组装，任何实现接口的类型都能接入——http.Handler、io.Copy 无处不在。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="第三章：Golang 标准库">
+<meta property="og:url" content="https://my919.github.io/2026/05/01/Golang/Golang%E6%A0%87%E5%87%86%E5%BA%93/index.html">
+<meta property="og:site_name" content="my">
+<meta property="og:description" content="第三章：Golang 标准库概念基础 标准库即生产力：Go 的口号是「 batteries included」——HTTP 服务端&#x2F;客户端、JSON、加密、IO、测试全部内置，多数 Web 服务零第三方依赖即可上线。 接口驱动设计：标准库围绕 io.Reader&#x2F;io.Writer 等小接口组装，任何实现接口的类型都能接入——http.Handler、io.Copy 无处不在。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-05-01T04:28:43.000Z">
+<meta property="article:modified_time" content="2026-09-01T14:12:09.024Z">
+<meta property="article:author" content="miracle">
+<meta property="article:tag" content="Golang">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://my919.github.io/2026/05/01/Golang/Golang%E6%A0%87%E5%87%86%E5%BA%93/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://my919.github.io/2026/05/01/Golang/Golang%E6%A0%87%E5%87%86%E5%BA%93/","path":"2026/05/01/Golang/Golang标准库/","title":"第三章：Golang 标准库"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>第三章：Golang 标准库 | my</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.10.1/mermaid.min.js","integrity":"sha256-BmQmdWDS8X2OTbrwELWK366LV6escyWhHHe0XCTU/Hk="}}</script>
+  <script src="/js/third-party/tags/mermaid.js" defer></script>
+
+
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="my" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">my</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-service"><a href="/service/" rel="section"><i class="fa fa-server fa-fw"></i>服务</a></li><li class="menu-item menu-item-tool"><a href="/tool/" rel="section"><i class="fa fa-wrench fa-fw"></i>工具</a></li><li class="menu-item menu-item-project"><a href="/project/" rel="section"><i class="fa fa-folder-open fa-fw"></i>项目</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%B8%89%E7%AB%A0%EF%BC%9AGolang-%E6%A0%87%E5%87%86%E5%BA%93"><span class="nav-number">1.</span> <span class="nav-text">第三章：Golang 标准库</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81net-http-%E6%9C%8D%E5%8A%A1%E7%AB%AF"><span class="nav-number">1.2.</span> <span class="nav-text">一、net&#x2F;http 服务端</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E6%9C%80%E5%B0%8F-HTTP-%E6%9C%8D%E5%8A%A1"><span class="nav-number">1.2.1.</span> <span class="nav-text">1. 最小 HTTP 服务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-Go-1-22-%E8%B7%AF%E7%94%B1%E5%A2%9E%E5%BC%BA"><span class="nav-number">1.2.2.</span> <span class="nav-text">2. Go 1.22 路由增强</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E7%94%9F%E4%BA%A7%E7%BA%A7-JSON-API%EF%BC%88%E9%AA%A8%E6%9E%B6%EF%BC%89"><span class="nav-number">1.2.3.</span> <span class="nav-text">3. 生产级 JSON API（骨架）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81net-http-%E5%AE%A2%E6%88%B7%E7%AB%AF"><span class="nav-number">1.3.</span> <span class="nav-text">二、net&#x2F;http 客户端</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81encoding-json"><span class="nav-number">1.4.</span> <span class="nav-text">三、encoding&#x2F;json</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E7%BB%93%E6%9E%84%E4%BD%93%E6%A0%87%E7%AD%BE"><span class="nav-number">1.4.1.</span> <span class="nav-text">1. 结构体标签</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E5%B8%B8%E7%94%A8%E6%93%8D%E4%BD%9C"><span class="nav-number">1.4.2.</span> <span class="nav-text">2. 常用操作</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81io-%E4%B8%8E%E6%96%87%E4%BB%B6"><span class="nav-number">1.5.</span> <span class="nav-text">四、io 与文件</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-io-Reader-Writer%EF%BC%9A%E4%B8%80%E5%88%87%E5%8F%AF%E7%BB%84%E8%A3%85"><span class="nav-number">1.5.1.</span> <span class="nav-text">1. io.Reader&#x2F;Writer：一切可组装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E6%96%87%E4%BB%B6%E6%93%8D%E4%BD%9C"><span class="nav-number">1.5.2.</span> <span class="nav-text">2. 文件操作</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81time%EF%BC%9A%E6%97%B6%E9%97%B4%E5%A4%84%E7%90%86"><span class="nav-number">1.6.</span> <span class="nav-text">五、time：时间处理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AD%E3%80%81log-slog%EF%BC%9A%E7%BB%93%E6%9E%84%E5%8C%96%E6%97%A5%E5%BF%97"><span class="nav-number">1.7.</span> <span class="nav-text">六、log&#x2F;slog：结构化日志</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%83%E3%80%81%E5%85%B6%E4%BB%96%E9%AB%98%E9%A2%91%E5%8C%85%E9%80%9F%E6%9F%A5"><span class="nav-number">1.8.</span> <span class="nav-text">七、其他高频包速查</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AB%E3%80%81%E5%B8%B8%E8%A7%81%E9%99%B7%E9%98%B1"><span class="nav-number">1.9.</span> <span class="nav-text">八、常见陷阱</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.10.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">miracle</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">257</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">36</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">156</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/my919" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;my919" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://gitee.com/my919" title="Gitee → https:&#x2F;&#x2F;gitee.com&#x2F;my919" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>Gitee</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:yeal166@163.com" title="E-Mail → mailto:yeal166@163.com" rel="noopener me external nofollow noreferrer" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://my919.github.io/2026/05/01/Golang/Golang%E6%A0%87%E5%87%86%E5%BA%93/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="第三章：Golang 标准库 | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          第三章：Golang 标准库
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-05-01 12:28:43" itemprop="dateCreated datePublished" datetime="2026-05-01T12:28:43+08:00">2026-05-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-09-01 22:12:09" itemprop="dateModified" datetime="2026-09-01T22:12:09+08:00">2026-09-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Golang/" itemprop="url" rel="index"><span itemprop="name">Golang</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>2k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>7 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="第三章：Golang-标准库"><a href="#第三章：Golang-标准库" class="headerlink" title="第三章：Golang 标准库"></a>第三章：Golang 标准库</h1><h2 id="概念基础"><a href="#概念基础" class="headerlink" title="概念基础"></a>概念基础</h2><ol>
+<li><strong>标准库即生产力</strong>：Go 的口号是「 batteries included」——HTTP 服务端&#x2F;客户端、JSON、加密、IO、测试全部内置，多数 Web 服务<strong>零第三方依赖</strong>即可上线。</li>
+<li><strong>接口驱动设计</strong>：标准库围绕 <code>io.Reader</code>&#x2F;<code>io.Writer</code> 等小接口组装，任何实现接口的类型都能接入——<code>http.Handler</code>、<code>io.Copy</code> 无处不在。</li>
+<li><strong>并发即默认</strong>：每个 HTTP 请求由独立 goroutine 处理，<code>net/http</code> 开箱即用高并发；标准库所有阻塞调用都与 goroutine&#x2F;超时配合良好。</li>
+<li><strong>JSON 是数据交换事实标准</strong>：<code>encoding/json</code> 用<strong>结构体标签</strong>控制序列化，配合 <code>omitempty</code>&#x2F;自定义 Marshaler 覆盖绝大多数场景。</li>
+<li><strong>本章目标</strong>：掌握日常占比最高的五大模块——<code>net/http</code>、<code>encoding/json</code>、<code>io/os</code>、<code>time</code>、<code>log/slog</code>，写出可直接落地的服务代码。</li>
+</ol>
+<blockquote>
+<p>本章承接 <a href="/2026/05/01/Golang/Golang%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" title="第二章：Golang 并发编程">第二章：Golang 并发编程</a> 的并发能力；示例均可 <code>go run</code> 直接验证（基于 Go 1.22+）。</p>
+</blockquote>
+<hr>
+<h2 id="一、net-http-服务端"><a href="#一、net-http-服务端" class="headerlink" title="一、net&#x2F;http 服务端"></a>一、net&#x2F;http 服务端</h2><h3 id="1-最小-HTTP-服务"><a href="#1-最小-HTTP-服务" class="headerlink" title="1. 最小 HTTP 服务"></a>1. 最小 HTTP 服务</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">&quot;fmt&quot;</span></span><br><span class="line">    <span class="string">&quot;net/http&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    mux := http.NewServeMux()</span><br><span class="line">    mux.HandleFunc(<span class="string">&quot;GET /hello/&#123;name&#125;&quot;</span>, <span class="function"><span class="keyword">func</span><span class="params">(w http.ResponseWriter, r *http.Request)</span></span> &#123;</span><br><span class="line">        <span class="comment">// Go 1.22+：方法 + 路径参数模式匹配</span></span><br><span class="line">        name := r.PathValue(<span class="string">&quot;name&quot;</span>)</span><br><span class="line">        fmt.Fprintf(w, <span class="string">&quot;hello, %s&quot;</span>, name)</span><br><span class="line">    &#125;)</span><br><span class="line"></span><br><span class="line">    server := &amp;http.Server&#123;</span><br><span class="line">        Addr:              <span class="string">&quot;:8080&quot;</span>,</span><br><span class="line">        Handler:           mux,</span><br><span class="line">        ReadHeaderTimeout: <span class="number">5</span> * time.Second,  <span class="comment">// 防慢速攻击，生产必配</span></span><br><span class="line">    &#125;</span><br><span class="line">    log.Println(<span class="string">&quot;listening :8080&quot;</span>)</span><br><span class="line">    log.Fatal(server.ListenAndServe())</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-Go-1-22-路由增强"><a href="#2-Go-1-22-路由增强" class="headerlink" title="2. Go 1.22 路由增强"></a>2. Go 1.22 路由增强</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">mux.HandleFunc(<span class="string">&quot;GET /api/users/&#123;id&#125;&quot;</span>, getUser)        <span class="comment">// 路径参数</span></span><br><span class="line">mux.HandleFunc(<span class="string">&quot;POST /api/users&quot;</span>, createUser)          <span class="comment">// 方法绑定</span></span><br><span class="line">mux.HandleFunc(<span class="string">&quot;GET /files/&#123;path...&#125;&quot;</span>, serveFile)      <span class="comment">// 通配尾部</span></span><br><span class="line">mux.Handle(<span class="string">&quot;GET /static/&quot;</span>, http.FileServer(http.Dir(<span class="string">&quot;./public&quot;</span>))) <span class="comment">// 静态文件</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="3-生产级-JSON-API（骨架）"><a href="#3-生产级-JSON-API（骨架）" class="headerlink" title="3. 生产级 JSON API（骨架）"></a>3. 生产级 JSON API（骨架）</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 用户请求/响应结构体：json 标签控制字段名</span></span><br><span class="line"><span class="keyword">type</span> createUserReq <span class="keyword">struct</span> &#123;</span><br><span class="line">    Name  <span class="type">string</span> <span class="string">`json:&quot;name&quot;`</span></span><br><span class="line">    Email <span class="type">string</span> <span class="string">`json:&quot;email&quot;`</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> createUserResp <span class="keyword">struct</span> &#123;</span><br><span class="line">    ID   <span class="type">int64</span>  <span class="string">`json:&quot;id&quot;`</span></span><br><span class="line">    Name <span class="type">string</span> <span class="string">`json:&quot;name&quot;`</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// writeJSON 统一响应封装：Content-Type + 状态码 + 编码</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">writeJSON</span><span class="params">(w http.ResponseWriter, status <span class="type">int</span>, v any)</span></span> &#123;</span><br><span class="line">    w.Header().Set(<span class="string">&quot;Content-Type&quot;</span>, <span class="string">&quot;application/json; charset=utf-8&quot;</span>)</span><br><span class="line">    w.WriteHeader(status)</span><br><span class="line">    <span class="keyword">if</span> err := json.NewEncoder(w).Encode(v); err != <span class="literal">nil</span> &#123;</span><br><span class="line">        log.Printf(<span class="string">&quot;encode response: %v&quot;</span>, err)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">createUser</span><span class="params">(w http.ResponseWriter, r *http.Request)</span></span> &#123;</span><br><span class="line">    <span class="keyword">var</span> req createUserReq</span><br><span class="line">    <span class="comment">// Decoder 直接从 body 流式解码；DisallowUnknownFields 拒绝未知字段</span></span><br><span class="line">    <span class="keyword">if</span> err := json.NewDecoder(r.Body).Decode(&amp;req); err != <span class="literal">nil</span> &#123;</span><br><span class="line">        writeJSON(w, http.StatusBadRequest, <span class="keyword">map</span>[<span class="type">string</span>]<span class="type">string</span>&#123;<span class="string">&quot;error&quot;</span>: <span class="string">&quot;invalid json&quot;</span>&#125;)</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> req.Name == <span class="string">&quot;&quot;</span> || req.Email == <span class="string">&quot;&quot;</span> &#123;</span><br><span class="line">        writeJSON(w, http.StatusBadRequest, <span class="keyword">map</span>[<span class="type">string</span>]<span class="type">string</span>&#123;<span class="string">&quot;error&quot;</span>: <span class="string">&quot;name/email required&quot;</span>&#125;)</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    writeJSON(w, http.StatusCreated, createUserResp&#123;ID: <span class="number">1</span>, Name: req.Name&#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong><code>http.Server</code> 三个超时必配</strong>：<code>ReadHeaderTimeout</code>、<code>ReadTimeout</code>、<code>WriteTimeout</code>——缺省零值&#x3D;永不超时，慢连接会耗尽资源（Slowloris 攻击的温床）。</p>
+</blockquote>
+<hr>
+<h2 id="二、net-http-客户端"><a href="#二、net-http-客户端" class="headerlink" title="二、net&#x2F;http 客户端"></a>二、net&#x2F;http 客户端</h2><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 复用全局 Client：连接池 + 明确超时（DefaultClient 无超时！）</span></span><br><span class="line"><span class="keyword">var</span> client = &amp;http.Client&#123;</span><br><span class="line">    Timeout: <span class="number">10</span> * time.Second,</span><br><span class="line">    Transport: &amp;http.Transport&#123;</span><br><span class="line">        MaxIdleConns:        <span class="number">100</span>,</span><br><span class="line">        MaxIdleConnsPerHost: <span class="number">10</span>,</span><br><span class="line">        IdleConnTimeout:     <span class="number">90</span> * time.Second,</span><br><span class="line">    &#125;,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">fetchJSON</span><span class="params">(ctx context.Context, url <span class="type">string</span>, dst any)</span></span> <span class="type">error</span> &#123;</span><br><span class="line">    req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, <span class="literal">nil</span>)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> fmt.Errorf(<span class="string">&quot;new request: %w&quot;</span>, err)</span><br><span class="line">    &#125;</span><br><span class="line">    req.Header.Set(<span class="string">&quot;Accept&quot;</span>, <span class="string">&quot;application/json&quot;</span>)</span><br><span class="line"></span><br><span class="line">    resp, err := client.Do(req)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> fmt.Errorf(<span class="string">&quot;do: %w&quot;</span>, err)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">defer</span> resp.Body.Close() <span class="comment">// 必须 Close，否则连接泄漏</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> resp.StatusCode &lt; <span class="number">200</span> || resp.StatusCode &gt;= <span class="number">300</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> fmt.Errorf(<span class="string">&quot;unexpected status: %s&quot;</span>, resp.Status)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> json.NewDecoder(resp.Body).Decode(dst)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th>要点</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>复用 Client</strong></td>
+<td><code>http.DefaultClient</code> 无超时；业务自建带 <code>Timeout</code> 的实例</td>
+</tr>
+<tr>
+<td><strong><code>NewRequestWithContext</code></strong></td>
+<td>把 ctx 传给请求，支持取消&#x2F;超时联动</td>
+</tr>
+<tr>
+<td><strong><code>defer Body.Close()</code></strong></td>
+<td>不关会泄漏连接，复用失效</td>
+</tr>
+<tr>
+<td><strong>读尽 Body</strong></td>
+<td><code>io.Copy(io.Discard, ...)</code> 后连接才能被连接池复用</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="三、encoding-json"><a href="#三、encoding-json" class="headerlink" title="三、encoding&#x2F;json"></a>三、encoding&#x2F;json</h2><h3 id="1-结构体标签"><a href="#1-结构体标签" class="headerlink" title="1. 结构体标签"></a>1. 结构体标签</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Order <span class="keyword">struct</span> &#123;</span><br><span class="line">    ID        <span class="type">int64</span>     <span class="string">`json:&quot;id&quot;`</span>                    <span class="comment">// 自定义键名</span></span><br><span class="line">    UserID    <span class="type">int64</span>     <span class="string">`json:&quot;user_id&quot;`</span>               <span class="comment">// snake_case 惯例</span></span><br><span class="line">    Amount    <span class="type">float64</span>   <span class="string">`json:&quot;amount,string&quot;`</span>         <span class="comment">// 序列化为字符串（JS 精度安全）</span></span><br><span class="line">    Remark    <span class="type">string</span>    <span class="string">`json:&quot;remark,omitempty&quot;`</span>      <span class="comment">// 零值省略</span></span><br><span class="line">    Password  <span class="type">string</span>    <span class="string">`json:&quot;-&quot;`</span>                     <span class="comment">// 永不序列化</span></span><br><span class="line">    CreatedAt time.Time <span class="string">`json:&quot;created_at&quot;`</span>            <span class="comment">// 内置 RFC3339 支持</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-常用操作"><a href="#2-常用操作" class="headerlink" title="2. 常用操作"></a>2. 常用操作</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 序列化（缩进便于调试，线上用 Marshal）</span></span><br><span class="line">data, err := json.MarshalIndent(order, <span class="string">&quot;&quot;</span>, <span class="string">&quot;  &quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 反序列化</span></span><br><span class="line"><span class="keyword">var</span> o Order</span><br><span class="line">err = json.Unmarshal(data, &amp;o)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 未知结构的动态解析：map 或 json.RawMessage 延迟解析</span></span><br><span class="line"><span class="keyword">var</span> raw <span class="keyword">map</span>[<span class="type">string</span>]any</span><br><span class="line">_ = json.Unmarshal(data, &amp;raw)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 流式：Encoder/Decoder 直接读写 IO</span></span><br><span class="line">_ = json.NewEncoder(file).Encode(o)</span><br><span class="line">_ = json.NewDecoder(resp.Body).Decode(&amp;o)</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong>缺省解析宽松</strong>：未知字段被忽略、类型不匹配报错但后续字段继续。严格场景配 <code>Decoder.DisallowUnknownFields()</code>。<strong>数字统一按 float64 解到 <code>any</code></strong>，大整数用 <code>json.Number</code>（<code>Decoder.UseNumber()</code>）。</p>
+</blockquote>
+<hr>
+<h2 id="四、io-与文件"><a href="#四、io-与文件" class="headerlink" title="四、io 与文件"></a>四、io 与文件</h2><h3 id="1-io-Reader-Writer：一切可组装"><a href="#1-io-Reader-Writer：一切可组装" class="headerlink" title="1. io.Reader&#x2F;Writer：一切可组装"></a>1. io.Reader&#x2F;Writer：一切可组装</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// io.Copy：从任意 Reader 拷到任意 Writer（内部 32KB 缓冲）</span></span><br><span class="line">n, err := io.Copy(os.Stdout, strings.NewReader(<span class="string">&quot;hello io&quot;</span>))</span><br><span class="line"></span><br><span class="line"><span class="comment">// 常用工具</span></span><br><span class="line">data, _ := io.ReadAll(r)            <span class="comment">// 读尽（大流慎用，吃内存）</span></span><br><span class="line">limited := io.LimitReader(r, <span class="number">1024</span>)  <span class="comment">// 限量读</span></span><br><span class="line">tee := io.TeeReader(r, os.Stdout)   <span class="comment">// 边读边写（透传+日志）</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="2-文件操作"><a href="#2-文件操作" class="headerlink" title="2. 文件操作"></a>2. 文件操作</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 整文件读写（小文件最简路径）</span></span><br><span class="line">data, err := os.ReadFile(<span class="string">&quot;config.json&quot;</span>)</span><br><span class="line">err = os.WriteFile(<span class="string">&quot;out.txt&quot;</span>, []<span class="type">byte</span>(<span class="string">&quot;hello&quot;</span>), <span class="number">0o644</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 流式处理大文件：bufio 缓冲 + 逐行扫描</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">countLines</span><span class="params">(path <span class="type">string</span>)</span></span> (<span class="type">int</span>, <span class="type">error</span>) &#123;</span><br><span class="line">    f, err := os.Open(path)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>, err</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">defer</span> f.Close()</span><br><span class="line"></span><br><span class="line">    scanner := bufio.NewScanner(f)</span><br><span class="line">    scanner.Buffer(<span class="built_in">make</span>([]<span class="type">byte</span>, <span class="number">0</span>, <span class="number">64</span>*<span class="number">1024</span>), <span class="number">1024</span>*<span class="number">1024</span>) <span class="comment">// 默认单行上限 64KB，按需调大</span></span><br><span class="line">    lines := <span class="number">0</span></span><br><span class="line">    <span class="keyword">for</span> scanner.Scan() &#123;</span><br><span class="line">        lines++</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> lines, scanner.Err()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 目录遍历（Go 1.16+ 推荐 fs.WalkDir）</span></span><br><span class="line">_ = filepath.WalkDir(<span class="string">&quot;./data&quot;</span>, <span class="function"><span class="keyword">func</span><span class="params">(path <span class="type">string</span>, d fs.DirEntry, err <span class="type">error</span>)</span></span> <span class="type">error</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123; <span class="keyword">return</span> err &#125;</span><br><span class="line">    <span class="keyword">if</span> !d.IsDir() &amp;&amp; strings.HasSuffix(path, <span class="string">&quot;.log&quot;</span>) &#123;</span><br><span class="line">        fmt.Println(path)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong><code>os.ReadFile</code> 一次进内存</strong>，几百 MB 的文件请走 Scanner&#x2F;<code>io.Copy</code> 流式路径；<code>Scanner</code> 默认单行 64KB 上限，超长行要 <code>Buffer</code> 调参。</p>
+</blockquote>
+<hr>
+<h2 id="五、time：时间处理"><a href="#五、time：时间处理" class="headerlink" title="五、time：时间处理"></a>五、time：时间处理</h2><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">now := time.Now()</span><br><span class="line"></span><br><span class="line"><span class="comment">// 布局常量 2006-01-02 15:04:05 是 Go 的记忆法（参考时间 01/02 03:04:05PM &#x27;06 -0700）</span></span><br><span class="line">fmt.Println(now.Format(<span class="string">&quot;2006-01-02 15:04:05&quot;</span>))</span><br><span class="line">t, _ := time.Parse(<span class="string">&quot;2006-01-02 15:04:05&quot;</span>, <span class="string">&quot;2026-08-31 22:00:00&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 时区：解析带时区用 ParseInLocation，避免默认 UTC</span></span><br><span class="line">loc, _ := time.LoadLocation(<span class="string">&quot;Asia/Shanghai&quot;</span>)</span><br><span class="line">t2, _ := time.ParseInLocation(<span class="string">&quot;2006-01-02 15:04:05&quot;</span>, <span class="string">&quot;2026-08-31 22:00:00&quot;</span>, loc)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 时长与计算</span></span><br><span class="line">d := <span class="number">90</span> * time.Minute</span><br><span class="line">future := now.Add(d)</span><br><span class="line">fmt.Println(future.Sub(now))     <span class="comment">// 1h30m0s</span></span><br><span class="line">now.AddDate(<span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>)             <span class="comment">// 加一个月</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 定时器：批量任务节拍常用 Ticker</span></span><br><span class="line">ticker := time.NewTicker(time.Second)</span><br><span class="line"><span class="keyword">defer</span> ticker.Stop()</span><br><span class="line"><span class="keyword">for</span> tm := <span class="keyword">range</span> ticker.C &#123;</span><br><span class="line">    _ = tm</span><br><span class="line">    <span class="keyword">break</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong><code>Format</code> 的布局字符串不是 strftime</strong>，而是固定参考时间 <code>2006-01-02 15:04:05</code>（1 月 2 日下午 3 点 4 分 5 秒 06 年，时区 -0700）——官方为方便记忆设计，新手第一天必懵。<strong>跨时区存库统一 UTC，展示层转本地</strong>。</p>
+</blockquote>
+<hr>
+<h2 id="六、log-slog：结构化日志"><a href="#六、log-slog：结构化日志" class="headerlink" title="六、log&#x2F;slog：结构化日志"></a>六、log&#x2F;slog：结构化日志</h2><p>Go 1.21+ 的 <code>log/slog</code> 是标准库结构化日志，生产可直接替代第三方：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> logger = slog.New(slog.NewJSONHandler(os.Stdout, &amp;slog.HandlerOptions&#123;</span><br><span class="line">    Level: slog.LevelInfo,</span><br><span class="line">&#125;))</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="comment">// 键值对结构化输出，便于日志系统检索</span></span><br><span class="line">    logger.Info(<span class="string">&quot;user login&quot;</span>,</span><br><span class="line">        <span class="string">&quot;user_id&quot;</span>, <span class="number">42</span>,</span><br><span class="line">        <span class="string">&quot;ip&quot;</span>, <span class="string">&quot;10.0.0.1&quot;</span>,</span><br><span class="line">        <span class="string">&quot;duration_ms&quot;</span>, <span class="number">128</span>,</span><br><span class="line">    )</span><br><span class="line">    <span class="comment">// &#123;&quot;time&quot;:&quot;...&quot;,&quot;level&quot;:&quot;INFO&quot;,&quot;msg&quot;:&quot;user login&quot;,&quot;user_id&quot;:42,&quot;ip&quot;:&quot;10.0.0.1&quot;,&quot;duration_ms&quot;:128&#125;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 带上下文的子 logger（微服务里绑定 request id）</span></span><br><span class="line">    reqLog := logger.With(<span class="string">&quot;request_id&quot;</span>, <span class="string">&quot;abc-123&quot;</span>)</span><br><span class="line">    reqLog.Warn(<span class="string">&quot;slow query&quot;</span>, <span class="string">&quot;sql_ms&quot;</span>, <span class="number">900</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th>级别</th>
+<th>方法</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Debug</td>
+<td><code>logger.Debug</code></td>
+<td>开发细节，生产关闭</td>
+</tr>
+<tr>
+<td>Info</td>
+<td><code>logger.Info</code></td>
+<td>常规业务事件</td>
+</tr>
+<tr>
+<td>Warn</td>
+<td><code>logger.Warn</code></td>
+<td>可自愈异常，需关注</td>
+</tr>
+<tr>
+<td>Error</td>
+<td><code>logger.Error</code></td>
+<td>需要告警的错误</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p><strong>结构化 &gt; 拼字符串</strong>：<code>&quot;user_id&quot;, 42</code> 传键值对而非 <code>fmt.Sprintf</code>，日志平台才能按字段聚合检索。</p>
+</blockquote>
+<hr>
+<h2 id="七、其他高频包速查"><a href="#七、其他高频包速查" class="headerlink" title="七、其他高频包速查"></a>七、其他高频包速查</h2><table>
+<thead>
+<tr>
+<th>包</th>
+<th>一句话</th>
+<th>关键 API</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>strings</strong></td>
+<td>字符串处理</td>
+<td><code>Split/Join/Contains/TrimSpace/Builder</code>（拼接用 Builder 防 O(n²)）</td>
+</tr>
+<tr>
+<td><strong>strconv</strong></td>
+<td>字符串↔数字</td>
+<td><code>Atoi/Itoa/ParseFloat/FormatFloat</code></td>
+</tr>
+<tr>
+<td><strong>sort</strong> &#x2F; <strong>slices</strong></td>
+<td>排序切片</td>
+<td><code>slices.SortFunc/Contains</code>（Go 1.21+ 泛型优先）</td>
+</tr>
+<tr>
+<td><strong>maps</strong></td>
+<td>map 工具</td>
+<td><code>maps.Keys/Clone</code>（Go 1.21+）</td>
+</tr>
+<tr>
+<td><strong>os&#x2F;exec</strong></td>
+<td>调外部命令</td>
+<td><code>exec.CommandContext</code>（务必带 ctx）</td>
+</tr>
+<tr>
+<td><strong>regexp</strong></td>
+<td>正则</td>
+<td><code>regexp.MustCompile</code>（包级预编译一次）</td>
+</tr>
+<tr>
+<td><strong>crypto&#x2F;sha256</strong></td>
+<td>哈希</td>
+<td><code>sha256.Sum256([]byte)</code>；密码用 <code>golang.org/x/crypto/bcrypt</code></td>
+</tr>
+<tr>
+<td><strong>net&#x2F;url</strong></td>
+<td>URL 处理</td>
+<td><code>url.QueryEscape/ParseQuery</code></td>
+</tr>
+</tbody></table>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// strings.Builder 高效拼接（O(n)）</span></span><br><span class="line"><span class="keyword">var</span> b strings.Builder</span><br><span class="line"><span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">100</span>; i++ &#123;</span><br><span class="line">    fmt.Fprintf(&amp;b, <span class="string">&quot;%d,&quot;</span>, i)</span><br><span class="line">&#125;</span><br><span class="line">s := b.String()</span><br><span class="line"></span><br><span class="line"><span class="comment">// slices 泛型工具（Go 1.21+）</span></span><br><span class="line">nums := []<span class="type">int</span>&#123;<span class="number">3</span>, <span class="number">1</span>, <span class="number">2</span>&#125;</span><br><span class="line">slices.Sort(nums)                 <span class="comment">// [1 2 3]</span></span><br><span class="line">has := slices.Contains(nums, <span class="number">2</span>)   <span class="comment">// true</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="八、常见陷阱"><a href="#八、常见陷阱" class="headerlink" title="八、常见陷阱"></a>八、常见陷阱</h2><table>
+<thead>
+<tr>
+<th>陷阱</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>HTTP Server 无超时</strong></td>
+<td><code>http.Server</code> 零值&#x3D;永不超时，必配 Read&#x2F;Write&#x2F;Header 超时</td>
+</tr>
+<tr>
+<td><strong>DefaultClient 无超时</strong></td>
+<td>出站请求自建 <code>&amp;http.Client&#123;Timeout: ...&#125;</code></td>
+</tr>
+<tr>
+<td><strong>忘关 resp.Body</strong></td>
+<td>连接泄漏；读尽 Body 才能复用连接</td>
+</tr>
+<tr>
+<td><strong>JSON 大整数失真</strong></td>
+<td><code>any</code> 解析数字为 float64，大 ID 用 <code>json.Number</code></td>
+</tr>
+<tr>
+<td><strong>time 布局写错</strong></td>
+<td>布局是参考时间 <code>2006-01-02 15:04:05</code>，不是 strftime</td>
+</tr>
+<tr>
+<td><strong>时区默认 UTC</strong></td>
+<td><code>time.Parse</code> 无时区按 UTC；本地时间用 <code>ParseInLocation</code></td>
+</tr>
+<tr>
+<td><strong>Scanner 行上限</strong></td>
+<td>默认 64KB&#x2F;行，长行需 <code>scanner.Buffer</code> 调大</td>
+</tr>
+<tr>
+<td><strong>字符串拼接 O(n²)</strong></td>
+<td>循环 <code>+=</code> 慢，用 <code>strings.Builder</code></td>
+</tr>
+<tr>
+<td><strong><code>os.ReadFile</code> 读大文件</strong></td>
+<td>一次进内存，大文件走流式</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="本章小结"><a href="#本章小结" class="headerlink" title="本章小结"></a>本章小结</h2><table>
+<thead>
+<tr>
+<th>要点</th>
+<th>结论</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>http 服务端</td>
+<td>ServeMux 1.22 方法+路径参数；Server 三超时必配</td>
+</tr>
+<tr>
+<td>http 客户端</td>
+<td>复用 Client + Timeout；<code>NewRequestWithContext</code> 联动取消</td>
+</tr>
+<tr>
+<td>JSON</td>
+<td>struct tag 定字段；<code>omitempty/-/string</code>；流式用 Encoder&#x2F;Decoder</td>
+</tr>
+<tr>
+<td>io</td>
+<td>Reader&#x2F;Writer 组合万物；小文件 ReadFile、大文件流式</td>
+</tr>
+<tr>
+<td>time</td>
+<td>布局&#x3D;参考时间 2006-01-02；跨时区存 UTC 展示转本地</td>
+</tr>
+<tr>
+<td>slog</td>
+<td>结构化键值对；<code>With</code> 绑定上下文；级别分级输出</td>
+</tr>
+<tr>
+<td>工具包</td>
+<td>strings.Builder 拼接、slices&#x2F;maps 泛型工具、exec 带 ctx</td>
+</tr>
+</tbody></table>
+<p>进入 <a href="/2026/05/01/Golang/Golang%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5/" title="第四章：Golang 工程实践">第四章：Golang 工程实践</a>，学习模块管理、测试、泛型与性能分析，把代码变成可维护的工程。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Golang/" rel="tag"># Golang</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/05/01/Golang/Golang%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" rel="prev" title="第二章：Golang 并发编程">
+                  <i class="fa fa-angle-left"></i> 第二章：Golang 并发编程
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2026/05/01/Golang/Golang%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5/" rel="next" title="第四章：Golang 工程实践">
+                  第四章：Golang 工程实践 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">miracle</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">362k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">20:07</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+<script>
+(function () {
+  function normalizeClipboard(s) {
+    return (s || '').replace(/\u00a0/g, ' ');
+  }
+
+  /** When innerText is empty, treat <br> as newlines (matches Hexo fenced + line_number HTML). */
+  function plainTextFromElement(el) {
+    if (!el) return '';
+    var t = el.innerText;
+    if (t != null && t !== '') return normalizeClipboard(t);
+    var clone = el.cloneNode(true);
+    clone.querySelectorAll('br').forEach(function (br) {
+      br.parentNode.replaceChild(document.createTextNode('\n'), br);
+    });
+    return normalizeClipboard(clone.textContent || '');
+  }
+
+  function extractFromFigure(fig) {
+    if (!fig) return '';
+    var cell = fig.querySelector('td.code') || fig.querySelector('.code');
+    if (cell) return plainTextFromElement(cell);
+    var pre = fig.querySelector('pre');
+    if (pre) return plainTextFromElement(pre);
+    var code = fig.querySelector('code');
+    return code ? plainTextFromElement(code) : '';
+  }
+
+  function extractForCopyBtn(btn) {
+    var fig = btn.closest('figure.highlight');
+    if (fig) return extractFromFigure(fig);
+    var wrap = btn.closest('.code-container');
+    if (wrap) {
+      var innerFig = wrap.querySelector('figure.highlight');
+      if (innerFig) return extractFromFigure(innerFig);
+      var preOnly = wrap.querySelector('pre');
+      if (preOnly) return plainTextFromElement(preOnly);
+    }
+    return '';
+  }
+
+  function setCopyIcon(btn, ok) {
+    var i = btn.querySelector('i');
+    if (i) i.className = ok ? 'fa fa-check-circle fa-fw' : 'fa fa-times-circle fa-fw';
+  }
+
+  function writeClipboard(text, btn) {
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(text).then(
+        function () { setCopyIcon(btn, true); },
+        function () { fallbackCopy(text, btn); }
+      );
+    }
+    fallbackCopy(text, btn);
+    return Promise.resolve();
+  }
+
+  function fallbackCopy(text, btn) {
+    try {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed';
+      ta.style.left = '-9999px';
+      document.body.appendChild(ta);
+      ta.select();
+      var ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      setCopyIcon(btn, ok);
+    } catch (e) {
+      setCopyIcon(btn, false);
+    }
+  }
+
+  document.addEventListener(
+    'click',
+    function (e) {
+      var btn = e.target.closest && e.target.closest('.copy-btn');
+      if (!btn) return;
+      if (!btn.closest('figure.highlight') && !btn.closest('.code-container')) return;
+      e.stopPropagation();
+      e.preventDefault();
+      var text = extractForCopyBtn(btn);
+      writeClipboard(text, btn);
+    },
+    true
+  );
+})();
+</script>
+
+</body>
+</html>

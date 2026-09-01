@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"my919.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="第二章：PyTorch 模型与训练概念基础 nn.Module 是模型的骨架：继承后在 __init__ 里声明层、在 forward 里组织数据流；参数注册、.to(device)、state_dict 保存全部自动获得。 Dataset&#x2F;DataLoader 解耦数据与模型：Dataset 定义「第 i 条样本怎么取」，DataLoader 负责批量化、打乱、多进程预取——大数据训练">
+<meta property="og:type" content="article">
+<meta property="og:title" content="第二章：PyTorch 模型与训练">
+<meta property="og:url" content="https://my919.github.io/2026/05/01/PyTorch/PyTorch-%E6%A8%A1%E5%9E%8B%E4%B8%8E%E8%AE%AD%E7%BB%83/index.html">
+<meta property="og:site_name" content="my">
+<meta property="og:description" content="第二章：PyTorch 模型与训练概念基础 nn.Module 是模型的骨架：继承后在 __init__ 里声明层、在 forward 里组织数据流；参数注册、.to(device)、state_dict 保存全部自动获得。 Dataset&#x2F;DataLoader 解耦数据与模型：Dataset 定义「第 i 条样本怎么取」，DataLoader 负责批量化、打乱、多进程预取——大数据训练">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-05-01T05:29:06.000Z">
+<meta property="article:modified_time" content="2026-09-01T14:49:52.783Z">
+<meta property="article:author" content="miracle">
+<meta property="article:tag" content="PyTorch">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://my919.github.io/2026/05/01/PyTorch/PyTorch-%E6%A8%A1%E5%9E%8B%E4%B8%8E%E8%AE%AD%E7%BB%83/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://my919.github.io/2026/05/01/PyTorch/PyTorch-%E6%A8%A1%E5%9E%8B%E4%B8%8E%E8%AE%AD%E7%BB%83/","path":"2026/05/01/PyTorch/PyTorch-模型与训练/","title":"第二章：PyTorch 模型与训练"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>第二章：PyTorch 模型与训练 | my</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.10.1/mermaid.min.js","integrity":"sha256-BmQmdWDS8X2OTbrwELWK366LV6escyWhHHe0XCTU/Hk="}}</script>
+  <script src="/js/third-party/tags/mermaid.js" defer></script>
+
+
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="my" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">my</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-service"><a href="/service/" rel="section"><i class="fa fa-server fa-fw"></i>服务</a></li><li class="menu-item menu-item-tool"><a href="/tool/" rel="section"><i class="fa fa-wrench fa-fw"></i>工具</a></li><li class="menu-item menu-item-project"><a href="/project/" rel="section"><i class="fa fa-folder-open fa-fw"></i>项目</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%9APyTorch-%E6%A8%A1%E5%9E%8B%E4%B8%8E%E8%AE%AD%E7%BB%83"><span class="nav-number">1.</span> <span class="nav-text">第二章：PyTorch 模型与训练</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E5%AE%9A%E4%B9%89%E6%A8%A1%E5%9E%8B%EF%BC%9Ann-Module"><span class="nav-number">1.2.</span> <span class="nav-text">一、定义模型：nn.Module</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81Dataset-%E4%B8%8E-DataLoader"><span class="nav-number">1.3.</span> <span class="nav-text">二、Dataset 与 DataLoader</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E8%AE%AD%E7%BB%83%E5%BE%AA%E7%8E%AF%EF%BC%9A%E5%AE%8C%E6%95%B4%E6%A8%A1%E6%9D%BF"><span class="nav-number">1.4.</span> <span class="nav-text">三、训练循环：完整模板</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E6%96%AD%E7%82%B9%E7%BB%AD%E8%AE%AD%EF%BC%9A%E4%BF%9D%E5%AD%98%E4%B8%8E%E6%81%A2%E5%A4%8D"><span class="nav-number">1.5.</span> <span class="nav-text">四、断点续训：保存与恢复</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E5%9B%9E%E5%BD%92%E4%B8%8E%E4%BA%8C%E5%88%86%E7%B1%BB%E7%9A%84%E6%8D%9F%E5%A4%B1%E9%80%89%E6%8B%A9"><span class="nav-number">1.6.</span> <span class="nav-text">五、回归与二分类的损失选择</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.7.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">miracle</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">257</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">36</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">156</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/my919" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;my919" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://gitee.com/my919" title="Gitee → https:&#x2F;&#x2F;gitee.com&#x2F;my919" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>Gitee</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:yeal166@163.com" title="E-Mail → mailto:yeal166@163.com" rel="noopener me external nofollow noreferrer" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://my919.github.io/2026/05/01/PyTorch/PyTorch-%E6%A8%A1%E5%9E%8B%E4%B8%8E%E8%AE%AD%E7%BB%83/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="第二章：PyTorch 模型与训练 | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          第二章：PyTorch 模型与训练
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-05-01 13:29:06" itemprop="dateCreated datePublished" datetime="2026-05-01T13:29:06+08:00">2026-05-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-09-01 22:49:52" itemprop="dateModified" datetime="2026-09-01T22:49:52+08:00">2026-09-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>1k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>3 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="第二章：PyTorch-模型与训练"><a href="#第二章：PyTorch-模型与训练" class="headerlink" title="第二章：PyTorch 模型与训练"></a>第二章：PyTorch 模型与训练</h1><h2 id="概念基础"><a href="#概念基础" class="headerlink" title="概念基础"></a>概念基础</h2><ol>
+<li><strong><code>nn.Module</code> 是模型的骨架</strong>：继承后在 <code>__init__</code> 里声明层、在 <code>forward</code> 里组织数据流；参数注册、<code>.to(device)</code>、<code>state_dict</code> 保存全部自动获得。</li>
+<li><strong>Dataset&#x2F;DataLoader 解耦数据与模型</strong>：Dataset 定义「第 i 条样本怎么取」，DataLoader 负责批量化、打乱、多进程预取——大数据训练的前提。</li>
+<li><strong>训练循环是固定四步</strong>：<code>optimizer.zero_grad() → forward → loss.backward() → optimizer.step()</code>，一切复杂训练都是这四步的变体。</li>
+<li><strong>train&#x2F;eval 切换不可少</strong>：Dropout、BatchNorm 在训练与推理行为不同；验证前必须 <code>model.eval()</code>，验证后 <code>model.train()</code>。</li>
+<li><strong>泛化靠工程手段</strong>：验证集监控、早停、学习率调度、正则化（weight_decay&#x2F;Dropout）共同决定模型能否落地。</li>
+</ol>
+<blockquote>
+<p>本章承接 <a href="/2026/05/01/PyTorch/PyTorch/" title="第一章：PyTorch 入门与张量">第一章：PyTorch 入门与张量</a> 的张量与 autograd。代码按 <strong>PyTorch 2.x 官方 API</strong> 书写（沙箱未装 torch，未逐条运行验证）。</p>
+</blockquote>
+<hr>
+<h2 id="一、定义模型：nn-Module"><a href="#一、定义模型：nn-Module" class="headerlink" title="一、定义模型：nn.Module"></a>一、定义模型：nn.Module</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">MLP</span>(nn.Module):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, in_dim: <span class="built_in">int</span>, hidden: <span class="built_in">int</span>, n_classes: <span class="built_in">int</span></span>):</span><br><span class="line">        <span class="built_in">super</span>().__init__()</span><br><span class="line">        <span class="variable language_">self</span>.net = nn.Sequential(</span><br><span class="line">            nn.Linear(in_dim, hidden),</span><br><span class="line">            nn.ReLU(),</span><br><span class="line">            nn.Dropout(<span class="number">0.2</span>),          <span class="comment"># 训练时随机丢弃，防过拟合</span></span><br><span class="line">            nn.Linear(hidden, n_classes),</span><br><span class="line">        )</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self, x</span>):</span><br><span class="line">        <span class="keyword">return</span> <span class="variable language_">self</span>.net(x)</span><br><span class="line"></span><br><span class="line">model = MLP(in_dim=<span class="number">20</span>, hidden=<span class="number">64</span>, n_classes=<span class="number">2</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="built_in">sum</span>(p.numel() <span class="keyword">for</span> p <span class="keyword">in</span> model.parameters()))   <span class="comment"># 参数总量</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>常用层速查</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>层</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>nn.Linear(in, out)</code></td>
+<td>全连接</td>
+</tr>
+<tr>
+<td><code>nn.Conv2d(cin, cout, k)</code></td>
+<td>图像卷积</td>
+</tr>
+<tr>
+<td><code>nn.BatchNorm2d(c)</code> &#x2F; <code>LayerNorm</code></td>
+<td>归一化（稳定训练）</td>
+</tr>
+<tr>
+<td><code>nn.ReLU</code> &#x2F; <code>GELU</code></td>
+<td>激活</td>
+</tr>
+<tr>
+<td><code>nn.Embedding(vocab, dim)</code></td>
+<td>离散 ID → 向量（NLP 必备）</td>
+</tr>
+<tr>
+<td><code>nn.LSTM</code> &#x2F; <code>nn.TransformerEncoder</code></td>
+<td>序列建模</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="二、Dataset-与-DataLoader"><a href="#二、Dataset-与-DataLoader" class="headerlink" title="二、Dataset 与 DataLoader"></a>二、Dataset 与 DataLoader</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> torch.utils.data <span class="keyword">import</span> Dataset, DataLoader</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">MyDataset</span>(<span class="title class_ inherited__">Dataset</span>):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, n: <span class="built_in">int</span> = <span class="number">1000</span></span>):</span><br><span class="line">        <span class="variable language_">self</span>.x = torch.randn(n, <span class="number">20</span>)</span><br><span class="line">        <span class="variable language_">self</span>.y = torch.randint(<span class="number">0</span>, <span class="number">2</span>, (n,))</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__len__</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">len</span>(<span class="variable language_">self</span>.y)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__getitem__</span>(<span class="params">self, i</span>):</span><br><span class="line">        <span class="keyword">return</span> <span class="variable language_">self</span>.x[i], <span class="variable language_">self</span>.y[i]</span><br><span class="line"></span><br><span class="line">train_ds = MyDataset()</span><br><span class="line">val_ds   = MyDataset(<span class="number">200</span>)</span><br><span class="line"></span><br><span class="line">train_loader = DataLoader(train_ds, batch_size=<span class="number">32</span>, shuffle=<span class="literal">True</span>,</span><br><span class="line">                          num_workers=<span class="number">4</span>, pin_memory=<span class="literal">True</span>)</span><br><span class="line">val_loader   = DataLoader(val_ds, batch_size=<span class="number">64</span>, shuffle=<span class="literal">False</span>)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong><code>num_workers</code></strong>：多进程预取，CPU 密集的预处理必开；Windows 下要在 <code>if __name__ == &quot;__main__&quot;:</code> 里跑。</li>
+<li><strong><code>pin_memory=True</code></strong>：页锁定内存加速 CPU→GPU 拷贝（配合第三章）。</li>
+<li><strong>变长序列</strong>：用 <code>collate_fn</code> 自定义打包（padding + mask）。</li>
+</ul>
+<hr>
+<h2 id="三、训练循环：完整模板"><a href="#三、训练循环：完整模板" class="headerlink" title="三、训练循环：完整模板"></a>三、训练循环：完整模板</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn</span><br><span class="line"><span class="keyword">import</span> torch.optim <span class="keyword">as</span> optim</span><br><span class="line"></span><br><span class="line">criterion = nn.CrossEntropyLoss()               <span class="comment"># 分类：logits + 类别 ID</span></span><br><span class="line">optimizer = optim.AdamW(model.parameters(), lr=<span class="number">1e-3</span>, weight_decay=<span class="number">1e-4</span>)</span><br><span class="line">scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=<span class="number">10</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">run_epoch</span>(<span class="params">loader, training: <span class="built_in">bool</span></span>):</span><br><span class="line">    model.train() <span class="keyword">if</span> training <span class="keyword">else</span> model.<span class="built_in">eval</span>()</span><br><span class="line">    total, correct, loss_sum = <span class="number">0</span>, <span class="number">0</span>, <span class="number">0.0</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> xb, yb <span class="keyword">in</span> loader:</span><br><span class="line">        <span class="keyword">if</span> training:</span><br><span class="line">            optimizer.zero_grad()               <span class="comment"># ① 清梯度</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">with</span> torch.set_grad_enabled(training):  <span class="comment"># 验证时不建图</span></span><br><span class="line">            logits = model(xb)                  <span class="comment"># ② 前向</span></span><br><span class="line">            loss = criterion(logits, yb)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> training:</span><br><span class="line">            loss.backward()                     <span class="comment"># ③ 反向</span></span><br><span class="line">            optimizer.step()                    <span class="comment"># ④ 更新</span></span><br><span class="line"></span><br><span class="line">        loss_sum += loss.item() * <span class="built_in">len</span>(yb)</span><br><span class="line">        total += <span class="built_in">len</span>(yb)</span><br><span class="line">        correct += (logits.argmax(<span class="number">1</span>) == yb).<span class="built_in">sum</span>().item()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> loss_sum / total, correct / total</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> epoch <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">10</span>):</span><br><span class="line">    tr_loss, tr_acc = run_epoch(train_loader, training=<span class="literal">True</span>)</span><br><span class="line">    va_loss, va_acc = run_epoch(val_loader,   training=<span class="literal">False</span>)</span><br><span class="line">    scheduler.step()</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;epoch <span class="subst">&#123;epoch&#125;</span>: train acc=<span class="subst">&#123;tr_acc:<span class="number">.3</span>f&#125;</span> val acc=<span class="subst">&#123;va_acc:<span class="number">.3</span>f&#125;</span>&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p><strong>四大高频翻车点</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>症状</th>
+<th>原因</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>loss 不降</td>
+<td>学习率过大&#x2F;过小；标签与 logits 形状不配</td>
+</tr>
+<tr>
+<td>loss 变 NaN</td>
+<td>lr 过大爆炸、除零、FP16 溢出（见第三章 GradScaler）</td>
+</tr>
+<tr>
+<td>验证 acc 虚高</td>
+<td>忘了 <code>model.eval()</code>，Dropout 还在随机丢弃</td>
+</tr>
+<tr>
+<td>显存随轮次上涨</td>
+<td>把带计算图的 loss 累加到 list（应 <code>loss.item()</code>）</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="四、断点续训：保存与恢复"><a href="#四、断点续训：保存与恢复" class="headerlink" title="四、断点续训：保存与恢复"></a>四、断点续训：保存与恢复</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 保存完整训练状态（模型 + 优化器 + 轮次）</span></span><br><span class="line">torch.save(&#123;</span><br><span class="line">    <span class="string">&quot;epoch&quot;</span>: epoch,</span><br><span class="line">    <span class="string">&quot;model_state&quot;</span>: model.state_dict(),</span><br><span class="line">    <span class="string">&quot;optim_state&quot;</span>: optimizer.state_dict(),</span><br><span class="line">    <span class="string">&quot;val_acc&quot;</span>: va_acc,</span><br><span class="line">&#125;, <span class="string">&quot;ckpt.pt&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 恢复</span></span><br><span class="line">ckpt = torch.load(<span class="string">&quot;ckpt.pt&quot;</span>, map_location=<span class="string">&quot;cpu&quot;</span>)</span><br><span class="line">model.load_state_dict(ckpt[<span class="string">&quot;model_state&quot;</span>])</span><br><span class="line">optimizer.load_state_dict(ckpt[<span class="string">&quot;optim_state&quot;</span>])</span><br><span class="line">start_epoch = ckpt[<span class="string">&quot;epoch&quot;</span>] + <span class="number">1</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong>推荐保存 <code>state_dict()</code> 而非整个模型对象</strong>：反序列化整个对象要求类定义路径一致，<code>state_dict</code> 只存权重、跨代码结构可用。</p>
+</blockquote>
+<hr>
+<h2 id="五、回归与二分类的损失选择"><a href="#五、回归与二分类的损失选择" class="headerlink" title="五、回归与二分类的损失选择"></a>五、回归与二分类的损失选择</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 回归（预测连续值）：输出 1 维，不用激活</span></span><br><span class="line">model_reg = nn.Linear(<span class="number">20</span>, <span class="number">1</span>)</span><br><span class="line">loss_reg = nn.MSELoss()                  <span class="comment"># 或 nn.L1Loss / HuberLoss</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 二分类：两种等价写法</span></span><br><span class="line">loss_bce_logits = nn.BCEWithLogitsLoss() <span class="comment"># 输出 1 维 logits，标签 0/1（数值更稳）</span></span><br><span class="line"><span class="comment"># 或直接 CrossEntropyLoss：输出 2 维 logits，标签 0/1</span></span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th>任务</th>
+<th>输出层</th>
+<th>损失函数</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>多分类</td>
+<td><code>Linear(→n_classes)</code></td>
+<td><code>CrossEntropyLoss</code></td>
+</tr>
+<tr>
+<td>二分类</td>
+<td><code>Linear(→1)</code></td>
+<td><code>BCEWithLogitsLoss</code></td>
+</tr>
+<tr>
+<td>回归</td>
+<td><code>Linear(→1)</code></td>
+<td><code>MSELoss</code> &#x2F; <code>HuberLoss</code></td>
+</tr>
+<tr>
+<td>多标签</td>
+<td><code>Linear(→n)</code></td>
+<td><code>BCEWithLogitsLoss</code>（标签 multi-hot）</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="本章小结"><a href="#本章小结" class="headerlink" title="本章小结"></a>本章小结</h2><table>
+<thead>
+<tr>
+<th>要点</th>
+<th>结论</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>模型</td>
+<td>继承 <code>nn.Module</code>，<code>__init__</code> 声明层、<code>forward</code> 串数据流</td>
+</tr>
+<tr>
+<td>数据</td>
+<td><code>Dataset</code> 取样 + <code>DataLoader</code> 批量化；变长数据用 <code>collate_fn</code></td>
+</tr>
+<tr>
+<td>训练四步</td>
+<td>zero_grad → forward → backward → step；验证前 <code>model.eval()</code></td>
+</tr>
+<tr>
+<td>排障</td>
+<td>NaN 查 lr&#x2F;精度；显存涨查计算图泄漏；acc 虚高查 eval 切换</td>
+</tr>
+<tr>
+<td>存取</td>
+<td>存 <code>state_dict()</code> + 优化器状态，跨机器恢复</td>
+</tr>
+</tbody></table>
+<hr>
+<p>训练跑通只是及格线，把速度和显存榨干是下一章的主线：<a href="/2026/05/01/PyTorch/PyTorch-GPU%E4%B8%8E%E6%B7%B7%E5%90%88%E7%B2%BE%E5%BA%A6/" title="第三章：PyTorch GPU 加速与混合精度">第三章：PyTorch GPU 加速与混合精度</a>。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/PyTorch/" rel="tag"># PyTorch</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/05/01/PyTorch/PyTorch/" rel="prev" title="第一章：PyTorch 入门与张量">
+                  <i class="fa fa-angle-left"></i> 第一章：PyTorch 入门与张量
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2026/05/01/PyTorch/PyTorch-GPU%E4%B8%8E%E6%B7%B7%E5%90%88%E7%B2%BE%E5%BA%A6/" rel="next" title="第三章：PyTorch GPU 加速与混合精度">
+                  第三章：PyTorch GPU 加速与混合精度 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">miracle</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">362k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">20:07</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+<script>
+(function () {
+  function normalizeClipboard(s) {
+    return (s || '').replace(/\u00a0/g, ' ');
+  }
+
+  /** When innerText is empty, treat <br> as newlines (matches Hexo fenced + line_number HTML). */
+  function plainTextFromElement(el) {
+    if (!el) return '';
+    var t = el.innerText;
+    if (t != null && t !== '') return normalizeClipboard(t);
+    var clone = el.cloneNode(true);
+    clone.querySelectorAll('br').forEach(function (br) {
+      br.parentNode.replaceChild(document.createTextNode('\n'), br);
+    });
+    return normalizeClipboard(clone.textContent || '');
+  }
+
+  function extractFromFigure(fig) {
+    if (!fig) return '';
+    var cell = fig.querySelector('td.code') || fig.querySelector('.code');
+    if (cell) return plainTextFromElement(cell);
+    var pre = fig.querySelector('pre');
+    if (pre) return plainTextFromElement(pre);
+    var code = fig.querySelector('code');
+    return code ? plainTextFromElement(code) : '';
+  }
+
+  function extractForCopyBtn(btn) {
+    var fig = btn.closest('figure.highlight');
+    if (fig) return extractFromFigure(fig);
+    var wrap = btn.closest('.code-container');
+    if (wrap) {
+      var innerFig = wrap.querySelector('figure.highlight');
+      if (innerFig) return extractFromFigure(innerFig);
+      var preOnly = wrap.querySelector('pre');
+      if (preOnly) return plainTextFromElement(preOnly);
+    }
+    return '';
+  }
+
+  function setCopyIcon(btn, ok) {
+    var i = btn.querySelector('i');
+    if (i) i.className = ok ? 'fa fa-check-circle fa-fw' : 'fa fa-times-circle fa-fw';
+  }
+
+  function writeClipboard(text, btn) {
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(text).then(
+        function () { setCopyIcon(btn, true); },
+        function () { fallbackCopy(text, btn); }
+      );
+    }
+    fallbackCopy(text, btn);
+    return Promise.resolve();
+  }
+
+  function fallbackCopy(text, btn) {
+    try {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed';
+      ta.style.left = '-9999px';
+      document.body.appendChild(ta);
+      ta.select();
+      var ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      setCopyIcon(btn, ok);
+    } catch (e) {
+      setCopyIcon(btn, false);
+    }
+  }
+
+  document.addEventListener(
+    'click',
+    function (e) {
+      var btn = e.target.closest && e.target.closest('.copy-btn');
+      if (!btn) return;
+      if (!btn.closest('figure.highlight') && !btn.closest('.code-container')) return;
+      e.stopPropagation();
+      e.preventDefault();
+      var text = extractForCopyBtn(btn);
+      writeClipboard(text, btn);
+    },
+    true
+  );
+})();
+</script>
+
+</body>
+</html>

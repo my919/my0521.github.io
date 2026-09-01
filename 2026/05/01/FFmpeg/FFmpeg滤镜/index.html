@@ -20,15 +20,15 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"my919.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
 
-    <meta name="description" content="第四章：滤镜与滤镜图概念基础：滤镜是加工流水线 滤镜（filter）加工每一帧：在解码后、编码前对原始帧做变换——缩放、裁剪、水印、字幕、调色等，是 FFmpeg 表达力最强也最易出错的部分。 三类入口：-vf（简单视频滤镜链，单输入）、-af（简单音频滤镜链）、-filter_complex（复杂滤镜图，多输入&#x2F;多输出&#x2F;多流合成，画中画、多路拼接必用）。 链与图：滤镜链（ch">
+    <meta name="description" content="第四章：滤镜与滤镜图概念基础 滤镜（filter）加工每一帧：在解码后、编码前对原始帧做变换——缩放、裁剪、水印、字幕、调色等，是 FFmpeg 表达力最强也最易出错的部分。 三类入口：-vf（简单视频滤镜链，单输入）、-af（简单音频滤镜链）、-filter_complex（复杂滤镜图，多输入&#x2F;多输出&#x2F;多流合成，画中画、多路拼接必用）。 链与图：滤镜链（chain） 用逗号串">
 <meta property="og:type" content="article">
 <meta property="og:title" content="第四章：滤镜与滤镜图">
 <meta property="og:url" content="https://my919.github.io/2026/05/01/FFmpeg/FFmpeg%E6%BB%A4%E9%95%9C/index.html">
 <meta property="og:site_name" content="my">
-<meta property="og:description" content="第四章：滤镜与滤镜图概念基础：滤镜是加工流水线 滤镜（filter）加工每一帧：在解码后、编码前对原始帧做变换——缩放、裁剪、水印、字幕、调色等，是 FFmpeg 表达力最强也最易出错的部分。 三类入口：-vf（简单视频滤镜链，单输入）、-af（简单音频滤镜链）、-filter_complex（复杂滤镜图，多输入&#x2F;多输出&#x2F;多流合成，画中画、多路拼接必用）。 链与图：滤镜链（ch">
+<meta property="og:description" content="第四章：滤镜与滤镜图概念基础 滤镜（filter）加工每一帧：在解码后、编码前对原始帧做变换——缩放、裁剪、水印、字幕、调色等，是 FFmpeg 表达力最强也最易出错的部分。 三类入口：-vf（简单视频滤镜链，单输入）、-af（简单音频滤镜链）、-filter_complex（复杂滤镜图，多输入&#x2F;多输出&#x2F;多流合成，画中画、多路拼接必用）。 链与图：滤镜链（chain） 用逗号串">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-05-01T05:41:59.000Z">
-<meta property="article:modified_time" content="2026-08-31T14:05:10.392Z">
+<meta property="article:modified_time" content="2026-09-01T13:56:38.271Z">
 <meta property="article:author" content="miracle">
 <meta property="article:tag" content="FFmpeg">
 <meta property="article:tag" content="音视频">
@@ -162,7 +162,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%9A%E6%BB%A4%E9%95%9C%E4%B8%8E%E6%BB%A4%E9%95%9C%E5%9B%BE"><span class="nav-number">1.</span> <span class="nav-text">第四章：滤镜与滤镜图</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80%EF%BC%9A%E6%BB%A4%E9%95%9C%E6%98%AF%E5%8A%A0%E5%B7%A5%E6%B5%81%E6%B0%B4%E7%BA%BF"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础：滤镜是加工流水线</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E6%BB%A4%E9%95%9C%E5%9B%BE%E8%AF%AD%E6%B3%95"><span class="nav-number">1.2.</span> <span class="nav-text">一、滤镜图语法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E7%AE%80%E5%8D%95%E6%BB%A4%E9%95%9C%E9%93%BE%EF%BC%88-vf-af%EF%BC%89"><span class="nav-number">1.2.1.</span> <span class="nav-text">1. 简单滤镜链（-vf &#x2F; -af）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E5%A4%8D%E6%9D%82%E6%BB%A4%E9%95%9C%E5%9B%BE%EF%BC%88-filter-complex%EF%BC%89"><span class="nav-number">1.2.2.</span> <span class="nav-text">2. 复杂滤镜图（-filter_complex）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E5%B8%B8%E7%94%A8%E8%A7%86%E9%A2%91%E6%BB%A4%E9%95%9C"><span class="nav-number">1.3.</span> <span class="nav-text">二、常用视频滤镜</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E7%BC%A9%E6%94%BE-scale"><span class="nav-number">1.3.1.</span> <span class="nav-text">1. 缩放 scale</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E8%A3%81%E5%89%AA-crop"><span class="nav-number">1.3.2.</span> <span class="nav-text">2. 裁剪 crop</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E6%B0%B4%E5%8D%B0-overlay"><span class="nav-number">1.3.3.</span> <span class="nav-text">3. 水印 overlay</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E5%AD%97%E5%B9%95%E7%83%A7%E5%BD%95-subtitles"><span class="nav-number">1.3.4.</span> <span class="nav-text">4. 字幕烧录 subtitles</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E8%B0%83%E8%89%B2%E4%B8%8E%E6%BB%A4%E9%95%9C%E6%95%88%E6%9E%9C"><span class="nav-number">1.3.5.</span> <span class="nav-text">5. 调色与滤镜效果</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-%E5%B8%A7%E7%8E%87-%E6%97%B6%E9%97%B4-trim"><span class="nav-number">1.3.6.</span> <span class="nav-text">6. 帧率&#x2F;时间 trim</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E5%B8%B8%E7%94%A8%E9%9F%B3%E9%A2%91%E6%BB%A4%E9%95%9C"><span class="nav-number">1.4.</span> <span class="nav-text">三、常用音频滤镜</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E5%A4%8D%E6%9D%82%E6%BB%A4%E9%95%9C%E5%9B%BE%E5%AE%9E%E6%88%98"><span class="nav-number">1.5.</span> <span class="nav-text">四、复杂滤镜图实战</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E7%94%BB%E4%B8%AD%E7%94%BB%EF%BC%88Picture-in-Picture%EF%BC%89"><span class="nav-number">1.5.1.</span> <span class="nav-text">1. 画中画（Picture-in-Picture）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E5%A4%9A%E8%B7%AF%E5%B9%B6%E6%8E%92%EF%BC%88grid%EF%BC%89"><span class="nav-number">1.5.2.</span> <span class="nav-text">2. 多路并排（grid）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E5%8F%8C%E9%9F%B3%E8%BD%A8%E6%B7%B7%E9%9F%B3"><span class="nav-number">1.5.3.</span> <span class="nav-text">3. 双音轨混音</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E6%96%87%E5%AD%97%E6%B0%B4%E5%8D%B0-drawtext"><span class="nav-number">1.5.4.</span> <span class="nav-text">4. 文字水印 drawtext</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E6%BB%A4%E9%95%9C%E9%93%BE%E6%89%A7%E8%A1%8C%E9%A1%BA%E5%BA%8F%E4%B8%8E%E6%80%A7%E8%83%BD"><span class="nav-number">1.6.</span> <span class="nav-text">五、滤镜链执行顺序与性能</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E8%B0%83%E8%AF%95%E6%8A%80%E5%B7%A7"><span class="nav-number">1.7.</span> <span class="nav-text">六、调试技巧</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%83%E3%80%81%E5%B8%B8%E8%A7%81%E9%99%B7%E9%98%B1"><span class="nav-number">1.8.</span> <span class="nav-text">七、常见陷阱</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.9.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%9A%E6%BB%A4%E9%95%9C%E4%B8%8E%E6%BB%A4%E9%95%9C%E5%9B%BE"><span class="nav-number">1.</span> <span class="nav-text">第四章：滤镜与滤镜图</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E6%BB%A4%E9%95%9C%E5%9B%BE%E8%AF%AD%E6%B3%95"><span class="nav-number">1.2.</span> <span class="nav-text">一、滤镜图语法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E7%AE%80%E5%8D%95%E6%BB%A4%E9%95%9C%E9%93%BE%EF%BC%88-vf-af%EF%BC%89"><span class="nav-number">1.2.1.</span> <span class="nav-text">1. 简单滤镜链（-vf &#x2F; -af）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E5%A4%8D%E6%9D%82%E6%BB%A4%E9%95%9C%E5%9B%BE%EF%BC%88-filter-complex%EF%BC%89"><span class="nav-number">1.2.2.</span> <span class="nav-text">2. 复杂滤镜图（-filter_complex）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E5%B8%B8%E7%94%A8%E8%A7%86%E9%A2%91%E6%BB%A4%E9%95%9C"><span class="nav-number">1.3.</span> <span class="nav-text">二、常用视频滤镜</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E7%BC%A9%E6%94%BE-scale"><span class="nav-number">1.3.1.</span> <span class="nav-text">1. 缩放 scale</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E8%A3%81%E5%89%AA-crop"><span class="nav-number">1.3.2.</span> <span class="nav-text">2. 裁剪 crop</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E6%B0%B4%E5%8D%B0-overlay"><span class="nav-number">1.3.3.</span> <span class="nav-text">3. 水印 overlay</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E5%AD%97%E5%B9%95%E7%83%A7%E5%BD%95-subtitles"><span class="nav-number">1.3.4.</span> <span class="nav-text">4. 字幕烧录 subtitles</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E8%B0%83%E8%89%B2%E4%B8%8E%E6%BB%A4%E9%95%9C%E6%95%88%E6%9E%9C"><span class="nav-number">1.3.5.</span> <span class="nav-text">5. 调色与滤镜效果</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-%E5%B8%A7%E7%8E%87-%E6%97%B6%E9%97%B4-trim"><span class="nav-number">1.3.6.</span> <span class="nav-text">6. 帧率&#x2F;时间 trim</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E5%B8%B8%E7%94%A8%E9%9F%B3%E9%A2%91%E6%BB%A4%E9%95%9C"><span class="nav-number">1.4.</span> <span class="nav-text">三、常用音频滤镜</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E5%A4%8D%E6%9D%82%E6%BB%A4%E9%95%9C%E5%9B%BE%E5%AE%9E%E6%88%98"><span class="nav-number">1.5.</span> <span class="nav-text">四、复杂滤镜图实战</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E7%94%BB%E4%B8%AD%E7%94%BB%EF%BC%88Picture-in-Picture%EF%BC%89"><span class="nav-number">1.5.1.</span> <span class="nav-text">1. 画中画（Picture-in-Picture）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E5%A4%9A%E8%B7%AF%E5%B9%B6%E6%8E%92%EF%BC%88grid%EF%BC%89"><span class="nav-number">1.5.2.</span> <span class="nav-text">2. 多路并排（grid）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E5%8F%8C%E9%9F%B3%E8%BD%A8%E6%B7%B7%E9%9F%B3"><span class="nav-number">1.5.3.</span> <span class="nav-text">3. 双音轨混音</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E6%96%87%E5%AD%97%E6%B0%B4%E5%8D%B0-drawtext"><span class="nav-number">1.5.4.</span> <span class="nav-text">4. 文字水印 drawtext</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E6%BB%A4%E9%95%9C%E9%93%BE%E6%89%A7%E8%A1%8C%E9%A1%BA%E5%BA%8F%E4%B8%8E%E6%80%A7%E8%83%BD"><span class="nav-number">1.6.</span> <span class="nav-text">五、滤镜链执行顺序与性能</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E8%B0%83%E8%AF%95%E6%8A%80%E5%B7%A7"><span class="nav-number">1.7.</span> <span class="nav-text">六、调试技巧</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%83%E3%80%81%E5%B8%B8%E8%A7%81%E9%99%B7%E9%98%B1"><span class="nav-number">1.8.</span> <span class="nav-text">七、常见陷阱</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.9.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -175,7 +175,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">234</span>
+          <span class="site-state-item-count">257</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -186,7 +186,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">124</span>
+        <span class="site-state-item-count">156</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -260,7 +260,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-08-31 22:05:10" itemprop="dateModified" datetime="2026-08-31T22:05:10+08:00">2026-08-31</time>
+      <time title="修改时间：2026-09-01 21:56:38" itemprop="dateModified" datetime="2026-09-01T21:56:38+08:00">2026-09-01</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -296,7 +296,7 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><h1 id="第四章：滤镜与滤镜图"><a href="#第四章：滤镜与滤镜图" class="headerlink" title="第四章：滤镜与滤镜图"></a>第四章：滤镜与滤镜图</h1><h2 id="概念基础：滤镜是加工流水线"><a href="#概念基础：滤镜是加工流水线" class="headerlink" title="概念基础：滤镜是加工流水线"></a>概念基础：滤镜是加工流水线</h2><ol>
+    <div class="post-body" itemprop="articleBody"><h1 id="第四章：滤镜与滤镜图"><a href="#第四章：滤镜与滤镜图" class="headerlink" title="第四章：滤镜与滤镜图"></a>第四章：滤镜与滤镜图</h1><h2 id="概念基础"><a href="#概念基础" class="headerlink" title="概念基础"></a>概念基础</h2><ol>
 <li><strong>滤镜（filter）加工每一帧</strong>：在解码后、编码前对原始帧做变换——缩放、裁剪、水印、字幕、调色等，是 FFmpeg 表达力最强也最易出错的部分。</li>
 <li><strong>三类入口</strong>：<strong><code>-vf</code></strong>（简单视频滤镜链，单输入）、<strong><code>-af</code></strong>（简单音频滤镜链）、<strong><code>-filter_complex</code></strong>（复杂滤镜图，多输入&#x2F;多输出&#x2F;多流合成，画中画、多路拼接必用）。</li>
 <li><strong>链与图</strong>：<strong>滤镜链（chain）</strong> 用逗号串多个滤镜顺序执行；<strong>滤镜图（graph）</strong> 用分号串多条链并行&#x2F;分支。<code>[label]</code> 标记流的去向。</li>
@@ -505,13 +505,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">321k</span>
+    <span title="站点总字数">362k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">17:52</span>
+    <span title="站点阅读时长">20:07</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

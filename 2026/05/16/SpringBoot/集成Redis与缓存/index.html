@@ -20,15 +20,15 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"my919.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
 
-    <meta name="description" content="第四章：SpringBoot 集成 Redis 与缓存概念基础：Redis 缓存是什么缓存把热点数据放进内存数据库，用空间换时间，降低数据库压力、缩短响应时间：  三种接入方式：本项目集成 Spring Data Redis（StringRedisTemplate）、Redisson（分布式对象、Bucket 等）、Spring Cache（@Cacheable，底层为 Redis），按场景选用。">
+    <meta name="description" content="第四章：SpringBoot 集成 Redis 与缓存概念基础缓存把热点数据放进内存数据库，用空间换时间，降低数据库压力、缩短响应时间：  三种接入方式：本项目集成 Spring Data Redis（StringRedisTemplate）、Redisson（分布式对象、Bucket 等）、Spring Cache（@Cacheable，底层为 Redis），按场景选用。 统一连接层：三者最终都">
 <meta property="og:type" content="article">
 <meta property="og:title" content="第四章：SpringBoot 集成 Redis 与缓存">
 <meta property="og:url" content="https://my919.github.io/2026/05/16/SpringBoot/%E9%9B%86%E6%88%90Redis%E4%B8%8E%E7%BC%93%E5%AD%98/index.html">
 <meta property="og:site_name" content="my">
-<meta property="og:description" content="第四章：SpringBoot 集成 Redis 与缓存概念基础：Redis 缓存是什么缓存把热点数据放进内存数据库，用空间换时间，降低数据库压力、缩短响应时间：  三种接入方式：本项目集成 Spring Data Redis（StringRedisTemplate）、Redisson（分布式对象、Bucket 等）、Spring Cache（@Cacheable，底层为 Redis），按场景选用。">
+<meta property="og:description" content="第四章：SpringBoot 集成 Redis 与缓存概念基础缓存把热点数据放进内存数据库，用空间换时间，降低数据库压力、缩短响应时间：  三种接入方式：本项目集成 Spring Data Redis（StringRedisTemplate）、Redisson（分布式对象、Bucket 等）、Spring Cache（@Cacheable，底层为 Redis），按场景选用。 统一连接层：三者最终都">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-05-16T02:15:00.000Z">
-<meta property="article:modified_time" content="2026-08-30T09:10:05.178Z">
+<meta property="article:modified_time" content="2026-09-01T13:56:38.193Z">
 <meta property="article:author" content="miracle">
 <meta property="article:tag" content="SpringBoot">
 <meta name="twitter:card" content="summary">
@@ -161,7 +161,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%9ASpringBoot-%E9%9B%86%E6%88%90-Redis-%E4%B8%8E%E7%BC%93%E5%AD%98"><span class="nav-number">1.</span> <span class="nav-text">第四章：SpringBoot 集成 Redis 与缓存</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80%EF%BC%9ARedis-%E7%BC%93%E5%AD%98%E6%98%AF%E4%BB%80%E4%B9%88"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础：Redis 缓存是什么</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9E%B6%E6%9E%84"><span class="nav-number">1.2.</span> <span class="nav-text">架构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%90%AD%E5%BB%BA%E6%AD%A5%E9%AA%A4"><span class="nav-number">1.3.</span> <span class="nav-text">搭建步骤</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E6%B7%BB%E5%8A%A0%E4%BE%9D%E8%B5%96"><span class="nav-number">1.3.1.</span> <span class="nav-text">1. 添加依赖</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-Redis-%E8%BF%9E%E6%8E%A5%E9%85%8D%E7%BD%AE"><span class="nav-number">1.3.2.</span> <span class="nav-text">2. Redis 连接配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E4%BD%BF%E7%94%A8%E6%96%B9%E5%BC%8F%E7%A4%BA%E4%BE%8B"><span class="nav-number">1.3.3.</span> <span class="nav-text">3. 使用方式示例</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E4%B8%8E%E9%98%B2%E9%87%8D-%E5%B9%82%E7%AD%89%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="nav-number">1.3.4.</span> <span class="nav-text">4. 与防重&#x2F;幂等的关系</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%AA%8C%E8%AF%81"><span class="nav-number">1.4.</span> <span class="nav-text">验证</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95"><span class="nav-number">1.5.</span> <span class="nav-text">单元测试</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%B8%E5%85%B3%E6%96%87%E4%BB%B6"><span class="nav-number">1.6.</span> <span class="nav-text">相关文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.7.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%9ASpringBoot-%E9%9B%86%E6%88%90-Redis-%E4%B8%8E%E7%BC%93%E5%AD%98"><span class="nav-number">1.</span> <span class="nav-text">第四章：SpringBoot 集成 Redis 与缓存</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9E%B6%E6%9E%84"><span class="nav-number">1.2.</span> <span class="nav-text">架构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%90%AD%E5%BB%BA%E6%AD%A5%E9%AA%A4"><span class="nav-number">1.3.</span> <span class="nav-text">搭建步骤</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E6%B7%BB%E5%8A%A0%E4%BE%9D%E8%B5%96"><span class="nav-number">1.3.1.</span> <span class="nav-text">1. 添加依赖</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-Redis-%E8%BF%9E%E6%8E%A5%E9%85%8D%E7%BD%AE"><span class="nav-number">1.3.2.</span> <span class="nav-text">2. Redis 连接配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E4%BD%BF%E7%94%A8%E6%96%B9%E5%BC%8F%E7%A4%BA%E4%BE%8B"><span class="nav-number">1.3.3.</span> <span class="nav-text">3. 使用方式示例</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E4%B8%8E%E9%98%B2%E9%87%8D-%E5%B9%82%E7%AD%89%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="nav-number">1.3.4.</span> <span class="nav-text">4. 与防重&#x2F;幂等的关系</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%AA%8C%E8%AF%81"><span class="nav-number">1.4.</span> <span class="nav-text">验证</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95"><span class="nav-number">1.5.</span> <span class="nav-text">单元测试</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%B8%E5%85%B3%E6%96%87%E4%BB%B6"><span class="nav-number">1.6.</span> <span class="nav-text">相关文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.7.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -174,7 +174,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">234</span>
+          <span class="site-state-item-count">257</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -185,7 +185,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">124</span>
+        <span class="site-state-item-count">156</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -259,7 +259,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-08-30 17:10:05" itemprop="dateModified" datetime="2026-08-30T17:10:05+08:00">2026-08-30</time>
+      <time title="修改时间：2026-09-01 21:56:38" itemprop="dateModified" datetime="2026-09-01T21:56:38+08:00">2026-09-01</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -278,7 +278,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>605</span>
+      <span>599</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -295,7 +295,7 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><h1 id="第四章：SpringBoot-集成-Redis-与缓存"><a href="#第四章：SpringBoot-集成-Redis-与缓存" class="headerlink" title="第四章：SpringBoot 集成 Redis 与缓存"></a>第四章：SpringBoot 集成 Redis 与缓存</h1><h2 id="概念基础：Redis-缓存是什么"><a href="#概念基础：Redis-缓存是什么" class="headerlink" title="概念基础：Redis 缓存是什么"></a>概念基础：Redis 缓存是什么</h2><p><strong>缓存</strong>把热点数据放进<strong>内存</strong>数据库，用空间换时间，降低数据库压力、缩短响应时间：</p>
+    <div class="post-body" itemprop="articleBody"><h1 id="第四章：SpringBoot-集成-Redis-与缓存"><a href="#第四章：SpringBoot-集成-Redis-与缓存" class="headerlink" title="第四章：SpringBoot 集成 Redis 与缓存"></a>第四章：SpringBoot 集成 Redis 与缓存</h1><h2 id="概念基础"><a href="#概念基础" class="headerlink" title="概念基础"></a>概念基础</h2><p><strong>缓存</strong>把热点数据放进<strong>内存</strong>数据库，用空间换时间，降低数据库压力、缩短响应时间：</p>
 <ol>
 <li><strong>三种接入方式</strong>：本项目集成 <strong>Spring Data Redis</strong>（<code>StringRedisTemplate</code>）、<strong>Redisson</strong>（分布式对象、Bucket 等）、<strong>Spring Cache</strong>（<code>@Cacheable</code>，底层为 Redis），按场景选用。</li>
 <li><strong>统一连接层</strong>：三者最终都经 <strong>Lettuce 连接</strong>访问同一个 Redis（见架构图），连接与超时配置集中管理。</li>
@@ -451,13 +451,13 @@ flowchart TB
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">321k</span>
+    <span title="站点总字数">362k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">17:52</span>
+    <span title="站点阅读时长">20:07</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

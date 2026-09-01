@@ -20,15 +20,15 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"my919.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
 
-    <meta name="description" content="第四章：Helm 应用包管理入门概念基础：Helm 是什么&#x2F;为什么 Helm 是 Kubernetes 的包管理器（如同 apt &#x2F; yum 之于 Linux 发行版）：把一个应用所需的全部 K8s 清单打包成 Chart，一条命令完成安装、升级与回滚。 三大核心模型：Chart（安装包，含模板与默认配置）、Release（Chart 在集群中的运行实例，同 Chart 可装多">
+    <meta name="description" content="第四章：Helm 应用包管理入门概念基础 Helm 是 Kubernetes 的包管理器（如同 apt &#x2F; yum 之于 Linux 发行版）：把一个应用所需的全部 K8s 清单打包成 Chart，一条命令完成安装、升级与回滚。 三大核心模型：Chart（安装包，含模板与默认配置）、Release（Chart 在集群中的运行实例，同 Chart 可装多份）、Repository（Char">
 <meta property="og:type" content="article">
 <meta property="og:title" content="第四章：Helm 应用包管理入门">
 <meta property="og:url" content="https://my919.github.io/2026/06/06/Cloud/Helm/index.html">
 <meta property="og:site_name" content="my">
-<meta property="og:description" content="第四章：Helm 应用包管理入门概念基础：Helm 是什么&#x2F;为什么 Helm 是 Kubernetes 的包管理器（如同 apt &#x2F; yum 之于 Linux 发行版）：把一个应用所需的全部 K8s 清单打包成 Chart，一条命令完成安装、升级与回滚。 三大核心模型：Chart（安装包，含模板与默认配置）、Release（Chart 在集群中的运行实例，同 Chart 可装多">
+<meta property="og:description" content="第四章：Helm 应用包管理入门概念基础 Helm 是 Kubernetes 的包管理器（如同 apt &#x2F; yum 之于 Linux 发行版）：把一个应用所需的全部 K8s 清单打包成 Chart，一条命令完成安装、升级与回滚。 三大核心模型：Chart（安装包，含模板与默认配置）、Release（Chart 在集群中的运行实例，同 Chart 可装多份）、Repository（Char">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-06-06T02:00:00.000Z">
-<meta property="article:modified_time" content="2026-08-30T09:10:05.262Z">
+<meta property="article:modified_time" content="2026-09-01T13:56:38.261Z">
 <meta property="article:author" content="miracle">
 <meta property="article:tag" content="Helm">
 <meta name="twitter:card" content="summary">
@@ -161,7 +161,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%9AHelm-%E5%BA%94%E7%94%A8%E5%8C%85%E7%AE%A1%E7%90%86%E5%85%A5%E9%97%A8"><span class="nav-number">1.</span> <span class="nav-text">第四章：Helm 应用包管理入门</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80%EF%BC%9AHelm-%E6%98%AF%E4%BB%80%E4%B9%88-%E4%B8%BA%E4%BB%80%E4%B9%88"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础：Helm 是什么&#x2F;为什么</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Chart-%E5%88%B0-Release"><span class="nav-number">1.2.</span> <span class="nav-text">Chart 到 Release</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5"><span class="nav-number">1.3.</span> <span class="nav-text">核心概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85%E4%B8%8E%E5%9F%BA%E7%A1%80%E7%8E%AF%E5%A2%83"><span class="nav-number">1.4.</span> <span class="nav-text">安装与基础环境</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%AE%89%E8%A3%85-Helm%EF%BC%88Linux%EF%BC%89"><span class="nav-number">1.4.1.</span> <span class="nav-text">1. 安装 Helm（Linux）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E4%BB%93%E5%BA%93%E4%B8%8E%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4"><span class="nav-number">1.4.2.</span> <span class="nav-text">2. 仓库与常用命令</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B8%B8%E7%94%A8%E5%85%AC%E5%85%B1%E4%BB%93%E5%BA%93"><span class="nav-number">1.4.2.1.</span> <span class="nav-text">常用公共仓库</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9C%AC%E6%9C%BA%E5%B7%B2%E9%85%8D%E7%BD%AE%E4%BB%93%E5%BA%93"><span class="nav-number">1.4.2.2.</span> <span class="nav-text">本机已配置仓库</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B7%B2%E5%BD%92%E6%A1%A3%E4%BB%93%E5%BA%93%EF%BC%88%E4%B8%8D%E6%8E%A8%E8%8D%90%E6%96%B0%E9%A1%B9%E7%9B%AE%E4%BD%BF%E7%94%A8%EF%BC%89"><span class="nav-number">1.4.2.3.</span> <span class="nav-text">已归档仓库（不推荐新项目使用）</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9F%A5%E6%89%BE%E4%B8%8E%E6%9F%A5%E7%9C%8B-Chart"><span class="nav-number">1.5.</span> <span class="nav-text">查找与查看 Chart</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85%E5%BA%94%E7%94%A8"><span class="nav-number">1.6.</span> <span class="nav-text">安装应用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%A1%E7%90%86-Release"><span class="nav-number">1.7.</span> <span class="nav-text">管理 Release</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89-Chart"><span class="nav-number">1.8.</span> <span class="nav-text">自定义 Chart</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E7%94%A8-Helm%EF%BC%9F"><span class="nav-number">1.9.</span> <span class="nav-text">为什么要用 Helm？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8E-kubectl-%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="nav-number">1.10.</span> <span class="nav-text">与 kubectl 的关系</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BB%B6%E4%BC%B8%E9%98%85%E8%AF%BB"><span class="nav-number">1.11.</span> <span class="nav-text">延伸阅读</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.12.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%9AHelm-%E5%BA%94%E7%94%A8%E5%8C%85%E7%AE%A1%E7%90%86%E5%85%A5%E9%97%A8"><span class="nav-number">1.</span> <span class="nav-text">第四章：Helm 应用包管理入门</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Chart-%E5%88%B0-Release"><span class="nav-number">1.2.</span> <span class="nav-text">Chart 到 Release</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5"><span class="nav-number">1.3.</span> <span class="nav-text">核心概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85%E4%B8%8E%E5%9F%BA%E7%A1%80%E7%8E%AF%E5%A2%83"><span class="nav-number">1.4.</span> <span class="nav-text">安装与基础环境</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%AE%89%E8%A3%85-Helm%EF%BC%88Linux%EF%BC%89"><span class="nav-number">1.4.1.</span> <span class="nav-text">1. 安装 Helm（Linux）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E4%BB%93%E5%BA%93%E4%B8%8E%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4"><span class="nav-number">1.4.2.</span> <span class="nav-text">2. 仓库与常用命令</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B8%B8%E7%94%A8%E5%85%AC%E5%85%B1%E4%BB%93%E5%BA%93"><span class="nav-number">1.4.2.1.</span> <span class="nav-text">常用公共仓库</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9C%AC%E6%9C%BA%E5%B7%B2%E9%85%8D%E7%BD%AE%E4%BB%93%E5%BA%93"><span class="nav-number">1.4.2.2.</span> <span class="nav-text">本机已配置仓库</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B7%B2%E5%BD%92%E6%A1%A3%E4%BB%93%E5%BA%93%EF%BC%88%E4%B8%8D%E6%8E%A8%E8%8D%90%E6%96%B0%E9%A1%B9%E7%9B%AE%E4%BD%BF%E7%94%A8%EF%BC%89"><span class="nav-number">1.4.2.3.</span> <span class="nav-text">已归档仓库（不推荐新项目使用）</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9F%A5%E6%89%BE%E4%B8%8E%E6%9F%A5%E7%9C%8B-Chart"><span class="nav-number">1.5.</span> <span class="nav-text">查找与查看 Chart</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85%E5%BA%94%E7%94%A8"><span class="nav-number">1.6.</span> <span class="nav-text">安装应用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%A1%E7%90%86-Release"><span class="nav-number">1.7.</span> <span class="nav-text">管理 Release</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89-Chart"><span class="nav-number">1.8.</span> <span class="nav-text">自定义 Chart</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E7%94%A8-Helm%EF%BC%9F"><span class="nav-number">1.9.</span> <span class="nav-text">为什么要用 Helm？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8E-kubectl-%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="nav-number">1.10.</span> <span class="nav-text">与 kubectl 的关系</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BB%B6%E4%BC%B8%E9%98%85%E8%AF%BB"><span class="nav-number">1.11.</span> <span class="nav-text">延伸阅读</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.12.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -174,7 +174,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">234</span>
+          <span class="site-state-item-count">257</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -185,7 +185,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">124</span>
+        <span class="site-state-item-count">156</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -259,7 +259,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-08-30 17:10:05" itemprop="dateModified" datetime="2026-08-30T17:10:05+08:00">2026-08-30</time>
+      <time title="修改时间：2026-09-01 21:56:38" itemprop="dateModified" datetime="2026-09-01T21:56:38+08:00">2026-09-01</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -295,7 +295,7 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><h1 id="第四章：Helm-应用包管理入门"><a href="#第四章：Helm-应用包管理入门" class="headerlink" title="第四章：Helm 应用包管理入门"></a>第四章：Helm 应用包管理入门</h1><h2 id="概念基础：Helm-是什么-为什么"><a href="#概念基础：Helm-是什么-为什么" class="headerlink" title="概念基础：Helm 是什么&#x2F;为什么"></a>概念基础：Helm 是什么&#x2F;为什么</h2><ol>
+    <div class="post-body" itemprop="articleBody"><h1 id="第四章：Helm-应用包管理入门"><a href="#第四章：Helm-应用包管理入门" class="headerlink" title="第四章：Helm 应用包管理入门"></a>第四章：Helm 应用包管理入门</h1><h2 id="概念基础"><a href="#概念基础" class="headerlink" title="概念基础"></a>概念基础</h2><ol>
 <li><strong>Helm</strong> 是 <strong>Kubernetes 的包管理器</strong>（如同 <strong>apt &#x2F; yum</strong> 之于 Linux 发行版）：把一个应用所需的全部 K8s 清单打包成 <strong>Chart</strong>，一条命令完成安装、升级与回滚。</li>
 <li><strong>三大核心模型</strong>：<strong>Chart</strong>（安装包，含模板与默认配置）、<strong>Release</strong>（Chart 在集群中的<strong>运行实例</strong>，同 Chart 可装多份）、<strong>Repository</strong>（Chart 仓库，官方&#x2F;自建均可）。</li>
 <li><strong>模板化 + values</strong>：重复 YAML 抽成模板，由 <strong><code>values.yaml</code></strong> 注入参数，<strong>同一套 Chart 适配 dev &#x2F; test &#x2F; prod</strong> 多环境，避免手抄清单。</li>
@@ -622,13 +622,13 @@ flowchart LR
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">321k</span>
+    <span title="站点总字数">362k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">17:52</span>
+    <span title="站点阅读时长">20:07</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

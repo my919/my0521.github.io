@@ -20,15 +20,15 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"my919.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
 
-    <meta name="description" content="Nginx概念基础：Nginx 是什么&#x2F;为什么 高性能 Web 服务器：Nginx 采用事件驱动、异步非阻塞架构，单机可承载数万并发连接，资源占用远低于传统的进程&#x2F;线程模型。 反向代理与负载均衡：作为系统入口网关把请求转发给后端多实例（upstream），支持轮询、ip_hash、least_conn 等策略，是微服务架构标配。 静态资源服务：托管前端构建产物（dist）高效稳">
+    <meta name="description" content="第一章：Nginx 入门与静态服务概念基础 事件驱动架构：Nginx 用一个 worker 进程 + epoll 事件循环处理成千上万连接，不像 Apache 那样一连接一线程——这是「高并发低内存」的根源。 master&#x2F;worker 模型：master 读配置、管 worker；worker 真正处理请求。nginx -s reload 平滑切换的底气就在于此。 配置是分层树：mai">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Nginx">
+<meta property="og:title" content="第一章：Nginx 入门与静态服务">
 <meta property="og:url" content="https://my919.github.io/2026/05/01/Nginx/Nginx/index.html">
 <meta property="og:site_name" content="my">
-<meta property="og:description" content="Nginx概念基础：Nginx 是什么&#x2F;为什么 高性能 Web 服务器：Nginx 采用事件驱动、异步非阻塞架构，单机可承载数万并发连接，资源占用远低于传统的进程&#x2F;线程模型。 反向代理与负载均衡：作为系统入口网关把请求转发给后端多实例（upstream），支持轮询、ip_hash、least_conn 等策略，是微服务架构标配。 静态资源服务：托管前端构建产物（dist）高效稳">
+<meta property="og:description" content="第一章：Nginx 入门与静态服务概念基础 事件驱动架构：Nginx 用一个 worker 进程 + epoll 事件循环处理成千上万连接，不像 Apache 那样一连接一线程——这是「高并发低内存」的根源。 master&#x2F;worker 模型：master 读配置、管 worker；worker 真正处理请求。nginx -s reload 平滑切换的底气就在于此。 配置是分层树：mai">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-05-01T05:31:50.000Z">
-<meta property="article:modified_time" content="2026-08-30T09:10:05.267Z">
+<meta property="article:modified_time" content="2026-09-01T14:43:22.788Z">
 <meta property="article:author" content="miracle">
 <meta property="article:tag" content="Nginx">
 <meta name="twitter:card" content="summary">
@@ -37,10 +37,10 @@
 <link rel="canonical" href="https://my919.github.io/2026/05/01/Nginx/Nginx/">
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://my919.github.io/2026/05/01/Nginx/Nginx/","path":"2026/05/01/Nginx/Nginx/","title":"Nginx"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://my919.github.io/2026/05/01/Nginx/Nginx/","path":"2026/05/01/Nginx/Nginx/","title":"第一章：Nginx 入门与静态服务"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>Nginx | my</title>
+<title>第一章：Nginx 入门与静态服务 | my</title>
   
 
 
@@ -161,7 +161,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Nginx"><span class="nav-number">1.</span> <span class="nav-text">Nginx</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80%EF%BC%9ANginx-%E6%98%AF%E4%BB%80%E4%B9%88-%E4%B8%BA%E4%BB%80%E4%B9%88"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础：Nginx 是什么&#x2F;为什么</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86"><span class="nav-number">1.2.</span> <span class="nav-text">反向代理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E5%B8%B8%E8%A7%81%E8%A7%92%E8%89%B2"><span class="nav-number">1.3.</span> <span class="nav-text">一、常见角色</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E6%9C%80%E5%B0%8F%E9%9D%99%E6%80%81%E7%AB%99%E7%82%B9"><span class="nav-number">1.4.</span> <span class="nav-text">二、最小静态站点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86"><span class="nav-number">1.5.</span> <span class="nav-text">三、反向代理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81HTTPS%EF%BC%88%E6%A6%82%E5%BF%B5%EF%BC%89"><span class="nav-number">1.6.</span> <span class="nav-text">四、HTTPS（概念）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E5%AE%89%E8%A3%85%E4%B8%8E%E8%BF%90%E7%BB%B4"><span class="nav-number">1.7.</span> <span class="nav-text">五、安装与运维</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.8.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E7%AB%A0%EF%BC%9ANginx-%E5%85%A5%E9%97%A8%E4%B8%8E%E9%9D%99%E6%80%81%E6%9C%8D%E5%8A%A1"><span class="nav-number">1.</span> <span class="nav-text">第一章：Nginx 入门与静态服务</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E5%AE%89%E8%A3%85%E4%B8%8E%E8%BF%9B%E7%A8%8B%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.2.</span> <span class="nav-text">一、安装与进程模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84"><span class="nav-number">1.3.</span> <span class="nav-text">二、配置文件结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E6%9C%80%E5%B0%8F%E9%9D%99%E6%80%81%E7%AB%99%E7%82%B9"><span class="nav-number">1.4.</span> <span class="nav-text">三、最小静态站点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81location-%E5%8C%B9%E9%85%8D%E8%A7%84%E5%88%99"><span class="nav-number">1.5.</span> <span class="nav-text">四、location 匹配规则</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E6%97%A5%E5%BF%97%E4%B8%8E%E6%8E%92%E9%9A%9C"><span class="nav-number">1.6.</span> <span class="nav-text">五、日志与排障</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.7.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -174,7 +174,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">234</span>
+          <span class="site-state-item-count">257</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -185,7 +185,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">124</span>
+        <span class="site-state-item-count">156</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -236,12 +236,12 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="Nginx | my">
+      <meta itemprop="name" content="第一章：Nginx 入门与静态服务 | my">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          Nginx
+          第一章：Nginx 入门与静态服务
         </h1>
 
         <div class="post-meta-container">
@@ -259,7 +259,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-08-30 17:10:05" itemprop="dateModified" datetime="2026-08-30T17:10:05+08:00">2026-08-30</time>
+      <time title="修改时间：2026-09-01 22:43:22" itemprop="dateModified" datetime="2026-09-01T22:43:22+08:00">2026-09-01</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -278,14 +278,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>722</span>
+      <span>1.1k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>2 分钟</span>
+      <span>4 分钟</span>
     </span>
 </div>
 
@@ -295,74 +295,98 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><h1 id="Nginx"><a href="#Nginx" class="headerlink" title="Nginx"></a>Nginx</h1><h2 id="概念基础：Nginx-是什么-为什么"><a href="#概念基础：Nginx-是什么-为什么" class="headerlink" title="概念基础：Nginx 是什么&#x2F;为什么"></a>概念基础：Nginx 是什么&#x2F;为什么</h2><ol>
-<li><strong>高性能 Web 服务器</strong>：Nginx 采用<strong>事件驱动、异步非阻塞</strong>架构，单机可承载数万并发连接，资源占用远低于传统的进程&#x2F;线程模型。</li>
-<li><strong>反向代理与负载均衡</strong>：作为系统<strong>入口网关</strong>把请求转发给后端多实例（<strong>upstream</strong>），支持轮询、ip_hash、least_conn 等策略，是微服务架构标配。</li>
-<li><strong>静态资源服务</strong>：托管前端构建产物（dist）高效稳定，配合 <strong><code>try_files</code></strong> 无缝支持 SPA 的 history 路由。</li>
-<li><strong>TLS 终结</strong>：在 Nginx 层统一卸载 <strong>HTTPS</strong>，后端走明文 HTTP，证书的申请与续期集中在一处管理。</li>
-<li><strong>模块化生态</strong>：限流、缓存、重写等能力开箱即用，也是 <strong>K8s Ingress Controller</strong> 的主流实现之一。</li>
+    <div class="post-body" itemprop="articleBody"><h1 id="第一章：Nginx-入门与静态服务"><a href="#第一章：Nginx-入门与静态服务" class="headerlink" title="第一章：Nginx 入门与静态服务"></a>第一章：Nginx 入门与静态服务</h1><h2 id="概念基础"><a href="#概念基础" class="headerlink" title="概念基础"></a>概念基础</h2><ol>
+<li><strong>事件驱动架构</strong>：Nginx 用<strong>一个 worker 进程 + epoll 事件循环</strong>处理成千上万连接，不像 Apache 那样一连接一线程——这是「高并发低内存」的根源。</li>
+<li><strong>master&#x2F;worker 模型</strong>：master 读配置、管 worker；worker 真正处理请求。<code>nginx -s reload</code> 平滑切换的底气就在于此。</li>
+<li><strong>配置是分层树</strong>：<code>main → events → http → server → location</code>，作用域向下继承；server 按域名分流，location 按 URI 前缀&#x2F;正则分流。</li>
+<li><strong>静态服务的强项</strong>：<code>sendfile</code> 零拷贝直接从内核送文件，<code>root</code> + <code>try_files</code> 组合是托管前端构建产物（dist）的事实标准。</li>
+<li><strong>一切皆模块</strong>：限流、缓存、重写、gzip 开箱即用，也是 <strong>K8s Ingress Controller</strong> 的主流实现之一。</li>
 </ol>
-<h2 id="反向代理"><a href="#反向代理" class="headerlink" title="反向代理"></a>反向代理</h2><pre>
-<code class="mermaid">
-
-flowchart LR
-  U[用户] --&gt; N[Nginx :443]
-  N --&gt;|proxy_pass| A1[upstream 实例 1]
-  N --&gt; A2[upstream 实例 2]
-  N --&gt; Static[静态 dist&#x2F;]
-</code>
-</pre>
-
+<blockquote>
+<p>本章是 Nginx 系列起点：安装、配置结构、静态站点与日志。反向代理见 <a href="/2026/05/01/Nginx/Nginx%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86/" title="第二章：Nginx 反向代理与负载均衡">第二章：Nginx 反向代理与负载均衡</a>，HTTPS 见 <a href="/2026/05/01/Nginx/Nginx-HTTPS%E4%B8%8E%E5%AE%89%E5%85%A8/" title="第三章：Nginx HTTPS 与安全">第三章：Nginx HTTPS 与安全</a>，缓存与调优见 <a href="/2026/05/01/Nginx/Nginx-%E7%BC%93%E5%AD%98%E4%B8%8E%E8%B0%83%E4%BC%98/" title="第四章：Nginx 缓存与性能调优">第四章：Nginx 缓存与性能调优</a>。</p>
+</blockquote>
 <hr>
-<h2 id="一、常见角色"><a href="#一、常见角色" class="headerlink" title="一、常见角色"></a>一、常见角色</h2><table>
+<h2 id="一、安装与进程模型"><a href="#一、安装与进程模型" class="headerlink" title="一、安装与进程模型"></a>一、安装与进程模型</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Rocky/RHEL</span></span><br><span class="line"><span class="built_in">sudo</span> dnf install -y nginx</span><br><span class="line"></span><br><span class="line"><span class="comment"># Debian/Ubuntu</span></span><br><span class="line"><span class="built_in">sudo</span> apt install -y nginx</span><br><span class="line"></span><br><span class="line"><span class="built_in">sudo</span> systemctl <span class="built_in">enable</span> --now nginx</span><br><span class="line">systemctl status nginx</span><br><span class="line">curl -I http://localhost        <span class="comment"># HTTP/1.1 200 OK，Welcome to nginx 页面</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ps -ef | grep nginx</span><br><span class="line"><span class="comment"># root      nginx: master process</span></span><br><span class="line"><span class="comment"># nginx     nginx: worker process      ← 通常 = CPU 核数</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>常用命令</strong>：</p>
+<table>
 <thead>
 <tr>
-<th>角色</th>
-<th>说明</th>
+<th>命令</th>
+<th>作用</th>
 </tr>
 </thead>
 <tbody><tr>
-<td><strong>静态文件</strong></td>
-<td>托管 HTML&#x2F;CSS&#x2F;JS（如 <a href="/2026/05/01/Frontend/Vite/" title="第二章：Vite 工程化构建与部署">第二章：Vite 工程化构建与部署</a> 构建的 <strong><code>dist</code></strong>）</td>
+<td><strong><code>nginx -t</code></strong></td>
+<td>语法检查（改配置后必跑）</td>
 </tr>
 <tr>
-<td><strong>反向代理</strong></td>
-<td>将 <strong><code>/api</code></strong> 转发到后端 <strong>Spring Boot &#x2F; Node</strong></td>
+<td><strong><code>nginx -s reload</code></strong></td>
+<td>平滑加载配置（不断连接）</td>
 </tr>
 <tr>
-<td><strong>负载均衡</strong></td>
-<td><strong><code>upstream</code></strong> 多实例 <strong>round-robin</strong>、<strong>ip_hash</strong>、<strong>least_conn</strong></td>
+<td><strong><code>nginx -s stop</code></strong> &#x2F; <code>-s quit</code></td>
+<td>立即停止 &#x2F; 优雅退出</td>
 </tr>
 <tr>
-<td><strong>TLS 终结</strong></td>
-<td>证书在 Nginx 卸载，后端走 HTTP</td>
+<td><strong><code>nginx -V</code></strong></td>
+<td>版本与编译参数（看有哪些模块）</td>
 </tr>
 </tbody></table>
-<p>底层基于 <a href="/2026/05/01/Protocol/HTTP/" title="第二章：HTTP 详解：报文、方法、版本与 curl&#x2F;nc 示例">第二章：HTTP 详解：报文、方法、版本与 curl&#x2F;nc 示例</a> 语义；HTTP&#x2F;2 可在 <strong><code>listen 443 ssl http2</code></strong> 启用。</p>
 <hr>
-<h2 id="二、最小静态站点"><a href="#二、最小静态站点" class="headerlink" title="二、最小静态站点"></a>二、最小静态站点</h2><figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">server</span> &#123;</span><br><span class="line">    <span class="attribute">listen</span> <span class="number">80</span>;</span><br><span class="line">    <span class="attribute">server_name</span> example.com;</span><br><span class="line">    <span class="attribute">root</span> /usr/share/nginx/html;</span><br><span class="line">    <span class="attribute">index</span> index.html;</span><br><span class="line"></span><br><span class="line">    <span class="section">location</span> / &#123;</span><br><span class="line">        <span class="attribute">try_files</span> <span class="variable">$uri</span> <span class="variable">$uri</span>/ /index.html;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="二、配置文件结构"><a href="#二、配置文件结构" class="headerlink" title="二、配置文件结构"></a>二、配置文件结构</h2><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">/etc/nginx/</span><br><span class="line">├── nginx.conf            # 主配置：全局 + events + http</span><br><span class="line">├── conf.d/*.conf         # 建议放各站点 server（include 进 http）</span><br><span class="line">└── mime.types            # 扩展名 → Content-Type 映射</span><br></pre></td></tr></table></figure>
 
-<p><strong><code>try_files</code></strong> 最后一项 <strong><code>/index.html</code></strong> 用于 <strong>SPA</strong>（<a href="/2026/05/01/Frontend/VUE3/" title="第一章：Vue 3 核心概念与组件开发">第一章：Vue 3 核心概念与组件开发</a> history 路由）。</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># nginx.conf 骨架</span></span><br><span class="line"><span class="attribute">user</span>  nginx;</span><br><span class="line"><span class="attribute">worker_processes</span>  auto;          <span class="comment"># worker 数 = CPU 核数</span></span><br><span class="line"></span><br><span class="line"><span class="section">events</span> &#123;</span><br><span class="line">    <span class="attribute">worker_connections</span>  <span class="number">1024</span>;    <span class="comment"># 每个 worker 的最大连接数</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="section">http</span> &#123;</span><br><span class="line">    <span class="attribute">include</span>       /etc/nginx/mime.types;</span><br><span class="line">    <span class="attribute">default_type</span>  application/octet-stream;</span><br><span class="line"></span><br><span class="line">    <span class="attribute">access_log</span>  /var/log/nginx/access.log;</span><br><span class="line">    <span class="attribute">error_log</span>   /var/log/nginx/<span class="literal">error</span>.log;</span><br><span class="line"></span><br><span class="line">    <span class="attribute">sendfile</span>        <span class="literal">on</span>;          <span class="comment"># 静态文件零拷贝</span></span><br><span class="line">    <span class="attribute">keepalive_timeout</span>  <span class="number">65</span>;</span><br><span class="line"></span><br><span class="line">    <span class="attribute">include</span> /etc/nginx/conf.d/<span class="regexp">*.conf</span>;   <span class="comment"># 站点配置在此展开</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>作用域与继承</strong>（内层可覆盖外层）：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">main（全局）</span><br><span class="line">└── events              # 连接模型</span><br><span class="line">    └── http            # HTTP 全局：日志、gzip、include</span><br><span class="line">        └── server      # 一个虚拟主机（listen + server_name）</span><br><span class="line">            └── location  # 一组 URI 的处理规则</span><br></pre></td></tr></table></figure>
+
 <hr>
-<h2 id="三、反向代理"><a href="#三、反向代理" class="headerlink" title="三、反向代理"></a>三、反向代理</h2><figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">upstream</span> backend &#123;</span><br><span class="line">    <span class="attribute">server</span> <span class="number">127.0.0.1:8080</span>;</span><br><span class="line">    <span class="attribute">server</span> <span class="number">127.0.0.1:8081</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="section">server</span> &#123;</span><br><span class="line">    <span class="attribute">listen</span> <span class="number">80</span>;</span><br><span class="line">    <span class="attribute">server_name</span> api.example.com;</span><br><span class="line"></span><br><span class="line">    <span class="section">location</span> / &#123;</span><br><span class="line">        <span class="attribute">proxy_pass</span> http://backend;</span><br><span class="line">        <span class="attribute">proxy_set_header</span> Host <span class="variable">$host</span>;</span><br><span class="line">        <span class="attribute">proxy_set_header</span> X-Real-IP <span class="variable">$remote_addr</span>;</span><br><span class="line">        <span class="attribute">proxy_set_header</span> X-Forwarded-For <span class="variable">$proxy_add_x_forwarded_for</span>;</span><br><span class="line">        <span class="attribute">proxy_set_header</span> X-Forwarded-Proto <span class="variable">$scheme</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="三、最小静态站点"><a href="#三、最小静态站点" class="headerlink" title="三、最小静态站点"></a>三、最小静态站点</h2><figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># /etc/nginx/conf.d/mysite.conf</span></span><br><span class="line"><span class="section">server</span> &#123;</span><br><span class="line">    <span class="attribute">listen</span> <span class="number">80</span>;</span><br><span class="line">    <span class="attribute">server_name</span> example.com;         <span class="comment"># 按请求的 Host 匹配</span></span><br><span class="line">    <span class="attribute">root</span> /usr/share/nginx/html;      <span class="comment"># 站点根目录</span></span><br><span class="line">    <span class="attribute">index</span> index.html;</span><br><span class="line"></span><br><span class="line">    <span class="section">location</span> / &#123;</span><br><span class="line">        <span class="attribute">try_files</span> <span class="variable">$uri</span> <span class="variable">$uri</span>/ /index.html;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<ul>
-<li><strong><code>proxy_pass</code></strong> 末尾 <strong><code>/</code></strong> 是否带，影响 URI 拼接规则。  </li>
-<li><strong>WebSocket</strong>：需 <strong><code>proxy_http_version 1.1</code></strong>、<strong><code>Upgrade</code></strong> &#x2F; <strong><code>Connection</code></strong> 头，见 <a href="/2026/05/01/Protocol/WebSocket/" title="第十一章：WebSocket 详解：握手、帧与 Python 示例">第十一章：WebSocket 详解：握手、帧与 Python 示例</a>。</li>
-</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> nginx -t &amp;&amp; <span class="built_in">sudo</span> systemctl reload nginx</span><br></pre></td></tr></table></figure>
+
+<p><strong><code>try_files</code> 三连</strong>：先找 <code>$uri</code> 文件、再找 <code>$uri/</code> 目录、都失败回退到 <code>/index.html</code>——最后一项正是 <strong>SPA</strong>（<a href="/2026/05/01/Frontend/VUE3/" title="第一章：Vue 3 核心概念与组件开发">第一章：Vue 3 核心概念与组件开发</a> history 路由）刷新不 404 的关键，dist 由 <a href="/2026/05/01/Frontend/Vite/" title="第二章：Vite 工程化构建与部署">第二章：Vite 工程化构建与部署</a> 构建产出。</p>
 <hr>
-<h2 id="四、HTTPS（概念）"><a href="#四、HTTPS（概念）" class="headerlink" title="四、HTTPS（概念）"></a>四、HTTPS（概念）</h2><figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">server</span> &#123;</span><br><span class="line">    <span class="attribute">listen</span> <span class="number">443</span> ssl http2;</span><br><span class="line">    <span class="attribute">server_name</span> example.com;</span><br><span class="line"></span><br><span class="line">    <span class="attribute">ssl_certificate</span>     /etc/nginx/certs/fullchain.pem;</span><br><span class="line">    <span class="attribute">ssl_certificate_key</span> /etc/nginx/certs/privkey.pem;</span><br><span class="line"></span><br><span class="line">    <span class="attribute">ssl_protocols</span> TLSv1.<span class="number">2</span> TLSv1.<span class="number">3</span>;</span><br><span class="line">    <span class="comment"># 现代 cipher 套件按 Mozilla 或发行版建议配置</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="四、location-匹配规则"><a href="#四、location-匹配规则" class="headerlink" title="四、location 匹配规则"></a>四、location 匹配规则</h2><figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">location</span> = /exact      &#123; &#125;   <span class="comment"># 精确匹配：最高优先级</span></span><br><span class="line"><span class="section">location</span><span class="regexp"> ^~</span> /static/   &#123; &#125;   <span class="comment"># 前缀匹配且不再尝试正则</span></span><br><span class="line"><span class="section">location</span> /prefix       &#123; &#125;   <span class="comment"># 普通前缀匹配</span></span><br><span class="line"><span class="section">location</span> <span class="regexp">~ \.php$</span>      &#123; &#125;   <span class="comment"># 正则匹配（区分大小写；~* 不区分）</span></span><br></pre></td></tr></table></figure>
 
-<p>证书可用 <strong>Let’s Encrypt（certbot）</strong> 自动续期；密码学背景见 <a href="/2026/05/01/OpenSSL/OpenSSL/" title="第一章：OpenSSL 命令行入门与常用操作总览">第一章：OpenSSL 命令行入门与常用操作总览</a>。</p>
+<p><strong>匹配顺序</strong>：<code>=</code> 精确 → <code>^~</code> 前缀（命中即停）→ 正则按出现顺序 → 普通前缀取最长。</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">server</span> &#123;</span><br><span class="line">    <span class="attribute">listen</span> <span class="number">80</span>;</span><br><span class="line">    <span class="attribute">root</span> /var/www/app;</span><br><span class="line"></span><br><span class="line">    <span class="section">location</span> <span class="regexp">~* \.(jpg|png|css|js)$</span> &#123;   <span class="comment"># 静态资源：缓存 7 天</span></span><br><span class="line">        <span class="attribute">expires</span> <span class="number">7d</span>;</span><br><span class="line">        <span class="attribute">access_log</span> <span class="literal">off</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="section">location</span> /api/ &#123;                     <span class="comment"># 交给后端（见第二章）</span></span><br><span class="line">        <span class="attribute">proxy_pass</span> http://backend;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="section">location</span> / &#123;</span><br><span class="line">        <span class="attribute">try_files</span> <span class="variable">$uri</span> <span class="variable">$uri</span>/ /index.html;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <hr>
-<h2 id="五、安装与运维"><a href="#五、安装与运维" class="headerlink" title="五、安装与运维"></a>五、安装与运维</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Debian/Ubuntu</span></span><br><span class="line"><span class="built_in">sudo</span> apt install nginx</span><br><span class="line"><span class="built_in">sudo</span> nginx -t</span><br><span class="line"><span class="built_in">sudo</span> systemctl reload nginx</span><br><span class="line"></span><br><span class="line"><span class="comment"># 日志</span></span><br><span class="line"><span class="built_in">tail</span> -f /var/log/nginx/access.log</span><br><span class="line"><span class="built_in">tail</span> -f /var/log/nginx/error.log</span><br></pre></td></tr></table></figure>
+<h2 id="五、日志与排障"><a href="#五、日志与排障" class="headerlink" title="五、日志与排障"></a>五、日志与排障</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">tail</span> -f /var/log/nginx/access.log     <span class="comment"># 访问日志：IP 路径 状态码 耗时...</span></span><br><span class="line"><span class="built_in">tail</span> -f /var/log/nginx/error.log      <span class="comment"># 错误日志：配置错、上游超时都在这</span></span><br></pre></td></tr></table></figure>
 
-<ul>
-<li><strong>限流</strong>：<strong><code>limit_req_zone</code></strong>、<strong><code>limit_conn_zone</code></strong>  </li>
-<li><strong>缓存</strong>：<strong><code>proxy_cache</code></strong> 减轻后端压力  </li>
-<li><strong>与 K8s</strong>：<strong>Ingress Controller</strong> 常用 Nginx 实现</li>
-</ul>
-<p>官方文档：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://nginx.org/en/docs/">https://nginx.org/en/docs/</a></p>
+<p>自定义访问日志格式（http 作用域）：</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">log_format</span> main <span class="string">&#x27;<span class="variable">$remote_addr</span> - <span class="variable">$request_time</span> &quot;<span class="variable">$request</span>&quot; &#x27;</span></span><br><span class="line">                <span class="string">&#x27;<span class="variable">$status</span> <span class="variable">$body_bytes_sent</span> &quot;<span class="variable">$http_user_agent</span>&quot;&#x27;</span>;</span><br><span class="line"><span class="attribute">access_log</span> /var/log/nginx/access.log main;</span><br></pre></td></tr></table></figure>
+
+<p><strong>高频排障对照</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>现象</th>
+<th>先看</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>502 Bad Gateway</td>
+<td>error.log：后端挂了&#x2F;拒绝连接</td>
+</tr>
+<tr>
+<td>403 Forbidden</td>
+<td>目录权限、<code>index</code> 缺文件、autoindex 关闭</td>
+</tr>
+<tr>
+<td>404 但文件存在</td>
+<td><code>root</code> 路径拼错、location 未命中</td>
+</tr>
+<tr>
+<td>改了配置不生效</td>
+<td>忘了 <code>nginx -t</code> 后 <code>reload</code>，或改错了 server</td>
+</tr>
+</tbody></table>
+<hr>
 <h2 id="本章小结"><a href="#本章小结" class="headerlink" title="本章小结"></a>本章小结</h2><table>
 <thead>
 <tr>
@@ -371,26 +395,28 @@ flowchart LR
 </tr>
 </thead>
 <tbody><tr>
+<td>架构</td>
+<td>master 管 worker；worker 用事件循环扛高并发</td>
+</tr>
+<tr>
+<td>配置结构</td>
+<td>main→events→http→server→location 分层继承，站点放 conf.d&#x2F;</td>
+</tr>
+<tr>
 <td>静态站点</td>
-<td><strong><code>root</code> + <code>try_files ... /index.html</code></strong> 托管 dist 并兼容 SPA 路由</td>
+<td><code>root</code> + <code>try_files $uri $uri/ /index.html</code> 兼容 SPA 路由</td>
 </tr>
 <tr>
-<td>反向代理</td>
-<td><strong><code>upstream</code> + <code>proxy_pass</code></strong>，转发时补齐 <strong>X-Real-IP &#x2F; X-Forwarded-For</strong> 等头</td>
-</tr>
-<tr>
-<td>HTTPS</td>
-<td><strong><code>listen 443 ssl</code></strong> 挂证书，certbot 自动续期，密码学细节见 OpenSSL 篇</td>
+<td>location</td>
+<td>优先级 &#x3D; 精确 &gt; ^~ &gt; 正则 &gt; 最长前缀</td>
 </tr>
 <tr>
 <td>运维三板斧</td>
-<td><strong><code>nginx -t</code></strong> 验配置、<strong><code>systemctl reload</code></strong> 平滑生效、access&#x2F;error 日志排障</td>
-</tr>
-<tr>
-<td>进阶能力</td>
-<td><strong><code>limit_req</code></strong> 限流、<strong><code>proxy_cache</code></strong> 缓存、Ingress Controller 接入 K8s</td>
+<td><code>nginx -t</code> 验配置、<code>reload</code> 平滑生效、access&#x2F;error 日志定位</td>
 </tr>
 </tbody></table>
+<hr>
+<p>代理与负载均衡是 Nginx 的第二张面孔：<a href="/2026/05/01/Nginx/Nginx%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86/" title="第二章：Nginx 反向代理与负载均衡">第二章：Nginx 反向代理与负载均衡</a>。系列总览见 <a href="/2026/05/01/Nginx/Nginx-HTTPS%E4%B8%8E%E5%AE%89%E5%85%A8/" title="第三章：Nginx HTTPS 与安全">第三章：Nginx HTTPS 与安全</a> 与 <a href="/2026/05/01/Nginx/Nginx-%E7%BC%93%E5%AD%98%E4%B8%8E%E8%B0%83%E4%BC%98/" title="第四章：Nginx 缓存与性能调优">第四章：Nginx 缓存与性能调优</a>。</p>
 
     </div>
 
@@ -412,8 +438,8 @@ flowchart LR
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2026/05/01/kafka-mq/" rel="next" title="第一章：Kafka 消息中间件入门：核心概念与架构">
-                  第一章：Kafka 消息中间件入门：核心概念与架构 <i class="fa fa-angle-right"></i>
+                <a href="/2026/05/01/Nginx/Nginx%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86/" rel="next" title="第二章：Nginx 反向代理与负载均衡">
+                  第二章：Nginx 反向代理与负载均衡 <i class="fa fa-angle-right"></i>
                 </a>
             </div>
           </div>
@@ -445,13 +471,13 @@ flowchart LR
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">321k</span>
+    <span title="站点总字数">362k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">17:52</span>
+    <span title="站点阅读时长">20:07</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动

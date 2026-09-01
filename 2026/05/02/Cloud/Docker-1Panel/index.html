@@ -20,15 +20,15 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"my919.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
 
-    <meta name="description" content="第三章：Docker 部署 1Panel概念基础：1Panel 是什么&#x2F;为什么 1Panel 是开源的 Linux 服务器运维管理面板：在网页上即可管理网站、数据库、容器、防火墙、定时任务等，替代繁琐的命令行运维。 为什么用 Docker 部署：面板本体与依赖全部封进镜像，一条 docker run 即可拉起，升级与重建都围绕镜像和数据卷进行，不污染宿主机。 两类典型环境：Windows">
+    <meta name="description" content="第三章：Docker 部署 1Panel概念基础 1Panel 是开源的 Linux 服务器运维管理面板：在网页上即可管理网站、数据库、容器、防火墙、定时任务等，替代繁琐的命令行运维。 为什么用 Docker 部署：面板本体与依赖全部封进镜像，一条 docker run 即可拉起，升级与重建都围绕镜像和数据卷进行，不污染宿主机。 两类典型环境：Windows + Docker Desktop +">
 <meta property="og:type" content="article">
 <meta property="og:title" content="第三章：Docker 部署 1Panel">
 <meta property="og:url" content="https://my919.github.io/2026/05/02/Cloud/Docker-1Panel/index.html">
 <meta property="og:site_name" content="my">
-<meta property="og:description" content="第三章：Docker 部署 1Panel概念基础：1Panel 是什么&#x2F;为什么 1Panel 是开源的 Linux 服务器运维管理面板：在网页上即可管理网站、数据库、容器、防火墙、定时任务等，替代繁琐的命令行运维。 为什么用 Docker 部署：面板本体与依赖全部封进镜像，一条 docker run 即可拉起，升级与重建都围绕镜像和数据卷进行，不污染宿主机。 两类典型环境：Windows">
+<meta property="og:description" content="第三章：Docker 部署 1Panel概念基础 1Panel 是开源的 Linux 服务器运维管理面板：在网页上即可管理网站、数据库、容器、防火墙、定时任务等，替代繁琐的命令行运维。 为什么用 Docker 部署：面板本体与依赖全部封进镜像，一条 docker run 即可拉起，升级与重建都围绕镜像和数据卷进行，不污染宿主机。 两类典型环境：Windows + Docker Desktop +">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-05-01T17:59:40.000Z">
-<meta property="article:modified_time" content="2026-08-30T09:10:05.261Z">
+<meta property="article:modified_time" content="2026-09-01T13:56:38.261Z">
 <meta property="article:author" content="miracle">
 <meta property="article:tag" content="1Panel">
 <meta property="article:tag" content="Docker">
@@ -165,7 +165,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%B8%89%E7%AB%A0%EF%BC%9ADocker-%E9%83%A8%E7%BD%B2-1Panel"><span class="nav-number">1.</span> <span class="nav-text">第三章：Docker 部署 1Panel</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80%EF%BC%9A1Panel-%E6%98%AF%E4%BB%80%E4%B9%88-%E4%B8%BA%E4%BB%80%E4%B9%88"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础：1Panel 是什么&#x2F;为什么</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B1%E7%94%A8%E5%89%8D%E6%8F%90"><span class="nav-number">1.2.</span> <span class="nav-text">共用前提</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E7%B1%BB%EF%BC%9AWindows-Docker-Desktop-WSL"><span class="nav-number">1.3.</span> <span class="nav-text">第一类：Windows + Docker Desktop + WSL</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#WSL-Git-Bash-macOS%EF%BC%88%E8%A1%8C%E6%9C%AB-%E7%BB%AD%E8%A1%8C%EF%BC%89"><span class="nav-number">1.3.1.</span> <span class="nav-text">WSL &#x2F; Git Bash &#x2F; macOS（行末 \ 续行）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Windows-CMD%EF%BC%88%E8%A1%8C%E6%9C%AB-%E7%BB%AD%E8%A1%8C%EF%BC%89"><span class="nav-number">1.3.2.</span> <span class="nav-text">Windows CMD（行末 ^ 续行）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%8F%E8%A7%88%E5%99%A8%E8%AE%BF%E9%97%AE%EF%BC%88%E6%9C%AC%E6%9C%BA%EF%BC%89"><span class="nav-number">1.3.3.</span> <span class="nav-text">浏览器访问（本机）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%AF%E9%80%89%EF%BC%9Adocker-compose%EF%BC%88%E7%AB%AF%E5%8F%A3%E6%98%A0%E5%B0%84%EF%BC%89"><span class="nav-number">1.3.4.</span> <span class="nav-text">可选：docker compose（端口映射）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E7%B1%BB%EF%BC%9ALinux-Docker-%E4%B8%BB%E6%9C%BA"><span class="nav-number">1.4.</span> <span class="nav-text">第二类：Linux Docker 主机</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%9A%E8%A1%8C-docker-run%EF%BC%88-network-host%EF%BC%89"><span class="nav-number">1.4.1.</span> <span class="nav-text">多行 docker run（--network host）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%AF%E9%80%89%EF%BC%9Adocker-compose%EF%BC%88host-%E7%BD%91%E7%BB%9C%EF%BC%89"><span class="nav-number">1.4.2.</span> <span class="nav-text">可选：docker compose（host 网络）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B8%B8%E7%94%A8%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F%EF%BC%88V2%EF%BC%89"><span class="nav-number">1.5.</span> <span class="nav-text">常用环境变量（V2）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%BF%E9%97%AE%E4%B8%8E%E6%97%A5%E5%B8%B8%E5%91%BD%E4%BB%A4%EF%BC%88Linux-%E5%85%AC%E7%BD%91%EF%BC%89"><span class="nav-number">1.6.</span> <span class="nav-text">访问与日常命令（Linux 公网）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%98%E6%96%B9%E8%84%9A%E6%9C%AC%E5%AE%89%E8%A3%85%EF%BC%88%E5%AF%B9%E7%85%A7%EF%BC%89"><span class="nav-number">1.7.</span> <span class="nav-text">官方脚本安装（对照）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.8.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%B8%89%E7%AB%A0%EF%BC%9ADocker-%E9%83%A8%E7%BD%B2-1Panel"><span class="nav-number">1.</span> <span class="nav-text">第三章：Docker 部署 1Panel</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B1%E7%94%A8%E5%89%8D%E6%8F%90"><span class="nav-number">1.2.</span> <span class="nav-text">共用前提</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E7%B1%BB%EF%BC%9AWindows-Docker-Desktop-WSL"><span class="nav-number">1.3.</span> <span class="nav-text">第一类：Windows + Docker Desktop + WSL</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#WSL-Git-Bash-macOS%EF%BC%88%E8%A1%8C%E6%9C%AB-%E7%BB%AD%E8%A1%8C%EF%BC%89"><span class="nav-number">1.3.1.</span> <span class="nav-text">WSL &#x2F; Git Bash &#x2F; macOS（行末 \ 续行）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Windows-CMD%EF%BC%88%E8%A1%8C%E6%9C%AB-%E7%BB%AD%E8%A1%8C%EF%BC%89"><span class="nav-number">1.3.2.</span> <span class="nav-text">Windows CMD（行末 ^ 续行）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%8F%E8%A7%88%E5%99%A8%E8%AE%BF%E9%97%AE%EF%BC%88%E6%9C%AC%E6%9C%BA%EF%BC%89"><span class="nav-number">1.3.3.</span> <span class="nav-text">浏览器访问（本机）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%AF%E9%80%89%EF%BC%9Adocker-compose%EF%BC%88%E7%AB%AF%E5%8F%A3%E6%98%A0%E5%B0%84%EF%BC%89"><span class="nav-number">1.3.4.</span> <span class="nav-text">可选：docker compose（端口映射）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E7%B1%BB%EF%BC%9ALinux-Docker-%E4%B8%BB%E6%9C%BA"><span class="nav-number">1.4.</span> <span class="nav-text">第二类：Linux Docker 主机</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%9A%E8%A1%8C-docker-run%EF%BC%88-network-host%EF%BC%89"><span class="nav-number">1.4.1.</span> <span class="nav-text">多行 docker run（--network host）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%AF%E9%80%89%EF%BC%9Adocker-compose%EF%BC%88host-%E7%BD%91%E7%BB%9C%EF%BC%89"><span class="nav-number">1.4.2.</span> <span class="nav-text">可选：docker compose（host 网络）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B8%B8%E7%94%A8%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F%EF%BC%88V2%EF%BC%89"><span class="nav-number">1.5.</span> <span class="nav-text">常用环境变量（V2）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%BF%E9%97%AE%E4%B8%8E%E6%97%A5%E5%B8%B8%E5%91%BD%E4%BB%A4%EF%BC%88Linux-%E5%85%AC%E7%BD%91%EF%BC%89"><span class="nav-number">1.6.</span> <span class="nav-text">访问与日常命令（Linux 公网）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%98%E6%96%B9%E8%84%9A%E6%9C%AC%E5%AE%89%E8%A3%85%EF%BC%88%E5%AF%B9%E7%85%A7%EF%BC%89"><span class="nav-number">1.7.</span> <span class="nav-text">官方脚本安装（对照）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.8.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -178,7 +178,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">234</span>
+          <span class="site-state-item-count">257</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -189,7 +189,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">124</span>
+        <span class="site-state-item-count">156</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -263,7 +263,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-08-30 17:10:05" itemprop="dateModified" datetime="2026-08-30T17:10:05+08:00">2026-08-30</time>
+      <time title="修改时间：2026-09-01 21:56:38" itemprop="dateModified" datetime="2026-09-01T21:56:38+08:00">2026-09-01</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -299,7 +299,7 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><h1 id="第三章：Docker-部署-1Panel"><a href="#第三章：Docker-部署-1Panel" class="headerlink" title="第三章：Docker 部署 1Panel"></a>第三章：Docker 部署 1Panel</h1><h2 id="概念基础：1Panel-是什么-为什么"><a href="#概念基础：1Panel-是什么-为什么" class="headerlink" title="概念基础：1Panel 是什么&#x2F;为什么"></a>概念基础：1Panel 是什么&#x2F;为什么</h2><ol>
+    <div class="post-body" itemprop="articleBody"><h1 id="第三章：Docker-部署-1Panel"><a href="#第三章：Docker-部署-1Panel" class="headerlink" title="第三章：Docker 部署 1Panel"></a>第三章：Docker 部署 1Panel</h1><h2 id="概念基础"><a href="#概念基础" class="headerlink" title="概念基础"></a>概念基础</h2><ol>
 <li><strong>1Panel</strong> 是开源的 <strong>Linux 服务器运维管理面板</strong>：在网页上即可管理<strong>网站、数据库、容器、防火墙、定时任务</strong>等，替代繁琐的命令行运维。</li>
 <li><strong>为什么用 Docker 部署</strong>：面板本体与依赖全部封进<strong>镜像</strong>，一条 <strong><code>docker run</code></strong> 即可拉起，升级与重建都围绕镜像和数据卷进行，<strong>不污染宿主机</strong>。</li>
 <li><strong>两类典型环境</strong>：<strong>Windows + Docker Desktop + WSL</strong>（必须端口映射 <strong><code>-p</code></strong>，勿用 <strong><code>--network host</code></strong>）与 <strong>Linux Docker 主机</strong>（可直接 <strong>host</strong> 网络）。</li>
@@ -484,13 +484,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">321k</span>
+    <span title="站点总字数">362k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">17:52</span>
+    <span title="站点阅读时长">20:07</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动
