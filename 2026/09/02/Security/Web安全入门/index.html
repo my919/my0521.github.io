@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"my919.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="第一章：Web 安全与认证授权概念基础 认证（Authentication）与授权（Authorization）是两件事：认证回答”你是谁”——通过用户名密码、短信验证码、生物特征证明身份；授权回答”你能做什么”——在已知身份的前提下，决定能否访问某个资源。先认证、后授权，顺序不能颠倒，且授权模型（RBAC&#x2F;ABAC）独立于认证方式存在。 OWASP Top 10 是风险地图：它不是漏洞">
+<meta property="og:type" content="article">
+<meta property="og:title" content="第一章：Web 安全与认证授权">
+<meta property="og:url" content="https://my919.github.io/2026/09/02/Security/Web%E5%AE%89%E5%85%A8%E5%85%A5%E9%97%A8/index.html">
+<meta property="og:site_name" content="my">
+<meta property="og:description" content="第一章：Web 安全与认证授权概念基础 认证（Authentication）与授权（Authorization）是两件事：认证回答”你是谁”——通过用户名密码、短信验证码、生物特征证明身份；授权回答”你能做什么”——在已知身份的前提下，决定能否访问某个资源。先认证、后授权，顺序不能颠倒，且授权模型（RBAC&#x2F;ABAC）独立于认证方式存在。 OWASP Top 10 是风险地图：它不是漏洞">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-09-02T02:00:00.000Z">
+<meta property="article:modified_time" content="2026-09-02T13:37:05.084Z">
+<meta property="article:author" content="miracle">
+<meta property="article:tag" content="Security">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://my919.github.io/2026/09/02/Security/Web%E5%AE%89%E5%85%A8%E5%85%A5%E9%97%A8/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://my919.github.io/2026/09/02/Security/Web%E5%AE%89%E5%85%A8%E5%85%A5%E9%97%A8/","path":"2026/09/02/Security/Web安全入门/","title":"第一章：Web 安全与认证授权"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>第一章：Web 安全与认证授权 | my</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.10.1/mermaid.min.js","integrity":"sha256-BmQmdWDS8X2OTbrwELWK366LV6escyWhHHe0XCTU/Hk="}}</script>
+  <script src="/js/third-party/tags/mermaid.js" defer></script>
+
+
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="my" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">my</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-service"><a href="/service/" rel="section"><i class="fa fa-server fa-fw"></i>服务</a></li><li class="menu-item menu-item-tool"><a href="/tool/" rel="section"><i class="fa fa-wrench fa-fw"></i>工具</a></li><li class="menu-item menu-item-project"><a href="/project/" rel="section"><i class="fa fa-folder-open fa-fw"></i>项目</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E7%AB%A0%EF%BC%9AWeb-%E5%AE%89%E5%85%A8%E4%B8%8E%E8%AE%A4%E8%AF%81%E6%8E%88%E6%9D%83"><span class="nav-number">1.</span> <span class="nav-text">第一章：Web 安全与认证授权</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81OWASP-Top-10-%E9%80%9F%E8%A7%88"><span class="nav-number">1.2.</span> <span class="nav-text">一、OWASP Top 10 速览</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E8%AE%A4%E8%AF%81%E4%B8%8E%E6%8E%88%E6%9D%83%E5%9F%BA%E7%A1%80"><span class="nav-number">1.3.</span> <span class="nav-text">二、认证与授权基础</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-Authentication-vs-Authorization"><span class="nav-number">1.3.1.</span> <span class="nav-text">1. Authentication vs Authorization</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-RBAC-%E4%B8%8E-ABAC-%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.3.2.</span> <span class="nav-text">2. RBAC 与 ABAC 模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E6%9C%80%E5%B0%8F%E6%9D%83%E9%99%90%E5%8E%9F%E5%88%99"><span class="nav-number">1.3.3.</span> <span class="nav-text">3. 最小权限原则</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81JWT-%E5%AE%9E%E6%88%98"><span class="nav-number">1.4.</span> <span class="nav-text">三、JWT 实战</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-JWT-%E4%B8%89%E6%AE%B5%E7%BB%93%E6%9E%84"><span class="nav-number">1.4.1.</span> <span class="nav-text">1. JWT 三段结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E7%AD%BE%E5%8F%91%E4%B8%8E%E9%AA%8C%E8%AF%81%EF%BC%88Java%EF%BC%8CJJWT%EF%BC%89"><span class="nav-number">1.4.2.</span> <span class="nav-text">2. 签发与验证（Java，JJWT）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E7%AD%BE%E5%8F%91%E4%B8%8E%E9%AA%8C%E8%AF%81%EF%BC%88Node%EF%BC%8Cjsonwebtoken%EF%BC%89"><span class="nav-number">1.4.3.</span> <span class="nav-text">3. 签发与验证（Node，jsonwebtoken）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E5%88%B7%E6%96%B0%E4%BB%A4%E7%89%8C%E6%9C%BA%E5%88%B6"><span class="nav-number">1.4.4.</span> <span class="nav-text">4. 刷新令牌机制</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81OAuth-2-0-%E4%B8%8E-OIDC"><span class="nav-number">1.5.</span> <span class="nav-text">四、OAuth 2.0 与 OIDC</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%9B%9B%E7%A7%8D%E6%8E%88%E6%9D%83%E6%A8%A1%E5%BC%8F"><span class="nav-number">1.5.1.</span> <span class="nav-text">1. 四种授权模式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E6%8E%88%E6%9D%83%E7%A0%81%E6%B5%81%E7%A8%8B"><span class="nav-number">1.5.2.</span> <span class="nav-text">2. 授权码流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-PKCE-%E6%89%A9%E5%B1%95%EF%BC%88%E5%85%AC%E5%BC%80%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%BF%85%E5%A4%87%EF%BC%89"><span class="nav-number">1.5.3.</span> <span class="nav-text">3. PKCE 扩展（公开客户端必备）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-OIDC-%E4%B8%8E-OAuth-2-0-%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">1.5.4.</span> <span class="nav-text">4. OIDC 与 OAuth 2.0 的区别</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81Session-%E7%AE%A1%E7%90%86%E4%B8%8E-Cookie-%E5%AE%89%E5%85%A8"><span class="nav-number">1.6.</span> <span class="nav-text">五、Session 管理与 Cookie 安全</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-Cookie-%E5%AE%89%E5%85%A8%E4%B8%89%E5%B1%9E%E6%80%A7"><span class="nav-number">1.6.1.</span> <span class="nav-text">1. Cookie 安全三属性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-Session-%E5%AD%98%E5%82%A8"><span class="nav-number">1.6.2.</span> <span class="nav-text">2. Session 存储</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-CSRF-%E9%98%B2%E6%8A%A4"><span class="nav-number">1.6.3.</span> <span class="nav-text">3. CSRF 防护</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E9%81%BF%E5%9D%91"><span class="nav-number">1.7.</span> <span class="nav-text">常见避坑</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.8.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">miracle</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">284</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">44</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">186</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/my919" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;my919" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://gitee.com/my919" title="Gitee → https:&#x2F;&#x2F;gitee.com&#x2F;my919" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>Gitee</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:yeal166@163.com" title="E-Mail → mailto:yeal166@163.com" rel="noopener me external nofollow noreferrer" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://my919.github.io/2026/09/02/Security/Web%E5%AE%89%E5%85%A8%E5%85%A5%E9%97%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="第一章：Web 安全与认证授权 | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          第一章：Web 安全与认证授权
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2026-09-02 10:00:00 / 修改时间：21:37:05" itemprop="dateCreated datePublished" datetime="2026-09-02T10:00:00+08:00">2026-09-02</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Security/" itemprop="url" rel="index"><span itemprop="name">Security</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>3.2k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>11 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="第一章：Web-安全与认证授权"><a href="#第一章：Web-安全与认证授权" class="headerlink" title="第一章：Web 安全与认证授权"></a>第一章：Web 安全与认证授权</h1><h2 id="概念基础"><a href="#概念基础" class="headerlink" title="概念基础"></a>概念基础</h2><ol>
+<li><strong>认证（Authentication）与授权（Authorization）是两件事</strong>：认证回答”你是谁”——通过用户名密码、短信验证码、生物特征证明身份；授权回答”你能做什么”——在已知身份的前提下，决定能否访问某个资源。先认证、后授权，顺序不能颠倒，且授权模型（RBAC&#x2F;ABAC）独立于认证方式存在。</li>
+<li><strong>OWASP Top 10 是风险地图</strong>：它不是漏洞清单，而是 Web 应用<strong>最常见、最具影响</strong>的十类安全风险归纳（约每 3–4 年更新一次，最新为 2021 版）。把它当作 checklist 能快速自检”我的系统是否覆盖了主流攻击面”，但<strong>通过 Top 10 不等于安全</strong>，需结合威胁建模与业务实际。</li>
+<li><strong>JWT 是无状态令牌</strong>：Header（算法）+ Payload（声明）+ Signature（签名）三段 Base64URL 拼接，签名由服务端密钥生成。优点是无需服务端存储会话、易于横向扩展；代价是<strong>令牌一旦签发，在过期前无法主动撤销</strong>，需配合短期有效期 + 刷新令牌 + 黑名单使用。</li>
+<li><strong>Session 与 Token 的取舍</strong>：Session 把状态存服务端、靠 Cookie 传递 ID，适合单体应用、易注销；Token（JWT）把状态放客户端、自包含，适合微服务&#x2F;跨域&#x2F;移动端，但注销与轮换较复杂。没有银弹，<strong>按场景选型</strong>而非跟风。</li>
+<li><strong>零信任（Zero Trust）理念</strong>：核心是”永不信任，始终验证”——不再以”是否在内网”作为信任依据，而是对每次访问都进行<strong>身份认证 + 授权 + 加密 + 持续评估</strong>。最小权限、默认拒绝、微隔离是其落地手段，NIST SP 800-207 是其权威参考。</li>
+</ol>
+<blockquote>
+<p>下一篇：<a href="/2026/09/02/Security/API%E5%AE%89%E5%85%A8%E4%B8%8E%E6%BC%8F%E6%B4%9E%E9%98%B2%E6%8A%A4/" title="第二章：API 安全与漏洞防护">第二章：API 安全与漏洞防护</a> 将从 Web 视角下沉到接口层，聚焦 SQL 注入、XSS、CSRF、SSRF 与速率限制的工程防护。</p>
+</blockquote>
+<hr>
+<h2 id="一、OWASP-Top-10-速览"><a href="#一、OWASP-Top-10-速览" class="headerlink" title="一、OWASP Top 10 速览"></a>一、OWASP Top 10 速览</h2><p>下表归纳 OWASP Top 10 (2021) 的十类风险，每项给出一句话描述与典型诱因，便于快速对照自检：</p>
+<table>
+<thead>
+<tr>
+<th>编号</th>
+<th>风险类别</th>
+<th>一句话描述</th>
+<th>典型诱因</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>A01</td>
+<td>失效的访问控制</td>
+<td>用户越权访问本不该访问的资源</td>
+<td>缺少后端鉴权、依赖前端隐藏菜单</td>
+</tr>
+<tr>
+<td>A02</td>
+<td>加密失败</td>
+<td>敏感数据传输&#x2F;存储未加密或用了弱算法</td>
+<td>HTTP 明文、MD5、硬编码密钥</td>
+</tr>
+<tr>
+<td>A03</td>
+<td>注入</td>
+<td>不可信数据被当作代码执行</td>
+<td>拼接 SQL&#x2F;命令、模板未转义</td>
+</tr>
+<tr>
+<td>A04</td>
+<td>不安全设计</td>
+<td>架构层面缺乏威胁建模与控制</td>
+<td>需求阶段未考虑滥用场景</td>
+</tr>
+<tr>
+<td>A05</td>
+<td>安全配置错误</td>
+<td>默认配置、多余功能、错误信息泄露</td>
+<td>未关调试、目录列表开启</td>
+</tr>
+<tr>
+<td>A06</td>
+<td>易受攻击的组件</td>
+<td>使用了含已知漏洞的依赖库</td>
+<td>不锁版本、不扫描、不升级</td>
+</tr>
+<tr>
+<td>A07</td>
+<td>身份认证失败</td>
+<td>认证逻辑可被绕过或爆破</td>
+<td>弱口令、无限重试、凭据填充</td>
+</tr>
+<tr>
+<td>A08</td>
+<td>数据完整性失败</td>
+<td>不可信源更新软件&#x2F;反序列化数据</td>
+<td>未校验签名、反序列化不可信流</td>
+</tr>
+<tr>
+<td>A09</td>
+<td>日志与监控失败</td>
+<td>攻击发生但未被记录与告警</td>
+<td>不记关键操作、无告警联动</td>
+</tr>
+<tr>
+<td>A10</td>
+<td>服务端请求伪造 SSRF</td>
+<td>服务端发起请求到任意目标</td>
+<td>未限制内网 URL、协议未白名单</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>提示：Top 10 是<strong>入门地图</strong>而非<strong>审计清单</strong>，纵深防御需结合具体业务威胁建模，不可”打钩即安全”。</p>
+</blockquote>
+<hr>
+<h2 id="二、认证与授权基础"><a href="#二、认证与授权基础" class="headerlink" title="二、认证与授权基础"></a>二、认证与授权基础</h2><h3 id="1-Authentication-vs-Authorization"><a href="#1-Authentication-vs-Authorization" class="headerlink" title="1. Authentication vs Authorization"></a>1. Authentication vs Authorization</h3><table>
+<thead>
+<tr>
+<th>维度</th>
+<th>认证（Authentication）</th>
+<th>授权（Authorization）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>回答的问题</td>
+<td>你是谁？</td>
+<td>你能做什么？</td>
+</tr>
+<tr>
+<td>时机</td>
+<td>先发生</td>
+<td>后发生，依赖认证结果</td>
+</tr>
+<tr>
+<td>常见手段</td>
+<td>密码、OTP、生物特征、SSO</td>
+<td>RBAC、ABAC、ACL</td>
+</tr>
+<tr>
+<td>失败后果</td>
+<td>冒充身份</td>
+<td>越权访问</td>
+</tr>
+</tbody></table>
+<h3 id="2-RBAC-与-ABAC-模型"><a href="#2-RBAC-与-ABAC-模型" class="headerlink" title="2. RBAC 与 ABAC 模型"></a>2. RBAC 与 ABAC 模型</h3><p><strong>RBAC（基于角色）</strong>：把权限挂在角色上，用户加入角色即继承权限。简单、易管理，适合组织结构稳定的场景。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">用户 ──&gt; 角色 ──&gt; 权限 ──&gt; 资源</span><br><span class="line">admin ──&gt; role_admin ──&gt; [user:read, user:write] ──&gt; /api/users</span><br></pre></td></tr></table></figure>
+
+<p><strong>ABAC（基于属性）</strong>：依据用户属性、资源属性、环境属性动态决策，灵活但复杂，适合细粒度、多租户场景。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">决策 = policy(user.dept, resource.owner, action, env.time)</span><br><span class="line"># 例：仅允许 同部门 + 工作时间 + 操作为读 时访问财务报表</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-最小权限原则"><a href="#3-最小权限原则" class="headerlink" title="3. 最小权限原则"></a>3. 最小权限原则</h3><p>无论哪种模型，都应遵循<strong>最小权限</strong>：默认拒绝，按需授予，定期回收。角色宁可细不可粗，权限宁可少不可多；离职&#x2F;转岗及时变更，避免”幽灵权限”长期存活。</p>
+<hr>
+<h2 id="三、JWT-实战"><a href="#三、JWT-实战" class="headerlink" title="三、JWT 实战"></a>三、JWT 实战</h2><h3 id="1-JWT-三段结构"><a href="#1-JWT-三段结构" class="headerlink" title="1. JWT 三段结构"></a>1. JWT 三段结构</h3><p>JWT 由 <code>Header.Payload.Signature</code> 三段 Base64URL 编码后用 <code>.</code> 拼接：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyXzAwMSIsImV4cCI6... .SflKxwRJSMeKKF2QT4fwp...</span><br><span class="line">        │              │                                    │</span><br><span class="line">        └ Header        └ Payload（声明）                     └ Signature（签名）</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>Header</strong>：<code>&#123;&quot;alg&quot;:&quot;HS256&quot;,&quot;typ&quot;:&quot;JWT&quot;&#125;</code>，声明算法与令牌类型。</li>
+<li><strong>Payload</strong>：标准声明（<code>sub</code> 主体、<code>exp</code> 过期、<code>iat</code> 签发时间、<code>iss</code> 签发方、<code>aud</code> 接收方）+ 自定义声明。</li>
+<li><strong>Signature</strong>：<code>HMAC-SHA256(base64url(header) + &quot;.&quot; + base64url(payload), secret)</code>，防篡改。</li>
+</ul>
+<blockquote>
+<p><strong>注意</strong>：Payload 仅做 Base64 编码，<strong>不是加密</strong>，严禁放密码、手机号等敏感信息。</p>
+</blockquote>
+<h3 id="2-签发与验证（Java，JJWT）"><a href="#2-签发与验证（Java，JJWT）" class="headerlink" title="2. 签发与验证（Java，JJWT）"></a>2. 签发与验证（Java，JJWT）</h3><p>Maven 依赖：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>io.jsonwebtoken<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>jjwt-api<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">version</span>&gt;</span>0.11.5<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>io.jsonwebtoken<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>jjwt-impl<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">version</span>&gt;</span>0.11.5<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">scope</span>&gt;</span>runtime<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>io.jsonwebtoken<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>jjwt-jackson<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">version</span>&gt;</span>0.11.5<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">scope</span>&gt;</span>runtime<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>签发与验证代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> io.jsonwebtoken.Jwts;</span><br><span class="line"><span class="keyword">import</span> io.jsonwebtoken.SignatureAlgorithm;</span><br><span class="line"><span class="keyword">import</span> io.jsonwebtoken.security.Keys;</span><br><span class="line"><span class="keyword">import</span> javax.crypto.SecretKey;</span><br><span class="line"><span class="keyword">import</span> java.util.Date;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 密钥至少 256 位（32 字节），生产环境应从配置中心/密钥管理服务读取，禁止硬编码</span></span><br><span class="line"><span class="type">SecretKey</span> <span class="variable">key</span> <span class="operator">=</span> Keys.hmacShaKeyFor(<span class="string">&quot;my-256-bit-secret-xxxxxxxxxxxxxxxx&quot;</span>.getBytes());</span><br><span class="line"></span><br><span class="line"><span class="comment">// 签发 access token（短期，15 分钟）</span></span><br><span class="line"><span class="type">String</span> <span class="variable">access</span> <span class="operator">=</span> Jwts.builder()</span><br><span class="line">    .setSubject(<span class="string">&quot;user_001&quot;</span>)                       <span class="comment">// 主体：用户标识</span></span><br><span class="line">    .claim(<span class="string">&quot;role&quot;</span>, <span class="string">&quot;admin&quot;</span>)                       <span class="comment">// 自定义声明</span></span><br><span class="line">    .setIssuer(<span class="string">&quot;myapp&quot;</span>)                           <span class="comment">// 签发方</span></span><br><span class="line">    .setIssuedAt(<span class="keyword">new</span> <span class="title class_">Date</span>())                      <span class="comment">// 签发时间</span></span><br><span class="line">    .setExpiration(<span class="keyword">new</span> <span class="title class_">Date</span>(System.currentTimeMillis() + <span class="number">15</span> * <span class="number">60_000L</span>)) <span class="comment">// 15 分钟过期</span></span><br><span class="line">    .signWith(key, SignatureAlgorithm.HS256)      <span class="comment">// HMAC-SHA256 签名</span></span><br><span class="line">    .compact();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 验证与解析（验签失败/过期会抛 JwtException）</span></span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="type">var</span> <span class="variable">claims</span> <span class="operator">=</span> Jwts.parserBuilder()</span><br><span class="line">        .setSigningKey(key)                        <span class="comment">// 固定密钥，禁止接受 alg=none</span></span><br><span class="line">        .requireIssuer(<span class="string">&quot;myapp&quot;</span>)                    <span class="comment">// 显式校验签发方</span></span><br><span class="line">        .build()</span><br><span class="line">        .parseClaimsJws(access)</span><br><span class="line">        .getBody();</span><br><span class="line">    <span class="type">String</span> <span class="variable">userId</span> <span class="operator">=</span> claims.getSubject();           <span class="comment">// 取出主体</span></span><br><span class="line">&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">    <span class="comment">// 令牌无效或已过期，拒绝访问</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-签发与验证（Node，jsonwebtoken）"><a href="#3-签发与验证（Node，jsonwebtoken）" class="headerlink" title="3. 签发与验证（Node，jsonwebtoken）"></a>3. 签发与验证（Node，jsonwebtoken）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install jsonwebtoken</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> jwt = <span class="built_in">require</span>(<span class="string">&#x27;jsonwebtoken&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="variable constant_">SECRET</span> = <span class="string">&#x27;my-256-bit-secret-xxxxxxxxxxxxxxxx&#x27;</span>; <span class="comment">// 至少 32 字节</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 签发 access token</span></span><br><span class="line"><span class="keyword">const</span> accessToken = jwt.<span class="title function_">sign</span>(</span><br><span class="line">  &#123; <span class="attr">sub</span>: <span class="string">&#x27;user_001&#x27;</span>, <span class="attr">role</span>: <span class="string">&#x27;admin&#x27;</span> &#125;,  <span class="comment">// sub 为主体，role 为自定义声明</span></span><br><span class="line">  <span class="variable constant_">SECRET</span>,</span><br><span class="line">  &#123; <span class="attr">algorithm</span>: <span class="string">&#x27;HS256&#x27;</span>, <span class="attr">issuer</span>: <span class="string">&#x27;myapp&#x27;</span>, <span class="attr">expiresIn</span>: <span class="string">&#x27;15m&#x27;</span> &#125;</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 验证（验签失败/过期会进入 err 分支）</span></span><br><span class="line">jwt.<span class="title function_">verify</span>(accessToken, <span class="variable constant_">SECRET</span>, &#123; <span class="attr">issuer</span>: <span class="string">&#x27;myapp&#x27;</span> &#125;, <span class="function">(<span class="params">err, payload</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">if</span> (err) <span class="keyword">return</span>;        <span class="comment">// 签名无效 / 过期 / 签发方不符</span></span><br><span class="line">  <span class="keyword">const</span> userId = payload.<span class="property">sub</span>;   <span class="comment">// 取出主体</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>JWT 默认用 HMAC 对称签名，签名&#x2F;验证用同一密钥；非对称场景（RS256&#x2F;ES256）可参考 <a href="/2026/05/01/openssl-sign-hmac/" title="第六章：OpenSSL 数字签名与 HMAC：完整性、身份与推荐用法">OpenSSL 数字签名与HMAC</a> 的密钥生成与验签命令。</p>
+</blockquote>
+<h3 id="4-刷新令牌机制"><a href="#4-刷新令牌机制" class="headerlink" title="4. 刷新令牌机制"></a>4. 刷新令牌机制</h3><p>access token 短期有效（15 分钟）以缩小泄露窗口；refresh token 长期有效（如 7 天）仅用于换取新 access token，并存储在服务端以便撤销：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">1. 登录成功   → 下发 access(15m) + refresh(7d)</span><br><span class="line">2. access 过期 → 用 refresh 调 /token/refresh</span><br><span class="line">3. 服务端校验  → refresh 签名 + 是否在黑名单，通过后签发新 access（可轮换 refresh）</span><br><span class="line">4. 注销/改密   → 把 refresh 加入黑名单，access 等待自然过期</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 刷新端点示意</span></span><br><span class="line">app.<span class="title function_">post</span>(<span class="string">&#x27;/token/refresh&#x27;</span>, <span class="title function_">async</span> (req, res) =&gt; &#123;</span><br><span class="line">  <span class="keyword">const</span> &#123; refreshToken &#125; = req.<span class="property">body</span>;</span><br><span class="line">  <span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> payload = jwt.<span class="title function_">verify</span>(refreshToken, <span class="variable constant_">REFRESH_SECRET</span>);  <span class="comment">// 1. 校验签名与有效期</span></span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">await</span> <span class="title function_">isRevoked</span>(payload.<span class="property">jti</span>)) <span class="keyword">return</span> res.<span class="title function_">status</span>(<span class="number">401</span>).<span class="title function_">end</span>(); <span class="comment">// 2. 查黑名单</span></span><br><span class="line">    <span class="keyword">const</span> access = jwt.<span class="title function_">sign</span>(&#123; <span class="attr">sub</span>: payload.<span class="property">sub</span>, <span class="attr">role</span>: payload.<span class="property">role</span> &#125;, <span class="comment">// 3. 签发新 access</span></span><br><span class="line">                            <span class="variable constant_">SECRET</span>, &#123; <span class="attr">expiresIn</span>: <span class="string">&#x27;15m&#x27;</span> &#125;);</span><br><span class="line">    res.<span class="title function_">json</span>(&#123; <span class="attr">accessToken</span>: access &#125;);</span><br><span class="line">  &#125; <span class="keyword">catch</span> (e) &#123;</span><br><span class="line">    res.<span class="title function_">status</span>(<span class="number">401</span>).<span class="title function_">end</span>();      <span class="comment">// refresh 无效，需重新登录</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="四、OAuth-2-0-与-OIDC"><a href="#四、OAuth-2-0-与-OIDC" class="headerlink" title="四、OAuth 2.0 与 OIDC"></a>四、OAuth 2.0 与 OIDC</h2><h3 id="1-四种授权模式"><a href="#1-四种授权模式" class="headerlink" title="1. 四种授权模式"></a>1. 四种授权模式</h3><p>| 模式 | 适用场景 | 是否需客户端密钥 |<br>|——|———|—————-|—————-|<br>| 授权码 Authorization Code | Web 后端应用（最常用） | 是 |<br>| 客户端凭证 Client Credentials | 服务到服务调用（M2M） | 是 |<br>| 密码模式 Resource Owner Password | 高度信任的官方客户端（已不推荐） | 是 |<br>| 简化模式 Implicit | 纯前端 SPA（已不推荐，改用 PKCE） | 否 |</p>
+<h3 id="2-授权码流程"><a href="#2-授权码流程" class="headerlink" title="2. 授权码流程"></a>2. 授权码流程</h3><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">用户-agent        客户端(后端)         授权服务器        资源服务器</span><br><span class="line">   │                  │                   │                │</span><br><span class="line">   │──1. 点登录────────&gt;│                   │                │</span><br><span class="line">   │                  │──2. 重定向到 /authorize?response_type=code&amp;...&gt;│</span><br><span class="line">   │──────────────────────────────────────&gt;│                │</span><br><span class="line">   │&lt;──3. 授权后回跳 ?code=xxxx─────────────│                │</span><br><span class="line">   │──4. 把 code 给后端─&gt;│                   │                │</span><br><span class="line">   │                  │──5. POST /token(code+client_secret)&gt;│                │</span><br><span class="line">   │                  │&lt;──6. 返回 access_token──────────────│                │</span><br><span class="line">   │                  │──7. 带 Bearer 访问资源──────────────────────────────&gt;│</span><br><span class="line">   │                  │&lt;──8. 返回受保护资源──────────────────────────────────│</span><br></pre></td></tr></table></figure>
+
+<p>关键点：<code>code</code> 短期有效、一次性、必须配合 <code>client_secret</code> 兑换，相比直接在 URL 返回 token 更安全。</p>
+<h3 id="3-PKCE-扩展（公开客户端必备）"><a href="#3-PKCE-扩展（公开客户端必备）" class="headerlink" title="3. PKCE 扩展（公开客户端必备）"></a>3. PKCE 扩展（公开客户端必备）</h3><p>SPA&#x2F;移动端无法安全保存 <code>client_secret</code>，PKCE（RFC 7636）用动态 <code>code_verifier</code> 代替密钥：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">1. 客户端生成随机 code_verifier（43~128 字符）</span><br><span class="line">2. 派生 code_challenge = BASE64URL(SHA256(code_verifier))  // &quot;S256&quot; 方式</span><br><span class="line">3. 授权请求带 code_challenge：GET /authorize?...&amp;code_challenge=xxx&amp;code_challenge_method=S256</span><br><span class="line">4. 换 token 时带原始 code_verifier：POST /token &#123;..., code_verifier=xxx&#125;</span><br><span class="line">5. 授权服务器校验 SHA256(code_verifier) == code_challenge，一致才发 token</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Node：生成 PKCE 对</span></span><br><span class="line"><span class="keyword">const</span> crypto = <span class="built_in">require</span>(<span class="string">&#x27;crypto&#x27;</span>);</span><br><span class="line"><span class="keyword">const</span> verifier = crypto.<span class="title function_">randomBytes</span>(<span class="number">32</span>).<span class="title function_">toString</span>(<span class="string">&#x27;base64url&#x27;</span>);        <span class="comment">// 随机 verifier</span></span><br><span class="line"><span class="keyword">const</span> challenge = crypto.<span class="title function_">createHash</span>(<span class="string">&#x27;sha256&#x27;</span>).<span class="title function_">update</span>(verifier).<span class="title function_">digest</span>(<span class="string">&#x27;base64url&#x27;</span>);</span><br><span class="line"><span class="comment">// verifier 本地保存，challenge 随授权请求发出，换 token 时回传 verifier</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="4-OIDC-与-OAuth-2-0-的区别"><a href="#4-OIDC-与-OAuth-2-0-的区别" class="headerlink" title="4. OIDC 与 OAuth 2.0 的区别"></a>4. OIDC 与 OAuth 2.0 的区别</h3><p>OAuth 2.0 只解决<strong>授权</strong>（委托访问），不解决认证；OIDC 在 OAuth 之上加 <strong>ID Token</strong>（一个 JWT，含用户身份声明）实现<strong>认证</strong>。要做”登录”用 OIDC，要做”代为访问 API”用 OAuth 2.0。</p>
+<hr>
+<h2 id="五、Session-管理与-Cookie-安全"><a href="#五、Session-管理与-Cookie-安全" class="headerlink" title="五、Session 管理与 Cookie 安全"></a>五、Session 管理与 Cookie 安全</h2><h3 id="1-Cookie-安全三属性"><a href="#1-Cookie-安全三属性" class="headerlink" title="1. Cookie 安全三属性"></a>1. Cookie 安全三属性</h3><table>
+<thead>
+<tr>
+<th>属性</th>
+<th>作用</th>
+<th>推荐值</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>HttpOnly</code></td>
+<td>禁止 JS 读取 Cookie，防 XSS 窃取</td>
+<td>必须开启</td>
+</tr>
+<tr>
+<td><code>Secure</code></td>
+<td>仅 HTTPS 下传输，防中间人嗅探</td>
+<td>生产必须开启</td>
+</tr>
+<tr>
+<td><code>SameSite</code></td>
+<td>跨站请求是否带 Cookie，防 CSRF</td>
+<td><code>Lax</code> 或 <code>Strict</code></td>
+</tr>
+</tbody></table>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">Set-Cookie</span><span class="punctuation">: </span>session_id=xxxx; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=3600</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-Session-存储"><a href="#2-Session-存储" class="headerlink" title="2. Session 存储"></a>2. Session 存储</h3><ul>
+<li>服务端存储会话数据，Cookie 仅存 <code>session_id</code>（随机、足够长）。</li>
+<li>多实例部署需把 session 放 Redis 等共享存储，或用粘性会话。</li>
+<li>注销即删除服务端 session 与客户端 Cookie，避免”僵尸会话”。</li>
+</ul>
+<h3 id="3-CSRF-防护"><a href="#3-CSRF-防护" class="headerlink" title="3. CSRF 防护"></a>3. CSRF 防护</h3><p>CSRF（跨站请求伪造）利用浏览器自动带 Cookie 的机制：在用户已登录站点 A 时，被恶意站点诱导对 A 发请求。防护手段：</p>
+<ul>
+<li><strong>Synchronizer Token</strong>：服务端生成随机 token 嵌入表单，提交时校验，攻击者拿不到 token。</li>
+<li><strong>SameSite Cookie</strong>：<code>SameSite=Lax</code>&#x2F;<code>Strict</code> 阻止跨站带 Cookie，是最简防御。</li>
+<li><strong>双重提交 Cookie</strong>：token 同时放 Cookie 与请求头，服务端比对两者一致。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Spring Security 默认启用 CSRF token（表单提交需带 _csrf）</span></span><br><span class="line"><span class="comment">// &lt;input type=&quot;hidden&quot; name=&quot;$&#123;_csrf.parameterName&#125;&quot; value=&quot;$&#123;_csrf.token&#125;&quot;/&gt;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// SPA：从 meta 读取 token 放进请求头（双重提交）</span></span><br><span class="line"><span class="keyword">const</span> csrf = <span class="variable language_">document</span>.<span class="title function_">querySelector</span>(<span class="string">&#x27;meta[name=csrf-token]&#x27;</span>).<span class="property">content</span>;</span><br><span class="line"><span class="title function_">fetch</span>(<span class="string">&#x27;/api/profile&#x27;</span>, &#123;</span><br><span class="line">  <span class="attr">method</span>: <span class="string">&#x27;POST&#x27;</span>,</span><br><span class="line">  <span class="attr">credentials</span>: <span class="string">&#x27;same-origin&#x27;</span>,</span><br><span class="line">  <span class="attr">headers</span>: &#123; <span class="string">&#x27;X-CSRF-Token&#x27;</span>: csrf &#125;,   <span class="comment">// 服务端比对 cookie 与 header</span></span><br><span class="line">  <span class="attr">body</span>: <span class="title class_">JSON</span>.<span class="title function_">stringify</span>(data),</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>对纯 API（前后端分离 + Bearer Token）场景，因不使用 Cookie 传递凭据，通常无 CSRF 风险，但跨站脚本仍需 XSS 防护配合。</p>
+</blockquote>
+<hr>
+<h2 id="常见避坑"><a href="#常见避坑" class="headerlink" title="常见避坑"></a>常见避坑</h2><table>
+<thead>
+<tr>
+<th>坑</th>
+<th>现象</th>
+<th>正确做法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>JWT 存 localStorage</td>
+<td>XSS 可直接窃取令牌</td>
+<td>存 HttpOnly Cookie 或内存，配合短期 access token</td>
+</tr>
+<tr>
+<td>Payload 放敏感信息</td>
+<td>手机号、权限被 Base64 解出</td>
+<td>只放 user_id 等非敏感标识</td>
+</tr>
+<tr>
+<td>不校验 exp&#x2F;iss&#x2F;aud</td>
+<td>令牌被复用、跨服务冒用</td>
+<td>验证时显式校验签发方与接收方</td>
+</tr>
+<tr>
+<td>接受 <code>alg=none</code></td>
+<td>攻击者伪造无签名令牌</td>
+<td>服务端固定算法白名单，禁止 none</td>
+</tr>
+<tr>
+<td>Cookie 不设 SameSite</td>
+<td>被 CSRF 攻击</td>
+<td><code>SameSite=Lax</code> 起步，关键操作用 Strict</td>
+</tr>
+<tr>
+<td>只前端隐藏菜单做鉴权</td>
+<td>抓包直接调用接口越权</td>
+<td>后端每个接口都做 RBAC 校验</td>
+</tr>
+<tr>
+<td>密码用 MD5&#x2F;SHA1</td>
+<td>撞库秒破</td>
+<td>用 bcrypt&#x2F;argon2 加盐慢哈希</td>
+</tr>
+<tr>
+<td>access token 长期有效</td>
+<td>泄露后窗口期长</td>
+<td>access 短期 + refresh 可撤销</td>
+</tr>
+<tr>
+<td>OAuth 用 Implicit</td>
+<td>token 经 URL 暴露</td>
+<td>用授权码 + PKCE</td>
+</tr>
+<tr>
+<td>refresh token 不轮换</td>
+<td>泄露后长期可用</td>
+<td>检测重用即吊销整个会话族</td>
+</tr>
+<tr>
+<td>弱口令 + 无限重试</td>
+<td>被凭据填充爆破</td>
+<td>强制密码强度 + 失败次数锁定 + 验证码</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="本章小结"><a href="#本章小结" class="headerlink" title="本章小结"></a>本章小结</h2><table>
+<thead>
+<tr>
+<th>要点</th>
+<th>结论</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>认证 vs 授权</td>
+<td>先认证你是谁，再授权你能做什么，二者不可混用</td>
+</tr>
+<tr>
+<td>OWASP Top 10</td>
+<td>是风险地图而非审计清单，需结合威胁建模</td>
+</tr>
+<tr>
+<td>JWT</td>
+<td>无状态、易扩展，但短期 + refresh + 黑名单才安全</td>
+</tr>
+<tr>
+<td>Session vs Token</td>
+<td>按场景选型，单体偏 Session，分布式跨域偏 Token</td>
+</tr>
+<tr>
+<td>Cookie 三属性</td>
+<td>HttpOnly + Secure + SameSite 是基线</td>
+</tr>
+<tr>
+<td>CSRF</td>
+<td>SameSite Cookie + Token 双重防御</td>
+</tr>
+<tr>
+<td>OAuth&#x2F;OIDC</td>
+<td>授权用 OAuth，登录用 OIDC，公开客户端用 PKCE</td>
+</tr>
+<tr>
+<td>零信任</td>
+<td>永不信任、始终验证、最小权限</td>
+</tr>
+</tbody></table>
+<hr>
+<p>Web 安全是一个系统工程，认证授权只是入口。接口层的注入、跨站脚本与请求伪造防护详见 <a href="/2026/09/02/Security/API%E5%AE%89%E5%85%A8%E4%B8%8E%E6%BC%8F%E6%B4%9E%E9%98%B2%E6%8A%A4/" title="第二章：API 安全与漏洞防护">第二章：API 安全与漏洞防护</a>；证书、TLS、密钥与容器加固等生产环境议题详见 <a href="/2026/09/02/Security/%E5%AE%89%E5%85%A8%E8%BF%90%E7%BB%B4%E4%B8%8E%E5%8A%A0%E5%9B%BA/" title="第三章：安全运维与生产加固">第三章：安全运维与生产加固</a>。建议按章节顺序阅读，形成”设计—编码—运维”的完整安全闭环。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Security/" rel="tag"># Security</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/09/02/Security/%E5%AE%89%E5%85%A8%E8%BF%90%E7%BB%B4%E4%B8%8E%E5%8A%A0%E5%9B%BA/" rel="prev" title="第三章：安全运维与生产加固">
+                  <i class="fa fa-angle-left"></i> 第三章：安全运维与生产加固
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2026/09/02/Security/API%E5%AE%89%E5%85%A8%E4%B8%8E%E6%BC%8F%E6%B4%9E%E9%98%B2%E6%8A%A4/" rel="next" title="第二章：API 安全与漏洞防护">
+                  第二章：API 安全与漏洞防护 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">miracle</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">424k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">23:32</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+<script>
+(function () {
+  function normalizeClipboard(s) {
+    return (s || '').replace(/\u00a0/g, ' ');
+  }
+
+  /** When innerText is empty, treat <br> as newlines (matches Hexo fenced + line_number HTML). */
+  function plainTextFromElement(el) {
+    if (!el) return '';
+    var t = el.innerText;
+    if (t != null && t !== '') return normalizeClipboard(t);
+    var clone = el.cloneNode(true);
+    clone.querySelectorAll('br').forEach(function (br) {
+      br.parentNode.replaceChild(document.createTextNode('\n'), br);
+    });
+    return normalizeClipboard(clone.textContent || '');
+  }
+
+  function extractFromFigure(fig) {
+    if (!fig) return '';
+    var cell = fig.querySelector('td.code') || fig.querySelector('.code');
+    if (cell) return plainTextFromElement(cell);
+    var pre = fig.querySelector('pre');
+    if (pre) return plainTextFromElement(pre);
+    var code = fig.querySelector('code');
+    return code ? plainTextFromElement(code) : '';
+  }
+
+  function extractForCopyBtn(btn) {
+    var fig = btn.closest('figure.highlight');
+    if (fig) return extractFromFigure(fig);
+    var wrap = btn.closest('.code-container');
+    if (wrap) {
+      var innerFig = wrap.querySelector('figure.highlight');
+      if (innerFig) return extractFromFigure(innerFig);
+      var preOnly = wrap.querySelector('pre');
+      if (preOnly) return plainTextFromElement(preOnly);
+    }
+    return '';
+  }
+
+  function setCopyIcon(btn, ok) {
+    var i = btn.querySelector('i');
+    if (i) i.className = ok ? 'fa fa-check-circle fa-fw' : 'fa fa-times-circle fa-fw';
+  }
+
+  function writeClipboard(text, btn) {
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(text).then(
+        function () { setCopyIcon(btn, true); },
+        function () { fallbackCopy(text, btn); }
+      );
+    }
+    fallbackCopy(text, btn);
+    return Promise.resolve();
+  }
+
+  function fallbackCopy(text, btn) {
+    try {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed';
+      ta.style.left = '-9999px';
+      document.body.appendChild(ta);
+      ta.select();
+      var ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      setCopyIcon(btn, ok);
+    } catch (e) {
+      setCopyIcon(btn, false);
+    }
+  }
+
+  document.addEventListener(
+    'click',
+    function (e) {
+      var btn = e.target.closest && e.target.closest('.copy-btn');
+      if (!btn) return;
+      if (!btn.closest('figure.highlight') && !btn.closest('.code-container')) return;
+      e.stopPropagation();
+      e.preventDefault();
+      var text = extractForCopyBtn(btn);
+      writeClipboard(text, btn);
+    },
+    true
+  );
+})();
+</script>
+
+</body>
+</html>

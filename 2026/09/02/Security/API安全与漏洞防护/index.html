@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"my919.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="第二章：API 安全与漏洞防护概念基础 输入即恶意：所有来自客户端的数据（表单、查询串、Header、Cookie、上传文件、回调 URL）都应被视为不可信。任何拼接到 SQL、命令、模板、URL 的字符串，都必须先校验或参数化，再使用。这是防注入、防 XSS、防 SSRF 的共同前提。 最小权限：数据库账号、服务间调用凭据、容器运行用户，都应只授予完成职责所必需的权限。Web 应用别用 root">
+<meta property="og:type" content="article">
+<meta property="og:title" content="第二章：API 安全与漏洞防护">
+<meta property="og:url" content="https://my919.github.io/2026/09/02/Security/API%E5%AE%89%E5%85%A8%E4%B8%8E%E6%BC%8F%E6%B4%9E%E9%98%B2%E6%8A%A4/index.html">
+<meta property="og:site_name" content="my">
+<meta property="og:description" content="第二章：API 安全与漏洞防护概念基础 输入即恶意：所有来自客户端的数据（表单、查询串、Header、Cookie、上传文件、回调 URL）都应被视为不可信。任何拼接到 SQL、命令、模板、URL 的字符串，都必须先校验或参数化，再使用。这是防注入、防 XSS、防 SSRF 的共同前提。 最小权限：数据库账号、服务间调用凭据、容器运行用户，都应只授予完成职责所必需的权限。Web 应用别用 root">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-09-02T02:00:00.000Z">
+<meta property="article:modified_time" content="2026-09-02T13:43:51.958Z">
+<meta property="article:author" content="miracle">
+<meta property="article:tag" content="Security">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://my919.github.io/2026/09/02/Security/API%E5%AE%89%E5%85%A8%E4%B8%8E%E6%BC%8F%E6%B4%9E%E9%98%B2%E6%8A%A4/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://my919.github.io/2026/09/02/Security/API%E5%AE%89%E5%85%A8%E4%B8%8E%E6%BC%8F%E6%B4%9E%E9%98%B2%E6%8A%A4/","path":"2026/09/02/Security/API安全与漏洞防护/","title":"第二章：API 安全与漏洞防护"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>第二章：API 安全与漏洞防护 | my</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.10.1/mermaid.min.js","integrity":"sha256-BmQmdWDS8X2OTbrwELWK366LV6escyWhHHe0XCTU/Hk="}}</script>
+  <script src="/js/third-party/tags/mermaid.js" defer></script>
+
+
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="my" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">my</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-service"><a href="/service/" rel="section"><i class="fa fa-server fa-fw"></i>服务</a></li><li class="menu-item menu-item-tool"><a href="/tool/" rel="section"><i class="fa fa-wrench fa-fw"></i>工具</a></li><li class="menu-item menu-item-project"><a href="/project/" rel="section"><i class="fa fa-folder-open fa-fw"></i>项目</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%9AAPI-%E5%AE%89%E5%85%A8%E4%B8%8E%E6%BC%8F%E6%B4%9E%E9%98%B2%E6%8A%A4"><span class="nav-number">1.</span> <span class="nav-text">第二章：API 安全与漏洞防护</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81SQL-%E6%B3%A8%E5%85%A5%E9%98%B2%E6%8A%A4"><span class="nav-number">1.2.</span> <span class="nav-text">一、SQL 注入防护</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%8F%82%E6%95%B0%E5%8C%96%E6%9F%A5%E8%AF%A2%EF%BC%88%E6%9C%80%E6%A0%B9%E6%9C%AC%E7%9A%84%E8%A7%A3%E6%B3%95%EF%BC%89"><span class="nav-number">1.2.1.</span> <span class="nav-text">1. 参数化查询（最根本的解法）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-MyBatis-%E4%B8%8E-%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">1.2.2.</span> <span class="nav-text">2. MyBatis #{} 与 ${} 的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-ORM-%E5%AE%89%E5%85%A8%E5%AE%9E%E8%B7%B5"><span class="nav-number">1.2.3.</span> <span class="nav-text">3. ORM 安全实践</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81XSS-%E9%98%B2%E6%8A%A4"><span class="nav-number">1.3.</span> <span class="nav-text">二、XSS 防护</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E4%B8%89%E7%A7%8D%E7%B1%BB%E5%9E%8B"><span class="nav-number">1.3.1.</span> <span class="nav-text">1. 三种类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E8%BE%93%E5%87%BA%E7%BC%96%E7%A0%81%EF%BC%88%E6%8C%89%E4%B8%8A%E4%B8%8B%E6%96%87%EF%BC%89"><span class="nav-number">1.3.2.</span> <span class="nav-text">2. 输出编码（按上下文）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-CSP-%E5%A4%B4%E4%B8%8E-HttpOnly-Cookie"><span class="nav-number">1.3.3.</span> <span class="nav-text">3. CSP 头与 HttpOnly Cookie</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81CSRF-%E9%98%B2%E6%8A%A4"><span class="nav-number">1.4.</span> <span class="nav-text">三、CSRF 防护</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-Token-%E6%96%B9%E6%A1%88%EF%BC%88Synchronizer-Token%EF%BC%89"><span class="nav-number">1.4.1.</span> <span class="nav-text">1. Token 方案（Synchronizer Token）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-SameSite-Cookie"><span class="nav-number">1.4.2.</span> <span class="nav-text">2. SameSite Cookie</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E5%8F%8C%E9%87%8D%E6%8F%90%E4%BA%A4-Cookie"><span class="nav-number">1.4.3.</span> <span class="nav-text">3. 双重提交 Cookie</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81SSRF-%E4%B8%8E%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E5%AE%89%E5%85%A8"><span class="nav-number">1.5.</span> <span class="nav-text">四、SSRF 与文件上传安全</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-SSRF-%E9%98%B2%E6%8A%A4"><span class="nav-number">1.5.1.</span> <span class="nav-text">1. SSRF 防护</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E6%96%87%E4%BB%B6%E7%B1%BB%E5%9E%8B%E6%A0%A1%E9%AA%8C"><span class="nav-number">1.5.2.</span> <span class="nav-text">2. 文件类型校验</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E8%B7%AF%E5%BE%84%E7%A9%BF%E8%B6%8A%E9%98%B2%E6%8A%A4"><span class="nav-number">1.5.3.</span> <span class="nav-text">3. 路径穿越防护</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81API-%E9%80%9F%E7%8E%87%E9%99%90%E5%88%B6%E4%B8%8E%E9%98%B2%E9%87%8D%E6%94%BE"><span class="nav-number">1.6.</span> <span class="nav-text">五、API 速率限制与防重放</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E4%BB%A4%E7%89%8C%E6%A1%B6%E7%AE%97%E6%B3%95"><span class="nav-number">1.6.1.</span> <span class="nav-text">1. 令牌桶算法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E5%B9%82%E7%AD%89%E4%BB%A4%E7%89%8C%E9%98%B2%E9%87%8D%E6%94%BE"><span class="nav-number">1.6.2.</span> <span class="nav-text">2. 幂等令牌防重放</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E6%97%B6%E9%97%B4%E7%AA%97%E5%8F%A3"><span class="nav-number">1.6.3.</span> <span class="nav-text">3. 时间窗口</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E4%BE%9D%E8%B5%96%E6%BC%8F%E6%B4%9E%E7%AE%A1%E7%90%86"><span class="nav-number">1.7.</span> <span class="nav-text">六、依赖漏洞管理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-SCA-%E8%BD%AF%E4%BB%B6%E6%88%90%E5%88%86%E5%88%86%E6%9E%90"><span class="nav-number">1.7.1.</span> <span class="nav-text">1. SCA 软件成分分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E6%B2%BB%E7%90%86%E5%AE%9E%E8%B7%B5"><span class="nav-number">1.7.2.</span> <span class="nav-text">2. 治理实践</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E9%81%BF%E5%9D%91"><span class="nav-number">1.8.</span> <span class="nav-text">常见避坑</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.9.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">miracle</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">284</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">44</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">186</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/my919" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;my919" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://gitee.com/my919" title="Gitee → https:&#x2F;&#x2F;gitee.com&#x2F;my919" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>Gitee</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:yeal166@163.com" title="E-Mail → mailto:yeal166@163.com" rel="noopener me external nofollow noreferrer" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://my919.github.io/2026/09/02/Security/API%E5%AE%89%E5%85%A8%E4%B8%8E%E6%BC%8F%E6%B4%9E%E9%98%B2%E6%8A%A4/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="第二章：API 安全与漏洞防护 | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          第二章：API 安全与漏洞防护
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2026-09-02 10:00:00 / 修改时间：21:43:51" itemprop="dateCreated datePublished" datetime="2026-09-02T10:00:00+08:00">2026-09-02</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Security/" itemprop="url" rel="index"><span itemprop="name">Security</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>3k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>10 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="第二章：API-安全与漏洞防护"><a href="#第二章：API-安全与漏洞防护" class="headerlink" title="第二章：API 安全与漏洞防护"></a>第二章：API 安全与漏洞防护</h1><h2 id="概念基础"><a href="#概念基础" class="headerlink" title="概念基础"></a>概念基础</h2><ol>
+<li><strong>输入即恶意</strong>：所有来自客户端的数据（表单、查询串、Header、Cookie、上传文件、回调 URL）都应被视为<strong>不可信</strong>。任何拼接到 SQL、命令、模板、URL 的字符串，都必须先校验或参数化，再使用。这是防注入、防 XSS、防 SSRF 的共同前提。</li>
+<li><strong>最小权限</strong>：数据库账号、服务间调用凭据、容器运行用户，都应只授予<strong>完成职责所必需</strong>的权限。Web 应用别用 root 连库，业务服务别用集群 admin，这样即使被攻破，横向移动与数据外泄也被限制在最小范围。</li>
+<li><strong>纵深防御</strong>：单一控制点失败不应导致全盘失守。前端转义 + 后端参数化 + WAF 规则 + 数据库最小权限，多层叠加；任一层漏了，下一层仍能拦截。安全不靠”一招制敌”，而靠”层层衰减”。</li>
+<li><strong>API 安全与 Web 安全的差异</strong>：Web 安全聚焦浏览器交互（Cookie、CSRF、同源策略），而 API 安全更关注<strong>无状态令牌、输入注入、越权访问、速率限制与重放</strong>。前后端分离后，跨站脚本通过 API 返回的 JSON 传播，XSS 防护点也从服务端模板转移到前端渲染。</li>
+<li><strong>速率限制是第一道防线</strong>：暴力破解、撞库、爬虫、CC 攻击都表现为高频请求。令牌桶&#x2F;漏桶算法限制每秒请求数，配合幂等令牌防重放，能在业务逻辑前拦下大多数自动化攻击，保护后端资源不被打满。</li>
+</ol>
+<blockquote>
+<p>下一篇：<a href="/2026/09/02/Security/%E5%AE%89%E5%85%A8%E8%BF%90%E7%BB%B4%E4%B8%8E%E5%8A%A0%E5%9B%BA/" title="第三章：安全运维与生产加固">第三章：安全运维与生产加固</a> 将从代码层走向运维层，聚焦 HTTPS&#x2F;TLS 加固、密钥管理、容器与 K8s 安全及应急响应。</p>
+</blockquote>
+<hr>
+<h2 id="一、SQL-注入防护"><a href="#一、SQL-注入防护" class="headerlink" title="一、SQL 注入防护"></a>一、SQL 注入防护</h2><p>SQL 注入（A03）的本质是：不可信数据被拼进 SQL 语句并被当作代码执行，导致绕过鉴权、拖库、甚至执行命令。</p>
+<h3 id="1-参数化查询（最根本的解法）"><a href="#1-参数化查询（最根本的解法）" class="headerlink" title="1. 参数化查询（最根本的解法）"></a>1. 参数化查询（最根本的解法）</h3><p>预编译语句把”SQL 结构”与”数据”分离，数据只作参数绑定，永不被解析为 SQL 语法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// JDBC：? 占位，驱动负责转义，不可信输入作为参数绑定</span></span><br><span class="line"><span class="keyword">try</span> (<span class="type">PreparedStatement</span> <span class="variable">ps</span> <span class="operator">=</span> conn.prepareStatement(</span><br><span class="line">        <span class="string">&quot;SELECT id, name FROM users WHERE name = ? AND status = ?&quot;</span>)) &#123;</span><br><span class="line">    ps.setString(<span class="number">1</span>, userName);      <span class="comment">// 即使 userName = &quot;&#x27; OR 1=1 --&quot; 也只是字符串</span></span><br><span class="line">    ps.setInt(<span class="number">2</span>, <span class="number">1</span>);</span><br><span class="line">    <span class="keyword">try</span> (<span class="type">ResultSet</span> <span class="variable">rs</span> <span class="operator">=</span> ps.executeQuery()) &#123;</span><br><span class="line">        <span class="keyword">while</span> (rs.next()) &#123; <span class="comment">/* ... */</span> &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-MyBatis-与-的区别"><a href="#2-MyBatis-与-的区别" class="headerlink" title="2. MyBatis #{} 与 ${} 的区别"></a>2. MyBatis <code>#&#123;&#125;</code> 与 <code>$&#123;&#125;</code> 的区别</h3><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 安全：#&#123;&#125; 会被编译为 ? 占位符并参数绑定 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">select</span> <span class="attr">id</span>=<span class="string">&quot;findByName&quot;</span> <span class="attr">parameterType</span>=<span class="string">&quot;string&quot;</span> <span class="attr">resultType</span>=<span class="string">&quot;User&quot;</span>&gt;</span></span><br><span class="line">  SELECT * FROM users WHERE name = #&#123;name&#125;</span><br><span class="line"><span class="tag">&lt;/<span class="name">select</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!-- 危险：$&#123;&#125; 是字符串拼接，直接拼进 SQL，SQL 注入高发 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">select</span> <span class="attr">id</span>=<span class="string">&quot;orderBy&quot;</span> <span class="attr">parameterType</span>=<span class="string">&quot;string&quot;</span> <span class="attr">resultType</span>=<span class="string">&quot;User&quot;</span>&gt;</span></span><br><span class="line">  SELECT * FROM users ORDER BY $&#123;field&#125;   <span class="comment">&lt;!-- field 来自前端则可注入 --&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">select</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>经验法则：<strong>凡是用户可控的值，一律用 <code>#&#123;&#125;</code></strong>。<code>$&#123;&#125;</code> 仅用于表名、列名、排序字段等”结构”位置，且必须先经白名单校验：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 排序字段无法用 ? 绑定，改用白名单校验</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Set&lt;String&gt; ALLOWED_ORDER = Set.of(<span class="string">&quot;id&quot;</span>, <span class="string">&quot;name&quot;</span>, <span class="string">&quot;created_at&quot;</span>);</span><br><span class="line"><span class="type">String</span> <span class="variable">field</span> <span class="operator">=</span> ALLOWED_ORDER.contains(inputField) ? inputField : <span class="string">&quot;id&quot;</span>;</span><br><span class="line"><span class="comment">// 再拼进 SQL：ORDER BY $&#123;field&#125;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="3-ORM-安全实践"><a href="#3-ORM-安全实践" class="headerlink" title="3. ORM 安全实践"></a>3. ORM 安全实践</h3><p>JPA&#x2F;Hibernate 默认参数化命名查询&#x2F;方法查询，但<strong>原生 SQL 与字符串拼接仍是雷区</strong>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 安全：命名参数绑定</span></span><br><span class="line">em.createQuery(<span class="string">&quot;SELECT u FROM User u WHERE u.name = :name&quot;</span>)</span><br><span class="line">  .setParameter(<span class="string">&quot;name&quot;</span>, name);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 危险：concat 拼接，注入点</span></span><br><span class="line">em.createNativeQuery(<span class="string">&quot;SELECT * FROM users WHERE name = &#x27;&quot;</span> + name + <span class="string">&quot;&#x27;&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>即使用 ORM，也要禁止拼接，开启 SQL 日志审计，并对 <code>LIKE</code> 的通配符做转义。</p>
+</blockquote>
+<hr>
+<h2 id="二、XSS-防护"><a href="#二、XSS-防护" class="headerlink" title="二、XSS 防护"></a>二、XSS 防护</h2><p>XSS（跨站脚本）让攻击者把恶意脚本注入到他人浏览器执行，可窃取 Cookie、伪造操作、改写页面。</p>
+<h3 id="1-三种类型"><a href="#1-三种类型" class="headerlink" title="1. 三种类型"></a>1. 三种类型</h3><table>
+<thead>
+<tr>
+<th>类型</th>
+<th>注入点</th>
+<th>触发方式</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>反射型</td>
+<td>URL 参数</td>
+<td>用户点击恶意链接，参数回显到页面</td>
+</tr>
+<tr>
+<td>存储型</td>
+<td>服务端数据库</td>
+<td>恶意内容被存库，所有访问者中招（危害最大）</td>
+</tr>
+<tr>
+<td>DOM 型</td>
+<td>前端 JS</td>
+<td>前端把不可信数据写入 DOM，不经服务端</td>
+</tr>
+</tbody></table>
+<h3 id="2-输出编码（按上下文）"><a href="#2-输出编码（按上下文）" class="headerlink" title="2. 输出编码（按上下文）"></a>2. 输出编码（按上下文）</h3><p>不同上下文需要不同转义，不能一刀切：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Java：使用 OWASP ESAPI 按上下文编码</span></span><br><span class="line"><span class="keyword">import</span> org.owasp.esapi.ESAPI;</span><br><span class="line"><span class="type">String</span> <span class="variable">safeHtml</span>  <span class="operator">=</span> ESAPI.encoder().encodeForHTML(userInput);         <span class="comment">// HTML 上下文</span></span><br><span class="line"><span class="type">String</span> <span class="variable">safeAttr</span>  <span class="operator">=</span> ESAPI.encoder().encodeForHTMLAttribute(userInput);<span class="comment">// 属性上下文</span></span><br><span class="line"><span class="type">String</span> <span class="variable">safeJS</span>    <span class="operator">=</span> ESAPI.encoder().encodeForJavaScript(userInput);   <span class="comment">// JS 上下文</span></span><br><span class="line"><span class="type">String</span> <span class="variable">safeURL</span>   <span class="operator">=</span> ESAPI.encoder().encodeForURL(userInput);         <span class="comment">// URL 上下文</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 前端：React 默认对 &#123;&#125; 插值做 HTML 转义，只有 dangerouslySetInnerHTML 才需手动清洗</span></span><br><span class="line"><span class="keyword">import</span> <span class="title class_">DOMPurify</span> <span class="keyword">from</span> <span class="string">&#x27;dompurify&#x27;</span>;</span><br><span class="line"><span class="keyword">const</span> clean = <span class="title class_">DOMPurify</span>.<span class="title function_">sanitize</span>(unTrustedHtml);    <span class="comment">// 富文本场景：白名单标签/属性</span></span><br><span class="line"><span class="keyword">return</span> <span class="language-xml"><span class="tag">&lt;<span class="name">div</span> <span class="attr">dangerouslySetInnerHTML</span>=<span class="string">&#123;&#123;</span> <span class="attr">__html:</span> <span class="attr">clean</span> &#125;&#125; /&gt;</span></span>;</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-CSP-头与-HttpOnly-Cookie"><a href="#3-CSP-头与-HttpOnly-Cookie" class="headerlink" title="3. CSP 头与 HttpOnly Cookie"></a>3. CSP 头与 HttpOnly Cookie</h3><p>CSP（内容安全策略）通过白名单限制脚本来源，是 XSS 的纵深防御层：</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">Content-Security-Policy</span><span class="punctuation">: </span>default-src &#x27;self&#x27;; script-src &#x27;self&#x27; https://cdn.example.com; object-src &#x27;none&#x27;; base-uri &#x27;self&#x27;</span><br></pre></td></tr></table></figure>
+
+<p>配合 Cookie 的 <code>HttpOnly</code> 属性，即使发生 XSS 也无法用 <code>document.cookie</code> 窃取会话（Cookie 安全详见 <a href="/2026/09/02/Security/Web%E5%AE%89%E5%85%A8%E5%85%A5%E9%97%A8/" title="第一章：Web 安全与认证授权">第一章：Web 安全与认证授权</a>）。</p>
+<hr>
+<h2 id="三、CSRF-防护"><a href="#三、CSRF-防护" class="headerlink" title="三、CSRF 防护"></a>三、CSRF 防护</h2><p>CSRF（跨站请求伪造）利用浏览器自动带 Cookie 的特性，在用户已登录站点 A 时，被恶意站点诱导对 A 发请求。</p>
+<h3 id="1-Token-方案（Synchronizer-Token）"><a href="#1-Token-方案（Synchronizer-Token）" class="headerlink" title="1. Token 方案（Synchronizer Token）"></a>1. Token 方案（Synchronizer Token）</h3><p>服务端为每个会话生成随机 token，嵌入表单隐藏域，提交时校验。攻击者所在站点跨域读不到 A 的表单，自然拿不到 token：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">form</span> <span class="attr">method</span>=<span class="string">&quot;post&quot;</span> <span class="attr">action</span>=<span class="string">&quot;/transfer&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;hidden&quot;</span> <span class="attr">name</span>=<span class="string">&quot;csrf_token&quot;</span> <span class="attr">value</span>=<span class="string">&quot;&#123;&#123;csrf_token&#125;&#125;&quot;</span>&gt;</span>  <span class="comment">&lt;!-- 服务端渲染注入 --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;text&quot;</span> <span class="attr">name</span>=<span class="string">&quot;to&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;number&quot;</span> <span class="attr">name</span>=<span class="string">&quot;amount&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">button</span>&gt;</span>提交<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">form</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>服务端在 <code>before_request</code> 中比对 <code>session[&#39;csrf_token&#39;]</code> 与表单提交值，不一致或缺失即返回 400。</p>
+<h3 id="2-SameSite-Cookie"><a href="#2-SameSite-Cookie" class="headerlink" title="2. SameSite Cookie"></a>2. SameSite Cookie</h3><p>最简防御：设 <code>SameSite=Lax</code> 阻止跨站 POST 自动带 Cookie（<code>Strict</code> 更严，连链接跳转都不带）：</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">Set-Cookie</span><span class="punctuation">: </span>session_id=xxxx; HttpOnly; Secure; SameSite=Lax</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-双重提交-Cookie"><a href="#3-双重提交-Cookie" class="headerlink" title="3. 双重提交 Cookie"></a>3. 双重提交 Cookie</h3><p>无状态的 CSRF 方案：token 同时放 Cookie 与请求头，服务端比对二者一致。攻击者无法跨域读 Cookie 也就伪造不出请求头：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 前端：从 Cookie 读 token 放进自定义头</span></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">getCookie</span>(<span class="params">name</span>) &#123; <span class="comment">/* 读 Cookie 工具函数 */</span> &#125;</span><br><span class="line"><span class="title function_">fetch</span>(<span class="string">&#x27;/api/transfer&#x27;</span>, &#123;</span><br><span class="line">  <span class="attr">method</span>: <span class="string">&#x27;POST&#x27;</span>,</span><br><span class="line">  <span class="attr">credentials</span>: <span class="string">&#x27;same-origin&#x27;</span>,</span><br><span class="line">  <span class="attr">headers</span>: &#123; <span class="string">&#x27;X-CSRF-Token&#x27;</span>: <span class="title function_">getCookie</span>(<span class="string">&#x27;csrf_token&#x27;</span>) &#125;,  <span class="comment">// 与 Cookie 中值比对</span></span><br><span class="line">  <span class="attr">body</span>: <span class="title class_">JSON</span>.<span class="title function_">stringify</span>(payload),</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>纯 API（Bearer Token，不依赖 Cookie）场景天然无 CSRF 风险，但仍需 XSS 防护配合，否则脚本可读 token 后直接调用。</p>
+</blockquote>
+<hr>
+<h2 id="四、SSRF-与文件上传安全"><a href="#四、SSRF-与文件上传安全" class="headerlink" title="四、SSRF 与文件上传安全"></a>四、SSRF 与文件上传安全</h2><h3 id="1-SSRF-防护"><a href="#1-SSRF-防护" class="headerlink" title="1. SSRF 防护"></a>1. SSRF 防护</h3><p>SSRF（服务端请求伪造，A10）让攻击者诱导服务端发起请求到任意目标，常用于打内网、读云元数据（如 AWS <code>169.254.169.254</code>）。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 白名单校验目标主机 + 协议</span></span><br><span class="line"><span class="type">URI</span> <span class="variable">uri</span> <span class="operator">=</span> URI.create(userUrl);</span><br><span class="line"><span class="type">String</span> <span class="variable">scheme</span> <span class="operator">=</span> uri.getScheme();</span><br><span class="line"><span class="type">String</span> <span class="variable">host</span> <span class="operator">=</span> uri.getHost();</span><br><span class="line"><span class="keyword">if</span> (!Set.of(<span class="string">&quot;http&quot;</span>, <span class="string">&quot;https&quot;</span>).contains(scheme)) <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">SecurityException</span>(<span class="string">&quot;非法协议&quot;</span>);</span><br><span class="line"><span class="keyword">if</span> (!ALLOWED_HOSTS.contains(host)) <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">SecurityException</span>(<span class="string">&quot;非法目标&quot;</span>);</span><br><span class="line"><span class="comment">// 二次解析：防止 DNS 重绑定，连接时再校验实际 IP 不在内网段</span></span><br><span class="line">InetAddress[] addrs = InetAddress.getAllByName(host);</span><br><span class="line"><span class="keyword">for</span> (InetAddress a : addrs) &#123;</span><br><span class="line">    <span class="keyword">if</span> (a.isSiteLocalAddress() || a.isLoopbackAddress()) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">SecurityException</span>(<span class="string">&quot;禁止访问内网&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-文件类型校验"><a href="#2-文件类型校验" class="headerlink" title="2. 文件类型校验"></a>2. 文件类型校验</h3><p>只信任扩展名或 Content-Type 都可被伪造，<strong>用魔数判断真实类型</strong>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 读前 16 字节判断魔数</span></span><br><span class="line"><span class="type">byte</span>[] head = readFirstBytes(in, <span class="number">16</span>);</span><br><span class="line"><span class="type">String</span> <span class="variable">realType</span> <span class="operator">=</span> MagicBytes.detect(head);   <span class="comment">// PNG=89504E47, JPEG=FFD8FF, GIF=474946</span></span><br><span class="line"><span class="keyword">if</span> (!ALLOWED_TYPES.contains(realType)) <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">SecurityException</span>(<span class="string">&quot;类型不允许&quot;</span>);</span><br><span class="line"><span class="comment">// 重命名存储，避免原文件名造成路径穿越或解析漏洞</span></span><br><span class="line"><span class="type">String</span> <span class="variable">savedName</span> <span class="operator">=</span> UUID.randomUUID() + <span class="string">&quot;.&quot;</span> + ALLOWED_EXT.get(realType);</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-路径穿越防护"><a href="#3-路径穿越防护" class="headerlink" title="3. 路径穿越防护"></a>3. 路径穿越防护</h3><p>上传&#x2F;读取文件时，用规范化路径校验仍在允许目录内，防止 <code>../../etc/passwd</code> 越界：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 规范化后校验仍在 base 目录内</span></span><br><span class="line"><span class="type">Path</span> <span class="variable">base</span> <span class="operator">=</span> Paths.get(<span class="string">&quot;/data/uploads&quot;</span>).toAbsolutePath().normalize();</span><br><span class="line"><span class="type">Path</span> <span class="variable">target</span> <span class="operator">=</span> base.resolve(fileName).normalize();</span><br><span class="line"><span class="keyword">if</span> (!target.startsWith(base)) <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">SecurityException</span>(<span class="string">&quot;路径越界&quot;</span>);</span><br><span class="line">Files.copy(in, target, StandardCopyOption.REPLACE_EXISTING);</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="五、API-速率限制与防重放"><a href="#五、API-速率限制与防重放" class="headerlink" title="五、API 速率限制与防重放"></a>五、API 速率限制与防重放</h2><h3 id="1-令牌桶算法"><a href="#1-令牌桶算法" class="headerlink" title="1. 令牌桶算法"></a>1. 令牌桶算法</h3><p>令牌以固定速率放入桶，桶有容量上限；每个请求消耗一个令牌，桶空则拒绝或排队。允许<strong>有限突发</strong>又限平均速率：</p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- Redis 原子脚本：令牌桶（KEYS[1]=桶, ARGV=容量,补充速率,当前时间秒）</span></span><br><span class="line"><span class="keyword">local</span> key = KEYS[<span class="number">1</span>]</span><br><span class="line"><span class="keyword">local</span> capacity = <span class="built_in">tonumber</span>(ARGV[<span class="number">1</span>])</span><br><span class="line"><span class="keyword">local</span> refill = <span class="built_in">tonumber</span>(ARGV[<span class="number">2</span>])     <span class="comment">-- 每秒补充令牌数</span></span><br><span class="line"><span class="keyword">local</span> now = <span class="built_in">tonumber</span>(ARGV[<span class="number">3</span>])</span><br><span class="line"><span class="keyword">local</span> tokens = <span class="built_in">tonumber</span>(redis.call(<span class="string">&#x27;get&#x27;</span>, key) <span class="keyword">or</span> capacity)</span><br><span class="line"><span class="keyword">local</span> last = <span class="built_in">tonumber</span>(redis.call(<span class="string">&#x27;get&#x27;</span>, key..<span class="string">&#x27;:ts&#x27;</span>) <span class="keyword">or</span> now)</span><br><span class="line">tokens = <span class="built_in">math</span>.<span class="built_in">min</span>(capacity, tokens + (now - last) * refill)  <span class="comment">-- 按时间差补充</span></span><br><span class="line"><span class="keyword">if</span> tokens &lt; <span class="number">1</span> <span class="keyword">then</span> <span class="keyword">return</span> <span class="number">0</span> <span class="keyword">end</span></span><br><span class="line">tokens = tokens - <span class="number">1</span>; redis.call(<span class="string">&#x27;setex&#x27;</span>, key, <span class="number">60</span>, tokens); redis.call(<span class="string">&#x27;setex&#x27;</span>, key..<span class="string">&#x27;:ts&#x27;</span>, <span class="number">60</span>, now)</span><br><span class="line"><span class="keyword">return</span> <span class="number">1</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Node：调用上述 Lua 脚本做限流</span></span><br><span class="line"><span class="keyword">const</span> sha = <span class="keyword">await</span> redis.<span class="title function_">script</span>(<span class="string">&#x27;LOAD&#x27;</span>, <span class="variable constant_">TOKEN_BUCKET_LUA</span>);</span><br><span class="line"><span class="keyword">const</span> ok = <span class="keyword">await</span> redis.<span class="title function_">evalsha</span>(sha, <span class="number">1</span>, <span class="string">`rate:<span class="subst">$&#123;userId&#125;</span>`</span>, <span class="string">&#x27;100&#x27;</span>, <span class="string">&#x27;10&#x27;</span>, <span class="title class_">Date</span>.<span class="title function_">now</span>() / <span class="number">1000</span>);</span><br><span class="line"><span class="keyword">if</span> (<span class="title class_">String</span>(ok) === <span class="string">&#x27;0&#x27;</span>) <span class="keyword">return</span> res.<span class="title function_">status</span>(<span class="number">429</span>).<span class="title function_">json</span>(&#123; <span class="attr">error</span>: <span class="string">&#x27;请求过于频繁&#x27;</span> &#125;);</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-幂等令牌防重放"><a href="#2-幂等令牌防重放" class="headerlink" title="2. 幂等令牌防重放"></a>2. 幂等令牌防重放</h3><p>对写操作（支付、下单），客户端生成唯一 <code>Idempotency-Key</code>，服务端用 <code>SETNX</code> 占位，重复提交返回首次结果而非重复执行：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 客户端：为每次写操作生成唯一 key</span></span><br><span class="line"><span class="title function_">fetch</span>(<span class="string">&#x27;/api/orders&#x27;</span>, &#123;</span><br><span class="line">  <span class="attr">method</span>: <span class="string">&#x27;POST&#x27;</span>,</span><br><span class="line">  <span class="attr">headers</span>: &#123; <span class="string">&#x27;Idempotency-Key&#x27;</span>: crypto.<span class="title function_">randomUUID</span>() &#125;,</span><br><span class="line">  <span class="attr">body</span>: <span class="title class_">JSON</span>.<span class="title function_">stringify</span>(payload),</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 服务端：Redis SETNX 占位，10 分钟内重复 key 返回缓存结果</span></span><br><span class="line">key = <span class="string">f&quot;idem:<span class="subst">&#123;request.headers[<span class="string">&#x27;Idempotency-Key&#x27;</span>]&#125;</span>&quot;</span></span><br><span class="line"><span class="keyword">if</span> <span class="keyword">not</span> redis.<span class="built_in">set</span>(key, <span class="string">&#x27;1&#x27;</span>, nx=<span class="literal">True</span>, ex=<span class="number">600</span>): <span class="keyword">return</span> cached_result_or_conflict</span><br><span class="line"><span class="comment"># ... 执行业务并缓存结果</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="3-时间窗口"><a href="#3-时间窗口" class="headerlink" title="3. 时间窗口"></a>3. 时间窗口</h3><p>对 OTP&#x2F;签名请求，校验 <code>timestamp</code> 与服务器时间差在窗口内（如 ±5 分钟），过期请求直接拒绝，配合 nonce 防重放：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">签名 = HMAC(secret, method + path + body + timestamp + nonce)</span><br><span class="line">服务端校验：签名正确 + timestamp 在窗口内 + nonce 未用过</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>HMAC 的生成与验签命令可参考 <a href="/2026/05/01/openssl-sign-hmac/" title="第六章：OpenSSL 数字签名与 HMAC：完整性、身份与推荐用法">OpenSSL 数字签名与HMAC</a>。</p>
+</blockquote>
+<hr>
+<h2 id="六、依赖漏洞管理"><a href="#六、依赖漏洞管理" class="headerlink" title="六、依赖漏洞管理"></a>六、依赖漏洞管理</h2><p>A06（易受攻击的组件）是被忽视的高发风险：Log4Shell、Fastjson 反序列化都源于含漏洞的依赖库。</p>
+<h3 id="1-SCA-软件成分分析"><a href="#1-SCA-软件成分分析" class="headerlink" title="1. SCA 软件成分分析"></a>1. SCA 软件成分分析</h3><p>SCA（Software Composition Analysis）扫描直接&#x2F;间接依赖的已知漏洞（CVE），并与版本库比对：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Trivy 扫描项目依赖与容器镜像</span></span><br><span class="line">trivy fs .                                  <span class="comment"># 扫描项目依赖（package.json/pom.xml 等）</span></span><br><span class="line">trivy fs --severity HIGH,CRITICAL .         <span class="comment"># 只看高危与严重</span></span><br><span class="line">trivy image myapp:1.0                       <span class="comment"># 扫描容器镜像</span></span><br></pre></td></tr></table></figure>
+
+<p>常用工具：Trivy（CI&#x2F;镜像&#x2F;IaC）、Snyk（多语言+自动 PR）、Dependabot（GitHub 内置）、OWASP Dependency-Check（Java 生态）。</p>
+<h3 id="2-治理实践"><a href="#2-治理实践" class="headerlink" title="2. 治理实践"></a>2. 治理实践</h3><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># .github/dependabot.yml：自动检测依赖更新并提 PR</span></span><br><span class="line"><span class="attr">version:</span> <span class="number">2</span></span><br><span class="line"><span class="attr">updates:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">package-ecosystem:</span> <span class="string">&quot;npm&quot;</span></span><br><span class="line">    <span class="attr">directory:</span> <span class="string">&quot;/&quot;</span></span><br><span class="line">    <span class="attr">schedule:</span> &#123; <span class="attr">interval:</span> <span class="string">&quot;weekly&quot;</span> &#125;</span><br><span class="line">    <span class="attr">open-pull-requests-limit:</span> <span class="number">10</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>锁版本</strong>：用 lockfile 锁定间接依赖，避免”昨天还安全今天就被带入漏洞”。</li>
+<li><strong>最小依赖</strong>：定期清理无用依赖，依赖越少攻击面越小。</li>
+<li><strong>CI 阻断</strong>：<code>trivy --exit-code 1</code> 在 CI 中阻断高危，强制修复后才合并。</li>
+</ul>
+<hr>
+<h2 id="常见避坑"><a href="#常见避坑" class="headerlink" title="常见避坑"></a>常见避坑</h2><table>
+<thead>
+<tr>
+<th>坑</th>
+<th>现象</th>
+<th>正确做法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>MyBatis <code>$&#123;&#125;</code> 拼用户值</td>
+<td>SQL 注入</td>
+<td>用户值一律用 <code>#&#123;&#125;</code>，结构值白名单</td>
+</tr>
+<tr>
+<td>ORM 拼原生 SQL</td>
+<td>注入点被忽视</td>
+<td>用参数绑定，禁拼接</td>
+</tr>
+<tr>
+<td>只过滤 <code>&lt;script&gt;</code></td>
+<td><code> &lt;img onerror&gt;</code> 绕过</td>
+<td>按上下文编码或白名单清洗</td>
+</tr>
+<tr>
+<td>富文本不过滤属性</td>
+<td><code>onload</code>&#x2F;<code>style</code> 仍可执行</td>
+<td>DOMPurify 白名单标签+属性</td>
+</tr>
+<tr>
+<td>Content-Type 信任前端</td>
+<td>改后缀绕过</td>
+<td>用魔数判断真实类型</td>
+</tr>
+<tr>
+<td>上传用原文件名</td>
+<td>路径穿越&#x2F;解析漏洞</td>
+<td>UUID 重命名 + 限定目录</td>
+</tr>
+<tr>
+<td>SSRF 只校验域名</td>
+<td>DNS 重绑定打内网</td>
+<td>二次解析校验实际 IP</td>
+</tr>
+<tr>
+<td>限流只按 IP</td>
+<td>NAT 后误杀&#x2F;代理后失效</td>
+<td>按用户 + IP 双维度</td>
+</tr>
+<tr>
+<td>重放无防护</td>
+<td>截获请求重复提交</td>
+<td>幂等 key + nonce + 时间窗口</td>
+</tr>
+<tr>
+<td>依赖不锁版本</td>
+<td>间接依赖被带入漏洞</td>
+<td>lockfile + SCA 扫描 + CI 阻断</td>
+</tr>
+<tr>
+<td>错误信息回显堆栈</td>
+<td>泄露技术栈与路径</td>
+<td>统一错误页，日志详查对外简略</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="本章小结"><a href="#本章小结" class="headerlink" title="本章小结"></a>本章小结</h2><table>
+<thead>
+<tr>
+<th>要点</th>
+<th>结论</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>输入即恶意</td>
+<td>所有客户端数据不可信，先校验&#x2F;参数化再使用</td>
+</tr>
+<tr>
+<td>SQL 注入</td>
+<td>参数化查询是根本，MyBatis 用 <code>#&#123;&#125;</code> 不用 <code>$&#123;&#125;</code></td>
+</tr>
+<tr>
+<td>XSS</td>
+<td>按上下文输出编码 + CSP + HttpOnly Cookie</td>
+</tr>
+<tr>
+<td>CSRF</td>
+<td>SameSite Cookie + Token&#x2F;双重提交，API 用 Bearer 可豁免</td>
+</tr>
+<tr>
+<td>SSRF&#x2F;上传</td>
+<td>白名单主机 + 魔数校验 + 路径规范化</td>
+</tr>
+<tr>
+<td>限流防重放</td>
+<td>令牌桶限流 + 幂等令牌 + nonce&#x2F;时间窗口</td>
+</tr>
+<tr>
+<td>依赖管理</td>
+<td>锁版本 + SCA 扫描 + CI 阻断高危</td>
+</tr>
+<tr>
+<td>纵深防御</td>
+<td>多层叠加，单点失效不致全盘失守</td>
+</tr>
+</tbody></table>
+<hr>
+<p>接口层的防护需要和运维层的加固配合才能真正安全。Web 认证授权基础详见 <a href="/2026/09/02/Security/Web%E5%AE%89%E5%85%A8%E5%85%A5%E9%97%A8/" title="第一章：Web 安全与认证授权">第一章：Web 安全与认证授权</a>；而证书、TLS、密钥与容器加固等生产议题详见 <a href="/2026/09/02/Security/%E5%AE%89%E5%85%A8%E8%BF%90%E7%BB%B4%E4%B8%8E%E5%8A%A0%E5%9B%BA/" title="第三章：安全运维与生产加固">第三章：安全运维与生产加固</a>。建议三章连读，把”设计—编码—运维”串成完整闭环。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Security/" rel="tag"># Security</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/09/02/Security/Web%E5%AE%89%E5%85%A8%E5%85%A5%E9%97%A8/" rel="prev" title="第一章：Web 安全与认证授权">
+                  <i class="fa fa-angle-left"></i> 第一章：Web 安全与认证授权
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2026/09/02/Observability/%E5%88%86%E5%B8%83%E5%BC%8F%E9%93%BE%E8%B7%AF%E8%BF%BD%E8%B8%AA/" rel="next" title="第三章：分布式链路追踪">
+                  第三章：分布式链路追踪 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">miracle</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">424k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">23:32</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+<script>
+(function () {
+  function normalizeClipboard(s) {
+    return (s || '').replace(/\u00a0/g, ' ');
+  }
+
+  /** When innerText is empty, treat <br> as newlines (matches Hexo fenced + line_number HTML). */
+  function plainTextFromElement(el) {
+    if (!el) return '';
+    var t = el.innerText;
+    if (t != null && t !== '') return normalizeClipboard(t);
+    var clone = el.cloneNode(true);
+    clone.querySelectorAll('br').forEach(function (br) {
+      br.parentNode.replaceChild(document.createTextNode('\n'), br);
+    });
+    return normalizeClipboard(clone.textContent || '');
+  }
+
+  function extractFromFigure(fig) {
+    if (!fig) return '';
+    var cell = fig.querySelector('td.code') || fig.querySelector('.code');
+    if (cell) return plainTextFromElement(cell);
+    var pre = fig.querySelector('pre');
+    if (pre) return plainTextFromElement(pre);
+    var code = fig.querySelector('code');
+    return code ? plainTextFromElement(code) : '';
+  }
+
+  function extractForCopyBtn(btn) {
+    var fig = btn.closest('figure.highlight');
+    if (fig) return extractFromFigure(fig);
+    var wrap = btn.closest('.code-container');
+    if (wrap) {
+      var innerFig = wrap.querySelector('figure.highlight');
+      if (innerFig) return extractFromFigure(innerFig);
+      var preOnly = wrap.querySelector('pre');
+      if (preOnly) return plainTextFromElement(preOnly);
+    }
+    return '';
+  }
+
+  function setCopyIcon(btn, ok) {
+    var i = btn.querySelector('i');
+    if (i) i.className = ok ? 'fa fa-check-circle fa-fw' : 'fa fa-times-circle fa-fw';
+  }
+
+  function writeClipboard(text, btn) {
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(text).then(
+        function () { setCopyIcon(btn, true); },
+        function () { fallbackCopy(text, btn); }
+      );
+    }
+    fallbackCopy(text, btn);
+    return Promise.resolve();
+  }
+
+  function fallbackCopy(text, btn) {
+    try {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed';
+      ta.style.left = '-9999px';
+      document.body.appendChild(ta);
+      ta.select();
+      var ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      setCopyIcon(btn, ok);
+    } catch (e) {
+      setCopyIcon(btn, false);
+    }
+  }
+
+  document.addEventListener(
+    'click',
+    function (e) {
+      var btn = e.target.closest && e.target.closest('.copy-btn');
+      if (!btn) return;
+      if (!btn.closest('figure.highlight') && !btn.closest('.code-container')) return;
+      e.stopPropagation();
+      e.preventDefault();
+      var text = extractForCopyBtn(btn);
+      writeClipboard(text, btn);
+    },
+    true
+  );
+})();
+</script>
+
+</body>
+</html>

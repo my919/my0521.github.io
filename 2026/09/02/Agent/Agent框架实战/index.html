@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"my919.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="第二章：Agent 框架实战概念基础 框架价值在于抽象通用模式：ReAct 循环、记忆管理、工具注册这些代码每次重写易错，框架把消息编排、状态流转、工具 schema封装好，开发者只需写业务工具与 Prompt。 LangChain 生态最全：从文档加载、向量检索到 Agent、链与 LangGraph，一站式且社区最大；缺点是抽象层多、API 变化快、版本间常有 breaking change。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="第二章：Agent 框架实战">
+<meta property="og:url" content="https://my919.github.io/2026/09/02/Agent/Agent%E6%A1%86%E6%9E%B6%E5%AE%9E%E6%88%98/index.html">
+<meta property="og:site_name" content="my">
+<meta property="og:description" content="第二章：Agent 框架实战概念基础 框架价值在于抽象通用模式：ReAct 循环、记忆管理、工具注册这些代码每次重写易错，框架把消息编排、状态流转、工具 schema封装好，开发者只需写业务工具与 Prompt。 LangChain 生态最全：从文档加载、向量检索到 Agent、链与 LangGraph，一站式且社区最大；缺点是抽象层多、API 变化快、版本间常有 breaking change。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-09-02T06:00:00.000Z">
+<meta property="article:modified_time" content="2026-09-02T14:17:20.164Z">
+<meta property="article:author" content="miracle">
+<meta property="article:tag" content="Agent">
+<meta property="article:tag" content="LangChain">
+<meta property="article:tag" content="LlamaIndex">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://my919.github.io/2026/09/02/Agent/Agent%E6%A1%86%E6%9E%B6%E5%AE%9E%E6%88%98/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://my919.github.io/2026/09/02/Agent/Agent%E6%A1%86%E6%9E%B6%E5%AE%9E%E6%88%98/","path":"2026/09/02/Agent/Agent框架实战/","title":"第二章：Agent 框架实战"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>第二章：Agent 框架实战 | my</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.10.1/mermaid.min.js","integrity":"sha256-BmQmdWDS8X2OTbrwELWK366LV6escyWhHHe0XCTU/Hk="}}</script>
+  <script src="/js/third-party/tags/mermaid.js" defer></script>
+
+
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="my" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">my</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-service"><a href="/service/" rel="section"><i class="fa fa-server fa-fw"></i>服务</a></li><li class="menu-item menu-item-tool"><a href="/tool/" rel="section"><i class="fa fa-wrench fa-fw"></i>工具</a></li><li class="menu-item menu-item-project"><a href="/project/" rel="section"><i class="fa fa-folder-open fa-fw"></i>项目</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%9AAgent-%E6%A1%86%E6%9E%B6%E5%AE%9E%E6%88%98"><span class="nav-number">1.</span> <span class="nav-text">第二章：Agent 框架实战</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81LangChain-Agent-%E5%AE%9E%E6%88%98"><span class="nav-number">1.2.</span> <span class="nav-text">一、LangChain Agent 实战</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-%E5%AE%89%E8%A3%85%E4%B8%8E%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="nav-number">1.2.1.</span> <span class="nav-text">1.1 安装与基本概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-%E5%AE%8C%E6%95%B4%E5%8F%AF%E8%BF%90%E8%A1%8C%E7%A4%BA%E4%BE%8B%EF%BC%9A%E6%90%9C%E7%B4%A2-%E8%AE%A1%E7%AE%97-%E6%95%B0%E6%8D%AE%E5%BA%93%E4%B8%89%E5%B7%A5%E5%85%B7-Agent"><span class="nav-number">1.2.2.</span> <span class="nav-text">1.2 完整可运行示例：搜索 + 计算 + 数据库三工具 Agent</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81LangGraph-%E7%8A%B6%E6%80%81%E5%9B%BE%E7%BC%96%E6%8E%92"><span class="nav-number">1.3.</span> <span class="nav-text">二、LangGraph 状态图编排</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5"><span class="nav-number">1.3.1.</span> <span class="nav-text">2.1 核心概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-Research-Agent-%E7%8A%B6%E6%80%81%E5%9B%BE"><span class="nav-number">1.3.2.</span> <span class="nav-text">2.2 Research Agent 状态图</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81LlamaIndex-Agent"><span class="nav-number">1.4.</span> <span class="nav-text">三、LlamaIndex Agent</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-ReActAgent-QueryEngineTool"><span class="nav-number">1.4.1.</span> <span class="nav-text">3.1 ReActAgent + QueryEngineTool</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-%E4%B8%8E-LangChain-%E5%B7%A5%E5%85%B7%E5%A4%8D%E7%94%A8%EF%BC%9AToolAdapter"><span class="nav-number">1.4.2.</span> <span class="nav-text">3.2 与 LangChain 工具复用：ToolAdapter</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81CrewAI-%E5%A4%9A-Agent-%E5%8D%8F%E4%BD%9C"><span class="nav-number">1.5.</span> <span class="nav-text">四、CrewAI 多 Agent 协作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5"><span class="nav-number">1.5.1.</span> <span class="nav-text">4.1 核心概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-%E4%B8%89-Agent-%E5%8D%8F%E4%BD%9C%E5%86%99%E6%8A%80%E6%9C%AF%E6%8A%A5%E5%91%8A"><span class="nav-number">1.5.2.</span> <span class="nav-text">4.2 三 Agent 协作写技术报告</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81AutoGen-%E5%AF%B9%E8%AF%9D%E5%BC%8F%E5%A4%9A-Agent"><span class="nav-number">1.6.</span> <span class="nav-text">五、AutoGen 对话式多 Agent</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E6%A1%86%E6%9E%B6%E9%80%89%E5%9E%8B%E5%AF%B9%E7%85%A7%E8%A1%A8"><span class="nav-number">1.7.</span> <span class="nav-text">六、框架选型对照表</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E9%81%BF%E5%9D%91"><span class="nav-number">1.8.</span> <span class="nav-text">常见避坑</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.9.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">miracle</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">284</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">44</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">186</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/my919" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;my919" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://gitee.com/my919" title="Gitee → https:&#x2F;&#x2F;gitee.com&#x2F;my919" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>Gitee</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:yeal166@163.com" title="E-Mail → mailto:yeal166@163.com" rel="noopener me external nofollow noreferrer" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://my919.github.io/2026/09/02/Agent/Agent%E6%A1%86%E6%9E%B6%E5%AE%9E%E6%88%98/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="第二章：Agent 框架实战 | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          第二章：Agent 框架实战
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2026-09-02 14:00:00 / 修改时间：22:17:20" itemprop="dateCreated datePublished" datetime="2026-09-02T14:00:00+08:00">2026-09-02</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Agent/" itemprop="url" rel="index"><span itemprop="name">Agent</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>2.2k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>7 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="第二章：Agent-框架实战"><a href="#第二章：Agent-框架实战" class="headerlink" title="第二章：Agent 框架实战"></a>第二章：Agent 框架实战</h1><h2 id="概念基础"><a href="#概念基础" class="headerlink" title="概念基础"></a>概念基础</h2><ol>
+<li><strong>框架价值在于抽象通用模式</strong>：ReAct 循环、记忆管理、工具注册这些代码每次重写易错，框架把<strong>消息编排、状态流转、工具 schema</strong>封装好，开发者只需写业务工具与 Prompt。</li>
+<li><strong>LangChain 生态最全</strong>：从文档加载、向量检索到 Agent、链与 LangGraph，<strong>一站式</strong>且社区最大；缺点是抽象层多、API 变化快、版本间常有 breaking change。</li>
+<li><strong>LlamaIndex 侧重 RAG + Agent 融合</strong>：以”数据连接”为核心，<strong>QueryEngineTool</strong> 让 Agent 调用向量索引，适合”文档密集型 Agent”场景。</li>
+<li><strong>框架 vs 裸 SDK 取舍</strong>：原型阶段裸 OpenAI SDK 更直观；当工具 &gt;3、需要并行&#x2F;重试&#x2F;状态机&#x2F;人工审批时，框架的红利压过其复杂度。</li>
+<li><strong>生产就绪度差异大</strong>：LangGraph 的 checkpoint 持久化、CrewAI 的角色管理、AutoGen 的群聊各有侧重；<strong>框架不是银弹</strong>，要看是否支持流式、可观测、回滚。</li>
+</ol>
+<blockquote>
+<p>上一章 <a href="/2026/09/02/Agent/Agent%E5%85%A5%E9%97%A8%E4%B8%8E%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5/" title="第一章：AI Agent 入门与核心概念">第一章：AI Agent 入门与核心概念</a> 介绍了 Agent 的核心概念，本章把它们落到五大主流框架。下一章 <a href="/2026/09/02/Agent/%E5%B7%A5%E5%85%B7%E8%B0%83%E7%94%A8%E4%B8%8E%E5%87%BD%E6%95%B0%E7%BC%96%E6%8E%92/" title="第三章：Agent 工具调用与函数编排">第三章：Agent 工具调用与函数编排</a> 深入工具协议。环境管理推荐 <a href="/2026/04/30/Python/Python-UV/" title="第一章：Python 的 UV 工具：极速 Python 环境与包管理">第一章：Python 的 UV 工具：极速 Python 环境与包管理</a>。代码基于 <strong>LangChain 0.3 &#x2F; LlamaIndex 0.11+ &#x2F; CrewAI 0.30+ &#x2F; AutoGen 0.4+</strong>（沙箱未装依赖，未逐条运行验证）。</p>
+</blockquote>
+<hr>
+<h2 id="一、LangChain-Agent-实战"><a href="#一、LangChain-Agent-实战" class="headerlink" title="一、LangChain Agent 实战"></a>一、LangChain Agent 实战</h2><h3 id="1-1-安装与基本概念"><a href="#1-1-安装与基本概念" class="headerlink" title="1.1 安装与基本概念"></a>1.1 安装与基本概念</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 用 uv 管理环境更省心</span></span><br><span class="line">uv init agent-demo &amp;&amp; <span class="built_in">cd</span> agent-demo</span><br><span class="line">uv add <span class="string">&quot;langchain&gt;=0.3&quot;</span> <span class="string">&quot;langchain-openai&gt;=0.1&quot;</span> <span class="string">&quot;langchain-community&gt;=0.3&quot;</span></span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th>概念</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>AgentExecutor</code></td>
+<td>运行循环、处理异常、限步</td>
+</tr>
+<tr>
+<td><code>create_tool_calling_agent</code></td>
+<td>基于模型 Function Calling 的 Agent</td>
+</tr>
+<tr>
+<td><code>@tool</code> &#x2F; <code>Tool</code></td>
+<td>工具定义方式</td>
+</tr>
+<tr>
+<td><code>ConversationBufferMemory</code></td>
+<td>短期对话记忆</td>
+</tr>
+</tbody></table>
+<h3 id="1-2-完整可运行示例：搜索-计算-数据库三工具-Agent"><a href="#1-2-完整可运行示例：搜索-计算-数据库三工具-Agent" class="headerlink" title="1.2 完整可运行示例：搜索 + 计算 + 数据库三工具 Agent"></a>1.2 完整可运行示例：搜索 + 计算 + 数据库三工具 Agent</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># langchain_agent.py</span></span><br><span class="line"><span class="keyword">from</span> langchain.agents <span class="keyword">import</span> create_tool_calling_agent, AgentExecutor</span><br><span class="line"><span class="keyword">from</span> langchain.tools <span class="keyword">import</span> tool</span><br><span class="line"><span class="keyword">from</span> langchain.memory <span class="keyword">import</span> ConversationBufferMemory</span><br><span class="line"><span class="keyword">from</span> langchain_openai <span class="keyword">import</span> ChatOpenAI</span><br><span class="line"><span class="keyword">from</span> langchain_core.prompts <span class="keyword">import</span> ChatPromptTemplate</span><br><span class="line"></span><br><span class="line"><span class="meta">@tool</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">web_search</span>(<span class="params">query: <span class="built_in">str</span></span>) -&gt; <span class="built_in">str</span>:</span><br><span class="line">    <span class="string">&quot;&quot;&quot;搜索互联网，输入查询关键词，返回前 3 条摘要。&quot;&quot;&quot;</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">f&quot;搜索 <span class="subst">&#123;query&#125;</span>：1) 官方文档 2) 教程 3) GitHub 仓库&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="meta">@tool</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">calculate</span>(<span class="params">expression: <span class="built_in">str</span></span>) -&gt; <span class="built_in">str</span>:</span><br><span class="line">    <span class="string">&quot;&quot;&quot;计算数学表达式，输入如 3*4+5。&quot;&quot;&quot;</span></span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">str</span>(<span class="built_in">eval</span>(expression, &#123;<span class="string">&quot;__builtins__&quot;</span>: &#123;&#125;&#125;, &#123;&#125;))</span><br><span class="line"></span><br><span class="line"><span class="meta">@tool</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">query_db</span>(<span class="params">sql: <span class="built_in">str</span></span>) -&gt; <span class="built_in">str</span>:</span><br><span class="line">    <span class="string">&quot;&quot;&quot;只读查询订单库，输入 SELECT 语句。&quot;&quot;&quot;</span></span><br><span class="line">    <span class="keyword">if</span> <span class="string">&quot;select&quot;</span> <span class="keyword">not</span> <span class="keyword">in</span> sql.lower():</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;仅允许 SELECT&quot;</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;2 行：SO1001 已发货 / SO1002 待支付&quot;</span></span><br><span class="line"></span><br><span class="line">tools = [web_search, calculate, query_db]</span><br><span class="line">llm = ChatOpenAI(model=<span class="string">&quot;gpt-4o-mini&quot;</span>)</span><br><span class="line">memory = ConversationBufferMemory(memory_key=<span class="string">&quot;history&quot;</span>, return_messages=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line">prompt = ChatPromptTemplate.from_messages([</span><br><span class="line">    (<span class="string">&quot;system&quot;</span>, <span class="string">&quot;你是订单分析助手，只用 SELECT 查询，复杂计算用 calculate。&quot;</span>),</span><br><span class="line">    (<span class="string">&quot;placeholder&quot;</span>, <span class="string">&quot;&#123;history&#125;&quot;</span>),</span><br><span class="line">    (<span class="string">&quot;human&quot;</span>, <span class="string">&quot;&#123;input&#125;&quot;</span>),</span><br><span class="line">    (<span class="string">&quot;placeholder&quot;</span>, <span class="string">&quot;&#123;agent_scratchpad&#125;&quot;</span>),</span><br><span class="line">])</span><br><span class="line">agent = create_tool_calling_agent(llm, tools, prompt)</span><br><span class="line">executor = AgentExecutor(agent=agent, tools=tools, memory=memory,</span><br><span class="line">                         verbose=<span class="literal">True</span>, max_iterations=<span class="number">8</span>)</span><br><span class="line"><span class="built_in">print</span>(executor.invoke(&#123;<span class="string">&quot;input&quot;</span>: <span class="string">&quot;查最近订单状态，并算金额合计 1234+5678&quot;</span>&#125;))</span><br></pre></td></tr></table></figure>
+
+<p><code>@tool</code> 装饰器自动把函数 <strong>docstring + 类型注解</strong> 转 schema，写好文档是 Agent 选对工具的关键。</p>
+<hr>
+<h2 id="二、LangGraph-状态图编排"><a href="#二、LangGraph-状态图编排" class="headerlink" title="二、LangGraph 状态图编排"></a>二、LangGraph 状态图编排</h2><h3 id="2-1-核心概念"><a href="#2-1-核心概念" class="headerlink" title="2.1 核心概念"></a>2.1 核心概念</h3><table>
+<thead>
+<tr>
+<th>概念</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>StateGraph</code></td>
+<td>以状态对象为核心的图</td>
+</tr>
+<tr>
+<td><code>Node</code></td>
+<td>接收 state、返回 state 增量的函数</td>
+</tr>
+<tr>
+<td><code>Edge</code></td>
+<td>固定路由</td>
+</tr>
+<tr>
+<td><code>Conditional Edge</code></td>
+<td>根据 state 动态选下一个节点</td>
+</tr>
+</tbody></table>
+<h3 id="2-2-Research-Agent-状态图"><a href="#2-2-Research-Agent-状态图" class="headerlink" title="2.2 Research Agent 状态图"></a>2.2 Research Agent 状态图</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># langgraph_research.py</span></span><br><span class="line"><span class="keyword">from</span> typing <span class="keyword">import</span> TypedDict, Annotated</span><br><span class="line"><span class="keyword">from</span> langgraph.graph <span class="keyword">import</span> StateGraph, START, END</span><br><span class="line"><span class="keyword">from</span> langgraph.graph.message <span class="keyword">import</span> add_messages</span><br><span class="line"><span class="keyword">from</span> langchain_openai <span class="keyword">import</span> ChatOpenAI</span><br><span class="line"></span><br><span class="line">llm = ChatOpenAI(model=<span class="string">&quot;gpt-4o-mini&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">State</span>(<span class="title class_ inherited__">TypedDict</span>):</span><br><span class="line">    question: <span class="built_in">str</span></span><br><span class="line">    docs: <span class="built_in">list</span>[<span class="built_in">str</span>]</span><br><span class="line">    answer: <span class="built_in">str</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">search</span>(<span class="params">state: State</span>):</span><br><span class="line">    docs = [<span class="string">f&quot;文档<span class="subst">&#123;i&#125;</span>：关于<span class="subst">&#123;state[<span class="string">&#x27;question&#x27;</span>]&#125;</span>的内容&quot;</span> <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">3</span>)]</span><br><span class="line">    <span class="keyword">return</span> &#123;<span class="string">&quot;docs&quot;</span>: docs&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">evaluate</span>(<span class="params">state: State</span>):</span><br><span class="line">    grade = llm.invoke(<span class="string">f&quot;这些文档是否足以回答 <span class="subst">&#123;state[<span class="string">&#x27;question&#x27;</span>]&#125;</span>？只回 yes/no：<span class="subst">&#123;state[<span class="string">&#x27;docs&#x27;</span>]&#125;</span>&quot;</span>).content</span><br><span class="line">    <span class="keyword">return</span> &#123;<span class="string">&quot;grade&quot;</span>: grade&#125;  <span class="comment"># 返回的 grade 也写入 state</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">synthesize</span>(<span class="params">state: State</span>):</span><br><span class="line">    answer = llm.invoke(<span class="string">f&quot;基于 <span class="subst">&#123;state[<span class="string">&#x27;docs&#x27;</span>]&#125;</span> 回答 <span class="subst">&#123;state[<span class="string">&#x27;question&#x27;</span>]&#125;</span>&quot;</span>).content</span><br><span class="line">    <span class="keyword">return</span> &#123;<span class="string">&quot;answer&quot;</span>: answer&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">route</span>(<span class="params">state: State</span>):</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;synthesize&quot;</span> <span class="keyword">if</span> state.get(<span class="string">&quot;grade&quot;</span>) == <span class="string">&quot;yes&quot;</span> <span class="keyword">else</span> <span class="string">&quot;search&quot;</span></span><br><span class="line"></span><br><span class="line">graph = StateGraph(State)</span><br><span class="line">graph.add_node(<span class="string">&quot;search&quot;</span>, search)</span><br><span class="line">graph.add_node(<span class="string">&quot;evaluate&quot;</span>, evaluate)</span><br><span class="line">graph.add_node(<span class="string">&quot;synthesize&quot;</span>, synthesize)</span><br><span class="line">graph.add_edge(START, <span class="string">&quot;search&quot;</span>)</span><br><span class="line">graph.add_edge(<span class="string">&quot;search&quot;</span>, <span class="string">&quot;evaluate&quot;</span>)</span><br><span class="line">graph.add_conditional_edges(<span class="string">&quot;evaluate&quot;</span>, route, &#123;<span class="string">&quot;synthesize&quot;</span>: <span class="string">&quot;synthesize&quot;</span>, <span class="string">&quot;search&quot;</span>: <span class="string">&quot;search&quot;</span>&#125;)</span><br><span class="line">graph.add_edge(<span class="string">&quot;synthesize&quot;</span>, END)</span><br><span class="line">app = graph.<span class="built_in">compile</span>()</span><br><span class="line"><span class="built_in">print</span>(app.invoke(&#123;<span class="string">&quot;question&quot;</span>: <span class="string">&quot;LangGraph 是什么？&quot;</span>&#125;))</span><br></pre></td></tr></table></figure>
+
+<p>LangGraph 的状态是<strong>显式 TypedDict</strong>，比 <code>AgentExecutor</code> 黑盒更可控、可断点续跑（<code>checkpointer</code>）。</p>
+<hr>
+<h2 id="三、LlamaIndex-Agent"><a href="#三、LlamaIndex-Agent" class="headerlink" title="三、LlamaIndex Agent"></a>三、LlamaIndex Agent</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uv add <span class="string">&quot;llama-index&gt;=0.11&quot;</span> <span class="string">&quot;llama-index-llms-openai&gt;=0.2&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="3-1-ReActAgent-QueryEngineTool"><a href="#3-1-ReActAgent-QueryEngineTool" class="headerlink" title="3.1 ReActAgent + QueryEngineTool"></a>3.1 ReActAgent + QueryEngineTool</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># llama_index_agent.py</span></span><br><span class="line"><span class="keyword">from</span> llama_index.core <span class="keyword">import</span> VectorStoreIndex, Document</span><br><span class="line"><span class="keyword">from</span> llama_index.core.tools <span class="keyword">import</span> QueryEngineTool, ToolMetadata, FunctionTool</span><br><span class="line"><span class="keyword">from</span> llama_index.core.agent <span class="keyword">import</span> ReActAgent</span><br><span class="line"><span class="keyword">from</span> llama_index.llms.openai <span class="keyword">import</span> OpenAI</span><br><span class="line"></span><br><span class="line">llm = OpenAI(model=<span class="string">&quot;gpt-4o-mini&quot;</span>)</span><br><span class="line">docs = [Document(text=<span class="string">&quot;订单 SO123 已发货；订单 SO456 待支付。&quot;</span>)]</span><br><span class="line">index = VectorStoreIndex.from_documents(docs)</span><br><span class="line"></span><br><span class="line">query_engine = index.as_query_engine(similarity_top_k=<span class="number">2</span>)</span><br><span class="line">qa_tool = QueryEngineTool.from_components(</span><br><span class="line">    query_engine,</span><br><span class="line">    metadata=ToolMetadata(</span><br><span class="line">        name=<span class="string">&quot;order_qa&quot;</span>,</span><br><span class="line">        description=<span class="string">&quot;根据订单知识库回答订单状态、金额等问题&quot;</span>,</span><br><span class="line">    ),</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">get_today</span>(<span class="params">date: <span class="built_in">str</span> = <span class="string">&quot;&quot;</span></span>) -&gt; <span class="built_in">str</span>:</span><br><span class="line">    <span class="string">&quot;&quot;&quot;返回今天日期，输入为空字符串。&quot;&quot;&quot;</span></span><br><span class="line">    <span class="keyword">import</span> datetime</span><br><span class="line">    <span class="keyword">return</span> datetime.date.today().isoformat()</span><br><span class="line"></span><br><span class="line">today_tool = FunctionTool.from_defaults(fn=get_today)</span><br><span class="line"></span><br><span class="line">agent = ReActAgent.from_tools([qa_tool, today_tool], llm=llm, verbose=<span class="literal">True</span>)</span><br><span class="line"><span class="built_in">print</span>(agent.chat(<span class="string">&quot;今天是几号？订单 SO123 状态如何？&quot;</span>))</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-2-与-LangChain-工具复用：ToolAdapter"><a href="#3-2-与-LangChain-工具复用：ToolAdapter" class="headerlink" title="3.2 与 LangChain 工具复用：ToolAdapter"></a>3.2 与 LangChain 工具复用：ToolAdapter</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 把 LangChain 的 @tool 转成 LlamaIndex 的 FunctionTool</span></span><br><span class="line"><span class="keyword">from</span> llama_index.core.tools <span class="keyword">import</span> FunctionTool</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">lc_to_li</span>(<span class="params">lc_tool</span>):</span><br><span class="line">    <span class="keyword">return</span> FunctionTool.from_defaults(</span><br><span class="line">        fn=lc_tool.invoke,</span><br><span class="line">        name=lc_tool.name,</span><br><span class="line">        description=lc_tool.description,</span><br><span class="line">    )</span><br></pre></td></tr></table></figure>
+
+<p>不同框架的 Tool schema 不完全等价，<strong>description 必须重写</strong>，否则模型可能选错。</p>
+<hr>
+<h2 id="四、CrewAI-多-Agent-协作"><a href="#四、CrewAI-多-Agent-协作" class="headerlink" title="四、CrewAI 多 Agent 协作"></a>四、CrewAI 多 Agent 协作</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uv add <span class="string">&quot;crewai&gt;=0.30&quot;</span> <span class="string">&quot;crewai-tools&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="4-1-核心概念"><a href="#4-1-核心概念" class="headerlink" title="4.1 核心概念"></a>4.1 核心概念</h3><table>
+<thead>
+<tr>
+<th>概念</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Crew</code></td>
+<td>一个多 Agent 团队</td>
+</tr>
+<tr>
+<td><code>Agent</code></td>
+<td>角色（role&#x2F;goal&#x2F;backstory）</td>
+</tr>
+<tr>
+<td><code>Task</code></td>
+<td>分配给某 Agent 的具体任务</td>
+</tr>
+<tr>
+<td><code>Process</code></td>
+<td><code>sequential</code> 串行 &#x2F; <code>hierarchical</code> 主管模式</td>
+</tr>
+</tbody></table>
+<h3 id="4-2-三-Agent-协作写技术报告"><a href="#4-2-三-Agent-协作写技术报告" class="headerlink" title="4.2 三 Agent 协作写技术报告"></a>4.2 三 Agent 协作写技术报告</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># crewai_report.py</span></span><br><span class="line"><span class="keyword">from</span> crewai <span class="keyword">import</span> Agent, Task, Crew, Process</span><br><span class="line"></span><br><span class="line">researcher = Agent(</span><br><span class="line">    role=<span class="string">&quot;研究员&quot;</span>,</span><br><span class="line">    goal=<span class="string">&quot;收集并整理 LangGraph 资料&quot;</span>,</span><br><span class="line">    backstory=<span class="string">&quot;资深研究助理，擅长抓重点&quot;</span>,</span><br><span class="line">    llm=<span class="string">&quot;gpt-4o-mini&quot;</span>,</span><br><span class="line">)</span><br><span class="line">writer = Agent(</span><br><span class="line">    role=<span class="string">&quot;技术作者&quot;</span>,</span><br><span class="line">    goal=<span class="string">&quot;把资料写成结构化技术报告&quot;</span>,</span><br><span class="line">    backstory=<span class="string">&quot;技术写作十年&quot;</span>,</span><br><span class="line">    llm=<span class="string">&quot;gpt-4o-mini&quot;</span>,</span><br><span class="line">)</span><br><span class="line">reviewer = Agent(</span><br><span class="line">    role=<span class="string">&quot;审稿人&quot;</span>,</span><br><span class="line">    goal=<span class="string">&quot;指出事实错误与逻辑漏洞&quot;</span>,</span><br><span class="line">    backstory=<span class="string">&quot;严苛主编&quot;</span>,</span><br><span class="line">    llm=<span class="string">&quot;gpt-4o-mini&quot;</span>,</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">research_task = Task(</span><br><span class="line">    description=<span class="string">&quot;围绕主题《LangGraph 状态图》调研：定义、节点、边、conditional edge。&quot;</span>,</span><br><span class="line">    expected_output=<span class="string">&quot;要点清单（中文）&quot;</span>, agent=researcher,</span><br><span class="line">)</span><br><span class="line">write_task = Task(</span><br><span class="line">    description=<span class="string">&quot;把要点写成 800 字报告。&quot;</span>,</span><br><span class="line">    expected_output=<span class="string">&quot;Markdown 报告&quot;</span>, agent=writer,</span><br><span class="line">)</span><br><span class="line">review_task = Task(</span><br><span class="line">    description=<span class="string">&quot;审校报告，输出修订后版本。&quot;</span>,</span><br><span class="line">    expected_output=<span class="string">&quot;最终 Markdown&quot;</span>, agent=reviewer,</span><br><span class="line">)</span><br><span class="line">crew = Crew(agents=[researcher, writer, reviewer],</span><br><span class="line">            tasks=[research_task, write_task, review_task],</span><br><span class="line">            process=Process.sequential, verbose=<span class="literal">True</span>)</span><br><span class="line">result = crew.kickoff()</span><br><span class="line"><span class="built_in">print</span>(result.raw)</span><br></pre></td></tr></table></figure>
+
+<p><code>hierarchical</code> 模式由 CrewAI 自动加一个”manager”分配任务，<strong>分工更灵活但成本更高</strong>。</p>
+<hr>
+<h2 id="五、AutoGen-对话式多-Agent"><a href="#五、AutoGen-对话式多-Agent" class="headerlink" title="五、AutoGen 对话式多 Agent"></a>五、AutoGen 对话式多 Agent</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uv add <span class="string">&quot;autogen&gt;=0.4&quot;</span> <span class="string">&quot;autogen-agentchat&quot;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># autogen_pair.py</span></span><br><span class="line"><span class="keyword">from</span> autogen <span class="keyword">import</span> ConversableAgent</span><br><span class="line"><span class="keyword">from</span> openai <span class="keyword">import</span> OpenAI</span><br><span class="line"></span><br><span class="line">llm_config = &#123;<span class="string">&quot;model&quot;</span>: <span class="string">&quot;gpt-4o-mini&quot;</span>&#125;</span><br><span class="line"></span><br><span class="line">coder = ConversableAgent(</span><br><span class="line">    name=<span class="string">&quot;Coder&quot;</span>,</span><br><span class="line">    system_message=<span class="string">&quot;你是 Python 工程师，写简洁可运行代码并解释。&quot;</span>,</span><br><span class="line">    llm_config=llm_config, max_consecutive_auto_reply=<span class="number">3</span>,</span><br><span class="line">)</span><br><span class="line">reviewer = ConversableAgent(</span><br><span class="line">    name=<span class="string">&quot;Reviewer&quot;</span>,</span><br><span class="line">    system_message=<span class="string">&quot;你是 reviewer，指出 bug 并要求改写，没问题就说 APPROVE。&quot;</span>,</span><br><span class="line">    llm_config=llm_config, max_consecutive_auto_reply=<span class="number">2</span>,</span><br><span class="line">)</span><br><span class="line"><span class="comment"># 终止条件：reviewer 说 APPROVE 就结束</span></span><br><span class="line">reviewer.set_termination_condition(</span><br><span class="line">    <span class="keyword">lambda</span> msg: <span class="string">&quot;APPROVE&quot;</span> <span class="keyword">in</span> msg[<span class="string">&quot;content&quot;</span>].upper()</span><br><span class="line">)</span><br><span class="line">coder.initiate_chat(reviewer, message=<span class="string">&quot;请实现一个返回斐波那契第 n 项的函数。&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>GroupChat 多个 Agent 在同一个会话里发言，<code>GroupChatManager</code> 控制发言顺序，适合<strong>多视角头脑风暴</strong>。<code>max_turns</code> &#x2F; <code>termination_msg</code> 必须设，否则群聊会无限延续。</p>
+<hr>
+<h2 id="六、框架选型对照表"><a href="#六、框架选型对照表" class="headerlink" title="六、框架选型对照表"></a>六、框架选型对照表</h2><table>
+<thead>
+<tr>
+<th>维度</th>
+<th>LangChain</th>
+<th>LangGraph</th>
+<th>LlamaIndex</th>
+<th>CrewAI</th>
+<th>AutoGen</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>适用场景</td>
+<td>通用 Agent</td>
+<td>复杂状态机</td>
+<td>RAG + Agent</td>
+<td>多 Agent 角色协作</td>
+<td>对话式多 Agent</td>
+</tr>
+<tr>
+<td>学习曲线</td>
+<td>中</td>
+<td>较陡</td>
+<td>中</td>
+<td>低</td>
+<td>中</td>
+</tr>
+<tr>
+<td>灵活性</td>
+<td>中</td>
+<td>高</td>
+<td>中</td>
+<td>中</td>
+<td>中高</td>
+</tr>
+<tr>
+<td>生产就绪</td>
+<td>中</td>
+<td>高</td>
+<td>中</td>
+<td>中</td>
+<td>中</td>
+</tr>
+<tr>
+<td>社区活跃</td>
+<td>最大</td>
+<td>大</td>
+<td>大</td>
+<td>中</td>
+<td>中</td>
+</tr>
+</tbody></table>
+<p><strong>选型决策树</strong>：单工具简单 Agent → LangChain <code>create_tool_calling_agent</code>；多状态、需断点续跑 → LangGraph；以文档问答为主 → LlamaIndex；多角色写报告 → CrewAI；多 Agent 对话打磨代码 → AutoGen。<strong>不互斥</strong>，可混用，例如 LlamaIndex 的 QueryEngine 当 LangChain 的 Tool。</p>
+<hr>
+<h2 id="常见避坑"><a href="#常见避坑" class="headerlink" title="常见避坑"></a>常见避坑</h2><table>
+<thead>
+<tr>
+<th>坑</th>
+<th>现象</th>
+<th>正确做法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>框架版本 breaking change</td>
+<td>升级后 API 不识别</td>
+<td><code>uv pip compile</code> 锁版本，看 CHANGELOG</td>
+</tr>
+<tr>
+<td>工具 schema 错误</td>
+<td>LLM 调不出工具</td>
+<td>docstring + 类型注解齐全，必填参数最小化</td>
+</tr>
+<tr>
+<td>AgentExecutor 无 max_iterations</td>
+<td>死循环烧 token</td>
+<td>构造时显式传 <code>max_iterations=8</code></td>
+</tr>
+<tr>
+<td>LangGraph 状态不可变 bug</td>
+<td>节点返回后 state 没变</td>
+<td>节点返回 dict 增量，不是原地改</td>
+</tr>
+<tr>
+<td>多 Agent 死循环</td>
+<td>互相推诿不结束</td>
+<td>设终止条件 + max_turns + 超时</td>
+</tr>
+<tr>
+<td>内存类型不匹配</td>
+<td>history 不进 prompt</td>
+<td>memory_key 与 prompt 占位符一致</td>
+</tr>
+<tr>
+<td>API key 泄漏到 prompt</td>
+<td>模型把 key 输出给用户</td>
+<td>环境变量加载，工具层做脱敏</td>
+</tr>
+<tr>
+<td>框架封装太深难调试</td>
+<td>verbose 仍看不清</td>
+<td>切到 LangGraph 显式状态图</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="本章小结"><a href="#本章小结" class="headerlink" title="本章小结"></a>本章小结</h2><table>
+<thead>
+<tr>
+<th>要点</th>
+<th>结论</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>选型</td>
+<td>按任务复杂度从 LangChain → LangGraph 递进</td>
+</tr>
+<tr>
+<td>状态管理</td>
+<td>LangGraph 显式 TypedDict 比 AgentExecutor 可控</td>
+</tr>
+<tr>
+<td>RAG 融合</td>
+<td>LlamaIndex 的 QueryEngineTool 是文档 Agent 的利器</td>
+</tr>
+<tr>
+<td>多 Agent</td>
+<td>CrewAI 重角色，AutoGen 重对话，终止条件都要设</td>
+</tr>
+<tr>
+<td>工具复用</td>
+<td>框架间 Tool 可桥接，但 description 要重写</td>
+</tr>
+<tr>
+<td>调试</td>
+<td>verbose + LangSmith trace 双管齐下</td>
+</tr>
+</tbody></table>
+<hr>
+<p>本章把五大主流框架的代表性用法跑了一遍，关键不在背 API 而在理解<strong>抽象映射</strong>：ReAct 循环 → AgentExecutor &#x2F; ReActAgent；状态机 → LangGraph；多角色 → CrewAI&#x2F;AutoGen。回到 <a href="/2026/09/02/Agent/Agent%E5%85%A5%E9%97%A8%E4%B8%8E%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5/" title="第一章：AI Agent 入门与核心概念">第一章：AI Agent 入门与核心概念</a> 复盘核心概念，继续看 <a href="/2026/09/02/Agent/%E5%B7%A5%E5%85%B7%E8%B0%83%E7%94%A8%E4%B8%8E%E5%87%BD%E6%95%B0%E7%BC%96%E6%8E%92/" title="第三章：Agent 工具调用与函数编排">第三章：Agent 工具调用与函数编排</a> 深挖工具协议，最后 <a href="/2026/09/02/Agent/Agent%E7%94%9F%E4%BA%A7%E5%8C%96%E4%B8%8E%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5/" title="第四章：Agent 生产化与工程实践">第四章：Agent 生产化与工程实践</a> 讲部署与监控。Python 环境管理推荐 <a href="/2026/04/30/Python/Python-UV/" title="第一章：Python 的 UV 工具：极速 Python 环境与包管理">第一章：Python 的 UV 工具：极速 Python 环境与包管理</a>，比传统 pip 几乎每个项目都更省心。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Agent/" rel="tag"># Agent</a>
+              <a href="/tags/LangChain/" rel="tag"># LangChain</a>
+              <a href="/tags/LlamaIndex/" rel="tag"># LlamaIndex</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/09/02/Agent/%E5%B7%A5%E5%85%B7%E8%B0%83%E7%94%A8%E4%B8%8E%E5%87%BD%E6%95%B0%E7%BC%96%E6%8E%92/" rel="prev" title="第三章：Agent 工具调用与函数编排">
+                  <i class="fa fa-angle-left"></i> 第三章：Agent 工具调用与函数编排
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2026/09/02/Agent/Agent%E5%85%A5%E9%97%A8%E4%B8%8E%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5/" rel="next" title="第一章：AI Agent 入门与核心概念">
+                  第一章：AI Agent 入门与核心概念 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">miracle</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">424k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">23:32</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+<script>
+(function () {
+  function normalizeClipboard(s) {
+    return (s || '').replace(/\u00a0/g, ' ');
+  }
+
+  /** When innerText is empty, treat <br> as newlines (matches Hexo fenced + line_number HTML). */
+  function plainTextFromElement(el) {
+    if (!el) return '';
+    var t = el.innerText;
+    if (t != null && t !== '') return normalizeClipboard(t);
+    var clone = el.cloneNode(true);
+    clone.querySelectorAll('br').forEach(function (br) {
+      br.parentNode.replaceChild(document.createTextNode('\n'), br);
+    });
+    return normalizeClipboard(clone.textContent || '');
+  }
+
+  function extractFromFigure(fig) {
+    if (!fig) return '';
+    var cell = fig.querySelector('td.code') || fig.querySelector('.code');
+    if (cell) return plainTextFromElement(cell);
+    var pre = fig.querySelector('pre');
+    if (pre) return plainTextFromElement(pre);
+    var code = fig.querySelector('code');
+    return code ? plainTextFromElement(code) : '';
+  }
+
+  function extractForCopyBtn(btn) {
+    var fig = btn.closest('figure.highlight');
+    if (fig) return extractFromFigure(fig);
+    var wrap = btn.closest('.code-container');
+    if (wrap) {
+      var innerFig = wrap.querySelector('figure.highlight');
+      if (innerFig) return extractFromFigure(innerFig);
+      var preOnly = wrap.querySelector('pre');
+      if (preOnly) return plainTextFromElement(preOnly);
+    }
+    return '';
+  }
+
+  function setCopyIcon(btn, ok) {
+    var i = btn.querySelector('i');
+    if (i) i.className = ok ? 'fa fa-check-circle fa-fw' : 'fa fa-times-circle fa-fw';
+  }
+
+  function writeClipboard(text, btn) {
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(text).then(
+        function () { setCopyIcon(btn, true); },
+        function () { fallbackCopy(text, btn); }
+      );
+    }
+    fallbackCopy(text, btn);
+    return Promise.resolve();
+  }
+
+  function fallbackCopy(text, btn) {
+    try {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed';
+      ta.style.left = '-9999px';
+      document.body.appendChild(ta);
+      ta.select();
+      var ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      setCopyIcon(btn, ok);
+    } catch (e) {
+      setCopyIcon(btn, false);
+    }
+  }
+
+  document.addEventListener(
+    'click',
+    function (e) {
+      var btn = e.target.closest && e.target.closest('.copy-btn');
+      if (!btn) return;
+      if (!btn.closest('figure.highlight') && !btn.closest('.code-container')) return;
+      e.stopPropagation();
+      e.preventDefault();
+      var text = extractForCopyBtn(btn);
+      writeClipboard(text, btn);
+    },
+    true
+  );
+})();
+</script>
+
+</body>
+</html>

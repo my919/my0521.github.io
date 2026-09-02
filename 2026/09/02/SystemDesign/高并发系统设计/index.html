@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"my919.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="第三章：高并发系统设计概念基础 高并发三指标 QPS&#x2F;RT&#x2F;并发数：QPS 每秒请求数、RT 响应时间（区分 P50&#x2F;P99&#x2F;P999）、并发数同时在线请求数，三者满足 QPS &#x3D; 并发数 &#x2F; RT——降 RT 与提并发数都能提 QPS，但 RT 是用户体验底线。 扩展性：垂直 vs 水平：垂直扩展是单机升配（CPU&#x2F;内存&amp;#x">
+<meta property="og:type" content="article">
+<meta property="og:title" content="第三章：高并发系统设计">
+<meta property="og:url" content="https://my919.github.io/2026/09/02/SystemDesign/%E9%AB%98%E5%B9%B6%E5%8F%91%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/index.html">
+<meta property="og:site_name" content="my">
+<meta property="og:description" content="第三章：高并发系统设计概念基础 高并发三指标 QPS&#x2F;RT&#x2F;并发数：QPS 每秒请求数、RT 响应时间（区分 P50&#x2F;P99&#x2F;P999）、并发数同时在线请求数，三者满足 QPS &#x3D; 并发数 &#x2F; RT——降 RT 与提并发数都能提 QPS，但 RT 是用户体验底线。 扩展性：垂直 vs 水平：垂直扩展是单机升配（CPU&#x2F;内存&amp;#x">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-09-02T04:00:00.000Z">
+<meta property="article:modified_time" content="2026-09-02T14:04:12.422Z">
+<meta property="article:author" content="miracle">
+<meta property="article:tag" content="SystemDesign">
+<meta property="article:tag" content="架构">
+<meta property="article:tag" content="高并发">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://my919.github.io/2026/09/02/SystemDesign/%E9%AB%98%E5%B9%B6%E5%8F%91%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://my919.github.io/2026/09/02/SystemDesign/%E9%AB%98%E5%B9%B6%E5%8F%91%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/","path":"2026/09/02/SystemDesign/高并发系统设计/","title":"第三章：高并发系统设计"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>第三章：高并发系统设计 | my</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.10.1/mermaid.min.js","integrity":"sha256-BmQmdWDS8X2OTbrwELWK366LV6escyWhHHe0XCTU/Hk="}}</script>
+  <script src="/js/third-party/tags/mermaid.js" defer></script>
+
+
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="my" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">my</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-service"><a href="/service/" rel="section"><i class="fa fa-server fa-fw"></i>服务</a></li><li class="menu-item menu-item-tool"><a href="/tool/" rel="section"><i class="fa fa-wrench fa-fw"></i>工具</a></li><li class="menu-item menu-item-project"><a href="/project/" rel="section"><i class="fa fa-folder-open fa-fw"></i>项目</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%B8%89%E7%AB%A0%EF%BC%9A%E9%AB%98%E5%B9%B6%E5%8F%91%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1"><span class="nav-number">1.</span> <span class="nav-text">第三章：高并发系统设计</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E7%BC%93%E5%AD%98%E6%9E%B6%E6%9E%84"><span class="nav-number">1.2.</span> <span class="nav-text">一、缓存架构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%9A%E7%BA%A7%E7%BC%93%E5%AD%98"><span class="nav-number">1.2.1.</span> <span class="nav-text">多级缓存</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F-%E5%87%BB%E7%A9%BF-%E9%9B%AA%E5%B4%A9"><span class="nav-number">1.2.2.</span> <span class="nav-text">缓存穿透 &#x2F; 击穿 &#x2F; 雪崩</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E4%B8%80%E8%87%B4%E6%80%A7%E7%AD%96%E7%95%A5"><span class="nav-number">1.2.3.</span> <span class="nav-text">缓存一致性策略</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%83%AD%E7%82%B9-Key"><span class="nav-number">1.2.4.</span> <span class="nav-text">热点 Key</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E6%95%B0%E6%8D%AE%E5%BA%93%E6%89%A9%E5%B1%95"><span class="nav-number">1.3.</span> <span class="nav-text">二、数据库扩展</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AF%BB%E5%86%99%E5%88%86%E7%A6%BB"><span class="nav-number">1.3.1.</span> <span class="nav-text">读写分离</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8"><span class="nav-number">1.3.2.</span> <span class="nav-text">分库分表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E7%89%87%E9%94%AE%E9%80%89%E6%8B%A9%E4%B8%8E%E5%85%A8%E5%B1%80-ID"><span class="nav-number">1.3.3.</span> <span class="nav-text">分片键选择与全局 ID</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E5%89%8A%E5%B3%B0"><span class="nav-number">1.4.</span> <span class="nav-text">三、消息队列削峰</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B6%88%E8%B4%B9%E8%80%85%E8%83%8C%E5%8E%8B%E4%B8%8E%E5%B9%82%E7%AD%89"><span class="nav-number">1.4.1.</span> <span class="nav-text">消费者背压与幂等</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E9%99%90%E6%B5%81%E4%B8%8E%E9%99%8D%E7%BA%A7"><span class="nav-number">1.5.</span> <span class="nav-text">四、限流与降级</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%99%90%E6%B5%81%E7%AE%97%E6%B3%95"><span class="nav-number">1.5.1.</span> <span class="nav-text">限流算法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%99%8D%E7%BA%A7%E4%B8%8E%E7%86%94%E6%96%AD%E5%AE%9E%E6%88%98"><span class="nav-number">1.5.2.</span> <span class="nav-text">降级与熔断实战</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81CDN-%E4%B8%8E%E9%9D%99%E6%80%81%E5%8C%96"><span class="nav-number">1.6.</span> <span class="nav-text">五、CDN 与静态化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CDN-%E8%BE%B9%E7%BC%98%E7%BC%93%E5%AD%98%E4%B8%8E%E5%8A%A8%E9%9D%99%E5%88%86%E7%A6%BB"><span class="nav-number">1.6.1.</span> <span class="nav-text">CDN 边缘缓存与动静分离</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%A1%B5%E9%9D%A2%E9%9D%99%E6%80%81%E5%8C%96%E4%B8%8E%E5%9B%BE%E7%89%87%E6%9C%8D%E5%8A%A1"><span class="nav-number">1.6.2.</span> <span class="nav-text">页面静态化与图片服务</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E5%AE%B9%E9%87%8F%E8%AF%84%E4%BC%B0%E4%B8%8E%E5%8E%8B%E6%B5%8B"><span class="nav-number">1.7.</span> <span class="nav-text">六、容量评估与压测</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#QPS-%E4%BC%B0%E7%AE%97%E4%B8%8E%E5%8E%8B%E6%B5%8B%E5%B7%A5%E5%85%B7"><span class="nav-number">1.7.1.</span> <span class="nav-text">QPS 估算与压测工具</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%A8%E9%93%BE%E8%B7%AF%E5%8E%8B%E6%B5%8B%E4%B8%8E%E5%BC%B9%E6%80%A7%E4%BC%B8%E7%BC%A9"><span class="nav-number">1.7.2.</span> <span class="nav-text">全链路压测与弹性伸缩</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E9%81%BF%E5%9D%91"><span class="nav-number">1.8.</span> <span class="nav-text">常见避坑</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.9.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">miracle</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">284</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">44</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">186</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/my919" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;my919" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://gitee.com/my919" title="Gitee → https:&#x2F;&#x2F;gitee.com&#x2F;my919" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>Gitee</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:yeal166@163.com" title="E-Mail → mailto:yeal166@163.com" rel="noopener me external nofollow noreferrer" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://my919.github.io/2026/09/02/SystemDesign/%E9%AB%98%E5%B9%B6%E5%8F%91%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="第三章：高并发系统设计 | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          第三章：高并发系统设计
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2026-09-02 12:00:00 / 修改时间：22:04:12" itemprop="dateCreated datePublished" datetime="2026-09-02T12:00:00+08:00">2026-09-02</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/SystemDesign/" itemprop="url" rel="index"><span itemprop="name">SystemDesign</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>2.9k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>10 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="第三章：高并发系统设计"><a href="#第三章：高并发系统设计" class="headerlink" title="第三章：高并发系统设计"></a>第三章：高并发系统设计</h1><h2 id="概念基础"><a href="#概念基础" class="headerlink" title="概念基础"></a>概念基础</h2><ol>
+<li><strong>高并发三指标 QPS&#x2F;RT&#x2F;并发数</strong>：QPS 每秒请求数、RT 响应时间（区分 P50&#x2F;P99&#x2F;P999）、并发数同时在线请求数，三者满足 <strong>QPS &#x3D; 并发数 &#x2F; RT</strong>——降 RT 与提并发数都能提 QPS，但 RT 是用户体验底线。</li>
+<li><strong>扩展性：垂直 vs 水平</strong>：垂直扩展是单机升配（CPU&#x2F;内存&#x2F;SSD），有上限且成本指数增长；水平扩展是多实例分摊流量，理论上无上限，但要解决状态分布、数据分片、一致性。</li>
+<li><strong>缓存不是银弹</strong>：缓存能扛住读 QPS，但带来<strong>一致性、穿透、雪崩、击穿</strong>四大难题；写多读少或强一致场景缓存收益小且风险大，滥用缓存是高并发系统最常见的事故源。</li>
+<li><strong>降级保核心</strong>：流量洪峰时主动牺牲非核心功能（评论、推荐、日志）保全核心链路（下单、支付），降级要<strong>预案先行</strong>、开关可灰度，而非临时手忙脚乱。</li>
+<li><strong>容量规划先行</strong>：先估算峰值 QPS 与单机容量，倒推实例数与资源水位线，再配弹性伸缩；没有容量规划的高并发是赌博，全链路压测是上线前的强制校验。</li>
+</ol>
+<blockquote>
+<p>本章聚焦缓存、数据库扩展、削峰、限流降级四板斧；缓存与数据库基础见 <a href="/2026/05/01/Redis/Redis/" title="第一章：Redis 概述、安装与 CLI 入门">第一章：Redis 概述、安装与 CLI 入门</a> 与 <a href="/2026/05/01/MySQL/MySQL/" title="第一章：MySQL DDL 语句与表设计入门">第一章：MySQL DDL 语句与表设计入门</a>。</p>
+</blockquote>
+<hr>
+<h2 id="一、缓存架构"><a href="#一、缓存架构" class="headerlink" title="一、缓存架构"></a>一、缓存架构</h2><h3 id="多级缓存"><a href="#多级缓存" class="headerlink" title="多级缓存"></a>多级缓存</h3><p>请求从前到后层层兜底：<strong>浏览器 → CDN → Nginx → 本地缓存（Caffeine）→ Redis → DB</strong>，每层挡住一部分流量，越靠前越快也越易失效。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Caffeine 本地缓存 + Redis 二级缓存（本地未命中查 Redis，回源后回填本地）</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">TwoLevelCache</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> com.github.benmanes.caffeine.cache.Cache&lt;String,String&gt; local =</span><br><span class="line">        com.github.benmanes.caffeine.cache.Caffeine.newBuilder().maximumSize(<span class="number">10_000</span>)</span><br><span class="line">            .expireAfterWrite(<span class="number">10</span>, java.util.concurrent.TimeUnit.SECONDS).build();</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Redis redis;</span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">get</span><span class="params">(String key)</span> &#123;</span><br><span class="line">        <span class="type">String</span> <span class="variable">v</span> <span class="operator">=</span> local.getIfPresent(key);             <span class="comment">// 一级本地</span></span><br><span class="line">        <span class="keyword">if</span> (v != <span class="literal">null</span>) <span class="keyword">return</span> v;</span><br><span class="line">        v = redis.get(key);                             <span class="comment">// 二级 Redis</span></span><br><span class="line">        <span class="keyword">if</span> (v != <span class="literal">null</span>) local.put(key, v);               <span class="comment">// 回填本地</span></span><br><span class="line">        <span class="keyword">return</span> v;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="缓存穿透-击穿-雪崩"><a href="#缓存穿透-击穿-雪崩" class="headerlink" title="缓存穿透 &#x2F; 击穿 &#x2F; 雪崩"></a>缓存穿透 &#x2F; 击穿 &#x2F; 雪崩</h3><table>
+<thead>
+<tr>
+<th>问题</th>
+<th>现象</th>
+<th>解决方案</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>穿透</td>
+<td>查不存在的 key，缓存 DB 都没有，每次打 DB</td>
+<td>布隆过滤器拦截；空值缓存短 TTL</td>
+</tr>
+<tr>
+<td>击穿</td>
+<td>单个热点 key 过期瞬间，海量请求直击 DB</td>
+<td>互斥锁（只放一个回源）+ 热点永不过期后台刷新</td>
+</tr>
+<tr>
+<td>雪崩</td>
+<td>大量 key 同时过期，DB 瞬时压力暴增</td>
+<td>TTL 加随机偏移；多级缓存兜底；熔断限流</td>
+</tr>
+</tbody></table>
+<h3 id="缓存一致性策略"><a href="#缓存一致性策略" class="headerlink" title="缓存一致性策略"></a>缓存一致性策略</h3><table>
+<thead>
+<tr>
+<th>策略</th>
+<th>做法</th>
+<th>一致性</th>
+<th>复杂度</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Cache Aside</td>
+<td>先更 DB 再删缓存，读时回填</td>
+<td>最终一致</td>
+<td>低，推荐</td>
+</tr>
+<tr>
+<td>Read Through</td>
+<td>缓存代理回源，应用只读缓存</td>
+<td>较强</td>
+<td>中</td>
+</tr>
+<tr>
+<td>Write Through</td>
+<td>写穿缓存再写 DB，同步</td>
+<td>强</td>
+<td>中</td>
+</tr>
+<tr>
+<td>Write Behind</td>
+<td>写缓存即返回，异步刷 DB</td>
+<td>弱但快</td>
+<td>高</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p><strong>Cache Aside 的删缓存时机</strong>：先更 DB 后删缓存，配合延迟双删（删→更→延迟再删）可缓解主从延迟导致的脏读。</p>
+</blockquote>
+<h3 id="热点-Key"><a href="#热点-Key" class="headerlink" title="热点 Key"></a>热点 Key</h3><p>热点 Key 单分片扛不住时：<strong>本地缓存</strong>吸收读、<strong>分片打散</strong>（key 加随机后缀分散到多分片）、<strong>只读副本</strong>分流。</p>
+<hr>
+<h2 id="二、数据库扩展"><a href="#二、数据库扩展" class="headerlink" title="二、数据库扩展"></a>二、数据库扩展</h2><h3 id="读写分离"><a href="#读写分离" class="headerlink" title="读写分离"></a>读写分离</h3><p>主库写、从库读，主从复制异步。代码层用 ShardingSphere 自动路由：写走 master、读走 slave。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># ShardingSphere-JDBC 读写分离配置</span></span><br><span class="line"><span class="attr">dataSources:</span></span><br><span class="line">  <span class="attr">write_ds:</span> &#123; <span class="attr">dataSourceClassName:</span> <span class="string">com.zaxxer.hikari.HikariDataSource</span>, <span class="attr">jdbcUrl:</span> <span class="string">jdbc:mysql://master:3306/db</span> &#125;</span><br><span class="line">  <span class="attr">read_ds0:</span> &#123; <span class="attr">dataSourceClassName:</span> <span class="string">com.zaxxer.hikari.HikariDataSource</span>, <span class="attr">jdbcUrl:</span> <span class="string">jdbc:mysql://slave0:3306/db</span> &#125;</span><br><span class="line"><span class="attr">rules:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="type">!READWRITE_SPLITTING</span></span><br><span class="line">    <span class="attr">dataSources:</span></span><br><span class="line">      <span class="attr">readwrite_ds:</span></span><br><span class="line">        <span class="attr">writeDataSourceName:</span> <span class="string">write_ds</span></span><br><span class="line">        <span class="attr">readDataSourceNames:</span> [ <span class="string">read_ds0</span> ]</span><br><span class="line">        <span class="attr">transactionalReadQueryStrategy:</span> <span class="string">PRIMARY</span>    <span class="comment"># 事务内读走主库避免幻读</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="分库分表"><a href="#分库分表" class="headerlink" title="分库分表"></a>分库分表</h3><ul>
+<li><strong>垂直拆分</strong>：按字段拆表（商品基本信息 vs 商品详情长文），解决单表字段过多。</li>
+<li><strong>水平拆分</strong>：按分片键（如 user_id）把数据分散到多库多表，解决单表数据量过大。</li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># ShardingSphere 水平分表：user_id 取模分 4 表</span></span><br><span class="line"><span class="attr">rules:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="type">!SHARDING</span></span><br><span class="line">    <span class="attr">tables:</span></span><br><span class="line">      <span class="attr">t_order:</span></span><br><span class="line">        <span class="attr">actualDataNodes:</span> <span class="string">ds_$&#123;0..1&#125;.t_order_$&#123;0..3&#125;</span></span><br><span class="line">        <span class="attr">databaseStrategy:</span></span><br><span class="line">          <span class="attr">standard:</span></span><br><span class="line">            <span class="attr">shardingColumn:</span> <span class="string">user_id</span></span><br><span class="line">            <span class="attr">shardingAlgorithmName:</span> <span class="string">t_order_db_algo</span></span><br><span class="line">        <span class="attr">tableStrategy:</span></span><br><span class="line">          <span class="attr">standard:</span></span><br><span class="line">            <span class="attr">shardingColumn:</span> <span class="string">user_id</span></span><br><span class="line">            <span class="attr">shardingAlgorithmName:</span> <span class="string">t_order_tbl_mod</span></span><br><span class="line">    <span class="attr">shardingAlgorithms:</span></span><br><span class="line">      <span class="attr">t_order_tbl_mod:</span> &#123; <span class="attr">type:</span> <span class="string">MOD</span>, <span class="attr">props:</span> &#123; <span class="attr">sharding-count:</span> <span class="number">4</span> &#125; &#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="分片键选择与全局-ID"><a href="#分片键选择与全局-ID" class="headerlink" title="分片键选择与全局 ID"></a>分片键选择与全局 ID</h3><ul>
+<li><strong>分片键</strong>：选高频查询条件（如 user_id），避免跨片查询；不带分片键的查询会广播所有分片。</li>
+<li><strong>跨片查询</strong>：用 ES 建二级索引，或宽表汇总，避免广播扫描。</li>
+<li><strong>全局唯一 ID</strong>：雪花算法（时间戳+机器 ID+序列号），趋势递增利于 B+树插入。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 雪花算法：64bit = 1bit符号 + 41bit时间戳 + 10bit机器 + 12bit序列</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Snowflake</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="type">long</span> <span class="variable">epoch</span> <span class="operator">=</span> <span class="number">1704067200000L</span>;   <span class="comment">// 2024 起始</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="type">long</span> machineId; <span class="keyword">private</span> <span class="type">long</span> <span class="variable">lastTs</span> <span class="operator">=</span> -<span class="number">1</span>; <span class="keyword">private</span> <span class="type">long</span> <span class="variable">seq</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">Snowflake</span><span class="params">(<span class="type">long</span> machineId)</span> &#123; <span class="built_in">this</span>.machineId = machineId; &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="type">long</span> <span class="title function_">nextId</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="type">long</span> <span class="variable">ts</span> <span class="operator">=</span> System.currentTimeMillis();</span><br><span class="line">        <span class="keyword">if</span> (ts == lastTs) &#123; seq = (seq + <span class="number">1</span>) &amp; <span class="number">0xFFF</span>; <span class="keyword">if</span> (seq == <span class="number">0</span>) ts = tilNext(ts); &#125;</span><br><span class="line">        <span class="keyword">else</span> seq = <span class="number">0</span>;</span><br><span class="line">        lastTs = ts;</span><br><span class="line">        <span class="keyword">return</span> ((ts - epoch) &lt;&lt; <span class="number">22</span>) | (machineId &lt;&lt; <span class="number">12</span>) | seq;   <span class="comment">// 拼位</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="type">long</span> <span class="title function_">tilNext</span><span class="params">(<span class="type">long</span> ts)</span> &#123; <span class="keyword">while</span> (System.currentTimeMillis() &lt;= ts) &#123;&#125; <span class="keyword">return</span> System.currentTimeMillis(); &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="三、消息队列削峰"><a href="#三、消息队列削峰" class="headerlink" title="三、消息队列削峰"></a>三、消息队列削峰</h2><p>消息队列在高并发里干三件事：<strong>削峰填谷</strong>（把瞬时洪峰蓄进队列、匀速消费）、<strong>异步解耦</strong>（写完即返回、下游异步处理）、<strong>最终一致</strong>（事件驱动跨服务状态同步）。</p>
+<h3 id="消费者背压与幂等"><a href="#消费者背压与幂等" class="headerlink" title="消费者背压与幂等"></a>消费者背压与幂等</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Go sarama 消费者组：背压靠拉取批次大小，幂等靠业务去重</span></span><br><span class="line"><span class="keyword">package</span> main</span><br><span class="line"><span class="keyword">import</span> (<span class="string">&quot;context&quot;</span>; <span class="string">&quot;github.com/IBM/sarama&quot;</span>)</span><br><span class="line"><span class="keyword">type</span> handler <span class="keyword">struct</span>&#123; dedup *Dedup &#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(h *handler)</span></span> Setup(sarama.ConsumerGroupSession) <span class="type">error</span>   &#123; <span class="keyword">return</span> <span class="literal">nil</span> &#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(h *handler)</span></span> Cleanup(sarama.ConsumerGroupSession) <span class="type">error</span> &#123; <span class="keyword">return</span> <span class="literal">nil</span> &#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(h *handler)</span></span> ConsumeClaim(sess sarama.ConsumerGroupSession, msg sarama.ConsumerGroupClaim) <span class="type">error</span> &#123;</span><br><span class="line">    <span class="keyword">for</span> m := <span class="keyword">range</span> msg.Messages() &#123;            <span class="comment">// 串行消费自然背压，并发则限 goroutine 数</span></span><br><span class="line">        <span class="keyword">if</span> h.dedup.Seen(<span class="type">string</span>(m.Key)) &#123; sess.MarkMessage(m, <span class="string">&quot;&quot;</span>); <span class="keyword">continue</span> &#125; <span class="comment">// 幂等去重</span></span><br><span class="line">        process(m.Value)                        <span class="comment">// 业务处理</span></span><br><span class="line">        sess.MarkMessage(m, <span class="string">&quot;&quot;</span>)                 <span class="comment">// 处理成功再提交位移</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    cfg := sarama.NewConfig()</span><br><span class="line">    cfg.Consumer.Group.Recovery.Strategy = sarama.RangeStrategy</span><br><span class="line">    cg, _ := sarama.NewConsumerGroupFromClient(<span class="string">&quot;order-group&quot;</span>, client)</span><br><span class="line">    <span class="keyword">for</span> &#123; cg.Consume(context.Background(), []<span class="type">string</span>&#123;<span class="string">&quot;order-created&quot;</span>&#125;, &amp;handler&#123;&#125;) &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong>死信队列</strong>：消费失败重试达上限后转入 DLQ 人工介入；<strong>位移提交</strong>：业务成功后再 MarkMessage，避免处理失败丢消息。MQ 基础见 <a href="/2026/05/01/kafka-mq/" title="第一章：Kafka 消息中间件入门：核心概念与架构">第一章：Kafka 消息中间件入门：核心概念与架构</a>。</p>
+</blockquote>
+<hr>
+<h2 id="四、限流与降级"><a href="#四、限流与降级" class="headerlink" title="四、限流与降级"></a>四、限流与降级</h2><h3 id="限流算法"><a href="#限流算法" class="headerlink" title="限流算法"></a>限流算法</h3><table>
+<thead>
+<tr>
+<th>算法</th>
+<th>特点</th>
+<th>场景</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>计数器</td>
+<td>固定窗口、临界突刺</td>
+<td>简单限频</td>
+</tr>
+<tr>
+<td>滑动窗口</td>
+<td>平滑、无突刺</td>
+<td>接口 QPS 限流</td>
+</tr>
+<tr>
+<td>令牌桶</td>
+<td>允许突发、匀速补桶</td>
+<td>网关入口限流</td>
+</tr>
+<tr>
+<td>漏桶</td>
+<td>匀速出水、削峰</td>
+<td>下游保护</td>
+</tr>
+</tbody></table>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- Redis + Lua 令牌桶限流（原子操作、分布式一致）</span></span><br><span class="line"><span class="keyword">local</span> key = KEYS[<span class="number">1</span>]</span><br><span class="line"><span class="keyword">local</span> rate = <span class="built_in">tonumber</span>(ARGV[<span class="number">1</span>])      <span class="comment">-- 每秒令牌数</span></span><br><span class="line"><span class="keyword">local</span> capacity = <span class="built_in">tonumber</span>(ARGV[<span class="number">2</span>])  <span class="comment">-- 桶容量</span></span><br><span class="line"><span class="keyword">local</span> now = <span class="built_in">tonumber</span>(ARGV[<span class="number">3</span>])</span><br><span class="line"><span class="keyword">local</span> last = <span class="built_in">tonumber</span>(redis.call(<span class="string">&#x27;hget&#x27;</span>, key, <span class="string">&#x27;ts&#x27;</span>) <span class="keyword">or</span> now)</span><br><span class="line"><span class="keyword">local</span> tokens = <span class="built_in">tonumber</span>(redis.call(<span class="string">&#x27;hget&#x27;</span>, key, <span class="string">&#x27;tk&#x27;</span>) <span class="keyword">or</span> capacity)</span><br><span class="line">tokens = <span class="built_in">math</span>.<span class="built_in">min</span>(capacity, tokens + (now - last) * rate)  <span class="comment">-- 补充令牌</span></span><br><span class="line"><span class="keyword">if</span> tokens &lt; <span class="number">1</span> <span class="keyword">then</span> redis.call(<span class="string">&#x27;hmset&#x27;</span>, key, <span class="string">&#x27;ts&#x27;</span>, now, <span class="string">&#x27;tk&#x27;</span>, tokens); <span class="keyword">return</span> <span class="number">0</span> <span class="keyword">end</span></span><br><span class="line">tokens = tokens - <span class="number">1</span></span><br><span class="line">redis.call(<span class="string">&#x27;hmset&#x27;</span>, key, <span class="string">&#x27;ts&#x27;</span>, now, <span class="string">&#x27;tk&#x27;</span>, tokens)</span><br><span class="line"><span class="keyword">return</span> <span class="number">1</span>                              <span class="comment">-- 1 放行 0 拒绝</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="降级与熔断实战"><a href="#降级与熔断实战" class="headerlink" title="降级与熔断实战"></a>降级与熔断实战</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 读降级：Redis 不可用时返回本地兜底；写降级：写 DB 失败转 MQ 异步补偿</span></span><br><span class="line"><span class="meta">@SentinelResource(value = &quot;getStock&quot;, blockHandler = &quot;blockStock&quot;, fallback = &quot;fallbackStock&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="type">int</span> <span class="title function_">getStock</span><span class="params">(<span class="type">long</span> sku)</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> Integer.parseInt(redis.get(<span class="string">&quot;stock:&quot;</span> + sku));   <span class="comment">// 主路径查缓存</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="type">int</span> <span class="title function_">fallbackStock</span><span class="params">(<span class="type">long</span> sku)</span> &#123; <span class="keyword">return</span> localCache.getIfPresent(sku); &#125;  <span class="comment">// 降级回本地</span></span><br><span class="line"><span class="keyword">public</span> <span class="type">int</span> <span class="title function_">blockStock</span><span class="params">(<span class="type">long</span> sku, BlockException e)</span> &#123; <span class="keyword">return</span> -<span class="number">1</span>; &#125;             <span class="comment">// 限流兜底</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>降级分级</strong>：读降级（缓存&#x2F;默认值）、写降级（同步转异步）、功能降级（关评论&#x2F;推荐）。</li>
+<li><strong>熔断</strong>：错误率&#x2F;RT 超阈值触发，OPEN 直接拒绝，休眠后 HALF_OPEN 探活恢复。</li>
+</ul>
+<blockquote>
+<p>熔断限流工程落地见 <a href="/2026/05/17/SpringCloud/%E9%9B%86%E6%88%90Sentinel/" title="第七章：集成 Sentinel：流控、熔断与服务保护">第七章：集成 Sentinel：流控、熔断与服务保护</a>。</p>
+</blockquote>
+<hr>
+<h2 id="五、CDN-与静态化"><a href="#五、CDN-与静态化" class="headerlink" title="五、CDN 与静态化"></a>五、CDN 与静态化</h2><h3 id="CDN-边缘缓存与动静分离"><a href="#CDN-边缘缓存与动静分离" class="headerlink" title="CDN 边缘缓存与动静分离"></a>CDN 边缘缓存与动静分离</h3><p>CDN 把静态资源缓存到离用户最近的边缘节点，回源率是成本与体验的关键。动静分离让动态请求走应用、静态走 CDN&#x2F;Nginx。</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Nginx 动静分离：静态走本地 root，动态反代到应用</span></span><br><span class="line"><span class="section">server</span> &#123;</span><br><span class="line">    <span class="attribute">listen</span> <span class="number">80</span>;</span><br><span class="line">    <span class="section">location</span> <span class="regexp">~* \.(js|css|png|jpg|woff2)$</span> &#123;</span><br><span class="line">        <span class="attribute">root</span> /data/static;             <span class="comment"># 静态资源直接吐</span></span><br><span class="line">        <span class="attribute">expires</span> <span class="number">30d</span>;                   <span class="comment"># 长缓存</span></span><br><span class="line">        <span class="attribute">add_header</span> Cache-Control <span class="string">&quot;public, immutable&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="section">location</span> /api/ &#123;</span><br><span class="line">        <span class="attribute">proxy_pass</span> http://app_upstream;  <span class="comment"># 动态请求反代</span></span><br><span class="line">        <span class="attribute">proxy_cache</span> api_cache;           <span class="comment"># 对响应缓存</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="页面静态化与图片服务"><a href="#页面静态化与图片服务" class="headerlink" title="页面静态化与图片服务"></a>页面静态化与图片服务</h3><ul>
+<li><strong>页面静态化</strong>：把活动页&#x2F;详情页预渲染成 HTML 推 CDN，QPS 由应用层降到 CDN 层。</li>
+<li><strong>图片服务</strong>：上传后转多尺寸+WebP，CDN 按尺寸回源；<strong>预热</strong>提前把热点资源推 CDN，<strong>刷新</strong>保证更新及时。</li>
+</ul>
+<p>Nginx 静态服务与反向代理见 <a href="/2026/05/01/Nginx/Nginx/" title="第一章：Nginx 入门与静态服务">第一章：Nginx 入门与静态服务</a>。</p>
+<hr>
+<h2 id="六、容量评估与压测"><a href="#六、容量评估与压测" class="headerlink" title="六、容量评估与压测"></a>六、容量评估与压测</h2><h3 id="QPS-估算与压测工具"><a href="#QPS-估算与压测工具" class="headerlink" title="QPS 估算与压测工具"></a>QPS 估算与压测工具</h3><p>峰值 QPS 估算：日均 PV ÷ 秒数 × 峰值系数（通常 5~10 倍），再按二八定律收敛到高峰时段。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># wrk 压测：2 线程 ×100 连接 持续 30 秒</span></span><br><span class="line">wrk -t2 -c100 -d30s --latency http://localhost:8080/api/order</span><br><span class="line"><span class="comment"># 输出 Latency、Requests/sec、P50/P90/P99</span></span><br><span class="line"><span class="comment"># k6 脚本化压测更适合复杂场景；JMeter 适合 GUI 与分布式压测</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="全链路压测与弹性伸缩"><a href="#全链路压测与弹性伸缩" class="headerlink" title="全链路压测与弹性伸缩"></a>全链路压测与弹性伸缩</h3><ul>
+<li><strong>全链路压测</strong>：在影子库影子表上模拟真实流量走过所有服务，发现瓶颈与雪崩点。</li>
+<li><strong>容量水位线</strong>：CPU&#x2F;内存&#x2F;RT 水位线，超过扩容、低于缩容。</li>
+<li><strong>K8s HPA</strong>：按 CPU 或自定义指标自动伸缩 Pod 数。</li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># K8s HPA：CPU 超 70% 扩到 10 个 Pod</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">autoscaling/v2</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">HorizontalPodAutoscaler</span></span><br><span class="line"><span class="attr">metadata:</span> &#123; <span class="attr">name:</span> <span class="string">order-hpa</span> &#125;</span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">scaleTargetRef:</span> &#123; <span class="attr">apiVersion:</span> <span class="string">apps/v1</span>, <span class="attr">kind:</span> <span class="string">Deployment</span>, <span class="attr">name:</span> <span class="string">order</span> &#125;</span><br><span class="line">  <span class="attr">minReplicas:</span> <span class="number">2</span></span><br><span class="line">  <span class="attr">maxReplicas:</span> <span class="number">10</span></span><br><span class="line">  <span class="attr">metrics:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">type:</span> <span class="string">Resource</span></span><br><span class="line">      <span class="attr">resource:</span> &#123; <span class="attr">name:</span> <span class="string">cpu</span>, <span class="attr">target:</span> &#123; <span class="attr">type:</span> <span class="string">Utilization</span>, <span class="attr">averageUtilization:</span> <span class="number">70</span> &#125; &#125;</span><br></pre></td></tr></table></figure>
+
+<p>容器编排与弹性伸缩见 <a href="/2026/05/01/Cloud/Kubernetes/" title="第二章：Kubernetes 容器编排入门">第二章：Kubernetes 容器编排入门</a>。</p>
+<h2 id="常见避坑"><a href="#常见避坑" class="headerlink" title="常见避坑"></a>常见避坑</h2><table>
+<thead>
+<tr>
+<th>坑</th>
+<th>现象</th>
+<th>正确做法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>缓存与 DB 强一致执念</strong></td>
+<td>加各种锁保强一致，性能崩盘</td>
+<td>接受最终一致，用延迟双删+消息补偿</td>
+</tr>
+<tr>
+<td><strong>热点 key 过期集中</strong></td>
+<td>同时过期引发雪崩击穿</td>
+<td>TTL 加随机偏移，热点永不过期后台刷</td>
+</tr>
+<tr>
+<td><strong>分片键选错</strong></td>
+<td>按自增 ID 分片导致写入热点</td>
+<td>选离散度高的业务键（user_id），避免时间序</td>
+</tr>
+<tr>
+<td><strong>跨片查询广播</strong></td>
+<td>不带分片键的查询扫所有分片</td>
+<td>建二级索引（ES&#x2F;宽表），或冗余分片键</td>
+</tr>
+<tr>
+<td><strong>消费位移提前提交</strong></td>
+<td>处理未成就位移，宕机丢消息</td>
+<td>业务成功后再 MarkMessage，处理失败重试</td>
+</tr>
+<tr>
+<td><strong>限流只限单机</strong></td>
+<td>单机限不住全局，总量仍超</td>
+<td>网关层 + Redis Lua 做分布式限流</td>
+</tr>
+<tr>
+<td><strong>降级开关临时找</strong></td>
+<td>故障时才现加开关，来不及</td>
+<td>预埋降级开关，演练验证可降级路径</td>
+</tr>
+<tr>
+<td><strong>压测压单接口</strong></td>
+<td>单接口扛住了，链路仍崩</td>
+<td>全链路压测，覆盖依赖与共享资源</td>
+</tr>
+<tr>
+<td><strong>HPA 扩容滞后</strong></td>
+<td>流量突增时 Pod 还没起就过载</td>
+<td>预留 buffer + 预扩容 + 缩容冷却防抖</td>
+</tr>
+<tr>
+<td><strong>缓存击穿用大锁</strong></td>
+<td>互斥锁锁全局，并发退化串行</td>
+<td>锁粒度细化到 key，或逻辑过期异步刷新</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="本章小结"><a href="#本章小结" class="headerlink" title="本章小结"></a>本章小结</h2><table>
+<thead>
+<tr>
+<th>要点</th>
+<th>结论</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>缓存</td>
+<td>多级缓存兜底，穿透&#x2F;击穿&#x2F;雪崩三防，Cache Aside 主流</td>
+</tr>
+<tr>
+<td>数据库</td>
+<td>读写分离+分库分表，雪花算法做全局 ID</td>
+</tr>
+<tr>
+<td>削峰</td>
+<td>MQ 削峰填谷+异步解耦，消费幂等与位移提交是底线</td>
+</tr>
+<tr>
+<td>限流降级</td>
+<td>令牌桶为主、Redis Lua 分布式，降级分级保核心</td>
+</tr>
+<tr>
+<td>静态化</td>
+<td>动静分离+页面静态化，CDN 边缘扛量</td>
+</tr>
+<tr>
+<td>容量</td>
+<td>先估 QPS 再全链路压测，HPA 弹性伸缩兜底</td>
+</tr>
+</tbody></table>
+<hr>
+<p>高并发管流量与资源，其服务间的拆分与容错来自 <a href="/2026/09/02/SystemDesign/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84%E6%A8%A1%E5%BC%8F/" title="第二章：微服务架构模式">第二章：微服务架构模式</a>，微观构件的模式来自 <a href="/2026/09/02/SystemDesign/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%B2%BE%E8%A6%81/" title="第一章：设计模式精要">第一章：设计模式精要</a>。配套基础设施：缓存主力 <a href="/2026/05/01/Redis/Redis/" title="第一章：Redis 概述、安装与 CLI 入门">第一章：Redis 概述、安装与 CLI 入门</a>、数据库分片 <a href="/2026/05/01/MySQL/MySQL/" title="第一章：MySQL DDL 语句与表设计入门">第一章：MySQL DDL 语句与表设计入门</a>、动静分离 <a href="/2026/05/01/Nginx/Nginx/" title="第一章：Nginx 入门与静态服务">第一章：Nginx 入门与静态服务</a>、弹性伸缩 <a href="/2026/05/01/Cloud/Kubernetes/" title="第二章：Kubernetes 容器编排入门">第二章：Kubernetes 容器编排入门</a>，三者层层递进构成完整系统设计骨架。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/SystemDesign/" rel="tag"># SystemDesign</a>
+              <a href="/tags/%E6%9E%B6%E6%9E%84/" rel="tag"># 架构</a>
+              <a href="/tags/%E9%AB%98%E5%B9%B6%E5%8F%91/" rel="tag"># 高并发</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/09/02/Testing/%E6%B5%8B%E8%AF%95%E6%96%B9%E6%B3%95%E8%AE%BA%E4%B8%8E%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95/" rel="prev" title="第一章：测试方法论与单元测试">
+                  <i class="fa fa-angle-left"></i> 第一章：测试方法论与单元测试
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2026/09/02/SystemDesign/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%B2%BE%E8%A6%81/" rel="next" title="第一章：设计模式精要">
+                  第一章：设计模式精要 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">miracle</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">424k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">23:32</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+<script>
+(function () {
+  function normalizeClipboard(s) {
+    return (s || '').replace(/\u00a0/g, ' ');
+  }
+
+  /** When innerText is empty, treat <br> as newlines (matches Hexo fenced + line_number HTML). */
+  function plainTextFromElement(el) {
+    if (!el) return '';
+    var t = el.innerText;
+    if (t != null && t !== '') return normalizeClipboard(t);
+    var clone = el.cloneNode(true);
+    clone.querySelectorAll('br').forEach(function (br) {
+      br.parentNode.replaceChild(document.createTextNode('\n'), br);
+    });
+    return normalizeClipboard(clone.textContent || '');
+  }
+
+  function extractFromFigure(fig) {
+    if (!fig) return '';
+    var cell = fig.querySelector('td.code') || fig.querySelector('.code');
+    if (cell) return plainTextFromElement(cell);
+    var pre = fig.querySelector('pre');
+    if (pre) return plainTextFromElement(pre);
+    var code = fig.querySelector('code');
+    return code ? plainTextFromElement(code) : '';
+  }
+
+  function extractForCopyBtn(btn) {
+    var fig = btn.closest('figure.highlight');
+    if (fig) return extractFromFigure(fig);
+    var wrap = btn.closest('.code-container');
+    if (wrap) {
+      var innerFig = wrap.querySelector('figure.highlight');
+      if (innerFig) return extractFromFigure(innerFig);
+      var preOnly = wrap.querySelector('pre');
+      if (preOnly) return plainTextFromElement(preOnly);
+    }
+    return '';
+  }
+
+  function setCopyIcon(btn, ok) {
+    var i = btn.querySelector('i');
+    if (i) i.className = ok ? 'fa fa-check-circle fa-fw' : 'fa fa-times-circle fa-fw';
+  }
+
+  function writeClipboard(text, btn) {
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(text).then(
+        function () { setCopyIcon(btn, true); },
+        function () { fallbackCopy(text, btn); }
+      );
+    }
+    fallbackCopy(text, btn);
+    return Promise.resolve();
+  }
+
+  function fallbackCopy(text, btn) {
+    try {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed';
+      ta.style.left = '-9999px';
+      document.body.appendChild(ta);
+      ta.select();
+      var ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      setCopyIcon(btn, ok);
+    } catch (e) {
+      setCopyIcon(btn, false);
+    }
+  }
+
+  document.addEventListener(
+    'click',
+    function (e) {
+      var btn = e.target.closest && e.target.closest('.copy-btn');
+      if (!btn) return;
+      if (!btn.closest('figure.highlight') && !btn.closest('.code-container')) return;
+      e.stopPropagation();
+      e.preventDefault();
+      var text = extractForCopyBtn(btn);
+      writeClipboard(text, btn);
+    },
+    true
+  );
+})();
+</script>
+
+</body>
+</html>

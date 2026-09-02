@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"my919.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="第四章：Agent 生产化与工程实践概念基础 Agent 生产化的三大挑战：延迟 &#x2F; 成本 &#x2F; 可靠性：单次对话要多次 LLM 调用 + 多次工具调用，首字延迟普遍 5-30 秒、单次成本可能 0.05-0.5 美元，非确定性输出让 QA 难以传统方式覆盖。 评估比传统软件难：传统软件输入确定 → 输出确定；Agent 同一输入两次结果可能不同，必须用任务完成率 + 工具调用准">
+<meta property="og:type" content="article">
+<meta property="og:title" content="第四章：Agent 生产化与工程实践">
+<meta property="og:url" content="https://my919.github.io/2026/09/02/Agent/Agent%E7%94%9F%E4%BA%A7%E5%8C%96%E4%B8%8E%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5/index.html">
+<meta property="og:site_name" content="my">
+<meta property="og:description" content="第四章：Agent 生产化与工程实践概念基础 Agent 生产化的三大挑战：延迟 &#x2F; 成本 &#x2F; 可靠性：单次对话要多次 LLM 调用 + 多次工具调用，首字延迟普遍 5-30 秒、单次成本可能 0.05-0.5 美元，非确定性输出让 QA 难以传统方式覆盖。 评估比传统软件难：传统软件输入确定 → 输出确定；Agent 同一输入两次结果可能不同，必须用任务完成率 + 工具调用准">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-09-02T06:00:00.000Z">
+<meta property="article:modified_time" content="2026-09-02T14:31:44.479Z">
+<meta property="article:author" content="miracle">
+<meta property="article:tag" content="Agent">
+<meta property="article:tag" content="Observability">
+<meta property="article:tag" content="Production">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://my919.github.io/2026/09/02/Agent/Agent%E7%94%9F%E4%BA%A7%E5%8C%96%E4%B8%8E%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://my919.github.io/2026/09/02/Agent/Agent%E7%94%9F%E4%BA%A7%E5%8C%96%E4%B8%8E%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5/","path":"2026/09/02/Agent/Agent生产化与工程实践/","title":"第四章：Agent 生产化与工程实践"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>第四章：Agent 生产化与工程实践 | my</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.10.1/mermaid.min.js","integrity":"sha256-BmQmdWDS8X2OTbrwELWK366LV6escyWhHHe0XCTU/Hk="}}</script>
+  <script src="/js/third-party/tags/mermaid.js" defer></script>
+
+
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="my" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">my</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-service"><a href="/service/" rel="section"><i class="fa fa-server fa-fw"></i>服务</a></li><li class="menu-item menu-item-tool"><a href="/tool/" rel="section"><i class="fa fa-wrench fa-fw"></i>工具</a></li><li class="menu-item menu-item-project"><a href="/project/" rel="section"><i class="fa fa-folder-open fa-fw"></i>项目</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%9AAgent-%E7%94%9F%E4%BA%A7%E5%8C%96%E4%B8%8E%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5"><span class="nav-number">1.</span> <span class="nav-text">第四章：Agent 生产化与工程实践</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81Agent-%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1"><span class="nav-number">1.2.</span> <span class="nav-text">一、Agent 架构设计</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-%E6%80%BB%E4%BD%93%E6%9E%B6%E6%9E%84"><span class="nav-number">1.2.1.</span> <span class="nav-text">1.1 总体架构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-FastAPI-LangGraph-%E6%B5%81%E5%BC%8F-SSE-Agent-API"><span class="nav-number">1.2.2.</span> <span class="nav-text">1.2 FastAPI + LangGraph 流式 SSE Agent API</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81RAG-Agent-%E8%9E%8D%E5%90%88%E5%AE%9E%E6%88%98"><span class="nav-number">1.3.</span> <span class="nav-text">二、RAG + Agent 融合实战</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-%E4%B8%BA%E4%BB%80%E4%B9%88-RAG-%E9%9C%80%E8%A6%81-Agent"><span class="nav-number">1.3.1.</span> <span class="nav-text">2.1 为什么 RAG 需要 Agent</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-LangGraph-Self-RAG-Agent"><span class="nav-number">1.3.2.</span> <span class="nav-text">2.2 LangGraph Self-RAG Agent</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E6%88%90%E6%9C%AC%E4%B8%8E%E5%BB%B6%E8%BF%9F%E4%BC%98%E5%8C%96"><span class="nav-number">1.4.</span> <span class="nav-text">三、成本与延迟优化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-%E4%BC%98%E5%8C%96%E6%B8%85%E5%8D%95"><span class="nav-number">1.4.1.</span> <span class="nav-text">3.1 优化清单</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-%E6%A8%A1%E5%9E%8B%E8%B7%AF%E7%94%B1%E5%99%A8-%E7%BB%93%E6%9E%9C%E7%BC%93%E5%AD%98"><span class="nav-number">1.4.2.</span> <span class="nav-text">3.2 模型路由器 + 结果缓存</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-%E5%8D%95%E6%AC%A1%E5%AF%B9%E8%AF%9D%E6%88%90%E6%9C%AC%E4%BC%B0%E7%AE%97"><span class="nav-number">1.4.3.</span> <span class="nav-text">3.3 单次对话成本估算</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E8%AF%84%E4%BC%B0%E4%B8%8E%E6%B5%8B%E8%AF%95"><span class="nav-number">1.5.</span> <span class="nav-text">四、评估与测试</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-%E8%AF%84%E4%BC%B0%E7%BB%B4%E5%BA%A6"><span class="nav-number">1.5.1.</span> <span class="nav-text">4.1 评估维度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-LangSmith-%E8%AF%84%E4%BC%B0%E9%9B%86-%E8%87%AA%E5%8A%A8%E8%AF%84%E5%88%86"><span class="nav-number">1.5.2.</span> <span class="nav-text">4.2 LangSmith 评估集 + 自动评分</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-%E5%9B%9E%E5%BD%92%E6%B5%8B%E8%AF%95%EF%BC%9A%E5%9B%BA%E5%8C%96-good-cases"><span class="nav-number">1.5.3.</span> <span class="nav-text">4.3 回归测试：固化 good cases</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E5%8F%AF%E8%A7%82%E6%B5%8B%E6%80%A7%E4%B8%8E%E7%9B%91%E6%8E%A7"><span class="nav-number">1.6.</span> <span class="nav-text">五、可观测性与监控</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#5-1-%E4%B8%89%E5%B1%82%E8%A7%82%E6%B5%8B"><span class="nav-number">1.6.1.</span> <span class="nav-text">5.1 三层观测</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-2-Langfuse-Prometheus-%E9%9B%86%E6%88%90"><span class="nav-number">1.6.2.</span> <span class="nav-text">5.2 Langfuse + Prometheus 集成</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-3-%E5%91%8A%E8%AD%A6%E8%A7%84%E5%88%99%E7%A4%BA%E4%BE%8B"><span class="nav-number">1.6.3.</span> <span class="nav-text">5.3 告警规则示例</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E9%83%A8%E7%BD%B2%E4%B8%8E%E8%BF%90%E7%BB%B4"><span class="nav-number">1.7.</span> <span class="nav-text">六、部署与运维</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#6-1-Dockerfile%EF%BC%88multi-stage%EF%BC%89"><span class="nav-number">1.7.1.</span> <span class="nav-text">6.1 Dockerfile（multi-stage）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-2-docker-compose-yml"><span class="nav-number">1.7.2.</span> <span class="nav-text">6.2 docker-compose.yml</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-3-K8s-Deployment-HPA-%E7%89%87%E6%AE%B5"><span class="nav-number">1.7.3.</span> <span class="nav-text">6.3 K8s Deployment + HPA 片段</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-4-%E7%81%B0%E5%BA%A6%E4%B8%8E%E5%BA%94%E6%80%A5"><span class="nav-number">1.7.4.</span> <span class="nav-text">6.4 灰度与应急</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E9%81%BF%E5%9D%91"><span class="nav-number">1.8.</span> <span class="nav-text">常见避坑</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.9.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">miracle</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">284</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">44</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">186</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/my919" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;my919" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://gitee.com/my919" title="Gitee → https:&#x2F;&#x2F;gitee.com&#x2F;my919" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>Gitee</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:yeal166@163.com" title="E-Mail → mailto:yeal166@163.com" rel="noopener me external nofollow noreferrer" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://my919.github.io/2026/09/02/Agent/Agent%E7%94%9F%E4%BA%A7%E5%8C%96%E4%B8%8E%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="第四章：Agent 生产化与工程实践 | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          第四章：Agent 生产化与工程实践
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2026-09-02 14:00:00 / 修改时间：22:31:44" itemprop="dateCreated datePublished" datetime="2026-09-02T14:00:00+08:00">2026-09-02</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Agent/" itemprop="url" rel="index"><span itemprop="name">Agent</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>2.5k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>8 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="第四章：Agent-生产化与工程实践"><a href="#第四章：Agent-生产化与工程实践" class="headerlink" title="第四章：Agent 生产化与工程实践"></a>第四章：Agent 生产化与工程实践</h1><h2 id="概念基础"><a href="#概念基础" class="headerlink" title="概念基础"></a>概念基础</h2><ol>
+<li><strong>Agent 生产化的三大挑战：延迟 &#x2F; 成本 &#x2F; 可靠性</strong>：单次对话要多次 LLM 调用 + 多次工具调用，<strong>首字延迟</strong>普遍 5-30 秒、单次成本可能 0.05-0.5 美元，<strong>非确定性输出</strong>让 QA 难以传统方式覆盖。</li>
+<li><strong>评估比传统软件难</strong>：传统软件输入确定 → 输出确定；Agent 同一输入两次结果可能不同，必须用<strong>任务完成率 + 工具调用准确率 + 人工标注</strong>多维度评估，靠单测不够。</li>
+<li><strong>可观测性是生命线</strong>：Agent 调用链跨多步、多工具，<strong>没有 trace 就是黑盒</strong>；LangSmith &#x2F; Langfuse 这类 step-level trace 在生产前就要接好，否则出问题无法复盘。</li>
+<li><strong>人在环（HITL）兜底</strong>：写操作、支付、删除等不可逆动作必须人工确认；<strong>Agent 不该 100% 自主</strong>，关键是定义清楚哪些步骤要人、哪些不要。</li>
+<li><strong>从 Demo 到生产的鸿沟</strong>：Demo 看 PPT 漂亮，上线要补<strong>鉴权、限流、缓存、降级、回滚、监控、审计、合规</strong>；80% 的工程量在 Demo 之外。</li>
+</ol>
+<blockquote>
+<p>前三章 <a href="/2026/09/02/Agent/Agent%E5%85%A5%E9%97%A8%E4%B8%8E%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5/" title="第一章：AI Agent 入门与核心概念">第一章：AI Agent 入门与核心概念</a>、<a href="/2026/09/02/Agent/Agent%E6%A1%86%E6%9E%B6%E5%AE%9E%E6%88%98/" title="第二章：Agent 框架实战">第二章：Agent 框架实战</a>、<a href="/2026/09/02/Agent/%E5%B7%A5%E5%85%B7%E8%B0%83%E7%94%A8%E4%B8%8E%E5%87%BD%E6%95%B0%E7%BC%96%E6%8E%92/" title="第三章：Agent 工具调用与函数编排">第三章：Agent 工具调用与函数编排</a> 解决”能跑”，本章解决”上得了生产”。RAG 基础见 <a href="/2026/05/01/AI/AI-RAG%E4%B8%8E%E5%90%91%E9%87%8F%E6%A3%80%E7%B4%A2/" title="第四章：RAG 与向量检索实战">第四章：RAG 与向量检索实战</a>，LLM 原理见 <a href="/2026/05/01/AI/LLM/" title="第三章：LLM 大语言模型基础">第三章：LLM 大语言模型基础</a>，Web 框架见 <a href="/2026/05/01/Python/FastAPI/" title="第八章：FastAPI：现代 Python Web API 框架入门">第八章：FastAPI：现代 Python Web API 框架入门</a>，监控见 <a href="/2026/09/02/Observability/Prometheus%E4%B8%8EGrafana/" title="第一章：Prometheus 指标监控与 Grafana 可视化">第一章：Prometheus 指标监控与 Grafana 可视化</a>，容器见 <a href="/2026/05/01/Cloud/Docker/" title="第一章：Docker 容器基础">第一章：Docker 容器基础</a>。代码基于 <strong>LangGraph 0.2 &#x2F; LangSmith 0.1 &#x2F; FastAPI 0.110+</strong>（沙箱未装依赖，未逐条运行验证）。</p>
+</blockquote>
+<hr>
+<h2 id="一、Agent-架构设计"><a href="#一、Agent-架构设计" class="headerlink" title="一、Agent 架构设计"></a>一、Agent 架构设计</h2><h3 id="1-1-总体架构"><a href="#1-1-总体架构" class="headerlink" title="1.1 总体架构"></a>1.1 总体架构</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">API 网关(FastAPI + 鉴权 + 限流) → Agent 编排(LangGraph 状态图 + checkpointer) → 工具层(检索/SQL/HTTP/沙箱) → 数据层(向量库/关系库/对象存储)</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-2-FastAPI-LangGraph-流式-SSE-Agent-API"><a href="#1-2-FastAPI-LangGraph-流式-SSE-Agent-API" class="headerlink" title="1.2 FastAPI + LangGraph 流式 SSE Agent API"></a>1.2 FastAPI + LangGraph 流式 SSE Agent API</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># app.py</span></span><br><span class="line"><span class="keyword">from</span> fastapi <span class="keyword">import</span> FastAPI</span><br><span class="line"><span class="keyword">from</span> fastapi.responses <span class="keyword">import</span> StreamingResponse</span><br><span class="line"><span class="keyword">from</span> langgraph.graph <span class="keyword">import</span> StateGraph, START, END</span><br><span class="line"><span class="keyword">from</span> langgraph.checkpoint.memory <span class="keyword">import</span> MemorySaver</span><br><span class="line"><span class="keyword">from</span> pydantic <span class="keyword">import</span> BaseModel</span><br><span class="line"><span class="keyword">import</span> json</span><br><span class="line"></span><br><span class="line">app = FastAPI()</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Query</span>(<span class="title class_ inherited__">BaseModel</span>):</span><br><span class="line">    session_id: <span class="built_in">str</span></span><br><span class="line">    question: <span class="built_in">str</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">search_node</span>(<span class="params">state</span>): <span class="keyword">return</span> &#123;<span class="string">&quot;answer&quot;</span>: <span class="string">f&quot;搜索结果: <span class="subst">&#123;state[<span class="string">&#x27;question&#x27;</span>]&#125;</span>&quot;</span>&#125;</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">summary_node</span>(<span class="params">state</span>): <span class="keyword">return</span> &#123;<span class="string">&quot;answer&quot;</span>: <span class="string">f&quot;汇总: <span class="subst">&#123;state[<span class="string">&#x27;answer&#x27;</span>]&#125;</span>&quot;</span>&#125;</span><br><span class="line"></span><br><span class="line">graph = StateGraph(<span class="built_in">dict</span>)</span><br><span class="line">graph.add_node(<span class="string">&quot;search&quot;</span>, search_node); graph.add_node(<span class="string">&quot;summary&quot;</span>, summary_node)</span><br><span class="line">graph.add_edge(START, <span class="string">&quot;search&quot;</span>); graph.add_edge(<span class="string">&quot;search&quot;</span>, <span class="string">&quot;summary&quot;</span>); graph.add_edge(<span class="string">&quot;summary&quot;</span>, END)</span><br><span class="line">agent = graph.<span class="built_in">compile</span>(checkpointer=MemorySaver())</span><br><span class="line"></span><br><span class="line"><span class="meta">@app.post(<span class="params"><span class="string">&quot;/chat&quot;</span></span>)</span></span><br><span class="line"><span class="keyword">async</span> <span class="keyword">def</span> <span class="title function_">chat</span>(<span class="params">q: Query</span>):</span><br><span class="line">    config = &#123;<span class="string">&quot;configurable&quot;</span>: &#123;<span class="string">&quot;thread_id&quot;</span>: q.session_id&#125;&#125;</span><br><span class="line">    <span class="keyword">async</span> <span class="keyword">def</span> <span class="title function_">stream</span>():</span><br><span class="line">        <span class="keyword">for</span> chunk <span class="keyword">in</span> agent.stream(&#123;<span class="string">&quot;question&quot;</span>: q.question&#125;, config=config, stream_mode=<span class="string">&quot;updates&quot;</span>):</span><br><span class="line">            <span class="keyword">for</span> node, delta <span class="keyword">in</span> chunk.items():</span><br><span class="line">                <span class="keyword">yield</span> <span class="string">f&quot;data: <span class="subst">&#123;json.dumps(&#123;<span class="string">&#x27;node&#x27;</span>: node, <span class="string">&#x27;delta&#x27;</span>: delta&#125;</span>, ensure_ascii=False)&#125;\n\n&quot;</span></span><br><span class="line">        <span class="keyword">yield</span> <span class="string">&quot;data: [DONE]\n\n&quot;</span></span><br><span class="line">    <span class="keyword">return</span> StreamingResponse(stream(), media_type=<span class="string">&quot;text/event-stream&quot;</span>)</span><br></pre></td></tr></table></figure>
+<p><code>thread_id</code> 维度持久化对话状态，配合 <code>MemorySaver</code> 实现<strong>会话续跑</strong>；生产把 checkpointer 换成 <code>PostgresSaver</code> 或 Redis。SSE 让用户<strong>实时看到每一步在做什么</strong>，首字延迟降到 1-2 秒。</p>
+<hr>
+<h2 id="二、RAG-Agent-融合实战"><a href="#二、RAG-Agent-融合实战" class="headerlink" title="二、RAG + Agent 融合实战"></a>二、RAG + Agent 融合实战</h2><h3 id="2-1-为什么-RAG-需要-Agent"><a href="#2-1-为什么-RAG-需要-Agent" class="headerlink" title="2.1 为什么 RAG 需要 Agent"></a>2.1 为什么 RAG 需要 Agent</h3><table>
+<thead>
+<tr>
+<th>普通 RAG</th>
+<th>Agent + RAG</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>单次检索</td>
+<td>多轮检索、按需补充</td>
+</tr>
+<tr>
+<td>检索后直答</td>
+<td>检索后判断相关性、必要时再检索</td>
+</tr>
+<tr>
+<td>工具不可调</td>
+<td>检索作为工具，可与 SQL&#x2F;API 并用</td>
+</tr>
+</tbody></table>
+<h3 id="2-2-LangGraph-Self-RAG-Agent"><a href="#2-2-LangGraph-Self-RAG-Agent" class="headerlink" title="2.2 LangGraph Self-RAG Agent"></a>2.2 LangGraph Self-RAG Agent</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># self_rag.py</span></span><br><span class="line"><span class="keyword">from</span> langgraph.graph <span class="keyword">import</span> StateGraph, START, END</span><br><span class="line"><span class="keyword">from</span> langchain_openai <span class="keyword">import</span> ChatOpenAI</span><br><span class="line">llm = ChatOpenAI(model=<span class="string">&quot;gpt-4o-mini&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">is_query_about_docs</span>(<span class="params">state</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;判断问题是否需要检索知识库&quot;&quot;&quot;</span></span><br><span class="line">    r = llm.invoke(<span class="string">f&quot;问题：<span class="subst">&#123;state[<span class="string">&#x27;question&#x27;</span>]&#125;</span>\n是否需要查知识库？只回 yes/no&quot;</span>).content</span><br><span class="line">    <span class="keyword">return</span> &#123;<span class="string">&quot;need_search&quot;</span>: r.strip().lower() == <span class="string">&quot;yes&quot;</span>&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">retrieve</span>(<span class="params">state</span>): <span class="keyword">return</span> &#123;<span class="string">&quot;docs&quot;</span>: [<span class="string">&quot;文档 A&quot;</span>, <span class="string">&quot;文档 B&quot;</span>], <span class="string">&quot;graded&quot;</span>: <span class="string">&quot;yes&quot;</span>&#125;  <span class="comment"># graded=yes 相关</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">synthesize</span>(<span class="params">state</span>): <span class="keyword">return</span> &#123;<span class="string">&quot;answer&quot;</span>: llm.invoke(<span class="string">f&quot;基于 <span class="subst">&#123;state.get(<span class="string">&#x27;docs&#x27;</span>)&#125;</span> 回答 <span class="subst">&#123;state[<span class="string">&#x27;question&#x27;</span>]&#125;</span>&quot;</span>).content&#125;</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">route</span>(<span class="params">state</span>):</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> state.get(<span class="string">&quot;need_search&quot;</span>): <span class="keyword">return</span> <span class="string">&quot;synthesize&quot;</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;retrieve&quot;</span> <span class="keyword">if</span> state.get(<span class="string">&quot;graded&quot;</span>) != <span class="string">&quot;yes&quot;</span> <span class="keyword">else</span> <span class="string">&quot;synthesize&quot;</span></span><br><span class="line"></span><br><span class="line">g = StateGraph(<span class="built_in">dict</span>)</span><br><span class="line">g.add_node(<span class="string">&quot;judge&quot;</span>, is_query_about_docs); g.add_node(<span class="string">&quot;retrieve&quot;</span>, retrieve); g.add_node(<span class="string">&quot;synthesize&quot;</span>, synthesize)</span><br><span class="line">g.add_edge(START, <span class="string">&quot;judge&quot;</span>)</span><br><span class="line">g.add_conditional_edges(<span class="string">&quot;judge&quot;</span>, route, &#123;<span class="string">&quot;retrieve&quot;</span>: <span class="string">&quot;retrieve&quot;</span>, <span class="string">&quot;synthesize&quot;</span>: <span class="string">&quot;synthesize&quot;</span>&#125;)</span><br><span class="line">g.add_conditional_edges(<span class="string">&quot;retrieve&quot;</span>, route, &#123;<span class="string">&quot;retrieve&quot;</span>: <span class="string">&quot;retrieve&quot;</span>, <span class="string">&quot;synthesize&quot;</span>: <span class="string">&quot;synthesize&quot;</span>&#125;)</span><br><span class="line">g.add_edge(<span class="string">&quot;synthesize&quot;</span>, END)</span><br><span class="line">self_rag = g.<span class="built_in">compile</span>()</span><br></pre></td></tr></table></figure>
+
+<p><strong>关键点</strong>：Agent 自主决定”要不要检索”；检索结果不相关则<strong>重检索或换查询词</strong>；相关性评估用模型打分（<code>graded</code>），构成自我修正闭环。</p>
+<hr>
+<h2 id="三、成本与延迟优化"><a href="#三、成本与延迟优化" class="headerlink" title="三、成本与延迟优化"></a>三、成本与延迟优化</h2><h3 id="3-1-优化清单"><a href="#3-1-优化清单" class="headerlink" title="3.1 优化清单"></a>3.1 优化清单</h3><table>
+<thead>
+<tr>
+<th>手段</th>
+<th>节省维度</th>
+<th>实现难度</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>模型分级路由</td>
+<td>成本、延迟</td>
+<td>低</td>
+</tr>
+<tr>
+<td>上下文裁剪</td>
+<td>成本</td>
+<td>中</td>
+</tr>
+<tr>
+<td>工具结果缓存</td>
+<td>成本、延迟</td>
+<td>中</td>
+</tr>
+<tr>
+<td>批处理</td>
+<td>延迟</td>
+<td>中</td>
+</tr>
+<tr>
+<td>流式输出</td>
+<td>体感延迟</td>
+<td>低</td>
+</tr>
+</tbody></table>
+<h3 id="3-2-模型路由器-结果缓存"><a href="#3-2-模型路由器-结果缓存" class="headerlink" title="3.2 模型路由器 + 结果缓存"></a>3.2 模型路由器 + 结果缓存</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># router.py</span></span><br><span class="line"><span class="keyword">from</span> functools <span class="keyword">import</span> lru_cache</span><br><span class="line"><span class="keyword">from</span> langchain_openai <span class="keyword">import</span> ChatOpenAI</span><br><span class="line"></span><br><span class="line">_router_llm = ChatOpenAI(model=<span class="string">&quot;gpt-4o-mini&quot;</span>)  <span class="comment"># 小模型当路由器</span></span><br><span class="line">_big_llm = ChatOpenAI(model=<span class="string">&quot;gpt-4o&quot;</span>)</span><br><span class="line">_small_llm = ChatOpenAI(model=<span class="string">&quot;gpt-4o-mini&quot;</span>)  <span class="comment"># 简单任务用小模型</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">route</span>(<span class="params">question: <span class="built_in">str</span></span>) -&gt; ChatOpenAI:</span><br><span class="line">    r = _router_llm.invoke(<span class="string">f&quot;问题：<span class="subst">&#123;question&#125;</span>\n复杂度？回答 simple/complex：&quot;</span>).content.strip().lower()</span><br><span class="line">    <span class="keyword">return</span> _big_llm <span class="keyword">if</span> r == <span class="string">&quot;complex&quot;</span> <span class="keyword">else</span> _small_llm</span><br><span class="line"></span><br><span class="line"><span class="meta">@lru_cache(<span class="params">maxsize=<span class="number">128</span></span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">cached_search</span>(<span class="params">query: <span class="built_in">str</span></span>) -&gt; <span class="built_in">str</span>:</span><br><span class="line">    <span class="string">&quot;&quot;&quot;相同 query 直接命中缓存&quot;&quot;&quot;</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">f&quot;搜索 <span class="subst">&#123;query&#125;</span> 结果&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="3-3-单次对话成本估算"><a href="#3-3-单次对话成本估算" class="headerlink" title="3.3 单次对话成本估算"></a>3.3 单次对话成本估算</h3><table>
+<thead>
+<tr>
+<th>场景</th>
+<th>模型组合</th>
+<th>Tokens&#x2F;次</th>
+<th>估算成本&#x2F;千次</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>简单问答</td>
+<td>gpt-4o-mini ×1</td>
+<td>1.2k</td>
+<td>~$0.18</td>
+</tr>
+<tr>
+<td>单工具 Agent</td>
+<td>gpt-4o-mini ×3 + 工具</td>
+<td>4k</td>
+<td>~$0.60</td>
+</tr>
+<tr>
+<td>多工具 Agent</td>
+<td>gpt-4o ×2 + gpt-4o-mini ×3</td>
+<td>12k</td>
+<td>~$3.60</td>
+</tr>
+<tr>
+<td>多 Agent 协作</td>
+<td>gpt-4o ×4</td>
+<td>30k</td>
+<td>~$15.00</td>
+</tr>
+</tbody></table>
+<p>成本随<strong>轮数 × 模型档位</strong>线性增长；先用小模型做路由器 + 缓存能把 80% 流量压到最便宜档位。</p>
+<hr>
+<h2 id="四、评估与测试"><a href="#四、评估与测试" class="headerlink" title="四、评估与测试"></a>四、评估与测试</h2><h3 id="4-1-评估维度"><a href="#4-1-评估维度" class="headerlink" title="4.1 评估维度"></a>4.1 评估维度</h3><table>
+<thead>
+<tr>
+<th>维度</th>
+<th>取值</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>任务完成率（端到端是否达标）</td>
+<td>0-100%</td>
+</tr>
+<tr>
+<td>工具调用准确率（选对工具+参数对）</td>
+<td>0-100%</td>
+</tr>
+<tr>
+<td>延迟 P50 &#x2F; P95</td>
+<td>秒</td>
+</tr>
+<tr>
+<td>成本（每千次对话）</td>
+<td>美元</td>
+</tr>
+</tbody></table>
+<h3 id="4-2-LangSmith-评估集-自动评分"><a href="#4-2-LangSmith-评估集-自动评分" class="headerlink" title="4.2 LangSmith 评估集 + 自动评分"></a>4.2 LangSmith 评估集 + 自动评分</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># eval.py</span></span><br><span class="line"><span class="keyword">from</span> langsmith <span class="keyword">import</span> Client</span><br><span class="line"><span class="keyword">from</span> langchain.evaluation <span class="keyword">import</span> EvaluatorType</span><br><span class="line"><span class="keyword">from</span> langchain.smith <span class="keyword">import</span> RunEvalConfig, arun_on_dataset</span><br><span class="line"><span class="keyword">import</span> asyncio</span><br><span class="line"></span><br><span class="line">client = Client()</span><br><span class="line">dataset_name = <span class="string">&quot;agent-eval&quot;</span></span><br><span class="line">client.create_examples(  <span class="comment"># push examples（query + 期望输出 + 期望工具链）</span></span><br><span class="line">    dataset_name=dataset_name,</span><br><span class="line">    inputs=[&#123;<span class="string">&quot;question&quot;</span>: <span class="string">&quot;查 SO123 状态&quot;</span>&#125;] * <span class="number">3</span>,</span><br><span class="line">    outputs=[&#123;<span class="string">&quot;answer&quot;</span>: <span class="string">&quot;已发货&quot;</span>, <span class="string">&quot;tools&quot;</span>: [<span class="string">&quot;search_orders&quot;</span>]&#125;] * <span class="number">3</span>)</span><br><span class="line">eval_config = RunEvalConfig(evaluators=[EvaluatorType.QA, EvaluatorType.TOOL_CALL_ACCURACY])</span><br><span class="line">asyncio.run(arun_on_dataset(client, dataset_name, agent.invoke, evaluation=eval_config, max_concurrency=<span class="number">2</span>))  <span class="comment"># Agent 当 target 跑评估</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="4-3-回归测试：固化-good-cases"><a href="#4-3-回归测试：固化-good-cases" class="headerlink" title="4.3 回归测试：固化 good cases"></a>4.3 回归测试：固化 good cases</h3><p>把线上<strong>真实成功对话</strong>沉淀成 golden dataset，每次 prompt 改动都跑一遍；模型版本升级前先跑回归集，<strong>过了再切流量</strong>。配合 LangSmith 的 “Experiments” 把不同 prompt 版本对比。</p>
+<hr>
+<h2 id="五、可观测性与监控"><a href="#五、可观测性与监控" class="headerlink" title="五、可观测性与监控"></a>五、可观测性与监控</h2><h3 id="5-1-三层观测"><a href="#5-1-三层观测" class="headerlink" title="5.1 三层观测"></a>5.1 三层观测</h3><table>
+<thead>
+<tr>
+<th>层</th>
+<th>工具</th>
+<th>看什么</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Trace</td>
+<td>LangSmith &#x2F; Langfuse</td>
+<td>Thought &#x2F; Action &#x2F; Observation 每步</td>
+</tr>
+<tr>
+<td>指标</td>
+<td>Prometheus</td>
+<td>延迟、工具调用数、错误率、成本</td>
+</tr>
+<tr>
+<td>日志</td>
+<td>结构化 JSON</td>
+<td>用户、session、工具、参数、结果</td>
+</tr>
+</tbody></table>
+<h3 id="5-2-Langfuse-Prometheus-集成"><a href="#5-2-Langfuse-Prometheus-集成" class="headerlink" title="5.2 Langfuse + Prometheus 集成"></a>5.2 Langfuse + Prometheus 集成</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># observability.py</span></span><br><span class="line"><span class="keyword">from</span> langfuse <span class="keyword">import</span> Langfuse</span><br><span class="line"><span class="keyword">from</span> langfuse.decorators <span class="keyword">import</span> observe</span><br><span class="line"><span class="keyword">from</span> prometheus_client <span class="keyword">import</span> Counter, Histogram, start_http_server</span><br><span class="line"></span><br><span class="line">lf = Langfuse()</span><br><span class="line">TOOL_CALLS = Counter(<span class="string">&quot;agent_tool_calls_total&quot;</span>, <span class="string">&quot;工具调用次数&quot;</span>, [<span class="string">&quot;name&quot;</span>, <span class="string">&quot;status&quot;</span>])</span><br><span class="line">DURATION = Histogram(<span class="string">&quot;agent_duration_seconds&quot;</span>, <span class="string">&quot;Agent 单次耗时&quot;</span>)</span><br><span class="line">start_http_server(<span class="number">9100</span>)</span><br><span class="line"></span><br><span class="line"><span class="meta">@observe(<span class="params">name=<span class="string">&quot;run_agent&quot;</span></span>)</span></span><br><span class="line"><span class="meta">@DURATION.time()</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">run_agent</span>(<span class="params">session_id, question</span>):</span><br><span class="line">    lf.trace(<span class="built_in">id</span>=session_id, name=<span class="string">&quot;agent-run&quot;</span>, user_id=session_id)</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        <span class="keyword">return</span> _do_work(session_id, question)</span><br><span class="line">    <span class="keyword">except</span> Exception:</span><br><span class="line">        TOOL_CALLS.labels(name=<span class="string">&quot;unknown&quot;</span>, status=<span class="string">&quot;error&quot;</span>).inc(); <span class="keyword">raise</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">call_tool</span>(<span class="params">name, fn, **kw</span>):</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        r = fn(**kw); TOOL_CALLS.labels(name=name, status=<span class="string">&quot;ok&quot;</span>).inc(); <span class="keyword">return</span> r</span><br><span class="line">    <span class="keyword">except</span> Exception:</span><br><span class="line">        TOOL_CALLS.labels(name=name, status=<span class="string">&quot;error&quot;</span>).inc(); <span class="keyword">raise</span></span><br></pre></td></tr></table></figure>
+<p><code>@observe</code> 推调用链到 Langfuse，<code>Counter</code> &#x2F; <code>Histogram</code> 暴露给 Prometheus；step trace 与趋势指标同时可看。</p>
+<h3 id="5-3-告警规则示例"><a href="#5-3-告警规则示例" class="headerlink" title="5.3 告警规则示例"></a>5.3 告警规则示例</h3><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Prometheus 告警规则</span></span><br><span class="line"><span class="attr">groups:</span></span><br><span class="line"><span class="bullet">-</span> <span class="attr">name:</span> <span class="string">agent</span></span><br><span class="line">  <span class="attr">rules:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">alert:</span> <span class="string">AgentHighErrorRate</span></span><br><span class="line">    <span class="attr">expr:</span> <span class="string">rate(agent_tool_calls_total&#123;status=&quot;error&quot;&#125;[5m])</span> <span class="string">/</span> <span class="string">rate(agent_tool_calls_total[5m])</span> <span class="string">&gt;</span> <span class="number">0.1</span></span><br><span class="line">    <span class="attr">for:</span> <span class="string">5m</span></span><br><span class="line">    <span class="attr">labels:</span> &#123;<span class="attr">severity:</span> <span class="string">critical</span>&#125;</span><br><span class="line">    <span class="attr">annotations:</span> &#123;<span class="attr">summary:</span> <span class="string">&quot;工具错误率 &gt;10%&quot;</span>&#125;</span><br><span class="line">  <span class="bullet">-</span> <span class="attr">alert:</span> <span class="string">AgentSlow</span></span><br><span class="line">    <span class="attr">expr:</span> <span class="string">histogram_quantile(0.95,</span> <span class="string">rate(agent_duration_seconds_bucket[5m]))</span> <span class="string">&gt;</span> <span class="number">30</span></span><br><span class="line">    <span class="attr">for:</span> <span class="string">10m</span></span><br><span class="line">    <span class="attr">annotations:</span> &#123;<span class="attr">summary:</span> <span class="string">&quot;P95 延迟 &gt;30s&quot;</span>&#125;</span><br></pre></td></tr></table></figure>
+<p>无告警的监控等于黑盒；<strong>至少要告警</strong>：工具失败率突增、循环步数异常、单次成本超标。</p>
+<hr>
+<h2 id="六、部署与运维"><a href="#六、部署与运维" class="headerlink" title="六、部署与运维"></a>六、部署与运维</h2><h3 id="6-1-Dockerfile（multi-stage）"><a href="#6-1-Dockerfile（multi-stage）" class="headerlink" title="6.1 Dockerfile（multi-stage）"></a>6.1 Dockerfile（multi-stage）</h3><figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Dockerfile（multi-stage）</span></span><br><span class="line"><span class="keyword">FROM</span> python:<span class="number">3.12</span>-slim AS builder</span><br><span class="line"><span class="keyword">WORKDIR</span><span class="language-bash"> /app</span></span><br><span class="line"><span class="keyword">COPY</span><span class="language-bash"> pyproject.toml uv.lock ./</span></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> pip install uv &amp;&amp; uv <span class="built_in">sync</span> --frozen --no-dev</span></span><br><span class="line"><span class="keyword">FROM</span> python:<span class="number">3.12</span>-slim</span><br><span class="line"><span class="keyword">COPY</span><span class="language-bash"> --from=builder /app/.venv /app/.venv</span></span><br><span class="line"><span class="keyword">COPY</span><span class="language-bash"> . /app</span></span><br><span class="line"><span class="keyword">ENV</span> PATH=<span class="string">&quot;/app/.venv/bin:$PATH&quot;</span></span><br><span class="line"><span class="keyword">CMD</span><span class="language-bash"> [<span class="string">&quot;uvicorn&quot;</span>, <span class="string">&quot;app:app&quot;</span>, <span class="string">&quot;--host&quot;</span>, <span class="string">&quot;0.0.0.0&quot;</span>, <span class="string">&quot;--port&quot;</span>, <span class="string">&quot;8000&quot;</span>]</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="6-2-docker-compose-yml"><a href="#6-2-docker-compose-yml" class="headerlink" title="6.2 docker-compose.yml"></a>6.2 docker-compose.yml</h3><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># docker-compose.yml</span></span><br><span class="line"><span class="attr">services:</span></span><br><span class="line">  <span class="attr">agent:</span> &#123;<span class="attr">build:</span> <span class="string">.</span>, <span class="attr">env_file:</span> <span class="string">.env</span>, <span class="attr">ports:</span> [<span class="string">&quot;8000:8000&quot;</span>], <span class="attr">depends_on:</span> [<span class="string">postgres</span>, <span class="string">redis</span>]&#125;</span><br><span class="line">  <span class="attr">postgres:</span> &#123;<span class="attr">image:</span> <span class="string">&quot;postgres:16&quot;</span>, <span class="attr">environment:</span> &#123;<span class="attr">POSTGRES_PASSWORD:</span> <span class="string">$</span>&#123;<span class="string">PG_PWD</span>&#125;&#125;, <span class="attr">volumes:</span> [<span class="string">&quot;pg:/var/lib/postgresql/data&quot;</span>]&#125;</span><br><span class="line">  <span class="attr">redis:</span> &#123;<span class="attr">image:</span> <span class="string">&quot;redis:7-alpine&quot;</span>&#125;</span><br><span class="line"><span class="attr">volumes:</span> &#123;<span class="attr">pg:</span> &#123;&#125;&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="6-3-K8s-Deployment-HPA-片段"><a href="#6-3-K8s-Deployment-HPA-片段" class="headerlink" title="6.3 K8s Deployment + HPA 片段"></a>6.3 K8s Deployment + HPA 片段</h3><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">apps/v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Deployment</span></span><br><span class="line"><span class="attr">metadata:</span> &#123;<span class="attr">name:</span> <span class="string">agent</span>&#125;</span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">replicas:</span> <span class="number">3</span></span><br><span class="line">  <span class="attr">selector:</span> &#123;<span class="attr">matchLabels:</span> &#123;<span class="attr">app:</span> <span class="string">agent</span>&#125;&#125;</span><br><span class="line">  <span class="attr">template:</span></span><br><span class="line">    <span class="attr">metadata:</span> &#123;<span class="attr">labels:</span> &#123;<span class="attr">app:</span> <span class="string">agent</span>&#125;&#125;</span><br><span class="line">    <span class="attr">spec:</span></span><br><span class="line">      <span class="attr">containers:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">agent</span></span><br><span class="line">        <span class="attr">image:</span> <span class="string">registry.example.com/agent:v1.2.3</span></span><br><span class="line">        <span class="attr">envFrom:</span> [&#123;<span class="attr">secretRef:</span> &#123;<span class="attr">name:</span> <span class="string">agent-secret</span>&#125;&#125;]</span><br><span class="line">        <span class="attr">resources:</span> &#123;<span class="attr">requests:</span> &#123;<span class="attr">cpu:</span> <span class="string">&quot;500m&quot;</span>, <span class="attr">memory:</span> <span class="string">&quot;512Mi&quot;</span>&#125;, <span class="attr">limits:</span> &#123;<span class="attr">cpu:</span> <span class="string">&quot;2&quot;</span>, <span class="attr">memory:</span> <span class="string">&quot;2Gi&quot;</span>&#125;&#125;</span><br><span class="line">        <span class="attr">livenessProbe:</span> &#123;<span class="attr">httpGet:</span> &#123;<span class="attr">path:</span> <span class="string">/health</span>, <span class="attr">port:</span> <span class="number">8000</span>&#125;, <span class="attr">initialDelaySeconds:</span> <span class="number">30</span>&#125;</span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">autoscaling/v2</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">HorizontalPodAutoscaler</span></span><br><span class="line"><span class="attr">metadata:</span> &#123;<span class="attr">name:</span> <span class="string">agent</span>&#125;</span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">scaleTargetRef:</span> &#123;<span class="attr">apiVersion:</span> <span class="string">apps/v1</span>, <span class="attr">kind:</span> <span class="string">Deployment</span>, <span class="attr">name:</span> <span class="string">agent</span>&#125;</span><br><span class="line">  <span class="attr">minReplicas:</span> <span class="number">3</span></span><br><span class="line">  <span class="attr">maxReplicas:</span> <span class="number">20</span></span><br><span class="line">  <span class="attr">metrics:</span> [&#123;<span class="attr">type:</span> <span class="string">Resource</span>, <span class="attr">resource:</span> &#123;<span class="attr">name:</span> <span class="string">cpu</span>, <span class="attr">target:</span> &#123;<span class="attr">type:</span> <span class="string">Utilization</span>, <span class="attr">averageUtilization:</span> <span class="number">60</span>&#125;&#125;&#125;]</span><br></pre></td></tr></table></figure>
+
+<h3 id="6-4-灰度与应急"><a href="#6-4-灰度与应急" class="headerlink" title="6.4 灰度与应急"></a>6.4 灰度与应急</h3><ul>
+<li><strong>灰度</strong>：header 路由 10% 用户灰度新 prompt，对比 success rate &#x2F; 成本 &#x2F; 延迟。</li>
+<li><strong>降级</strong>：Agent 失败回退固定流程（RAG 直答 &#x2F; 静态规则）保可用。</li>
+<li><strong>回滚</strong>：Prompt 版本化存配置中心，一键切回上一版本；写操作走审批队列。</li>
+</ul>
+<hr>
+<h2 id="常见避坑"><a href="#常见避坑" class="headerlink" title="常见避坑"></a>常见避坑</h2><table>
+<thead>
+<tr>
+<th>坑</th>
+<th>现象</th>
+<th>正确做法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Demo 完美上线崩</td>
+<td>真实流量分布不同</td>
+<td>用线上真实数据压测</td>
+</tr>
+<tr>
+<td>无成本监控</td>
+<td>月底账单爆炸</td>
+<td>每请求记 token，配预算告警</td>
+</tr>
+<tr>
+<td>无循环检测</td>
+<td>死循环烧 token</td>
+<td>限 max_iterations + 重复动作计数</td>
+</tr>
+<tr>
+<td>prompt 改了没回归</td>
+<td>同一问题答不出来</td>
+<td>golden dataset 回归</td>
+</tr>
+<tr>
+<td>上下文窗口溢出</td>
+<td>老对话压垮模型</td>
+<td>滑动窗口 + 摘要外置</td>
+</tr>
+<tr>
+<td>工具超时无熔断</td>
+<td>单工具卡死全链路</td>
+<td>工具 timeout + circuit breaker</td>
+</tr>
+<tr>
+<td>无 trace 线上黑盒</td>
+<td>出问题无法复盘</td>
+<td>上线前接 LangSmith&#x2F;Langfuse</td>
+</tr>
+<tr>
+<td>模型升级 breaking</td>
+<td>升级后 prompt 失效</td>
+<td>升级前跑评估集，灰度上线</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="本章小结"><a href="#本章小结" class="headerlink" title="本章小结"></a>本章小结</h2><table>
+<thead>
+<tr>
+<th>要点</th>
+<th>结论</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>架构</td>
+<td>API 网关 → Agent 编排 → 工具 → 数据层；SSE 流式 + checkpointer</td>
+</tr>
+<tr>
+<td>RAG 融合</td>
+<td>Agent 自主决定是否检索、评估相关性、补充检索</td>
+</tr>
+<tr>
+<td>成本延迟</td>
+<td>模型分级路由 + 缓存 + 批处理，80% 流量走小模型</td>
+</tr>
+<tr>
+<td>评估</td>
+<td>任务完成率 + 工具准确率 + 延迟 + 成本，golden dataset 回归</td>
+</tr>
+<tr>
+<td>可观测</td>
+<td>LangSmith trace + Prometheus 指标 + 结构化日志 + 告警</td>
+</tr>
+<tr>
+<td>部署</td>
+<td>Docker multi-stage + K8s + HPA + 灰度 + 降级 + 回滚</td>
+</tr>
+</tbody></table>
+<hr>
+<p>至此 Agent 系列四章完成：<a href="/2026/09/02/Agent/Agent%E5%85%A5%E9%97%A8%E4%B8%8E%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5/" title="第一章：AI Agent 入门与核心概念">第一章：AI Agent 入门与核心概念</a> 打概念底子，<a href="/2026/09/02/Agent/Agent%E6%A1%86%E6%9E%B6%E5%AE%9E%E6%88%98/" title="第二章：Agent 框架实战">第二章：Agent 框架实战</a> 落到五大框架，<a href="/2026/09/02/Agent/%E5%B7%A5%E5%85%B7%E8%B0%83%E7%94%A8%E4%B8%8E%E5%87%BD%E6%95%B0%E7%BC%96%E6%8E%92/" title="第三章：Agent 工具调用与函数编排">第三章：Agent 工具调用与函数编排</a> 深挖工具协议，本章把 Agent 推上生产。Agent 的”大脑”原理见 <a href="/2026/05/01/AI/LLM/" title="第三章：LLM 大语言模型基础">第三章：LLM 大语言模型基础</a>、”知识”见 <a href="/2026/05/01/AI/AI-RAG%E4%B8%8E%E5%90%91%E9%87%8F%E6%A3%80%E7%B4%A2/" title="第四章：RAG 与向量检索实战">第四章：RAG 与向量检索实战</a>；后端用 <a href="/2026/05/01/Python/FastAPI/" title="第八章：FastAPI：现代 Python Web API 框架入门">第八章：FastAPI：现代 Python Web API 框架入门</a> 暴露接口、监控用 <a href="/2026/09/02/Observability/Prometheus%E4%B8%8EGrafana/" title="第一章：Prometheus 指标监控与 Grafana 可视化">第一章：Prometheus 指标监控与 Grafana 可视化</a>、容器用 <a href="/2026/05/01/Cloud/Docker/" title="第一章：Docker 容器基础">第一章：Docker 容器基础</a>，组合起来就是一个完整可上线的 Agent 工程体系。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Agent/" rel="tag"># Agent</a>
+              <a href="/tags/Production/" rel="tag"># Production</a>
+              <a href="/tags/Observability/" rel="tag"># Observability</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/09/02/Frontend/Pinia%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86/" rel="prev" title="第四章：Pinia 状态管理实战">
+                  <i class="fa fa-angle-left"></i> 第四章：Pinia 状态管理实战
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2026/09/02/Agent/%E5%B7%A5%E5%85%B7%E8%B0%83%E7%94%A8%E4%B8%8E%E5%87%BD%E6%95%B0%E7%BC%96%E6%8E%92/" rel="next" title="第三章：Agent 工具调用与函数编排">
+                  第三章：Agent 工具调用与函数编排 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">miracle</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">424k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">23:32</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+<script>
+(function () {
+  function normalizeClipboard(s) {
+    return (s || '').replace(/\u00a0/g, ' ');
+  }
+
+  /** When innerText is empty, treat <br> as newlines (matches Hexo fenced + line_number HTML). */
+  function plainTextFromElement(el) {
+    if (!el) return '';
+    var t = el.innerText;
+    if (t != null && t !== '') return normalizeClipboard(t);
+    var clone = el.cloneNode(true);
+    clone.querySelectorAll('br').forEach(function (br) {
+      br.parentNode.replaceChild(document.createTextNode('\n'), br);
+    });
+    return normalizeClipboard(clone.textContent || '');
+  }
+
+  function extractFromFigure(fig) {
+    if (!fig) return '';
+    var cell = fig.querySelector('td.code') || fig.querySelector('.code');
+    if (cell) return plainTextFromElement(cell);
+    var pre = fig.querySelector('pre');
+    if (pre) return plainTextFromElement(pre);
+    var code = fig.querySelector('code');
+    return code ? plainTextFromElement(code) : '';
+  }
+
+  function extractForCopyBtn(btn) {
+    var fig = btn.closest('figure.highlight');
+    if (fig) return extractFromFigure(fig);
+    var wrap = btn.closest('.code-container');
+    if (wrap) {
+      var innerFig = wrap.querySelector('figure.highlight');
+      if (innerFig) return extractFromFigure(innerFig);
+      var preOnly = wrap.querySelector('pre');
+      if (preOnly) return plainTextFromElement(preOnly);
+    }
+    return '';
+  }
+
+  function setCopyIcon(btn, ok) {
+    var i = btn.querySelector('i');
+    if (i) i.className = ok ? 'fa fa-check-circle fa-fw' : 'fa fa-times-circle fa-fw';
+  }
+
+  function writeClipboard(text, btn) {
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(text).then(
+        function () { setCopyIcon(btn, true); },
+        function () { fallbackCopy(text, btn); }
+      );
+    }
+    fallbackCopy(text, btn);
+    return Promise.resolve();
+  }
+
+  function fallbackCopy(text, btn) {
+    try {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed';
+      ta.style.left = '-9999px';
+      document.body.appendChild(ta);
+      ta.select();
+      var ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      setCopyIcon(btn, ok);
+    } catch (e) {
+      setCopyIcon(btn, false);
+    }
+  }
+
+  document.addEventListener(
+    'click',
+    function (e) {
+      var btn = e.target.closest && e.target.closest('.copy-btn');
+      if (!btn) return;
+      if (!btn.closest('figure.highlight') && !btn.closest('.code-container')) return;
+      e.stopPropagation();
+      e.preventDefault();
+      var text = extractForCopyBtn(btn);
+      writeClipboard(text, btn);
+    },
+    true
+  );
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"my919.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="第二章：Rust 类型系统与 trait概念基础 trait 是接口：定义一组方法签名，类型通过 impl Trait for Type 实现，可带默认实现，类似 Go&#x2F;Java 的 interface。 泛型是静态分发：编译期单态化（monomorphization）为每个具体类型生成一份代码，零运行时开销，但二进制体积增大。 生命周期是编译期分析：标注不改变引用实际存活时长，只向编译">
+<meta property="og:type" content="article">
+<meta property="og:title" content="第二章：Rust 类型系统与 trait">
+<meta property="og:url" content="https://my919.github.io/2026/09/02/Rust/Rust%E7%B1%BB%E5%9E%8B%E7%B3%BB%E7%BB%9F%E4%B8%8Etrait/index.html">
+<meta property="og:site_name" content="my">
+<meta property="og:description" content="第二章：Rust 类型系统与 trait概念基础 trait 是接口：定义一组方法签名，类型通过 impl Trait for Type 实现，可带默认实现，类似 Go&#x2F;Java 的 interface。 泛型是静态分发：编译期单态化（monomorphization）为每个具体类型生成一份代码，零运行时开销，但二进制体积增大。 生命周期是编译期分析：标注不改变引用实际存活时长，只向编译">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-09-02T04:00:00.000Z">
+<meta property="article:modified_time" content="2026-09-02T13:58:54.840Z">
+<meta property="article:author" content="miracle">
+<meta property="article:tag" content="Rust">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://my919.github.io/2026/09/02/Rust/Rust%E7%B1%BB%E5%9E%8B%E7%B3%BB%E7%BB%9F%E4%B8%8Etrait/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://my919.github.io/2026/09/02/Rust/Rust%E7%B1%BB%E5%9E%8B%E7%B3%BB%E7%BB%9F%E4%B8%8Etrait/","path":"2026/09/02/Rust/Rust类型系统与trait/","title":"第二章：Rust 类型系统与 trait"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>第二章：Rust 类型系统与 trait | my</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.10.1/mermaid.min.js","integrity":"sha256-BmQmdWDS8X2OTbrwELWK366LV6escyWhHHe0XCTU/Hk="}}</script>
+  <script src="/js/third-party/tags/mermaid.js" defer></script>
+
+
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="my" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">my</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-service"><a href="/service/" rel="section"><i class="fa fa-server fa-fw"></i>服务</a></li><li class="menu-item menu-item-tool"><a href="/tool/" rel="section"><i class="fa fa-wrench fa-fw"></i>工具</a></li><li class="menu-item menu-item-project"><a href="/project/" rel="section"><i class="fa fa-folder-open fa-fw"></i>项目</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%9ARust-%E7%B1%BB%E5%9E%8B%E7%B3%BB%E7%BB%9F%E4%B8%8E-trait"><span class="nav-number">1.</span> <span class="nav-text">第二章：Rust 类型系统与 trait</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81trait-%E5%AE%9A%E4%B9%89%E4%B8%8E%E5%AE%9E%E7%8E%B0"><span class="nav-number">1.2.</span> <span class="nav-text">一、trait 定义与实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E6%B3%9B%E5%9E%8B%E4%B8%8E-trait-%E7%BA%A6%E6%9D%9F"><span class="nav-number">1.3.</span> <span class="nav-text">二、泛型与 trait 约束</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81impl-Trait-%E4%B8%8E%E7%89%B9%E5%BE%81%E5%AF%B9%E8%B1%A1"><span class="nav-number">1.4.</span> <span class="nav-text">三、impl Trait 与特征对象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E5%85%B3%E8%81%94%E7%B1%BB%E5%9E%8B%E4%B8%8E%E9%BB%98%E8%AE%A4%E7%B1%BB%E5%9E%8B"><span class="nav-number">1.5.</span> <span class="nav-text">四、关联类型与默认类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F"><span class="nav-number">1.6.</span> <span class="nav-text">五、生命周期</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AD%E3%80%81trait-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F"><span class="nav-number">1.7.</span> <span class="nav-text">六、trait 设计模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E9%81%BF%E5%9D%91"><span class="nav-number">1.8.</span> <span class="nav-text">常见避坑</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.9.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">miracle</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">284</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">44</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">186</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/my919" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;my919" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://gitee.com/my919" title="Gitee → https:&#x2F;&#x2F;gitee.com&#x2F;my919" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>Gitee</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:yeal166@163.com" title="E-Mail → mailto:yeal166@163.com" rel="noopener me external nofollow noreferrer" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://my919.github.io/2026/09/02/Rust/Rust%E7%B1%BB%E5%9E%8B%E7%B3%BB%E7%BB%9F%E4%B8%8Etrait/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="第二章：Rust 类型系统与 trait | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          第二章：Rust 类型系统与 trait
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2026-09-02 12:00:00 / 修改时间：21:58:54" itemprop="dateCreated datePublished" datetime="2026-09-02T12:00:00+08:00">2026-09-02</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Rust/" itemprop="url" rel="index"><span itemprop="name">Rust</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>2.1k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>7 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="第二章：Rust-类型系统与-trait"><a href="#第二章：Rust-类型系统与-trait" class="headerlink" title="第二章：Rust 类型系统与 trait"></a>第二章：Rust 类型系统与 trait</h1><h2 id="概念基础"><a href="#概念基础" class="headerlink" title="概念基础"></a>概念基础</h2><ol>
+<li><strong>trait 是接口</strong>：定义一组方法签名，类型通过 <code>impl Trait for Type</code> 实现，可带默认实现，类似 Go&#x2F;Java 的 interface。</li>
+<li><strong>泛型是静态分发</strong>：编译期<strong>单态化</strong>（monomorphization）为每个具体类型生成一份代码，零运行时开销，但二进制体积增大。</li>
+<li><strong>生命周期是编译期分析</strong>：标注不改变引用实际存活时长，只向编译器声明引用同寿关系，防悬垂引用。</li>
+<li><strong>trait object vs 泛型</strong>：<strong><code>dyn Trait</code></strong> 运行时虚表分发，可装进同一集合但有一次指针解引用开销；<strong><code>impl Trait</code></strong> 编译期已知，零成本。</li>
+<li><strong>关联类型</strong>：trait 内部定义占位类型，让一个类型只为某 trait 实现一次，比泛型参数语义更清晰。</li>
+</ol>
+<blockquote>
+<p>本章聚焦类型系统。所有权与基础语法见 <a href="/2026/09/02/Rust/Rust/" title="第一章：Rust 入门与所有权系统">第一章：Rust 入门与所有权系统</a>；并发与错误处理见 <a href="/2026/09/02/Rust/Rust%E5%B9%B6%E5%8F%91%E4%B8%8E%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86/" title="第三章：Rust 并发与错误处理">第三章：Rust 并发与错误处理</a>；工程实践见 <a href="/2026/09/02/Rust/Rust%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5%E4%B8%8EWeb%E5%BC%80%E5%8F%91/" title="第四章：Rust 工程实践与 Web 开发">第四章：Rust 工程实践与 Web 开发</a>。</p>
+</blockquote>
+<hr>
+<h2 id="一、trait-定义与实现"><a href="#一、trait-定义与实现" class="headerlink" title="一、trait 定义与实现"></a>一、trait 定义与实现</h2><p><strong>trait</strong> 类似接口，定义一组方法签名，类型通过 <code>impl Trait for Type</code> 实现：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">trait</span> <span class="title class_">Greet</span> &#123;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">name</span>(&amp;<span class="keyword">self</span>) <span class="punctuation">-&gt;</span> <span class="type">String</span>;</span><br><span class="line">    <span class="comment">// 默认实现：实现者可覆盖</span></span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">hello</span>(&amp;<span class="keyword">self</span>) &#123;</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;你好，&#123;&#125;&quot;</span>, <span class="keyword">self</span>.<span class="title function_ invoke__">name</span>());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">Dog</span> &#123; who: <span class="type">String</span> &#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">impl</span> <span class="title class_">Greet</span> <span class="keyword">for</span> <span class="title class_">Dog</span> &#123;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">name</span>(&amp;<span class="keyword">self</span>) <span class="punctuation">-&gt;</span> <span class="type">String</span> &#123; <span class="keyword">self</span>.who.<span class="title function_ invoke__">clone</span>() &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">d</span> = Dog &#123; who: <span class="string">&quot;旺财&quot;</span>.<span class="title function_ invoke__">into</span>() &#125;;</span><br><span class="line">    d.<span class="title function_ invoke__">hello</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>trait 可作为参数类型（<strong><code>impl Trait</code></strong> 或 <strong><code>&amp;dyn Trait</code></strong>），也可由 derive 宏自动实现，如 <code>#[derive(Debug, Clone, Copy)]</code>。</p>
+<hr>
+<h2 id="二、泛型与-trait-约束"><a href="#二、泛型与-trait-约束" class="headerlink" title="二、泛型与 trait 约束"></a>二、泛型与 trait 约束</h2><p>泛型让函数&#x2F;类型对多种类型通用；<strong>trait bound</strong> 限定泛型必须具备的能力：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// trait bound：T 必须实现 PartialOrd（可比较）+ Copy</span></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">max</span>&lt;T: <span class="built_in">PartialOrd</span> + <span class="built_in">Copy</span>&gt;(a: T, b: T) <span class="punctuation">-&gt;</span> T &#123;</span><br><span class="line">    <span class="keyword">if</span> a &gt;= b &#123; a &#125; <span class="keyword">else</span> &#123; b &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 等价的 where 写法，约束复杂时更清晰</span></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">first</span>&lt;T&gt;(v: &amp;<span class="type">Vec</span>&lt;T&gt;) <span class="punctuation">-&gt;</span> <span class="type">Option</span>&lt;&amp;T&gt; <span class="keyword">where</span> T: <span class="built_in">Sized</span> &#123;</span><br><span class="line">    v.<span class="title function_ invoke__">first</span>()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125; &#123;&#125;&quot;</span>, <span class="title function_ invoke__">max</span>(<span class="number">3</span>, <span class="number">7</span>), <span class="title function_ invoke__">max</span>(<span class="number">3.14</span>, <span class="number">2.71</span>));</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;:?&#125;&quot;</span>, <span class="title function_ invoke__">first</span>(&amp;<span class="built_in">vec!</span>[<span class="number">10</span>, <span class="number">20</span>, <span class="number">30</span>]));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>泛型在<strong>编译期单态化</strong>：<code>max(3, 7)</code> 和 <code>max(3.14, 2.71)</code> 会生成两份不同代码，零运行时开销但二进制体积增大。</p>
+<hr>
+<h2 id="三、impl-Trait-与特征对象"><a href="#三、impl-Trait-与特征对象" class="headerlink" title="三、impl Trait 与特征对象"></a>三、impl Trait 与特征对象</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">trait</span> <span class="title class_">Animal</span> &#123;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">sound</span>(&amp;<span class="keyword">self</span>) <span class="punctuation">-&gt;</span> &amp;<span class="type">str</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">Cat</span>;</span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">Cow</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">impl</span> <span class="title class_">Animal</span> <span class="keyword">for</span> <span class="title class_">Cat</span> &#123; <span class="keyword">fn</span> <span class="title function_">sound</span>(&amp;<span class="keyword">self</span>) <span class="punctuation">-&gt;</span> &amp;<span class="type">str</span> &#123; <span class="string">&quot;喵&quot;</span> &#125; &#125;</span><br><span class="line"><span class="keyword">impl</span> <span class="title class_">Animal</span> <span class="keyword">for</span> <span class="title class_">Cow</span> &#123; <span class="keyword">fn</span> <span class="title function_">sound</span>(&amp;<span class="keyword">self</span>) <span class="punctuation">-&gt;</span> &amp;<span class="type">str</span> &#123; <span class="string">&quot;哞&quot;</span> &#125; &#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="comment">// 静态分发（泛型 + 单态化）：编译期生成多份代码，零成本</span></span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">shout</span>&lt;A: Animal&gt;(a: &amp;A) &#123; <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;!&quot;</span>, a.<span class="title function_ invoke__">sound</span>().<span class="title function_ invoke__">to_uppercase</span>()) &#125;</span><br><span class="line">    <span class="title function_ invoke__">shout</span>(&amp;Cat);</span><br><span class="line">    <span class="title function_ invoke__">shout</span>(&amp;Cow);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 动态分发（特征对象 dyn）：运行时通过虚表，可装进同一集合</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">zoo</span>: <span class="type">Vec</span>&lt;<span class="type">Box</span>&lt;<span class="keyword">dyn</span> Animal&gt;&gt; = <span class="built_in">vec!</span>[<span class="type">Box</span>::<span class="title function_ invoke__">new</span>(Cat), <span class="type">Box</span>::<span class="title function_ invoke__">new</span>(Cow)];</span><br><span class="line">    <span class="keyword">for</span> <span class="variable">a</span> <span class="keyword">in</span> &amp;zoo &#123;</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>, a.<span class="title function_ invoke__">sound</span>());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong><code>impl Trait</code></strong> 作返回值表示「返回某实现了该 trait 的具体类型」（编译期已知），常用于闭包、迭代器；<strong><code>dyn Trait</code></strong> 作类型表示「运行时才知道具体类型」，需通过引用或 <code>Box</code> 放在堆上，有一次虚表查找开销。</p>
+</blockquote>
+<p><strong>trait bound 进阶</strong>：<code>?Sized</code> 允许大小不明类型，<code>impl Trait + Trait2</code> 多重约束：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 返回闭包：impl Fn(i32) -&gt; i32 表示具体类型由编译器推断</span></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">make_adder</span>(k: <span class="type">i32</span>) <span class="punctuation">-&gt;</span> <span class="keyword">impl</span> <span class="title class_">Fn</span>(<span class="type">i32</span>) <span class="punctuation">-&gt;</span> <span class="type">i32</span> &#123;</span><br><span class="line">    <span class="keyword">move</span> |x| x + k</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">add5</span> = <span class="title function_ invoke__">make_adder</span>(<span class="number">5</span>);</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>, <span class="title function_ invoke__">add5</span>(<span class="number">10</span>)); <span class="comment">// 15</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>对象安全</strong>：trait 方法若含泛型参数、<code>Self</code> 类型、无 <code>self</code> 参数则不是对象安全，无法用 <code>dyn Trait</code>。拆分 trait 是常见解法。</p>
+<hr>
+<h2 id="四、关联类型与默认类型"><a href="#四、关联类型与默认类型" class="headerlink" title="四、关联类型与默认类型"></a>四、关联类型与默认类型</h2><p><strong>关联类型</strong>让 trait 内部声明一个占位类型，实现者指定具体类型，一个类型只能为该 trait 实现一次：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">trait</span> <span class="title class_">Container</span> &#123;</span><br><span class="line">    <span class="keyword">type</span> <span class="title class_">Item</span>; <span class="comment">// 关联类型</span></span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">first</span>(&amp;<span class="keyword">self</span>) <span class="punctuation">-&gt;</span> <span class="type">Option</span>&lt;&amp;<span class="keyword">Self</span>::Item&gt;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">VecContainer</span>&lt;T&gt;(<span class="type">Vec</span>&lt;T&gt;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">impl</span>&lt;T&gt; Container <span class="keyword">for</span> <span class="title class_">VecContainer</span>&lt;T&gt; &#123;</span><br><span class="line">    <span class="keyword">type</span> <span class="title class_">Item</span> = T;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">first</span>(&amp;<span class="keyword">self</span>) <span class="punctuation">-&gt;</span> <span class="type">Option</span>&lt;&amp;T&gt; &#123; <span class="keyword">self</span>.<span class="number">0</span>.<span class="title function_ invoke__">first</span>() &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">c</span> = <span class="title function_ invoke__">VecContainer</span>(<span class="built_in">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]);</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">let</span> <span class="variable">Some</span>(x) = c.<span class="title function_ invoke__">first</span>() &#123;</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;&#123;x&#125;&quot;</span>); <span class="comment">// 1</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>对比泛型 trait（<code>trait Container&lt;Item&gt;</code>）可多次实现，关联类型语义「该类型的唯一关联」，更清晰。</p>
+<p><strong>默认类型参数</strong>：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 默认类型：K 不指定时默认为 String</span></span><br><span class="line"><span class="keyword">trait</span> <span class="title class_">Store</span>&lt;V, K = <span class="type">String</span>&gt; &#123;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">key</span>(&amp;<span class="keyword">self</span>) <span class="punctuation">-&gt;</span> K;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">NameStore</span>(<span class="type">String</span>);</span><br><span class="line"><span class="keyword">impl</span> <span class="title class_">Store</span>&lt;<span class="type">String</span>, <span class="type">String</span>&gt; <span class="keyword">for</span> <span class="title class_">NameStore</span> &#123;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">key</span>(&amp;<span class="keyword">self</span>) <span class="punctuation">-&gt;</span> <span class="type">String</span> &#123; <span class="keyword">self</span>.<span class="number">0</span>.<span class="title function_ invoke__">clone</span>() &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">s</span> = <span class="title function_ invoke__">NameStore</span>(<span class="string">&quot;app&quot;</span>.<span class="title function_ invoke__">into</span>());</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>, s.<span class="title function_ invoke__">key</span>());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="五、生命周期"><a href="#五、生命周期" class="headerlink" title="五、生命周期"></a>五、生命周期</h2><p>生命周期标注<strong>不改变</strong>引用实际存活时长，只是向编译器声明「这些引用的存活期相同」。编译器据此判断引用是否比被引用者活得长（悬垂引用会被拒绝）。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// &#x27;a 声明：返回的 &amp;str 至少和 x、y 中较短者同寿</span></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">longest</span>&lt;<span class="symbol">&#x27;a</span>&gt;(x: &amp;<span class="symbol">&#x27;a</span> <span class="type">str</span>, y: &amp;<span class="symbol">&#x27;a</span> <span class="type">str</span>) <span class="punctuation">-&gt;</span> &amp;<span class="symbol">&#x27;a</span> <span class="type">str</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> x.<span class="title function_ invoke__">len</span>() &gt; y.<span class="title function_ invoke__">len</span>() &#123; x &#125; <span class="keyword">else</span> &#123; y &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 结构体持有引用，必须标注生命周期，确保 struct 不比引用的数据活得长</span></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">Excerpt</span>&lt;<span class="symbol">&#x27;a</span>&gt; &#123;</span><br><span class="line">    part: &amp;<span class="symbol">&#x27;a</span> <span class="type">str</span>,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">s1</span> = <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;长字符串&quot;</span>);</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">s2</span> = <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;xyz&quot;</span>);</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">r</span> = <span class="title function_ invoke__">longest</span>(s1.<span class="title function_ invoke__">as_str</span>(), s2.<span class="title function_ invoke__">as_str</span>());</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;较长的是: &#123;r&#125;&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">novel</span> = <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;我 昨天 读了一本书&quot;</span>);</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">first</span> = novel.<span class="title function_ invoke__">split</span>(<span class="string">&#x27; &#x27;</span>).<span class="title function_ invoke__">nth</span>(<span class="number">1</span>).<span class="title function_ invoke__">unwrap</span>();</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">ex</span> = Excerpt &#123; part: first &#125;;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;摘录: &#123;&#125;&quot;</span>, ex.part);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>省略规则</strong>：函数只有一个输入生命周期参数时，输出生命周期默认与之一致；方法中 <code>&amp;self</code>&#x2F;<code>&amp;mut self</code> 的输出默认与 <code>self</code> 同寿命。多数场景无需手写标注。</p>
+<p><strong><code>&#39;static</code></strong>：存活整个程序期，所有字符串字面量都是 <strong><code>&amp;&#39;static str</code></strong>。</p>
+<p><strong>生命周期与泛型结合</strong>：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 泛型 + 生命周期 + trait bound 三者可同时出现</span></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">top</span>&lt;T: <span class="built_in">PartialOrd</span>&gt;(v: &amp;[T]) <span class="punctuation">-&gt;</span> <span class="type">Option</span>&lt;&amp;T&gt; &#123;</span><br><span class="line">    v.<span class="title function_ invoke__">iter</span>().<span class="title function_ invoke__">max</span>()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 生命周期约束：&#x27;a: &#x27;b 表示 &#x27;a 至少和 &#x27;b 一样长</span></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">first_word</span>&lt;<span class="symbol">&#x27;a</span>, <span class="symbol">&#x27;b</span>&gt;(s: &amp;<span class="symbol">&#x27;a</span> <span class="type">str</span>, _t: &amp;<span class="symbol">&#x27;b</span> <span class="type">str</span>) <span class="punctuation">-&gt;</span> &amp;<span class="symbol">&#x27;a</span> <span class="type">str</span></span><br><span class="line"><span class="keyword">where</span> <span class="symbol">&#x27;a</span>: <span class="symbol">&#x27;b</span> &#123;</span><br><span class="line">    s</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">v</span> = <span class="built_in">vec!</span>[<span class="number">3</span>, <span class="number">1</span>, <span class="number">4</span>, <span class="number">1</span>, <span class="number">5</span>];</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;:?&#125;&quot;</span>, <span class="title function_ invoke__">top</span>(&amp;v));</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">s</span> = <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;hello world&quot;</span>);</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>, <span class="title function_ invoke__">first_word</span>(&amp;s, &amp;s));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="六、trait-设计模式"><a href="#六、trait-设计模式" class="headerlink" title="六、trait 设计模式"></a>六、trait 设计模式</h2><p><strong>newtype 模式</strong>：为外部类型实现外部 trait（孤儿规则限制时）：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">Wrapper</span>(<span class="type">Vec</span>&lt;<span class="type">String</span>&gt;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">impl</span> <span class="title class_">std</span>::fmt::Display <span class="keyword">for</span> <span class="title class_">Wrapper</span> &#123;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">fmt</span>(&amp;<span class="keyword">self</span>, f: &amp;<span class="keyword">mut</span> std::fmt::Formatter) <span class="punctuation">-&gt;</span> std::fmt::<span class="type">Result</span> &#123;</span><br><span class="line">        <span class="built_in">write!</span>(f, <span class="string">&quot;[&#123;&#125;]&quot;</span>, <span class="keyword">self</span>.<span class="number">0</span>.<span class="title function_ invoke__">join</span>(<span class="string">&quot;, &quot;</span>))</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">w</span> = <span class="title function_ invoke__">Wrapper</span>(<span class="built_in">vec!</span>[<span class="string">&quot;a&quot;</span>.<span class="title function_ invoke__">into</span>(), <span class="string">&quot;b&quot;</span>.<span class="title function_ invoke__">into</span>()]);</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;w&#125;&quot;</span>); <span class="comment">// [a, b]</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>trait 继承</strong>：一个 trait 可要求另一 trait 作为超集：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">trait</span> <span class="title class_">Animal</span>: std::fmt::Display &#123;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">name</span>(&amp;<span class="keyword">self</span>) <span class="punctuation">-&gt;</span> <span class="type">String</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">Cat</span>(<span class="type">String</span>);</span><br><span class="line"><span class="keyword">impl</span> <span class="title class_">std</span>::fmt::Display <span class="keyword">for</span> <span class="title class_">Cat</span> &#123;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">fmt</span>(&amp;<span class="keyword">self</span>, f: &amp;<span class="keyword">mut</span> std::fmt::Formatter) <span class="punctuation">-&gt;</span> std::fmt::<span class="type">Result</span> &#123;</span><br><span class="line">        <span class="built_in">write!</span>(f, <span class="string">&quot;&#123;&#125;&quot;</span>, <span class="keyword">self</span>.<span class="number">0</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">impl</span> <span class="title class_">Animal</span> <span class="keyword">for</span> <span class="title class_">Cat</span> &#123;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">name</span>(&amp;<span class="keyword">self</span>) <span class="punctuation">-&gt;</span> <span class="type">String</span> &#123; <span class="keyword">self</span>.<span class="number">0</span>.<span class="title function_ invoke__">clone</span>() &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">c</span> = <span class="title function_ invoke__">Cat</span>(<span class="string">&quot;咪咪&quot;</span>.<span class="title function_ invoke__">into</span>());</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;: &#123;&#125;&quot;</span>, c, c.<span class="title function_ invoke__">name</span>());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>Builder 模式</strong>用 trait 与链式调用构造复杂对象，<strong>迭代器 trait</strong>（<code>Iterator</code>）是 trait 设计的典范。</p>
+<hr>
+<h2 id="常见避坑"><a href="#常见避坑" class="headerlink" title="常见避坑"></a>常见避坑</h2><table>
+<thead>
+<tr>
+<th>场景</th>
+<th>错误</th>
+<th>正确做法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>孤儿规则</td>
+<td>为 <code>Vec&lt;T&gt;</code> 实现 <code>Display</code> → 编译错误</td>
+<td>用 newtype <code>struct W(Vec&lt;T&gt;)</code> 包装</td>
+</tr>
+<tr>
+<td>对象安全</td>
+<td><code>dyn MyTrait</code> 含泛型方法 → 不是对象安全</td>
+<td>改用具体类型或拆 trait</td>
+</tr>
+<tr>
+<td>关联类型重复实现</td>
+<td>同一类型两次实现带关联类型的 trait</td>
+<td>一个类型只能实现一次，改用泛型 trait</td>
+</tr>
+<tr>
+<td>返回引用悬垂</td>
+<td><code>fn f() -&gt; &amp;str &#123; &amp;local &#125;</code> → 编译错误</td>
+<td>返回 <code>String</code> 或借被引用者</td>
+</tr>
+<tr>
+<td>生命周期省略失效</td>
+<td>多输入引用无法省略 → 编译错误</td>
+<td>显式标注 <code>&#39;a</code>，或重构返回所有权</td>
+</tr>
+<tr>
+<td><code>dyn Trait</code> 大小不明</td>
+<td><code>let x: dyn Trait = ...</code> → 编译错误</td>
+<td>用 <code>Box&lt;dyn Trait&gt;</code> 或 <code>&amp;dyn Trait</code></td>
+</tr>
+<tr>
+<td>泛型未加 bound</td>
+<td><code>fn f&lt;T&gt;(a: T, b: T) &#123; a &gt; b &#125;</code> → 无 PartialOrd</td>
+<td>加 <code>T: PartialOrd</code></td>
+</tr>
+<tr>
+<td><code>?Sized</code> 缺失</td>
+<td>泛型默认 <code>Sized</code>，处理 <code>[T]</code>&#x2F;<code>str</code> 失败</td>
+<td>加 <code>T: ?Sized</code> 允许大小不明</td>
+</tr>
+<tr>
+<td>默认实现依赖未定义方法</td>
+<td>trait 默认方法调用另一个无默认方法 → 运行时 panic</td>
+<td>实现者必须提供核心方法</td>
+</tr>
+<tr>
+<td>trait 爆炸</td>
+<td>一个 trait 方法太多，实现成本高</td>
+<td>拆成多个小 trait，用组合</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="本章小结"><a href="#本章小结" class="headerlink" title="本章小结"></a>本章小结</h2><table>
+<thead>
+<tr>
+<th>要点</th>
+<th>结论</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>trait</td>
+<td>定义能力契约，<code>impl Trait for Type</code> 实现，可带默认方法</td>
+</tr>
+<tr>
+<td>泛型</td>
+<td>编译期单态化，零成本抽象，二进制体积换性能</td>
+</tr>
+<tr>
+<td>trait bound</td>
+<td><code>T: Trait</code> 约束泛型能力，<code>where</code> 写法便于复杂约束</td>
+</tr>
+<tr>
+<td>静态 vs 动态分发</td>
+<td><code>impl Trait</code> 编译期零成本；<code>dyn Trait</code> 运行时虚表，可装同集合</td>
+</tr>
+<tr>
+<td>关联类型</td>
+<td>trait 内占位类型，一个类型只实现一次，比泛型参数清晰</td>
+</tr>
+<tr>
+<td>生命周期</td>
+<td>标注引用同寿关系，编译期防悬垂；省略规则覆盖多数场景</td>
+</tr>
+<tr>
+<td>trait 设计</td>
+<td>newtype 绕孤儿规则，trait 继承做超集，Builder 链式构造</td>
+</tr>
+</tbody></table>
+<hr>
+<blockquote>
+<p>上一篇：<a href="/2026/09/02/Rust/Rust/" title="第一章：Rust 入门与所有权系统">第一章：Rust 入门与所有权系统</a>　|　<a href="/2026/09/02/Rust/Rust%E5%B9%B6%E5%8F%91%E4%B8%8E%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86/" title="第三章：Rust 并发与错误处理">第三章：Rust 并发与错误处理</a>　|　<a href="/2026/09/02/Rust/Rust%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5%E4%B8%8EWeb%E5%BC%80%E5%8F%91/" title="第四章：Rust 工程实践与 Web 开发">第四章：Rust 工程实践与 Web 开发</a></p>
+</blockquote>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Rust/" rel="tag"># Rust</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/09/02/Rust/Rust%E5%B9%B6%E5%8F%91%E4%B8%8E%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86/" rel="prev" title="第三章：Rust 并发与错误处理">
+                  <i class="fa fa-angle-left"></i> 第三章：Rust 并发与错误处理
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2026/09/02/Rust/Rust%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5%E4%B8%8EWeb%E5%BC%80%E5%8F%91/" rel="next" title="第四章：Rust 工程实践与 Web 开发">
+                  第四章：Rust 工程实践与 Web 开发 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">miracle</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">424k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">23:32</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+<script>
+(function () {
+  function normalizeClipboard(s) {
+    return (s || '').replace(/\u00a0/g, ' ');
+  }
+
+  /** When innerText is empty, treat <br> as newlines (matches Hexo fenced + line_number HTML). */
+  function plainTextFromElement(el) {
+    if (!el) return '';
+    var t = el.innerText;
+    if (t != null && t !== '') return normalizeClipboard(t);
+    var clone = el.cloneNode(true);
+    clone.querySelectorAll('br').forEach(function (br) {
+      br.parentNode.replaceChild(document.createTextNode('\n'), br);
+    });
+    return normalizeClipboard(clone.textContent || '');
+  }
+
+  function extractFromFigure(fig) {
+    if (!fig) return '';
+    var cell = fig.querySelector('td.code') || fig.querySelector('.code');
+    if (cell) return plainTextFromElement(cell);
+    var pre = fig.querySelector('pre');
+    if (pre) return plainTextFromElement(pre);
+    var code = fig.querySelector('code');
+    return code ? plainTextFromElement(code) : '';
+  }
+
+  function extractForCopyBtn(btn) {
+    var fig = btn.closest('figure.highlight');
+    if (fig) return extractFromFigure(fig);
+    var wrap = btn.closest('.code-container');
+    if (wrap) {
+      var innerFig = wrap.querySelector('figure.highlight');
+      if (innerFig) return extractFromFigure(innerFig);
+      var preOnly = wrap.querySelector('pre');
+      if (preOnly) return plainTextFromElement(preOnly);
+    }
+    return '';
+  }
+
+  function setCopyIcon(btn, ok) {
+    var i = btn.querySelector('i');
+    if (i) i.className = ok ? 'fa fa-check-circle fa-fw' : 'fa fa-times-circle fa-fw';
+  }
+
+  function writeClipboard(text, btn) {
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(text).then(
+        function () { setCopyIcon(btn, true); },
+        function () { fallbackCopy(text, btn); }
+      );
+    }
+    fallbackCopy(text, btn);
+    return Promise.resolve();
+  }
+
+  function fallbackCopy(text, btn) {
+    try {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed';
+      ta.style.left = '-9999px';
+      document.body.appendChild(ta);
+      ta.select();
+      var ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      setCopyIcon(btn, ok);
+    } catch (e) {
+      setCopyIcon(btn, false);
+    }
+  }
+
+  document.addEventListener(
+    'click',
+    function (e) {
+      var btn = e.target.closest && e.target.closest('.copy-btn');
+      if (!btn) return;
+      if (!btn.closest('figure.highlight') && !btn.closest('.code-container')) return;
+      e.stopPropagation();
+      e.preventDefault();
+      var text = extractForCopyBtn(btn);
+      writeClipboard(text, btn);
+    },
+    true
+  );
+})();
+</script>
+
+</body>
+</html>

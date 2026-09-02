@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"my919.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="第三章：分布式链路追踪概念基础 Trace &#x2F; Span &#x2F; 上下文传播：Trace 是一次完整请求的因果树，Span 是树中一节点（含 traceId、spanId、parentSpanId、起止时间、标签）。上下游服务通过 HTTP Header 或消息头把 traceId&#x2F;spanId 透传下去，是构建端到端链路的核心。 采样率：高 QPS 场景全量上报会撑爆存储与网络，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="第三章：分布式链路追踪">
+<meta property="og:url" content="https://my919.github.io/2026/09/02/Observability/%E5%88%86%E5%B8%83%E5%BC%8F%E9%93%BE%E8%B7%AF%E8%BF%BD%E8%B8%AA/index.html">
+<meta property="og:site_name" content="my">
+<meta property="og:description" content="第三章：分布式链路追踪概念基础 Trace &#x2F; Span &#x2F; 上下文传播：Trace 是一次完整请求的因果树，Span 是树中一节点（含 traceId、spanId、parentSpanId、起止时间、标签）。上下游服务通过 HTTP Header 或消息头把 traceId&#x2F;spanId 透传下去，是构建端到端链路的核心。 采样率：高 QPS 场景全量上报会撑爆存储与网络，">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-09-02T02:00:00.000Z">
+<meta property="article:modified_time" content="2026-09-02T13:48:26.385Z">
+<meta property="article:author" content="miracle">
+<meta property="article:tag" content="Observability">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://my919.github.io/2026/09/02/Observability/%E5%88%86%E5%B8%83%E5%BC%8F%E9%93%BE%E8%B7%AF%E8%BF%BD%E8%B8%AA/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://my919.github.io/2026/09/02/Observability/%E5%88%86%E5%B8%83%E5%BC%8F%E9%93%BE%E8%B7%AF%E8%BF%BD%E8%B8%AA/","path":"2026/09/02/Observability/分布式链路追踪/","title":"第三章：分布式链路追踪"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>第三章：分布式链路追踪 | my</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.10.1/mermaid.min.js","integrity":"sha256-BmQmdWDS8X2OTbrwELWK366LV6escyWhHHe0XCTU/Hk="}}</script>
+  <script src="/js/third-party/tags/mermaid.js" defer></script>
+
+
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="my" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">my</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-service"><a href="/service/" rel="section"><i class="fa fa-server fa-fw"></i>服务</a></li><li class="menu-item menu-item-tool"><a href="/tool/" rel="section"><i class="fa fa-wrench fa-fw"></i>工具</a></li><li class="menu-item menu-item-project"><a href="/project/" rel="section"><i class="fa fa-folder-open fa-fw"></i>项目</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%B8%89%E7%AB%A0%EF%BC%9A%E5%88%86%E5%B8%83%E5%BC%8F%E9%93%BE%E8%B7%AF%E8%BF%BD%E8%B8%AA"><span class="nav-number">1.</span> <span class="nav-text">第三章：分布式链路追踪</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81OpenTelemetry-%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5"><span class="nav-number">1.2.</span> <span class="nav-text">一、OpenTelemetry 核心概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81Jaeger-%E9%83%A8%E7%BD%B2%E4%B8%8E%E6%9E%B6%E6%9E%84"><span class="nav-number">1.3.</span> <span class="nav-text">二、Jaeger 部署与架构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81Java-%E5%BA%94%E7%94%A8%E6%8E%A5%E5%85%A5"><span class="nav-number">1.4.</span> <span class="nav-text">三、Java 应用接入</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81Go-%E5%BA%94%E7%94%A8%E6%8E%A5%E5%85%A5"><span class="nav-number">1.5.</span> <span class="nav-text">四、Go 应用接入</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E8%B7%A8%E6%9C%8D%E5%8A%A1%E4%BC%A0%E6%92%AD"><span class="nav-number">1.6.</span> <span class="nav-text">五、跨服务传播</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E9%93%BE%E8%B7%AF%E5%88%86%E6%9E%90%E4%B8%8E%E6%8E%92%E9%9A%9C"><span class="nav-number">1.7.</span> <span class="nav-text">六、链路分析与排障</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E9%81%BF%E5%9D%91"><span class="nav-number">1.8.</span> <span class="nav-text">常见避坑</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.9.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">miracle</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">284</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">44</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">186</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/my919" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;my919" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://gitee.com/my919" title="Gitee → https:&#x2F;&#x2F;gitee.com&#x2F;my919" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>Gitee</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:yeal166@163.com" title="E-Mail → mailto:yeal166@163.com" rel="noopener me external nofollow noreferrer" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://my919.github.io/2026/09/02/Observability/%E5%88%86%E5%B8%83%E5%BC%8F%E9%93%BE%E8%B7%AF%E8%BF%BD%E8%B8%AA/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="第三章：分布式链路追踪 | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          第三章：分布式链路追踪
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2026-09-02 10:00:00 / 修改时间：21:48:26" itemprop="dateCreated datePublished" datetime="2026-09-02T10:00:00+08:00">2026-09-02</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Observability/" itemprop="url" rel="index"><span itemprop="name">Observability</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>2.5k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>8 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="第三章：分布式链路追踪"><a href="#第三章：分布式链路追踪" class="headerlink" title="第三章：分布式链路追踪"></a>第三章：分布式链路追踪</h1><h2 id="概念基础"><a href="#概念基础" class="headerlink" title="概念基础"></a>概念基础</h2><ol>
+<li><strong>Trace &#x2F; Span &#x2F; 上下文传播</strong>：Trace 是一次完整请求的因果树，Span 是树中一节点（含 <code>traceId</code>、<code>spanId</code>、<code>parentSpanId</code>、起止时间、标签）。上下游服务通过 HTTP Header 或消息头把 <code>traceId/spanId</code> 透传下去，是构建端到端链路的核心。</li>
+<li><strong>采样率</strong>：高 QPS 场景全量上报会撑爆存储与网络，常用 <code>head-based</code>（在入口按概率决定）或 <code>tail-based</code>（在出口按错误&#x2F;延迟决定）采样。错误链路必须 100% 上报，正常路径 1%~10% 即可。</li>
+<li><strong>OpenTelemetry 统一标准</strong>：CNCF 主推的 OTLP 协议与 API&#x2F;SDK，把各家厂商（Jaeger、Zipkin、SkyWalking、Datadog）的客户端 API 统一，让应用埋点与后端解耦，迁移成本低。</li>
+<li><strong>追踪 vs 监控</strong>：监控（指标）回答”什么坏了”，日志回答”为什么坏”，链路回答”在哪个调用坏了、调用了谁”。三者互补：先指标告警，再日志取证据，链路定位根因 Span。</li>
+<li><strong>后端选型</strong>：Jaeger（CNCF，OTel 原生）、Zipkin（轻量）、SkyWalking（含 APM+告警）、Tempo（Grafana 全家桶）。中小规模推荐 Jaeger all-in-one，大规模推荐 Collector + 存储后端（Cassandra&#x2F;ES）独立部署。</li>
+</ol>
+<blockquote>
+<p>链路是排障的因果图谱，本章是可观测性三支柱收官篇，请同步阅读 <a href="/2026/09/02/Observability/Prometheus%E4%B8%8EGrafana/" title="第一章：Prometheus 指标监控与 Grafana 可视化">第一章：Prometheus 指标监控与 Grafana 可视化</a> 与 <a href="/2026/09/02/Observability/ELK%E6%97%A5%E5%BF%97%E6%94%B6%E9%9B%86/" title="第二章：ELK 日志收集与分析">第二章：ELK 日志收集与分析</a>，三者协同使用。</p>
+</blockquote>
+<hr>
+<h2 id="一、OpenTelemetry-核心概念"><a href="#一、OpenTelemetry-核心概念" class="headerlink" title="一、OpenTelemetry 核心概念"></a>一、OpenTelemetry 核心概念</h2><p>OTel 的核心数据模型：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Trace（一次请求的因果树）</span><br><span class="line">  Span A (root, traceId=abc, spanId=A, parentSpanId=null)</span><br><span class="line">  ├─ Span B (spanId=B, parentSpanId=A)</span><br><span class="line">  │  └─ Span C (spanId=C, parentSpanId=B)</span><br><span class="line">  └─ Span D (spanId=D, parentSpanId=A)</span><br><span class="line">Span 关键字段：TraceId（128bit 全局唯一）、SpanId（64bit）、ParentSpanId（父 Span 构成树）、Name（操作名）、Kind（SERVER/CLIENT/PRODUCER/CONSUMER/INTERNAL）、Attributes（键值标签如 http.method）、Events（离散事件）、Status（OK/ERROR/UNSET）、Links（跨 Trace 关联）。</span><br></pre></td></tr></table></figure>
+
+<p><strong>W3C TraceContext</strong> 通过 <code>traceparent</code> 头传播上下文，格式 <code>00-&#123;traceId(32hex)&#125;-&#123;spanId(16hex)&#125;-&#123;flags(2hex)&#125;</code>：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">traceparent: 00-0af7651916cd43dd8448eb211c80319c-b7ad6b7169203331-01</span><br><span class="line">tracestate: vendor=opaque_value            // 多厂商扩展信息</span><br><span class="line">baggage:    userId=10086,env=prod           // 业务字段透传</span><br></pre></td></tr></table></figure>
+
+<p>其中 <code>00</code> 是版本号，<code>flags</code> 为 <code>01</code> 表示 sampled（被采样）。</p>
+<p>OTel Collector 配置示例（接收 OTLP，尾部采样后导出到 Jaeger）：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># otel-collector-config.yaml</span></span><br><span class="line"><span class="attr">receivers:</span></span><br><span class="line">  <span class="attr">otlp:</span></span><br><span class="line">    <span class="attr">protocols:</span></span><br><span class="line">      <span class="attr">grpc:</span> &#123; <span class="attr">endpoint:</span> <span class="number">0.0</span><span class="number">.0</span><span class="number">.0</span><span class="string">:4317</span> &#125;</span><br><span class="line">      <span class="attr">http:</span> &#123; <span class="attr">endpoint:</span> <span class="number">0.0</span><span class="number">.0</span><span class="number">.0</span><span class="string">:4318</span> &#125;</span><br><span class="line"></span><br><span class="line"><span class="attr">processors:</span></span><br><span class="line">  <span class="attr">batch:</span> &#123; <span class="attr">timeout:</span> <span class="string">5s</span>, <span class="attr">send_batch_size:</span> <span class="number">1000</span> &#125;</span><br><span class="line">  <span class="attr">memory_limiter:</span> &#123; <span class="attr">check_interval:</span> <span class="string">1s</span>, <span class="attr">limit_mib:</span> <span class="number">512</span> &#125;</span><br><span class="line">  <span class="attr">attributes:</span></span><br><span class="line">    <span class="attr">actions:</span></span><br><span class="line">      <span class="bullet">-</span> &#123; <span class="attr">key:</span> <span class="string">env</span>, <span class="attr">value:</span> <span class="string">prod</span>, <span class="attr">action:</span> <span class="string">upsert</span> &#125;</span><br><span class="line">  <span class="comment"># 尾部采样：错误与慢链路 100% 保留，正常 10%</span></span><br><span class="line">  <span class="attr">tail_sampling:</span></span><br><span class="line">    <span class="attr">decision_wait:</span> <span class="string">10s</span></span><br><span class="line">    <span class="attr">policies:</span></span><br><span class="line">      <span class="bullet">-</span> &#123; <span class="attr">name:</span> <span class="string">errors</span>, <span class="attr">type:</span> <span class="string">status_code</span>, <span class="attr">status_code:</span> &#123; <span class="attr">status_codes:</span> [<span class="string">ERROR</span>] &#125; &#125;</span><br><span class="line">      <span class="bullet">-</span> &#123; <span class="attr">name:</span> <span class="string">slow</span>, <span class="attr">type:</span> <span class="string">latency</span>, <span class="attr">latency:</span> &#123; <span class="attr">threshold_ms:</span> <span class="number">500</span> &#125; &#125;</span><br><span class="line">      <span class="bullet">-</span> &#123; <span class="attr">name:</span> <span class="string">random10</span>, <span class="attr">type:</span> <span class="string">probabilistic</span>, <span class="attr">probabilistic:</span> &#123; <span class="attr">sampling_percentage:</span> <span class="number">10</span> &#125; &#125;</span><br><span class="line"></span><br><span class="line"><span class="attr">exporters:</span></span><br><span class="line">  <span class="attr">jaeger:</span> &#123; <span class="attr">endpoint:</span> <span class="string">jaeger:14250</span>, <span class="attr">tls:</span> &#123; <span class="attr">insecure:</span> <span class="literal">true</span> &#125; &#125;</span><br><span class="line">  <span class="attr">prometheus:</span> &#123; <span class="attr">endpoint:</span> <span class="number">0.0</span><span class="number">.0</span><span class="number">.0</span><span class="string">:8889</span> &#125;    <span class="comment"># 同时暴露 RED 指标</span></span><br><span class="line"></span><br><span class="line"><span class="attr">service:</span></span><br><span class="line">  <span class="attr">pipelines:</span></span><br><span class="line">    <span class="attr">traces:</span>  &#123; <span class="attr">receivers:</span> [<span class="string">otlp</span>], <span class="attr">processors:</span> [<span class="string">memory_limiter</span>, <span class="string">attributes</span>, <span class="string">tail_sampling</span>, <span class="string">batch</span>], <span class="attr">exporters:</span> [<span class="string">jaeger</span>] &#125;</span><br><span class="line">    <span class="attr">metrics:</span> &#123; <span class="attr">receivers:</span> [<span class="string">otlp</span>], <span class="attr">processors:</span> [<span class="string">batch</span>], <span class="attr">exporters:</span> [<span class="string">prometheus</span>] &#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="二、Jaeger-部署与架构"><a href="#二、Jaeger-部署与架构" class="headerlink" title="二、Jaeger 部署与架构"></a>二、Jaeger 部署与架构</h2><p>Jaeger all-in-one 适合开发与中小规模：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># docker-compose.yml - Jaeger + OTel Collector</span></span><br><span class="line"><span class="attr">version:</span> <span class="string">&quot;3.8&quot;</span></span><br><span class="line"><span class="attr">services:</span></span><br><span class="line">  <span class="attr">jaeger:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">jaegertracing/all-in-one:1.60</span></span><br><span class="line">    <span class="attr">ports:</span> [<span class="string">&quot;16686:16686&quot;</span>, <span class="string">&quot;14250:14250&quot;</span>, <span class="string">&quot;4317:4317&quot;</span>, <span class="string">&quot;4318:4318&quot;</span>]</span><br><span class="line">    <span class="attr">environment:</span></span><br><span class="line">      <span class="attr">COLLECTOR_OTLP_ENABLED:</span> <span class="string">&quot;true&quot;</span></span><br><span class="line">      <span class="attr">SPAN_STORAGE_TYPE:</span> <span class="string">badger</span></span><br><span class="line">      <span class="attr">BADGER_EPHEMERAL:</span> <span class="string">&quot;false&quot;</span></span><br><span class="line">      <span class="attr">BADGER_DIRECTORY_VALUE:</span> <span class="string">/badger/data</span></span><br><span class="line">      <span class="attr">BADGER_DIRECTORY_KEY:</span> <span class="string">/badger/key</span></span><br><span class="line">    <span class="attr">volumes:</span> [<span class="string">&quot;./badger:/badger&quot;</span>]</span><br><span class="line"></span><br><span class="line">  <span class="attr">otel-collector:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">otel/opentelemetry-collector-contrib:0.108.0</span></span><br><span class="line">    <span class="attr">command:</span> [<span class="string">&quot;--config=/etc/otel/config.yaml&quot;</span>]</span><br><span class="line">    <span class="attr">volumes:</span> [<span class="string">&quot;./otel/config.yaml:/etc/otel/config.yaml:ro&quot;</span>]</span><br><span class="line">    <span class="attr">ports:</span> [<span class="string">&quot;8889:8889&quot;</span>]</span><br><span class="line">    <span class="attr">depends_on:</span> [<span class="string">jaeger</span>]</span><br></pre></td></tr></table></figure>
+
+<p>生产推荐 Collector 分离架构：App → OTel Collector (Agent DaemonSet) → OTel Collector Gateway (tail sampling) → Jaeger Collector → Storage（Elasticsearch&#x2F;Cassandra&#x2F;Kafka）。存储后端按规模选：Badger 嵌入式适合开发，Elasticsearch 查询能力强适合大规模+日志整合，Cassandra 写入吞吐高适合纯链路，Kafka 适合高峰缓冲再落 ES。</p>
+<h2 id="三、Java-应用接入"><a href="#三、Java-应用接入" class="headerlink" title="三、Java 应用接入"></a>三、Java 应用接入</h2><p>Spring Boot 3.x 使用 Micrometer Tracing + OTel 自动埋点：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- pom.xml：引入 OTel bridge 与 starter --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>io.micrometer<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>micrometer-tracing-bridge-otel<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>io.opentelemetry.instrumentation<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>opentelemetry-spring-boot-starter<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.9.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># application.yml：采样率与上报地址</span></span><br><span class="line"><span class="attr">management:</span></span><br><span class="line">  <span class="attr">tracing:</span></span><br><span class="line">    <span class="attr">sampling:</span></span><br><span class="line">      <span class="attr">probability:</span> <span class="number">1.0</span>          <span class="comment"># 开发期 100%，生产 0.1</span></span><br><span class="line">  <span class="attr">otlp:</span></span><br><span class="line">    <span class="attr">tracing:</span></span><br><span class="line">      <span class="attr">endpoint:</span> <span class="string">http://otel-collector:4318/v1/traces</span></span><br><span class="line">      <span class="attr">export.timeout:</span> <span class="string">5s</span></span><br><span class="line"><span class="attr">otel:</span></span><br><span class="line">  <span class="attr">traces:</span></span><br><span class="line">    <span class="attr">sampler:</span> <span class="string">parentbased_always_on</span>   <span class="comment"># 测试期；生产 parentbased_traceidratio</span></span><br><span class="line">  <span class="attr">service.name:</span> <span class="string">$&#123;spring.application.name&#125;</span></span><br><span class="line">  <span class="attr">exporter.otlp.endpoint:</span> <span class="string">http://otel-collector:4318</span></span><br></pre></td></tr></table></figure>
+
+<p>自动埋点覆盖 HTTP、JDBC、Redis、Kafka 等；手动 Span 用于业务关键节点。注意 <code>span.end()</code> 必须在 finally 中执行避免泄漏：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Service</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">OrderService</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Tracer tracer;     <span class="comment">// io.opentelemetry.api.trace.Tracer</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> Order <span class="title function_">placeOrder</span><span class="params">(OrderRequest req)</span> &#123;</span><br><span class="line">        <span class="type">Span</span> <span class="variable">span</span> <span class="operator">=</span> tracer.spanBuilder(<span class="string">&quot;order.placeOrder&quot;</span>)</span><br><span class="line">                .setAttribute(<span class="string">&quot;order.userId&quot;</span>, req.getUserId())</span><br><span class="line">                .setAttribute(<span class="string">&quot;order.amount&quot;</span>, req.getAmount())</span><br><span class="line">                .startSpan();</span><br><span class="line">        <span class="keyword">try</span> (<span class="type">Scope</span> <span class="variable">scope</span> <span class="operator">=</span> span.makeCurrent()) &#123;</span><br><span class="line">            <span class="comment">// 子调用自动作为本 Span 的子节点</span></span><br><span class="line">            inventoryService.deduct(req);</span><br><span class="line">            paymentService.charge(req);</span><br><span class="line">            <span class="type">Order</span> <span class="variable">order</span> <span class="operator">=</span> orderRepo.save(req);</span><br><span class="line">            span.setAttribute(<span class="string">&quot;order.id&quot;</span>, order.getId());</span><br><span class="line">            <span class="keyword">return</span> order;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            span.recordException(e);                       <span class="comment">// 记录异常</span></span><br><span class="line">            span.setStatus(StatusCode.ERROR, e.getMessage());</span><br><span class="line">            <span class="keyword">throw</span> e;</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            span.end();                                    <span class="comment">// 必须显式结束</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>注解 <code>@WithSpan(&quot;order.syncTask&quot;)</code> 可为定时任务等方法自动生成 Span，无需手工创建。</p>
+<h2 id="四、Go-应用接入"><a href="#四、Go-应用接入" class="headerlink" title="四、Go 应用接入"></a>四、Go 应用接入</h2><p>Go 用 <code>otel</code> SDK + HTTP&#x2F;gRPC 拦截器自动埋点。初始化 TracerProvider 后，服务端用 <code>otelhttp.NewHandler</code> 自动注入&#x2F;提取 traceparent；手动 Span 包裹业务关键节点，下游调用用 <code>otelhttp.NewTransport</code> 自动透传头：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">&quot;context&quot;</span>; <span class="string">&quot;log&quot;</span>; <span class="string">&quot;net/http&quot;</span></span><br><span class="line">    <span class="string">&quot;go.opentelemetry.io/otel&quot;</span></span><br><span class="line">    <span class="string">&quot;go.opentelemetry.io/otel/attribute&quot;</span></span><br><span class="line">    <span class="string">&quot;go.opentelemetry.io/otel/codes&quot;</span></span><br><span class="line">    <span class="string">&quot;go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp&quot;</span></span><br><span class="line">    <span class="string">&quot;go.opentelemetry.io/otel/propagation&quot;</span></span><br><span class="line">    <span class="string">&quot;go.opentelemetry.io/otel/sdk/resource&quot;</span></span><br><span class="line">    sdktrace <span class="string">&quot;go.opentelemetry.io/otel/sdk/trace&quot;</span></span><br><span class="line">    semconv <span class="string">&quot;go.opentelemetry.io/otel/semconv/v1.27.0&quot;</span></span><br><span class="line">    <span class="string">&quot;go.opentelemetry.io/otel/trace&quot;</span></span><br><span class="line">    <span class="string">&quot;go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">initTracer</span><span class="params">(ctx context.Context)</span></span> (*sdktrace.TracerProvider, <span class="type">error</span>) &#123;</span><br><span class="line">    exporter, err := otlptracehttp.New(ctx,</span><br><span class="line">        otlptracehttp.WithEndpoint(<span class="string">&quot;otel-collector:4318&quot;</span>),</span><br><span class="line">        otlptracehttp.WithInsecure())</span><br><span class="line">    res, _ := resource.New(ctx, resource.WithAttributes(</span><br><span class="line">        semconv.ServiceName(<span class="string">&quot;order-service&quot;</span>), semconv.DeploymentEnvironment(<span class="string">&quot;prod&quot;</span>)))</span><br><span class="line">    tp := sdktrace.NewTracerProvider(</span><br><span class="line">        sdktrace.WithBatcher(exporter), sdktrace.WithResource(res),</span><br><span class="line">        sdktrace.WithSampler(sdktrace.ParentBased(sdktrace.TraceIDRatioBased(<span class="number">0.1</span>))), <span class="comment">// 生产 10%</span></span><br><span class="line">    )</span><br><span class="line">    otel.SetTracerProvider(tp)</span><br><span class="line">    otel.SetTextMapPropagator(propagation.TraceContext&#123;&#125;)  <span class="comment">// W3C 传播</span></span><br><span class="line">    <span class="keyword">return</span> tp, err</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    ctx := context.Background()</span><br><span class="line">    tp, _ := initTracer(ctx)</span><br><span class="line">    <span class="keyword">defer</span> tp.ForceFlush(ctx)</span><br><span class="line">    mux := http.NewServeMux()</span><br><span class="line">    mux.HandleFunc(<span class="string">&quot;/orders&quot;</span>, placeOrder)</span><br><span class="line">    wrapped := otelhttp.NewHandler(mux, <span class="string">&quot;order-api&quot;</span>)  <span class="comment">// 自动埋点 + 注入/提取 traceparent</span></span><br><span class="line">    log.Fatal(http.ListenAndServe(<span class="string">&quot;:8080&quot;</span>, wrapped))</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 手动创建业务 Span，与 HTTP Span 构成父子关系</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">placeOrder</span><span class="params">(w http.ResponseWriter, r *http.Request)</span></span> &#123;</span><br><span class="line">    ctx := r.Context()</span><br><span class="line">    ctx, span := otel.Tracer(<span class="string">&quot;order-service&quot;</span>).Start(ctx, <span class="string">&quot;placeOrder&quot;</span>,</span><br><span class="line">        trace.WithAttributes(attribute.String(<span class="string">&quot;order.userId&quot;</span>, r.URL.Query().Get(<span class="string">&quot;userId&quot;</span>))))</span><br><span class="line">    <span class="keyword">defer</span> span.End()</span><br><span class="line">    <span class="keyword">if</span> err := chargePayment(ctx); err != <span class="literal">nil</span> &#123;</span><br><span class="line">        span.RecordError(err)</span><br><span class="line">        span.SetStatus(codes.Error, err.Error())</span><br><span class="line">        http.Error(w, err.Error(), <span class="number">500</span>)</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    w.WriteHeader(<span class="number">200</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 调下游服务时 otelhttp client 自动注入 traceparent 头</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">chargePayment</span><span class="params">(ctx context.Context)</span></span> <span class="type">error</span> &#123;</span><br><span class="line">    client := http.Client&#123;Transport: otelhttp.NewTransport(http.DefaultTransport)&#125;</span><br><span class="line">    req, _ := http.NewRequestWithContext(ctx, <span class="string">&quot;GET&quot;</span>, <span class="string">&quot;http://payment:8080/charge&quot;</span>, <span class="literal">nil</span>)</span><br><span class="line">    resp, err := client.Do(req)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> err</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">defer</span> resp.Body.Close()</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>gRPC 拦截器一行接入：服务端 <code>grpc.UnaryInterceptor(otelgrpc.UnaryServerInterceptor())</code>，客户端 <code>grpc.WithUnaryInterceptor(otelgrpc.UnaryClientInterceptor())</code>，均来自 <code>go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc</code>。</p>
+<h2 id="五、跨服务传播"><a href="#五、跨服务传播" class="headerlink" title="五、跨服务传播"></a>五、跨服务传播</h2><p>HTTP 上下文通过 <code>traceparent</code> 头自动透传，应用无须手工注入。但当链路穿越异步边界（消息队列、定时任务、线程切换）时容易丢失。</p>
+<p><strong>Kafka 消息传播</strong>：生产者注入上下文到消息 Header，消费者提取后恢复 traceId：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 生产者：把当前上下文写入消息 Header</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">send</span><span class="params">(OrderEvent event)</span> &#123;</span><br><span class="line">    ProducerRecord&lt;String, OrderEvent&gt; record = <span class="keyword">new</span> <span class="title class_">ProducerRecord</span>&lt;&gt;(</span><br><span class="line">        <span class="string">&quot;order.created&quot;</span>, event.getOrderId(), event);</span><br><span class="line">    KafkaHeaders.inject(Context.current(), record.getHeaders(), tracer);</span><br><span class="line">    kafka.send(record);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 消费者：从 Header 提取上下文，恢复 traceId</span></span><br><span class="line"><span class="meta">@KafkaListener(topics = &quot;order.created&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">onMessage</span><span class="params">(ConsumerRecord&lt;String, OrderEvent&gt; record)</span> &#123;</span><br><span class="line">    <span class="type">Context</span> <span class="variable">parent</span> <span class="operator">=</span> KafkaHeaders.extract(record.headers(), tracer);</span><br><span class="line">    <span class="type">Span</span> <span class="variable">span</span> <span class="operator">=</span> tracer.spanBuilder(<span class="string">&quot;kafka.consume&quot;</span>).setParent(parent).startSpan();</span><br><span class="line">    <span class="keyword">try</span> (<span class="type">Scope</span> <span class="variable">scope</span> <span class="operator">=</span> span.makeCurrent()) &#123;</span><br><span class="line">        processOrder(record.value());</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        span.end();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>线程切换丢失</strong>：CompletableFuture 默认不传播 ThreadLocal，必须用 <code>ContextExecutorService</code> 包装线程池：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ❌ 错误：异步执行时丢失上下文</span></span><br><span class="line">CompletableFuture.supplyAsync(() -&gt; inventoryService.deduct(req));</span><br><span class="line"></span><br><span class="line"><span class="comment">// ✅ 正确：用 Micrometer Context-propagation 包装线程池</span></span><br><span class="line"><span class="type">ExecutorService</span> <span class="variable">exec</span> <span class="operator">=</span> ContextExecutorService.wrap(Executors.newFixedThreadPool(<span class="number">8</span>));</span><br><span class="line">CompletableFuture.supplyAsync(() -&gt; inventoryService.deduct(req), exec);</span><br></pre></td></tr></table></figure>
+
+<p><strong>上下文丢失排查清单</strong>：① 检查下游 Span 的 <code>parentSpanId</code> 是否对齐上游 <code>spanId</code>；② 抓包确认 <code>traceparent</code> 头是否在 HTTP&#x2F;MQ Header 中存在；③ 异步任务用线程池包装 <code>ContextExecutorService</code> 或 <code>TaskDecorator</code>；④ 日志 MDC 中 <code>traceId</code> 是否贯穿整条调用栈；⑤ 跨域调用是否被代理拦截头（如 Nginx 默认不过滤 <code>traceparent</code>）。</p>
+<h2 id="六、链路分析与排障"><a href="#六、链路分析与排障" class="headerlink" title="六、链路分析与排障"></a>六、链路分析与排障</h2><p>Jaeger UI 提供多种排障视图：<strong>Find a Trace</strong> 按 <code>service + operation + tags</code> 过滤（如 <code>tags=&#123;&quot;error&quot;:true&#125;</code> 找错误链路）；<strong>Compare</strong> 对比两条相似链路找耗时差异 Span；<strong>Dependencies</strong> 自动生成服务依赖 DAG 图发现意外依赖；<strong>SPM</strong> 聚合 RED 指标发现慢调用分布。</p>
+<p>慢调用定位流程：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">1. 在 Grafana 看到 order-service P99 从 200ms 涨到 1.2s</span><br><span class="line">2. 打开 Jaeger UI → Find a Trace → Service=order-service</span><br><span class="line">   Operation=/api/orders → Duration Min=1s → 查询最近 1 小时慢链路</span><br><span class="line">3. 选中耗时最长的 Trace → 展开 Span 树</span><br><span class="line">4. 发现 payment.charge Span 占 1.1s，远超库存扣减的 5ms</span><br><span class="line">5. 切换到 payment-service → 在 Span Attributes 中发现</span><br><span class="line">   db.statement 是 SELECT *（未走索引） → 根因定位完成</span><br></pre></td></tr></table></figure>
+
+<p>错误链路过滤：<code>&#123;&quot;error&quot;:true&#125;</code> 找错误链路，<code>&#123;&quot;http.status_code&quot;:&quot;500&quot;&#125;</code> 找 5xx，<code>&#123;&quot;user_id&quot;:&quot;10086&quot;&#125;</code> 按用户定位。</p>
+<p>与指标&#x2F;日志关联是排障闭环关键。Grafana 数据源联动配置（Loki → Trace to logs）：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">lokiQuery:</span> <span class="string">&#x27;&#123;service=&quot;$$&#123;__span.tags.service&#125;&quot;&#125; | json | traceId=&quot;$$&#123;__trace.traceId&#125;&quot;&#x27;</span></span><br><span class="line"><span class="comment"># Trace to Metrics：关联对应服务的 P99 延迟</span></span><br><span class="line"><span class="attr">queries:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">expr:</span> <span class="string">&#x27;histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket&#123;job=&quot;$$&#123;__span.tags.service&#125;&quot;&#125;[5m])) by (le))&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>Tempo + Grafana 还支持在日志中嵌入 <code>traceId</code> 后一键跳转：日志行中包含 <code>traceId</code> 字段，Grafana Detected Fields 点击即可跳到对应 Trace。</p>
+<h2 id="常见避坑"><a href="#常见避坑" class="headerlink" title="常见避坑"></a>常见避坑</h2><table>
+<thead>
+<tr>
+<th>坑</th>
+<th>现象</th>
+<th>正确做法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>采样率过高</td>
+<td>生产存储爆掉</td>
+<td>用 <code>tail_sampling</code> 错误链路全保留，正常 1%~10%</td>
+</tr>
+<tr>
+<td>异步丢上下文</td>
+<td>Span 断裂成孤儿</td>
+<td>用 <code>ContextExecutorService</code> 包装线程池</td>
+</tr>
+<tr>
+<td>MQ 上下文丢失</td>
+<td>生产消费 traceId 不一致</td>
+<td>Producer 写 Header，Consumer 注入 Extract</td>
+</tr>
+<tr>
+<td>手动 Span 不 end</td>
+<td>Span 内存泄漏</td>
+<td><code>try-finally span.end()</code> 必须执行</td>
+</tr>
+<tr>
+<td>高基数 Attribute</td>
+<td>Span 标签膨胀</td>
+<td>不要把 <code>user_id</code> <code>order_id</code> 写死，改为 trace search tag</td>
+</tr>
+<tr>
+<td>W3C 与 B3 共存</td>
+<td>跨语言链路断裂</td>
+<td>统一用 W3C <code>traceparent</code>，兼容老系统用 <code>b3multi</code> propagator</td>
+</tr>
+<tr>
+<td>跨域代理过滤头</td>
+<td>链路在网关后断开</td>
+<td>Nginx <code>proxy_pass_request_headers on</code> 不过滤 <code>traceparent</code></td>
+</tr>
+<tr>
+<td>Collector 资源不足</td>
+<td>出现 Span 丢失、超时</td>
+<td>加 <code>memory_limiter</code> + <code>batch</code> 处理器，限制并发</td>
+</tr>
+<tr>
+<td>Span 命名混乱</td>
+<td>Jaeger 中 operation 几千种</td>
+<td>命名 <code>&#123;type&#125;.&#123;method&#125;</code>，HTTP 用路由名而非 URL</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="本章小结"><a href="#本章小结" class="headerlink" title="本章小结"></a>本章小结</h2><table>
+<thead>
+<tr>
+<th>要点</th>
+<th>结论</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>数据模型</td>
+<td>Trace&#x2F;Span 构成因果树，traceId 跨服务唯一</td>
+</tr>
+<tr>
+<td>传播标准</td>
+<td>W3C TraceContext <code>traceparent</code> 头是事实标准</td>
+</tr>
+<tr>
+<td>后端选型</td>
+<td>Jaeger all-in-one 中小规模；大规模 Collector + ES&#x2F;Cassandra</td>
+</tr>
+<tr>
+<td>SDK 选型</td>
+<td>OpenTelemetry 统一 API，与后端解耦，优先采用</td>
+</tr>
+<tr>
+<td>自动埋点</td>
+<td>Spring Boot OTel Starter &#x2F; Go otelhttp 拦截器覆盖 80% 场景</td>
+</tr>
+<tr>
+<td>异步传播</td>
+<td>线程池、消息队列必须手动注入&#x2F;提取上下文</td>
+</tr>
+<tr>
+<td>排障闭环</td>
+<td>指标告警 → 链路定位根因 Span → 日志取证</td>
+</tr>
+</tbody></table>
+<hr>
+<p>可观测性三支柱至此收官：指标维度见 <a href="/2026/09/02/Observability/Prometheus%E4%B8%8EGrafana/" title="第一章：Prometheus 指标监控与 Grafana 可视化">第一章：Prometheus 指标监控与 Grafana 可视化</a>，日志维度见 <a href="/2026/09/02/Observability/ELK%E6%97%A5%E5%BF%97%E6%94%B6%E9%9B%86/" title="第二章：ELK 日志收集与分析">第二章：ELK 日志收集与分析</a>。三者协同使用才能形成”告警 → 定位 → 取证”的闭环。在 K8s 上部署 OTel Collector DaemonSet 与 Jaeger Collector 时，可结合 <a href="/2026/05/01/Cloud/Kubernetes/" title="第二章：Kubernetes 容器编排入门">第二章：Kubernetes 容器编排入门</a>，用 Helm Charts 一键拉起 DaemonSet、Service、ConfigMap，并配合 Sidecar 注入简化应用接入。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Observability/" rel="tag"># Observability</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/09/02/Security/API%E5%AE%89%E5%85%A8%E4%B8%8E%E6%BC%8F%E6%B4%9E%E9%98%B2%E6%8A%A4/" rel="prev" title="第二章：API 安全与漏洞防护">
+                  <i class="fa fa-angle-left"></i> 第二章：API 安全与漏洞防护
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2026/09/02/Observability/Prometheus%E4%B8%8EGrafana/" rel="next" title="第一章：Prometheus 指标监控与 Grafana 可视化">
+                  第一章：Prometheus 指标监控与 Grafana 可视化 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">miracle</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">424k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">23:32</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+<script>
+(function () {
+  function normalizeClipboard(s) {
+    return (s || '').replace(/\u00a0/g, ' ');
+  }
+
+  /** When innerText is empty, treat <br> as newlines (matches Hexo fenced + line_number HTML). */
+  function plainTextFromElement(el) {
+    if (!el) return '';
+    var t = el.innerText;
+    if (t != null && t !== '') return normalizeClipboard(t);
+    var clone = el.cloneNode(true);
+    clone.querySelectorAll('br').forEach(function (br) {
+      br.parentNode.replaceChild(document.createTextNode('\n'), br);
+    });
+    return normalizeClipboard(clone.textContent || '');
+  }
+
+  function extractFromFigure(fig) {
+    if (!fig) return '';
+    var cell = fig.querySelector('td.code') || fig.querySelector('.code');
+    if (cell) return plainTextFromElement(cell);
+    var pre = fig.querySelector('pre');
+    if (pre) return plainTextFromElement(pre);
+    var code = fig.querySelector('code');
+    return code ? plainTextFromElement(code) : '';
+  }
+
+  function extractForCopyBtn(btn) {
+    var fig = btn.closest('figure.highlight');
+    if (fig) return extractFromFigure(fig);
+    var wrap = btn.closest('.code-container');
+    if (wrap) {
+      var innerFig = wrap.querySelector('figure.highlight');
+      if (innerFig) return extractFromFigure(innerFig);
+      var preOnly = wrap.querySelector('pre');
+      if (preOnly) return plainTextFromElement(preOnly);
+    }
+    return '';
+  }
+
+  function setCopyIcon(btn, ok) {
+    var i = btn.querySelector('i');
+    if (i) i.className = ok ? 'fa fa-check-circle fa-fw' : 'fa fa-times-circle fa-fw';
+  }
+
+  function writeClipboard(text, btn) {
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(text).then(
+        function () { setCopyIcon(btn, true); },
+        function () { fallbackCopy(text, btn); }
+      );
+    }
+    fallbackCopy(text, btn);
+    return Promise.resolve();
+  }
+
+  function fallbackCopy(text, btn) {
+    try {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed';
+      ta.style.left = '-9999px';
+      document.body.appendChild(ta);
+      ta.select();
+      var ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      setCopyIcon(btn, ok);
+    } catch (e) {
+      setCopyIcon(btn, false);
+    }
+  }
+
+  document.addEventListener(
+    'click',
+    function (e) {
+      var btn = e.target.closest && e.target.closest('.copy-btn');
+      if (!btn) return;
+      if (!btn.closest('figure.highlight') && !btn.closest('.code-container')) return;
+      e.stopPropagation();
+      e.preventDefault();
+      var text = extractForCopyBtn(btn);
+      writeClipboard(text, btn);
+    },
+    true
+  );
+})();
+</script>
+
+</body>
+</html>

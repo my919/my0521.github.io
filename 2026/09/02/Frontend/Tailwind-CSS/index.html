@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"my919.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="第五章：CSS 现代方案与 Tailwind CSS概念基础 Utility-First 理念：不写抽象语义类名，直接用 flex、pt-4、text-center 这类原子工具类组合出界面；样式即结构、所见即所得，省去命名与上下文切换。 原子化 CSS 优势：CSS 体积随类名集合而非页面数量增长，长期收敛；无 dead CSS、无样式冲突；与 第一章：Vue 3 核心概念与组件开发 的 SFC">
+<meta property="og:type" content="article">
+<meta property="og:title" content="第五章：CSS 现代方案与 Tailwind CSS">
+<meta property="og:url" content="https://my919.github.io/2026/09/02/Frontend/Tailwind-CSS/index.html">
+<meta property="og:site_name" content="my">
+<meta property="og:description" content="第五章：CSS 现代方案与 Tailwind CSS概念基础 Utility-First 理念：不写抽象语义类名，直接用 flex、pt-4、text-center 这类原子工具类组合出界面；样式即结构、所见即所得，省去命名与上下文切换。 原子化 CSS 优势：CSS 体积随类名集合而非页面数量增长，长期收敛；无 dead CSS、无样式冲突；与 第一章：Vue 3 核心概念与组件开发 的 SFC">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-09-02T04:00:00.000Z">
+<meta property="article:modified_time" content="2026-09-02T13:55:52.697Z">
+<meta property="article:author" content="miracle">
+<meta property="article:tag" content="CSS">
+<meta property="article:tag" content="Frontend">
+<meta property="article:tag" content="Tailwind">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://my919.github.io/2026/09/02/Frontend/Tailwind-CSS/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://my919.github.io/2026/09/02/Frontend/Tailwind-CSS/","path":"2026/09/02/Frontend/Tailwind-CSS/","title":"第五章：CSS 现代方案与 Tailwind CSS"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>第五章：CSS 现代方案与 Tailwind CSS | my</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.10.1/mermaid.min.js","integrity":"sha256-BmQmdWDS8X2OTbrwELWK366LV6escyWhHHe0XCTU/Hk="}}</script>
+  <script src="/js/third-party/tags/mermaid.js" defer></script>
+
+
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="my" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">my</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-service"><a href="/service/" rel="section"><i class="fa fa-server fa-fw"></i>服务</a></li><li class="menu-item menu-item-tool"><a href="/tool/" rel="section"><i class="fa fa-wrench fa-fw"></i>工具</a></li><li class="menu-item menu-item-project"><a href="/project/" rel="section"><i class="fa fa-folder-open fa-fw"></i>项目</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%BA%94%E7%AB%A0%EF%BC%9ACSS-%E7%8E%B0%E4%BB%A3%E6%96%B9%E6%A1%88%E4%B8%8E-Tailwind-CSS"><span class="nav-number">1.</span> <span class="nav-text">第五章：CSS 现代方案与 Tailwind CSS</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81Tailwind-CSS-%E5%AE%89%E8%A3%85%E4%B8%8E%E9%85%8D%E7%BD%AE"><span class="nav-number">1.2.</span> <span class="nav-text">一、Tailwind CSS 安装与配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E6%A0%B8%E5%BF%83%E5%B7%A5%E5%85%B7%E7%B1%BB%E9%80%9F%E8%A7%88"><span class="nav-number">1.3.</span> <span class="nav-text">二、核心工具类速览</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E5%93%8D%E5%BA%94%E5%BC%8F%E4%B8%8E%E6%9A%97%E8%89%B2%E6%A8%A1%E5%BC%8F"><span class="nav-number">1.4.</span> <span class="nav-text">三、响应式与暗色模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E7%BB%84%E4%BB%B6%E6%A8%A1%E5%BC%8F%E4%B8%8E-apply"><span class="nav-number">1.5.</span> <span class="nav-text">四、组件模式与 @apply</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E4%B8%8E-Vue-3-%E7%BB%84%E4%BB%B6%E7%BB%93%E5%90%88"><span class="nav-number">1.6.</span> <span class="nav-text">五、与 Vue 3 组件结合</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%B8%8E%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5"><span class="nav-number">1.7.</span> <span class="nav-text">六、性能优化与最佳实践</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E9%81%BF%E5%9D%91"><span class="nav-number">1.8.</span> <span class="nav-text">常见避坑</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.9.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">miracle</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">284</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">44</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">186</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/my919" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;my919" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://gitee.com/my919" title="Gitee → https:&#x2F;&#x2F;gitee.com&#x2F;my919" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>Gitee</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:yeal166@163.com" title="E-Mail → mailto:yeal166@163.com" rel="noopener me external nofollow noreferrer" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://my919.github.io/2026/09/02/Frontend/Tailwind-CSS/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="第五章：CSS 现代方案与 Tailwind CSS | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          第五章：CSS 现代方案与 Tailwind CSS
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2026-09-02 12:00:00 / 修改时间：21:55:52" itemprop="dateCreated datePublished" datetime="2026-09-02T12:00:00+08:00">2026-09-02</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Frontend/" itemprop="url" rel="index"><span itemprop="name">Frontend</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>1.9k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>6 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="第五章：CSS-现代方案与-Tailwind-CSS"><a href="#第五章：CSS-现代方案与-Tailwind-CSS" class="headerlink" title="第五章：CSS 现代方案与 Tailwind CSS"></a>第五章：CSS 现代方案与 Tailwind CSS</h1><h2 id="概念基础"><a href="#概念基础" class="headerlink" title="概念基础"></a>概念基础</h2><ol>
+<li><strong>Utility-First 理念</strong>：不写抽象语义类名，直接用 <code>flex</code>、<code>pt-4</code>、<code>text-center</code> 这类<strong>原子工具类</strong>组合出界面；样式即结构、所见即所得，省去命名与上下文切换。</li>
+<li><strong>原子化 CSS 优势</strong>：CSS 体积随<strong>类名集合</strong>而非页面数量增长，长期收敛；无 dead CSS、无样式冲突；与 <a href="/2026/05/01/Frontend/VUE3/" title="第一章：Vue 3 核心概念与组件开发">第一章：Vue 3 核心概念与组件开发</a> 的 SFC 天然契合。</li>
+<li><strong>JIT 编译</strong>：Tailwind 3+ 默认 <strong>Just-In-Time</strong> 引擎，按 <code>content</code> 扫描到的类名生成 CSS，未用的类零字节产出，开发即生产、无需额外 Purge 配置。</li>
+<li><strong>响应式设计</strong>：<code>sm:/md:/lg:/xl:/2xl:</code> 前缀即断点，<strong>移动优先</strong>从小屏写起；暗色模式用 <code>dark:</code> 变体，与 <code>prefers-color-scheme</code> 对齐。</li>
+<li><strong>组件抽象</strong>：重复的工具类组合用 <code>@layer components</code> + <code>@apply</code> 抽成组件类，或直接抽 Vue 组件；不要在全局写一堆 <code>@apply</code> 把原子化退化为传统 CSS。</li>
+</ol>
+<blockquote>
+<p>本章承接 <a href="/2026/05/01/Frontend/Vite/" title="第二章：Vite 工程化构建与部署">第二章：Vite 工程化构建与部署</a> 的 Vite 构建，并复用 <a href="/2026/05/01/Frontend/VUE3/" title="第一章：Vue 3 核心概念与组件开发">第一章：Vue 3 核心概念与组件开发</a> 的组件能力；样式之外还有性能闭环，见 <a href="/2026/09/02/Frontend/%E5%89%8D%E7%AB%AF%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/" title="第六章：前端性能优化与监控">第六章：前端性能优化与监控</a>。</p>
+</blockquote>
+<hr>
+<h2 id="一、Tailwind-CSS-安装与配置"><a href="#一、Tailwind-CSS-安装与配置" class="headerlink" title="一、Tailwind CSS 安装与配置"></a>一、Tailwind CSS 安装与配置</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">npm i -D tailwindcss @tailwindcss/vite</span><br><span class="line">npx tailwindcss init -p        <span class="comment"># 生成 tailwind.config.ts 与 postcss 配置</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// vite.config.ts —— Vite 官方插件集成</span></span><br><span class="line"><span class="keyword">import</span> &#123; defineConfig &#125; <span class="keyword">from</span> <span class="string">&#x27;vite&#x27;</span></span><br><span class="line"><span class="keyword">import</span> vue <span class="keyword">from</span> <span class="string">&#x27;@vitejs/plugin-vue&#x27;</span></span><br><span class="line"><span class="keyword">import</span> tailwindcss <span class="keyword">from</span> <span class="string">&#x27;@tailwindcss/vite&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="title function_">defineConfig</span>(&#123;</span><br><span class="line">  <span class="attr">plugins</span>: [<span class="title function_">vue</span>(), <span class="title function_">tailwindcss</span>()],</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* src/style.css —— 引入 Tailwind v4 入口 */</span></span><br><span class="line"><span class="keyword">@import</span> <span class="string">&quot;tailwindcss&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* v3 写法对照 */</span></span><br><span class="line"><span class="comment">/* @tailwind base; @tailwind components; @tailwind utilities; */</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// tailwind.config.ts —— 主题与扫描范围</span></span><br><span class="line"><span class="keyword">import</span> <span class="keyword">type</span> &#123; <span class="title class_">Config</span> &#125; <span class="keyword">from</span> <span class="string">&#x27;tailwindcss&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> &#123;</span><br><span class="line">  <span class="attr">content</span>: [</span><br><span class="line">    <span class="string">&#x27;./index.html&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;./src/**/*.&#123;vue,js,ts,jsx,tsx&#125;&#x27;</span>,           <span class="comment">// 必须覆盖所有用类名的文件</span></span><br><span class="line">  ],</span><br><span class="line">  <span class="attr">theme</span>: &#123;</span><br><span class="line">    <span class="attr">extend</span>: &#123;</span><br><span class="line">      <span class="attr">colors</span>: &#123;</span><br><span class="line">        <span class="attr">brand</span>: &#123; <span class="number">50</span>: <span class="string">&#x27;#eff6ff&#x27;</span>, <span class="number">500</span>: <span class="string">&#x27;#3b82f6&#x27;</span>, <span class="number">700</span>: <span class="string">&#x27;#1d4ed8&#x27;</span> &#125;,</span><br><span class="line">      &#125;,</span><br><span class="line">      <span class="attr">spacing</span>: &#123; <span class="string">&#x27;128&#x27;</span>: <span class="string">&#x27;32rem&#x27;</span> &#125;,               <span class="comment">// 扩展非标准间距</span></span><br><span class="line">      <span class="attr">fontFamily</span>: &#123; <span class="attr">sans</span>: [<span class="string">&#x27;Inter&#x27;</span>, <span class="string">&#x27;system-ui&#x27;</span>, <span class="string">&#x27;sans-serif&#x27;</span>] &#125;,</span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">plugins</span>: [],</span><br><span class="line">&#125; <span class="keyword">satisfies</span> <span class="title class_">Config</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>content 配置是体积关键</strong>：扫不到的类不会生成 CSS；漏配会导致生产环境样式缺失。</p>
+<hr>
+<h2 id="二、核心工具类速览"><a href="#二、核心工具类速览" class="headerlink" title="二、核心工具类速览"></a>二、核心工具类速览</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;!-- 布局 Flex --&gt;</span><br><span class="line">  &lt;div class=&quot;flex items-center justify-between gap-4&quot;&gt;</span><br><span class="line">    &lt;span class=&quot;flex-1&quot;&gt;左&lt;/span&gt;</span><br><span class="line">    &lt;span&gt;右&lt;/span&gt;</span><br><span class="line">  &lt;/div&gt;</span><br><span class="line"></span><br><span class="line">  &lt;!-- 网格 Grid --&gt;</span><br><span class="line">  &lt;div class=&quot;grid grid-cols-1 md:grid-cols-3 gap-6&quot;&gt;</span><br><span class="line">    &lt;div class=&quot;col-span-2&quot;&gt;宽&lt;/div&gt;</span><br><span class="line">    &lt;div&gt;窄&lt;/div&gt;</span><br><span class="line">  &lt;/div&gt;</span><br><span class="line"></span><br><span class="line">  &lt;!-- 间距 + 排版 + 颜色 + 边框 --&gt;</span><br><span class="line">  &lt;p class=&quot;px-4 py-2 text-lg font-medium text-slate-700 rounded-lg border border-slate-200 shadow-sm&quot;&gt;</span><br><span class="line">    Hello Tailwind</span><br><span class="line">  &lt;/p&gt;</span><br><span class="line">&lt;/template&gt;</span><br></pre></td></tr></table></figure>
+
+<p><strong>常用类速查表</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>类别</th>
+<th>常用类</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>布局</td>
+<td><code>flex grid block inline-flex</code></td>
+<td>容器模式</td>
+</tr>
+<tr>
+<td>对齐</td>
+<td><code>items-center justify-between</code></td>
+<td>交叉&#x2F;主轴对齐</td>
+</tr>
+<tr>
+<td>间距</td>
+<td><code>p-4 px-3 py-2 m-2 gap-4</code></td>
+<td><code>p</code>内边距 <code>m</code>外边距</td>
+</tr>
+<tr>
+<td>排版</td>
+<td><code>text-sm text-lg font-bold leading-6</code></td>
+<td>字号、字重、行高</td>
+</tr>
+<tr>
+<td>颜色</td>
+<td><code>text-slate-700 bg-blue-500</code></td>
+<td>文字&#x2F;背景色</td>
+</tr>
+<tr>
+<td>边框</td>
+<td><code>border border-slate-200 rounded-lg</code></td>
+<td>边框圆角</td>
+</tr>
+<tr>
+<td>阴影</td>
+<td><code>shadow-sm shadow-md shadow-lg</code></td>
+<td>阴影层级</td>
+</tr>
+<tr>
+<td>宽高</td>
+<td><code>w-full h-12 max-w-md</code></td>
+<td>尺寸控制</td>
+</tr>
+<tr>
+<td>定位</td>
+<td><code>absolute relative top-0 z-10</code></td>
+<td>定位与层叠</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="三、响应式与暗色模式"><a href="#三、响应式与暗色模式" class="headerlink" title="三、响应式与暗色模式"></a>三、响应式与暗色模式</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;!-- 移动优先：默认单列，md 起三列 --&gt;</span><br><span class="line">  &lt;div class=&quot;grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4&quot;&gt;</span><br><span class="line">    &lt;div class=&quot;p-4 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100&quot;&gt;</span><br><span class="line">      自适应卡片</span><br><span class="line">    &lt;/div&gt;</span><br><span class="line">  &lt;/div&gt;</span><br><span class="line">&lt;/template&gt;</span><br></pre></td></tr></table></figure>
+
+<p><strong>断点约定</strong>（默认 <code>min-width</code>）：</p>
+<table>
+<thead>
+<tr>
+<th>前缀</th>
+<th>断点</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>(无)</td>
+<td>0</td>
+<td>移动端默认</td>
+</tr>
+<tr>
+<td><code>sm:</code></td>
+<td>640px</td>
+<td>大手机&#x2F;小平板</td>
+</tr>
+<tr>
+<td><code>md:</code></td>
+<td>768px</td>
+<td>平板</td>
+</tr>
+<tr>
+<td><code>lg:</code></td>
+<td>1024px</td>
+<td>小桌面</td>
+</tr>
+<tr>
+<td><code>xl:</code></td>
+<td>1280px</td>
+<td>桌面</td>
+</tr>
+<tr>
+<td><code>2xl:</code></td>
+<td>1536px</td>
+<td>大屏</td>
+</tr>
+</tbody></table>
+<p><strong>暗色模式切换</strong>：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// tailwind.config.ts</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> &#123;</span><br><span class="line">  <span class="attr">darkMode</span>: <span class="string">&#x27;class&#x27;</span>,          <span class="comment">// 用 .dark 类切换，而非媒体查询</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// stores/theme.ts —— 配合 Pinia 切换主题</span></span><br><span class="line"><span class="keyword">import</span> &#123; ref &#125; <span class="keyword">from</span> <span class="string">&#x27;vue&#x27;</span></span><br><span class="line"><span class="keyword">const</span> dark = <span class="title function_">ref</span>(<span class="literal">false</span>)</span><br><span class="line"><span class="keyword">export</span> <span class="keyword">function</span> <span class="title function_">useTheme</span>(<span class="params"></span>) &#123;</span><br><span class="line">  <span class="keyword">function</span> <span class="title function_">toggle</span>(<span class="params"></span>) &#123;</span><br><span class="line">    dark.<span class="property">value</span> = !dark.<span class="property">value</span></span><br><span class="line">    <span class="variable language_">document</span>.<span class="property">documentElement</span>.<span class="property">classList</span>.<span class="title function_">toggle</span>(<span class="string">&#x27;dark&#x27;</span>, dark.<span class="property">value</span>)</span><br><span class="line">    <span class="variable language_">localStorage</span>.<span class="title function_">setItem</span>(<span class="string">&#x27;theme&#x27;</span>, dark.<span class="property">value</span> ? <span class="string">&#x27;dark&#x27;</span> : <span class="string">&#x27;light&#x27;</span>)</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> &#123; dark, toggle &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>容器查询 vs 媒体查询</strong>：Tailwind v3.2+ 支持 <code>@container</code>，<code>@md:</code> 前缀基于<strong>父容器宽度</strong>而非视口，组件化场景更精准（v4 已原生内置）。</p>
+<hr>
+<h2 id="四、组件模式与-apply"><a href="#四、组件模式与-apply" class="headerlink" title="四、组件模式与 @apply"></a>四、组件模式与 @apply</h2><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* src/style.css —— 用 @layer components 抽组件类 */</span></span><br><span class="line"><span class="keyword">@layer</span> components &#123;</span><br><span class="line">  <span class="selector-class">.btn</span> &#123;</span><br><span class="line">    <span class="keyword">@apply</span> inline-flex items-center px-<span class="number">4</span> py-<span class="number">2</span> rounded-lg font-medium transition;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="selector-class">.btn-primary</span> &#123; <span class="keyword">@apply</span> btn bg-brand-<span class="number">500</span> text-white <span class="attribute">hover</span>:bg-brand-<span class="number">700</span>; &#125;</span><br><span class="line">  <span class="selector-class">.btn-ghost</span>   &#123; <span class="keyword">@apply</span> btn bg-transparent text-slate-<span class="number">700</span> <span class="attribute">hover</span>:bg-slate-<span class="number">100</span>; &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;button class=&quot;btn-primary&quot;&gt;保存&lt;/button&gt;</span><br><span class="line">  &lt;button class=&quot;btn-ghost&quot;&gt;取消&lt;/button&gt;</span><br><span class="line">&lt;/template&gt;</span><br></pre></td></tr></table></figure>
+
+<p><strong>Plugin 开发</strong> —— 复用团队设计 token：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// plugins/form.ts —— 自定义工具类</span></span><br><span class="line"><span class="keyword">import</span> plugin <span class="keyword">from</span> <span class="string">&#x27;tailwindcss/plugin&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="title function_">plugin</span>(<span class="keyword">function</span> (<span class="params">&#123; addComponents, theme &#125;</span>) &#123;</span><br><span class="line">  <span class="title function_">addComponents</span>(&#123;</span><br><span class="line">    <span class="string">&#x27;.form-input&#x27;</span>: &#123;</span><br><span class="line">      <span class="string">&#x27;@apply w-full px-3 py-2 rounded border border-slate-300 focus:border-brand-500&#x27;</span>: &#123;&#125;,</span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p><strong>variants 层级</strong>：<code>base</code> → <code>components</code> → <code>utilities</code>，后写的覆盖前者；<code>@apply</code> 不要滥用，组件抽 Vue SFC 比全局类更可维护。</p>
+<hr>
+<h2 id="五、与-Vue-3-组件结合"><a href="#五、与-Vue-3-组件结合" class="headerlink" title="五、与 Vue 3 组件结合"></a>五、与 Vue 3 组件结合</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&lt;!-- components/Card.vue —— Scoped 与 Tailwind 共存 --&gt;</span><br><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div class=&quot;rounded-lg border p-4 hover:shadow-md transition&quot;&gt;</span><br><span class="line">    &lt;h3 class=&quot;text-lg font-semibold&quot;&gt;&#123;&#123; title &#125;&#125;&lt;/h3&gt;</span><br><span class="line">    &lt;p class=&quot;mt-1 text-sm text-slate-500&quot;&gt;&lt;slot /&gt;&lt;/p&gt;</span><br><span class="line">  &lt;/div&gt;</span><br><span class="line">&lt;/template&gt;</span><br><span class="line"></span><br><span class="line">&lt;style scoped&gt;</span><br><span class="line">/* Scoped 仍可用，处理 Tailwind 表达不了的复杂选择器 */</span><br><span class="line">.card-deep :deep(.inner) &#123; transform: rotate(0deg); &#125;</span><br><span class="line">&lt;/style&gt;</span><br></pre></td></tr></table></figure>
+
+<p><strong>条件类名</strong> —— <code>class</code> 绑定与 Tailwind 配合：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&lt;script setup lang=&quot;ts&quot;&gt;</span><br><span class="line">import &#123; computed &#125; from &#x27;vue&#x27;</span><br><span class="line">const props = defineProps&lt;&#123; active: boolean &#125;&gt;()</span><br><span class="line">const cls = computed(() =&gt; [</span><br><span class="line">  &#x27;px-4 py-2 rounded&#x27;,                            // 基础类</span><br><span class="line">  props.active ? &#x27;bg-brand-500 text-white&#x27; : &#x27;bg-slate-100 text-slate-700&#x27;,</span><br><span class="line">])</span><br><span class="line">&lt;/script&gt;</span><br><span class="line"></span><br><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;button :class=&quot;cls&quot;&gt;切换&lt;/button&gt;</span><br><span class="line">&lt;/template&gt;</span><br></pre></td></tr></table></figure>
+
+<p><strong>设计模式建议</strong>：状态相关类名抽 <code>computed</code> 数组，避免模板里堆三目表达式；复杂条件用 <code>clsx</code> &#x2F; <code>tailwind-merge</code> 合并去重。</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 推荐 twMerge 处理冲突类（同一属性后者覆盖前者）</span></span><br><span class="line"><span class="keyword">import</span> &#123; twMerge &#125; <span class="keyword">from</span> <span class="string">&#x27;tailwind-merge&#x27;</span></span><br><span class="line"><span class="keyword">const</span> final = <span class="title function_">twMerge</span>(<span class="string">&#x27;px-2 py-2&#x27;</span>, <span class="string">&#x27;px-4&#x27;</span>)        <span class="comment">// → &#x27;px-4 py-2&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="六、性能优化与最佳实践"><a href="#六、性能优化与最佳实践" class="headerlink" title="六、性能优化与最佳实践"></a>六、性能优化与最佳实践</h2><p><strong>Purge &#x2F; 体积控制</strong>：</p>
+<ul>
+<li>JIT 模式下只生成<strong>被使用的类</strong>，<code>content</code> 覆盖全部源码即可，无需手动 Purge。</li>
+<li>动态类名要写<strong>完整字面量</strong>：<code>class=&quot;bg-red-500&quot;</code> ✅，<code>class=&quot;bg-$&#123;color&#125;-500&quot;</code> ❌（扫描不到）。</li>
+</ul>
+<p><strong>tree-shaking 与构建</strong>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">npm run build     <span class="comment"># Vite + Tailwind 产物默认压缩，仅含用到的类</span></span><br><span class="line">npx tailwindcss --content <span class="string">&#x27;./dist/**/*.html&#x27;</span> -o dist/tw.min.css  <span class="comment"># 纯静态站可后处理</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>CDN vs 本地构建</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>方案</th>
+<th>优点</th>
+<th>缺点</th>
+<th>场景</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>CDN play</td>
+<td>零配置、即用</td>
+<td>体积大、不能定制主题</td>
+<td>原型&#x2F;Demo</td>
+</tr>
+<tr>
+<td>本地构建</td>
+<td>体积小、可定制、JIT</td>
+<td>需配 Vite</td>
+<td>生产项目</td>
+</tr>
+</tbody></table>
+<p><strong>与 Sass&#x2F;Less 共存</strong>：Tailwind 不排斥预处理器，复杂逻辑用 Sass 变量&#x2F;mixin，原子样式用 Tailwind；但<strong>避免双轨重复</strong>，能 <code>@apply</code> 就别再写一遍 Sass。</p>
+<hr>
+<h2 id="常见避坑"><a href="#常见避坑" class="headerlink" title="常见避坑"></a>常见避坑</h2><table>
+<thead>
+<tr>
+<th>坑</th>
+<th>现象</th>
+<th>正确做法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>动态拼接类名</td>
+<td>生产环境样式缺失</td>
+<td>写完整字面量，或用对象映射常量类</td>
+</tr>
+<tr>
+<td>content 漏配</td>
+<td>某些组件样式消失</td>
+<td>覆盖 <code>index.html</code> + 全部 <code>vue/js/ts</code> 源</td>
+</tr>
+<tr>
+<td>滥用 @apply</td>
+<td>退化为传统 CSS、难维护</td>
+<td>优先抽 Vue 组件，@apply 只做少量语义类</td>
+</tr>
+<tr>
+<td>dark: 不生效</td>
+<td>切换无效</td>
+<td><code>darkMode:&#39;class&#39;</code> + 根节点加 <code>.dark</code></td>
+</tr>
+<tr>
+<td>断点写反</td>
+<td>桌面样式覆盖移动</td>
+<td>移动优先：默认小屏，<code>md:</code> 加宽屏</td>
+</tr>
+<tr>
+<td>主题色用死值</td>
+<td>改不动、不响应暗色</td>
+<td>用 <code>theme.extend.colors</code> 自定义 token</td>
+</tr>
+<tr>
+<td>与 Scoped 冲突</td>
+<td>Tailwind 类被 scoped hash 干扰</td>
+<td>Tailwind 类放根元素，scoped 处理深层</td>
+</tr>
+<tr>
+<td>CDN 上生产</td>
+<td>体积 3MB+、无定制</td>
+<td>生产用本地构建 + JIT</td>
+</tr>
+<tr>
+<td>升级 v3→v4 配置失效</td>
+<td>入口&#x2F;插件写法变了</td>
+<td>v4 用 <code>@import &quot;tailwindcss&quot;</code> + vite 插件</td>
+</tr>
+<tr>
+<td>重复类名覆盖</td>
+<td>padding 被后者吃掉</td>
+<td>用 <code>tailwind-merge</code> 合并</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="本章小结"><a href="#本章小结" class="headerlink" title="本章小结"></a>本章小结</h2><table>
+<thead>
+<tr>
+<th>要点</th>
+<th>结论</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>理念</td>
+<td>Utility-First：原子类组合，所见即所得</td>
+</tr>
+<tr>
+<td>编译</td>
+<td>JIT 按需生成，未用类零产出，无需手动 Purge</td>
+</tr>
+<tr>
+<td>响应式</td>
+<td>移动优先 + <code>sm/md/lg/xl</code> 断点；<code>dark:</code> 暗色模式</td>
+</tr>
+<tr>
+<td>组件</td>
+<td><code>@layer components</code> + <code>@apply</code> 抽语义类，复杂抽 SFC</td>
+</tr>
+<tr>
+<td>集成</td>
+<td>Vite 插件一步到位；与 Scoped 共存不互斥</td>
+</tr>
+<tr>
+<td>性能</td>
+<td>本地构建最小化；动态类名写完整字面量</td>
+</tr>
+</tbody></table>
+<hr>
+<p>样式方案至此完结：基于 <a href="/2026/05/01/Frontend/Vite/" title="第二章：Vite 工程化构建与部署">第二章：Vite 工程化构建与部署</a> 的 Vite 构建，配合 <a href="/2026/05/01/Frontend/VUE3/" title="第一章：Vue 3 核心概念与组件开发">第一章：Vue 3 核心概念与组件开发</a> 的组件能力落地界面。状态管理见 <a href="/2026/09/02/Frontend/Pinia%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86/" title="第四章：Pinia 状态管理实战">第四章：Pinia 状态管理实战</a>，性能收口见 <a href="/2026/09/02/Frontend/%E5%89%8D%E7%AB%AF%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/" title="第六章：前端性能优化与监控">第六章：前端性能优化与监控</a>。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Frontend/" rel="tag"># Frontend</a>
+              <a href="/tags/CSS/" rel="tag"># CSS</a>
+              <a href="/tags/Tailwind/" rel="tag"># Tailwind</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/09/02/Frontend/%E5%89%8D%E7%AB%AF%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/" rel="prev" title="第六章：前端性能优化与监控">
+                  <i class="fa fa-angle-left"></i> 第六章：前端性能优化与监控
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2026/09/02/Frontend/Pinia%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86/" rel="next" title="第四章：Pinia 状态管理实战">
+                  第四章：Pinia 状态管理实战 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">miracle</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">424k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">23:32</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+<script>
+(function () {
+  function normalizeClipboard(s) {
+    return (s || '').replace(/\u00a0/g, ' ');
+  }
+
+  /** When innerText is empty, treat <br> as newlines (matches Hexo fenced + line_number HTML). */
+  function plainTextFromElement(el) {
+    if (!el) return '';
+    var t = el.innerText;
+    if (t != null && t !== '') return normalizeClipboard(t);
+    var clone = el.cloneNode(true);
+    clone.querySelectorAll('br').forEach(function (br) {
+      br.parentNode.replaceChild(document.createTextNode('\n'), br);
+    });
+    return normalizeClipboard(clone.textContent || '');
+  }
+
+  function extractFromFigure(fig) {
+    if (!fig) return '';
+    var cell = fig.querySelector('td.code') || fig.querySelector('.code');
+    if (cell) return plainTextFromElement(cell);
+    var pre = fig.querySelector('pre');
+    if (pre) return plainTextFromElement(pre);
+    var code = fig.querySelector('code');
+    return code ? plainTextFromElement(code) : '';
+  }
+
+  function extractForCopyBtn(btn) {
+    var fig = btn.closest('figure.highlight');
+    if (fig) return extractFromFigure(fig);
+    var wrap = btn.closest('.code-container');
+    if (wrap) {
+      var innerFig = wrap.querySelector('figure.highlight');
+      if (innerFig) return extractFromFigure(innerFig);
+      var preOnly = wrap.querySelector('pre');
+      if (preOnly) return plainTextFromElement(preOnly);
+    }
+    return '';
+  }
+
+  function setCopyIcon(btn, ok) {
+    var i = btn.querySelector('i');
+    if (i) i.className = ok ? 'fa fa-check-circle fa-fw' : 'fa fa-times-circle fa-fw';
+  }
+
+  function writeClipboard(text, btn) {
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(text).then(
+        function () { setCopyIcon(btn, true); },
+        function () { fallbackCopy(text, btn); }
+      );
+    }
+    fallbackCopy(text, btn);
+    return Promise.resolve();
+  }
+
+  function fallbackCopy(text, btn) {
+    try {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed';
+      ta.style.left = '-9999px';
+      document.body.appendChild(ta);
+      ta.select();
+      var ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      setCopyIcon(btn, ok);
+    } catch (e) {
+      setCopyIcon(btn, false);
+    }
+  }
+
+  document.addEventListener(
+    'click',
+    function (e) {
+      var btn = e.target.closest && e.target.closest('.copy-btn');
+      if (!btn) return;
+      if (!btn.closest('figure.highlight') && !btn.closest('.code-container')) return;
+      e.stopPropagation();
+      e.preventDefault();
+      var text = extractForCopyBtn(btn);
+      writeClipboard(text, btn);
+    },
+    true
+  );
+})();
+</script>
+
+</body>
+</html>

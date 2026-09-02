@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"my919.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"stackoverflow-dark","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="第四章：Rust 工程实践与 Web 开发概念基础 Cargo 包管理：官方工具集构建&#x2F;测试&#x2F;文档&#x2F;依赖于一体，配合 crates.io 社区仓库，cargo add&#x2F;build&#x2F;test&#x2F;fmt&#x2F;clippy 一站式工程化。 零成本抽象：泛型单态化、迭代器、trait 等高层抽象编译后不引入运行时开销，安全与性能兼得。 生态选">
+<meta property="og:type" content="article">
+<meta property="og:title" content="第四章：Rust 工程实践与 Web 开发">
+<meta property="og:url" content="https://my919.github.io/2026/09/02/Rust/Rust%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5%E4%B8%8EWeb%E5%BC%80%E5%8F%91/index.html">
+<meta property="og:site_name" content="my">
+<meta property="og:description" content="第四章：Rust 工程实践与 Web 开发概念基础 Cargo 包管理：官方工具集构建&#x2F;测试&#x2F;文档&#x2F;依赖于一体，配合 crates.io 社区仓库，cargo add&#x2F;build&#x2F;test&#x2F;fmt&#x2F;clippy 一站式工程化。 零成本抽象：泛型单态化、迭代器、trait 等高层抽象编译后不引入运行时开销，安全与性能兼得。 生态选">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-09-02T04:00:00.000Z">
+<meta property="article:modified_time" content="2026-09-02T14:05:03.726Z">
+<meta property="article:author" content="miracle">
+<meta property="article:tag" content="Rust">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://my919.github.io/2026/09/02/Rust/Rust%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5%E4%B8%8EWeb%E5%BC%80%E5%8F%91/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://my919.github.io/2026/09/02/Rust/Rust%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5%E4%B8%8EWeb%E5%BC%80%E5%8F%91/","path":"2026/09/02/Rust/Rust工程实践与Web开发/","title":"第四章：Rust 工程实践与 Web 开发"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>第四章：Rust 工程实践与 Web 开发 | my</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.10.1/mermaid.min.js","integrity":"sha256-BmQmdWDS8X2OTbrwELWK366LV6escyWhHHe0XCTU/Hk="}}</script>
+  <script src="/js/third-party/tags/mermaid.js" defer></script>
+
+
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="my" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">my</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-service"><a href="/service/" rel="section"><i class="fa fa-server fa-fw"></i>服务</a></li><li class="menu-item menu-item-tool"><a href="/tool/" rel="section"><i class="fa fa-wrench fa-fw"></i>工具</a></li><li class="menu-item menu-item-project"><a href="/project/" rel="section"><i class="fa fa-folder-open fa-fw"></i>项目</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%9ARust-%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5%E4%B8%8E-Web-%E5%BC%80%E5%8F%91"><span class="nav-number">1.</span> <span class="nav-text">第四章：Rust 工程实践与 Web 开发</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E5%9F%BA%E7%A1%80"><span class="nav-number">1.1.</span> <span class="nav-text">概念基础</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E6%A8%A1%E5%9D%97%E7%B3%BB%E7%BB%9F%E4%B8%8E-Cargo"><span class="nav-number">1.2.</span> <span class="nav-text">一、模块系统与 Cargo</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E6%A8%A1%E5%9D%97%E4%B8%8E%E5%8F%AF%E8%A7%81%E6%80%A7"><span class="nav-number">1.2.1.</span> <span class="nav-text">1. 模块与可见性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-Cargo-%E5%8C%85%E7%BB%93%E6%9E%84"><span class="nav-number">1.2.2.</span> <span class="nav-text">2. Cargo 包结构</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E5%B8%B8%E7%94%A8%E6%A0%87%E5%87%86%E5%BA%93"><span class="nav-number">1.3.</span> <span class="nav-text">二、常用标准库</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E6%96%87%E4%BB%B6%E4%B8%8E-IO"><span class="nav-number">1.3.1.</span> <span class="nav-text">1. 文件与 IO</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E8%B7%AF%E5%BE%84%E3%80%81%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F%E3%80%81%E8%BF%9B%E7%A8%8B"><span class="nav-number">1.3.2.</span> <span class="nav-text">2. 路径、环境变量、进程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E6%97%B6%E9%97%B4%E4%B8%8E%E6%A0%BC%E5%BC%8F%E5%8C%96"><span class="nav-number">1.3.3.</span> <span class="nav-text">3. 时间与格式化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E6%8E%92%E5%BA%8F%E4%B8%8E%E8%BF%90%E7%AE%97%E7%AC%A6%E9%87%8D%E8%BD%BD"><span class="nav-number">1.3.4.</span> <span class="nav-text">4. 排序与运算符重载</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E7%94%9F%E6%80%81%E4%B8%8E%E5%9C%BA%E6%99%AF"><span class="nav-number">1.4.</span> <span class="nav-text">三、生态与场景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81axum-Web-%E6%A1%86%E6%9E%B6%E5%AE%9E%E6%88%98"><span class="nav-number">1.5.</span> <span class="nav-text">四、axum Web 框架实战</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81tokio-%E5%BC%82%E6%AD%A5%E8%BF%90%E8%A1%8C%E6%97%B6"><span class="nav-number">1.6.</span> <span class="nav-text">五、tokio 异步运行时</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AD%E3%80%81serde-%E4%B8%8E-sqlx"><span class="nav-number">1.7.</span> <span class="nav-text">六、serde 与 sqlx</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%83%E3%80%81%E6%B5%8B%E8%AF%95"><span class="nav-number">1.8.</span> <span class="nav-text">七、测试</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AB%E3%80%81%E9%83%A8%E7%BD%B2"><span class="nav-number">1.9.</span> <span class="nav-text">八、部署</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E9%81%BF%E5%9D%91"><span class="nav-number">1.10.</span> <span class="nav-text">常见避坑</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">1.11.</span> <span class="nav-text">本章小结</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">miracle</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">284</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">44</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">186</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/my919" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;my919" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://gitee.com/my919" title="Gitee → https:&#x2F;&#x2F;gitee.com&#x2F;my919" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>Gitee</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:yeal166@163.com" title="E-Mail → mailto:yeal166@163.com" rel="noopener me external nofollow noreferrer" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://my919.github.io/2026/09/02/Rust/Rust%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5%E4%B8%8EWeb%E5%BC%80%E5%8F%91/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="miracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="my">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="第四章：Rust 工程实践与 Web 开发 | my">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          第四章：Rust 工程实践与 Web 开发
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2026-09-02 12:00:00 / 修改时间：22:05:03" itemprop="dateCreated datePublished" datetime="2026-09-02T12:00:00+08:00">2026-09-02</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Rust/" itemprop="url" rel="index"><span itemprop="name">Rust</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>2k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>7 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="第四章：Rust-工程实践与-Web-开发"><a href="#第四章：Rust-工程实践与-Web-开发" class="headerlink" title="第四章：Rust 工程实践与 Web 开发"></a>第四章：Rust 工程实践与 Web 开发</h1><h2 id="概念基础"><a href="#概念基础" class="headerlink" title="概念基础"></a>概念基础</h2><ol>
+<li><strong>Cargo 包管理</strong>：官方工具集<strong>构建&#x2F;测试&#x2F;文档&#x2F;依赖</strong>于一体，配合 <strong>crates.io</strong> 社区仓库，<code>cargo add</code>&#x2F;<code>build</code>&#x2F;<code>test</code>&#x2F;<code>fmt</code>&#x2F;<code>clippy</code> 一站式工程化。</li>
+<li><strong>零成本抽象</strong>：泛型单态化、迭代器、trait 等高层抽象编译后不引入运行时开销，<strong>安全</strong>与<strong>性能</strong>兼得。</li>
+<li><strong>生态选择</strong>：CLI（clap）、Web（axum&#x2F;actix-web）、序列化（serde）、异步运行时（tokio）、数据并行（rayon）、Wasm（wasm-pack）均有成熟方案。</li>
+<li><strong>Web 框架选型</strong>：<strong>axum</strong> 与 tokio&#x2F;tower&#x2F;serde 生态整合最好；<strong>actix-web</strong> 性能强、actor 模型；<strong>poem</strong>&#x2F;<strong>salvo</strong> 各有特色。</li>
+<li><strong>FFI 互操作</strong>：通过 <strong><code>extern &quot;C&quot;</code></strong> 与 C&#x2F;C++ 混编，<strong>bindgen</strong> 自动生成绑定，<strong>cbindgen</strong> 反向生成 C 头文件。</li>
+</ol>
+<blockquote>
+<p>本章聚焦工程实践。所有权与基础语法见 <a href="/2026/09/02/Rust/Rust/" title="第一章：Rust 入门与所有权系统">第一章：Rust 入门与所有权系统</a>；类型系统见 <a href="/2026/09/02/Rust/Rust%E7%B1%BB%E5%9E%8B%E7%B3%BB%E7%BB%9F%E4%B8%8Etrait/" title="第二章：Rust 类型系统与 trait">第二章：Rust 类型系统与 trait</a>；并发与错误处理见 <a href="/2026/09/02/Rust/Rust%E5%B9%B6%E5%8F%91%E4%B8%8E%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86/" title="第三章：Rust 并发与错误处理">第三章：Rust 并发与错误处理</a>。</p>
+</blockquote>
+<hr>
+<h2 id="一、模块系统与-Cargo"><a href="#一、模块系统与-Cargo" class="headerlink" title="一、模块系统与 Cargo"></a>一、模块系统与 Cargo</h2><h3 id="1-模块与可见性"><a href="#1-模块与可见性" class="headerlink" title="1. 模块与可见性"></a>1. 模块与可见性</h3><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">mod</span> network &#123;</span><br><span class="line">    <span class="keyword">pub</span> <span class="keyword">mod</span> http &#123;</span><br><span class="line">        <span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">fetch</span>() <span class="punctuation">-&gt;</span> <span class="type">String</span> &#123; <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;200 OK&quot;</span>) &#125;</span><br><span class="line">        <span class="keyword">fn</span> <span class="title function_">internal</span>() &#123;&#125; <span class="comment">// 默认私有</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">use</span> network::http::fetch <span class="keyword">as</span> req; <span class="comment">// use 引入路径，as 重命名，pub use 再导出</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123; <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>, <span class="title function_ invoke__">req</span>()); &#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong><code>pub</code></strong> 控制可见性；结构体字段需单独标 <code>pub</code> 才对外可见。</li>
+<li><strong><code>pub(crate)</code></strong> 仅对当前 crate 可见，常用于内部共享。</li>
+<li>模块可写在单文件里（<code>mod x &#123; ... &#125;</code>），也可放 <code>x.rs</code> 或 <code>x/mod.rs</code> 文件中。</li>
+</ul>
+<h3 id="2-Cargo-包结构"><a href="#2-Cargo-包结构" class="headerlink" title="2. Cargo 包结构"></a>2. Cargo 包结构</h3><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">my_app/</span><br><span class="line">├── Cargo.toml          # 清单：name/version/dependencies</span><br><span class="line">├── src/</span><br><span class="line">│   ├── main.rs         # 二进制入口（库 + 二进制可同时存在）</span><br><span class="line">│   ├── lib.rs          # 库入口</span><br><span class="line">│   └── bin/            # 多个二进制：每个文件一个可执行</span><br><span class="line">│       └── tool.rs</span><br><span class="line">└── tests/              # 集成测试</span><br><span class="line">    └── integration.rs</span><br></pre></td></tr></table></figure>
+
+<p>常用命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">cargo new my_app            <span class="comment"># 新建二进制项目（--lib 建库）</span></span><br><span class="line">cargo build                 <span class="comment"># 编译（--release 优化）</span></span><br><span class="line">cargo run                   <span class="comment"># 编译并运行</span></span><br><span class="line">cargo <span class="built_in">test</span>                  <span class="comment"># 跑测试</span></span><br><span class="line">cargo <span class="built_in">fmt</span>                   <span class="comment"># 格式化</span></span><br><span class="line">cargo clippy                <span class="comment"># 静态检查（lint）</span></span><br><span class="line">cargo doc --open            <span class="comment"># 生成文档并打开</span></span><br><span class="line">cargo add serde             <span class="comment"># 添加依赖（写入 Cargo.toml）</span></span><br></pre></td></tr></table></figure>
+
+<p>依赖写在 <strong><code>Cargo.toml</code></strong>：</p>
+<figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[package]</span></span><br><span class="line"><span class="attr">name</span> = <span class="string">&quot;my_app&quot;</span></span><br><span class="line"><span class="attr">version</span> = <span class="string">&quot;0.1.0&quot;</span></span><br><span class="line"><span class="attr">edition</span> = <span class="string">&quot;2021&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="section">[dependencies]</span></span><br><span class="line"><span class="attr">serde</span> = &#123; version = <span class="string">&quot;1.0&quot;</span>, features = [<span class="string">&quot;derive&quot;</span>] &#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="二、常用标准库"><a href="#二、常用标准库" class="headerlink" title="二、常用标准库"></a>二、常用标准库</h2><h3 id="1-文件与-IO"><a href="#1-文件与-IO" class="headerlink" title="1. 文件与 IO"></a>1. 文件与 IO</h3><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> std::fs;</span><br><span class="line"><span class="keyword">use</span> std::io::&#123;<span class="keyword">self</span>, Write, BufRead, BufReader&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() <span class="punctuation">-&gt;</span> io::<span class="type">Result</span>&lt;()&gt; &#123;</span><br><span class="line">    fs::<span class="title function_ invoke__">write</span>(<span class="string">&quot;hello.txt&quot;</span>, <span class="string">&quot;第一行\n&quot;</span>)?;</span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">f</span> = fs::OpenOptions::<span class="title function_ invoke__">new</span>().<span class="title function_ invoke__">append</span>(<span class="literal">true</span>).<span class="title function_ invoke__">open</span>(<span class="string">&quot;hello.txt&quot;</span>)?;</span><br><span class="line">    <span class="built_in">writeln!</span>(f, <span class="string">&quot;第二行&quot;</span>)?;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">s</span> = fs::<span class="title function_ invoke__">read_to_string</span>(<span class="string">&quot;hello.txt&quot;</span>)?; <span class="comment">// 一次读</span></span><br><span class="line">    <span class="comment">// 按行流式读（适合大文件）</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">reader</span> = BufReader::<span class="title function_ invoke__">new</span>(fs::File::<span class="title function_ invoke__">open</span>(<span class="string">&quot;hello.txt&quot;</span>)?);</span><br><span class="line">    <span class="keyword">for</span> <span class="variable">line</span> <span class="keyword">in</span> reader.<span class="title function_ invoke__">lines</span>() &#123; <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>, line?); &#125;</span><br><span class="line">    <span class="title function_ invoke__">Ok</span>(())</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-路径、环境变量、进程"><a href="#2-路径、环境变量、进程" class="headerlink" title="2. 路径、环境变量、进程"></a>2. 路径、环境变量、进程</h3><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> std::&#123;env, path::PathBuf, process::Command&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">p</span>: PathBuf = [<span class="string">&quot;home&quot;</span>, <span class="string">&quot;user&quot;</span>, <span class="string">&quot;file.txt&quot;</span>].<span class="title function_ invoke__">iter</span>().<span class="title function_ invoke__">collect</span>();</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>, p.<span class="title function_ invoke__">display</span>());</span><br><span class="line">    env::<span class="title function_ invoke__">set_var</span>(<span class="string">&quot;MY_VAR&quot;</span>, <span class="string">&quot;42&quot;</span>);</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">args</span>: <span class="type">Vec</span>&lt;<span class="type">String</span>&gt; = env::<span class="title function_ invoke__">args</span>().<span class="title function_ invoke__">collect</span>();</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">out</span> = Command::<span class="title function_ invoke__">new</span>(<span class="string">&quot;echo&quot;</span>).<span class="title function_ invoke__">arg</span>(<span class="string">&quot;hi&quot;</span>).<span class="title function_ invoke__">output</span>().<span class="title function_ invoke__">unwrap</span>();</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>, <span class="type">String</span>::<span class="title function_ invoke__">from_utf8_lossy</span>(&amp;out.stdout));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-时间与格式化"><a href="#3-时间与格式化" class="headerlink" title="3. 时间与格式化"></a>3. 时间与格式化</h3><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> std::time::&#123;Duration, Instant&#125;;</span><br><span class="line"><span class="keyword">use</span> std::thread;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">start</span> = Instant::<span class="title function_ invoke__">now</span>();           <span class="comment">// 计时</span></span><br><span class="line">    thread::<span class="title function_ invoke__">sleep</span>(Duration::<span class="title function_ invoke__">from_millis</span>(<span class="number">50</span>));</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;耗时 &#123;:?&#125;&quot;</span>, start.<span class="title function_ invoke__">elapsed</span>());</span><br><span class="line"></span><br><span class="line">    <span class="meta">#[derive(Debug)]</span></span><br><span class="line">    <span class="keyword">struct</span> <span class="title class_">Point</span> &#123; x: <span class="type">i32</span>, y: <span class="type">i32</span> &#125;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">p</span> = Point &#123; x: <span class="number">10</span>, y: <span class="number">20</span> &#125;;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;:?&#125;&quot;</span>, p);          <span class="comment">// Debug</span></span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;:#?&#125;&quot;</span>, p);         <span class="comment">// Pretty Debug</span></span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;:&gt;10&#125;&quot;</span>, <span class="string">&quot;右&quot;</span>);     <span class="comment">// 右对齐宽 10</span></span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;:.3&#125;&quot;</span>, <span class="number">3.14159</span>);   <span class="comment">// 小数 3 位</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong><code>std::time</code></strong> 只提供 <code>Instant</code>&#x2F;<code>Duration</code>。日历日期需用 <strong><code>chrono</code></strong> crate。</p>
+</blockquote>
+<h3 id="4-排序与运算符重载"><a href="#4-排序与运算符重载" class="headerlink" title="4. 排序与运算符重载"></a>4. 排序与运算符重载</h3><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> std::ops::Add;</span><br><span class="line"></span><br><span class="line"><span class="meta">#[derive(Debug, Clone, Copy)]</span></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">Vec2</span> &#123; x: <span class="type">f64</span>, y: <span class="type">f64</span> &#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">impl</span> <span class="title class_">Add</span> <span class="keyword">for</span> <span class="title class_">Vec2</span> &#123;</span><br><span class="line">    <span class="keyword">type</span> <span class="title class_">Output</span> = Vec2;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">add</span>(<span class="keyword">self</span>, o: Vec2) <span class="punctuation">-&gt;</span> Vec2 &#123; Vec2 &#123; x: <span class="keyword">self</span>.x + o.x, y: <span class="keyword">self</span>.y + o.y &#125; &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">v</span> = <span class="built_in">vec!</span>[<span class="number">3</span>, <span class="number">1</span>, <span class="number">4</span>, <span class="number">1</span>, <span class="number">5</span>];</span><br><span class="line">    v.<span class="title function_ invoke__">sort</span>();                       <span class="comment">// 升序（实现 Ord）</span></span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;:?&#125;&quot;</span>, v);            <span class="comment">// [1, 1, 3, 4, 5]</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">a</span> = Vec2 &#123; x: <span class="number">1.0</span>, y: <span class="number">2.0</span> &#125;;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">b</span> = Vec2 &#123; x: <span class="number">3.0</span>, y: <span class="number">4.0</span> &#125;;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;:?&#125;&quot;</span>, a + b);        <span class="comment">// Vec2 &#123; x: 4, y: 6 &#125;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="三、生态与场景"><a href="#三、生态与场景" class="headerlink" title="三、生态与场景"></a>三、生态与场景</h2><table>
+<thead>
+<tr>
+<th>领域</th>
+<th>crate &#x2F; 项目</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>CLI</strong></td>
+<td><strong>clap</strong>（参数解析）、<strong>ripgrep</strong></td>
+</tr>
+<tr>
+<td><strong>Web</strong></td>
+<td><strong>axum</strong>、<strong>actix-web</strong></td>
+</tr>
+<tr>
+<td><strong>序列化</strong></td>
+<td><strong>serde</strong>（<code>#[derive(Serialize, Deserialize)]</code>）</td>
+</tr>
+<tr>
+<td><strong>异步运行时</strong></td>
+<td><strong>tokio</strong>、<strong>async-std</strong></td>
+</tr>
+<tr>
+<td><strong>并发并行</strong></td>
+<td><strong>rayon</strong>（数据并行）</td>
+</tr>
+<tr>
+<td><strong>Wasm</strong></td>
+<td><strong>wasm-pack</strong></td>
+</tr>
+<tr>
+<td><strong>系统</strong></td>
+<td>驱动、嵌入式 <strong>no_std</strong></td>
+</tr>
+</tbody></table>
+<p>与 <a href="/2026/05/01/Golang/Golang/" title="第一章：Golang 语言基础">第一章：Golang 语言基础</a> 对照：Rust 更偏<strong>零成本抽象 + 编译期安全</strong>，Go 更偏<strong>简单并发 + GC</strong>。容器化部署见 <a href="/2026/05/01/Cloud/Docker/" title="第一章：Docker 容器基础">第一章：Docker 容器基础</a>。</p>
+<p>安装：<strong>rustup</strong>（<a target="_blank" rel="noopener external nofollow noreferrer" href="https://rustup.rs/%EF%BC%89">https://rustup.rs/）</a> · 文档：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://doc.rust-lang.org/book/">https://doc.rust-lang.org/book/</a></p>
+<hr>
+<h2 id="四、axum-Web-框架实战"><a href="#四、axum-Web-框架实战" class="headerlink" title="四、axum Web 框架实战"></a>四、axum Web 框架实战</h2><p><strong>axum</strong> 基于 tokio + tower + hyper，提供路由、提取器、中间件，与生态无缝整合：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">// 依赖：axum = &quot;0.7&quot;, tokio = &#123; version = &quot;1&quot;, features = [&quot;full&quot;] &#125;</span><br><span class="line">//        serde = &#123; version = &quot;1&quot;, features = [&quot;derive&quot;] &#125;</span><br><span class="line">// use axum::&#123;routing::&#123;get, post&#125;, Router, Json, extract::Path&#125;;</span><br><span class="line">// use serde::&#123;Deserialize, Serialize&#125;;</span><br><span class="line">//</span><br><span class="line">// #[derive(Serialize, Deserialize)]</span><br><span class="line">// struct User &#123; name: String, age: u32 &#125;</span><br><span class="line">//</span><br><span class="line">// async fn health() -&gt; &amp;&#x27;static str &#123; &quot;OK&quot; &#125;</span><br><span class="line">// async fn get_user(Path(id): Path&lt;String&gt;) -&gt; Json&lt;User&gt; &#123; Json(User &#123; name: id, age: 18 &#125;) &#125;</span><br><span class="line">// async fn create_user(Json(u): Json&lt;User&gt;) -&gt; Json&lt;User&gt; &#123; Json(u) &#125;</span><br><span class="line">//</span><br><span class="line">// #[tokio::main]</span><br><span class="line">// async fn main() &#123;</span><br><span class="line">//     let app = Router::new()</span><br><span class="line">//         .route(&quot;/health&quot;, get(health))</span><br><span class="line">//         .route(&quot;/user/&#123;id&#125;&quot;, get(get_user))</span><br><span class="line">//         .route(&quot;/user&quot;, post(create_user));</span><br><span class="line">//     let listener = tokio::net::TcpListener::bind(&quot;0.0.0.0:3000&quot;).await.unwrap();</span><br><span class="line">//     axum::serve(listener, app).await.unwrap();</span><br><span class="line">// &#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>提取器</strong>（<code>FromRequest</code>）：从请求解析参数，如 <code>Path</code>&#x2F;<code>Query</code>&#x2F;<code>Json</code>&#x2F;<code>State</code>。<strong>中间件</strong>（tower <code>Layer</code>）：日志、鉴权、限流，可叠加。<strong>JSON</strong> 通过 serde 自动序列化&#x2F;反序列化。</p>
+<hr>
+<h2 id="五、tokio-异步运行时"><a href="#五、tokio-异步运行时" class="headerlink" title="五、tokio 异步运行时"></a>五、tokio 异步运行时</h2><p><strong>tokio</strong> 是最主流的异步运行时，提供 IO&#x2F;定时器&#x2F;任务调度：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">// 依赖：tokio = &#123; version = &quot;1&quot;, features = [&quot;full&quot;] &#125;</span><br><span class="line">// use tokio::time::sleep; use std::time::Duration;</span><br><span class="line">//</span><br><span class="line">// async fn task(name: &amp;str) -&gt; String &#123;</span><br><span class="line">//     sleep(Duration::from_millis(50)).await;</span><br><span class="line">//     format!(&quot;&#123;name&#125; 完成&quot;)</span><br><span class="line">// &#125;</span><br><span class="line">// #[tokio::main]</span><br><span class="line">// async fn main() &#123;</span><br><span class="line">//     let (a, b) = tokio::join!(task(&quot;A&quot;), task(&quot;B&quot;)); // 并发执行</span><br><span class="line">//     let h = tokio::spawn(async &#123; 1 + 2 &#125;);           // 后台任务</span><br><span class="line">//     println!(&quot;&#123;a&#125; | &#123;b&#125; | &#123;&#125;&quot;, h.await.unwrap());    // 3</span><br><span class="line">// &#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><code>#[tokio::main]</code> 宏把 <code>async fn main</code> 包进运行时。CPU 密集任务用 <code>tokio::task::spawn_blocking</code> 避免阻塞 reactor。</p>
+</blockquote>
+<hr>
+<h2 id="六、serde-与-sqlx"><a href="#六、serde-与-sqlx" class="headerlink" title="六、serde 与 sqlx"></a>六、serde 与 sqlx</h2><p><strong>serde</strong> 是序列化事实标准，<code>#[derive(Serialize, Deserialize)]</code> 一行搞定 JSON&#x2F;TOML&#x2F;YAML&#x2F;CSV：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">// 依赖：serde = &#123; version = &quot;1&quot;, features = [&quot;derive&quot;] &#125;, serde_json = &quot;1&quot;</span><br><span class="line">// use serde::&#123;Serialize, Deserialize&#125;;</span><br><span class="line">//</span><br><span class="line">// #[derive(Serialize, Deserialize)]</span><br><span class="line">// struct Config &#123; name: String, port: u16 &#125;</span><br><span class="line">//</span><br><span class="line">// fn main() &#123;</span><br><span class="line">//     let c = Config &#123; name: &quot;app&quot;.into(), port: 3000 &#125;;</span><br><span class="line">//     let json = serde_json::to_string(&amp;c).unwrap();</span><br><span class="line">//     println!(&quot;&#123;json&#125;&quot;); // &#123;&quot;name&quot;:&quot;app&quot;,&quot;port&quot;:3000&#125;</span><br><span class="line">//     let back: Config = serde_json::from_str(&amp;json).unwrap();</span><br><span class="line">//     println!(&quot;&#123;&#125; &#123;&#125;&quot;, back.name, back.port);</span><br><span class="line">// &#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>sqlx</strong> 异步数据库（PostgreSQL&#x2F;MySQL&#x2F;SQLite），编译期 SQL 校验：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">// 依赖：sqlx = &#123; version = &quot;0.7&quot;, features = [&quot;postgres&quot;, &quot;runtime-tokio&quot;] &#125;</span><br><span class="line">// use sqlx::postgres::PgPool;</span><br><span class="line">// #[derive(sqlx::FromRow)]</span><br><span class="line">// struct User &#123; id: i32, name: String &#125;</span><br><span class="line">// async fn list_users(pool: &amp;PgPool) -&gt; Vec&lt;User&gt; &#123;</span><br><span class="line">//     sqlx::query_as::&lt;_, User&gt;(&quot;SELECT id, name FROM users&quot;)</span><br><span class="line">//         .fetch_all(pool).await.unwrap()</span><br><span class="line">// &#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="七、测试"><a href="#七、测试" class="headerlink" title="七、测试"></a>七、测试</h2><p>Rust 测试分<strong>单元测试</strong>（<code>#[test]</code>）与<strong>集成测试</strong>（<code>tests/</code> 目录）：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">add</span>(a: <span class="type">i32</span>, b: <span class="type">i32</span>) <span class="punctuation">-&gt;</span> <span class="type">i32</span> &#123; a + b &#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">#[test]</span></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">test_add</span>() &#123;</span><br><span class="line">    <span class="built_in">assert_eq!</span>(<span class="title function_ invoke__">add</span>(<span class="number">1</span>, <span class="number">2</span>), <span class="number">3</span>);</span><br><span class="line">    <span class="built_in">assert_ne!</span>(<span class="title function_ invoke__">add</span>(<span class="number">1</span>, <span class="number">2</span>), <span class="number">4</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">#[test]</span></span><br><span class="line"><span class="meta">#[should_panic(expected = <span class="string">&quot;越界&quot;</span>)]</span></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">test_panic</span>() &#123; <span class="built_in">panic!</span>(<span class="string">&quot;越界&quot;</span>); &#125; <span class="comment">// 测试 panic 场景</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>异步测试</strong>用 <code>#[tokio::test]</code>，命令：<code>cargo test</code>（全跑）&#x2F; <code>cargo test test_add</code>（过滤）&#x2F; <code>cargo test -- --nocapture</code>（显示 println）。<strong>文档测试</strong>：<code>///</code> 注释里的代码块可被 <code>cargo test</code> 执行。</p>
+<hr>
+<h2 id="八、部署"><a href="#八、部署" class="headerlink" title="八、部署"></a>八、部署</h2><p><strong>交叉编译</strong>：用 <strong><code>cross</code></strong> 工具链（基于 Docker）或 <strong><code>cargo-ndk</code></strong>（Android）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">rustup target add x86_64-unknown-linux-musl  <span class="comment"># 静态链接</span></span><br><span class="line">cargo build --release --target x86_64-unknown-linux-musl</span><br></pre></td></tr></table></figure>
+
+<p><strong>Docker 多阶段构建</strong>（最小镜像）：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> rust:<span class="number">1.80</span> AS builder</span><br><span class="line"><span class="keyword">WORKDIR</span><span class="language-bash"> /app</span></span><br><span class="line"><span class="keyword">COPY</span><span class="language-bash"> . .</span></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> cargo build --release</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">FROM</span> debian:bookworm-slim</span><br><span class="line"><span class="keyword">COPY</span><span class="language-bash"> --from=builder /app/target/release/my_app /usr/local/bin/</span></span><br><span class="line"><span class="keyword">CMD</span><span class="language-bash"> [<span class="string">&quot;my_app&quot;</span>]</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>静态链接 + distroless&#x2F;alpine 可做到镜像 &lt; 20MB。详见 <a href="/2026/05/01/Cloud/Docker/" title="第一章：Docker 容器基础">第一章：Docker 容器基础</a>。</p>
+</blockquote>
+<hr>
+<h2 id="常见避坑"><a href="#常见避坑" class="headerlink" title="常见避坑"></a>常见避坑</h2><table>
+<thead>
+<tr>
+<th>场景</th>
+<th>错误</th>
+<th>正确做法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>unwrap</code> 在生产</td>
+<td><code>unwrap()</code> 遇错 panic</td>
+<td>用 <code>?</code>&#x2F;<code>expect</code> 带上下文</td>
+</tr>
+<tr>
+<td>阻塞 async 运行时</td>
+<td>在 <code>async fn</code> 里做 CPU 密集 → 卡死 reactor</td>
+<td>用 <code>spawn_blocking</code></td>
+</tr>
+<tr>
+<td>忘 <code>pub</code></td>
+<td>模块私有 → 外部不可见</td>
+<td>按需加 <code>pub</code>&#x2F;<code>pub(crate)</code></td>
+</tr>
+<tr>
+<td>字段未 <code>pub</code></td>
+<td>struct 可见但字段私有</td>
+<td>每个字段单独标 <code>pub</code></td>
+</tr>
+<tr>
+<td><code>chrono</code> 缺失</td>
+<td><code>std::time</code> 无日历 → 无法处理日期</td>
+<td>引入 <code>chrono</code> crate</td>
+</tr>
+<tr>
+<td><code>Mutex</code> 锁未释放</td>
+<td><code>lock().unwrap()</code> 后长持有 → 阻塞</td>
+<td>缩小临界区，及时 <code>drop</code></td>
+</tr>
+<tr>
+<td>编译慢</td>
+<td>debug 全量重编 → 慢</td>
+<td>用 <code>sccache</code>&#x2F;<code>cargo-nextest</code>&#x2F;分 crate</td>
+</tr>
+<tr>
+<td>二进制体积大</td>
+<td>release 未 strip → 大</td>
+<td><code>strip = true</code> in <code>Cargo.toml</code></td>
+</tr>
+<tr>
+<td>集成测试找不到库</td>
+<td><code>tests/</code> 无法 <code>use</code> crate</td>
+<td>lib.rs 导出，集成测试依赖本 crate</td>
+</tr>
+<tr>
+<td>镜像过大</td>
+<td>用 <code>rust:latest</code> 运行 → 数百 MB</td>
+<td>多阶段构建 + distroless&#x2F;alpine</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="本章小结"><a href="#本章小结" class="headerlink" title="本章小结"></a>本章小结</h2><table>
+<thead>
+<tr>
+<th>要点</th>
+<th>结论</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Cargo</td>
+<td>统一构建&#x2F;测试&#x2F;依赖&#x2F;文档；<code>Cargo.toml</code> 管依赖，<code>cargo add/test/clippy</code> 日常</td>
+</tr>
+<tr>
+<td>模块</td>
+<td><code>mod</code>&#x2F;<code>use</code>&#x2F;<code>pub</code> 组织可见性；<code>pub(crate)</code> 限 crate 内</td>
+</tr>
+<tr>
+<td>标准库</td>
+<td><code>fs/io</code>、<code>path</code>、<code>env/process</code>、<code>time</code>、<code>fmt</code>、<code>cmp/ops</code> 覆盖日常需求</td>
+</tr>
+<tr>
+<td>生态</td>
+<td>serde&#x2F;tokio&#x2F;axum&#x2F;rayon&#x2F;clap 成熟；CLI&#x2F;Web&#x2F;Wasm&#x2F;嵌入式均有方案</td>
+</tr>
+<tr>
+<td>axum</td>
+<td>路由+提取器+中间件+JSON，与 tokio&#x2F;tower&#x2F;serde 整合</td>
+</tr>
+<tr>
+<td>tokio</td>
+<td>主流异步运行时；<code>join!</code>&#x2F;<code>spawn</code>&#x2F;<code>spawn_blocking</code></td>
+</tr>
+<tr>
+<td>serde&#x2F;sqlx</td>
+<td>serde 序列化事实标准；sqlx 编译期 SQL 校验</td>
+</tr>
+<tr>
+<td>测试</td>
+<td><code>#[test]</code> 单元、<code>tests/</code> 集成、<code>#[tokio::test]</code> 异步、<code>///</code> 文档测试</td>
+</tr>
+<tr>
+<td>部署</td>
+<td>交叉编译 + Docker 多阶段 + 静态链接，镜像可 &lt; 20MB</td>
+</tr>
+</tbody></table>
+<hr>
+<blockquote>
+<p>上一篇：<a href="/2026/09/02/Rust/Rust/" title="第一章：Rust 入门与所有权系统">第一章：Rust 入门与所有权系统</a>　|　<a href="/2026/09/02/Rust/Rust%E7%B1%BB%E5%9E%8B%E7%B3%BB%E7%BB%9F%E4%B8%8Etrait/" title="第二章：Rust 类型系统与 trait">第二章：Rust 类型系统与 trait</a>　|　<a href="/2026/09/02/Rust/Rust%E5%B9%B6%E5%8F%91%E4%B8%8E%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86/" title="第三章：Rust 并发与错误处理">第三章：Rust 并发与错误处理</a></p>
+</blockquote>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Rust/" rel="tag"># Rust</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/09/02/Rust/Rust%E7%B1%BB%E5%9E%8B%E7%B3%BB%E7%BB%9F%E4%B8%8Etrait/" rel="prev" title="第二章：Rust 类型系统与 trait">
+                  <i class="fa fa-angle-left"></i> 第二章：Rust 类型系统与 trait
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2026/09/02/Rust/Rust/" rel="next" title="第一章：Rust 入门与所有权系统">
+                  第一章：Rust 入门与所有权系统 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">miracle</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">424k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">23:32</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener external nofollow noreferrer" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+<script>
+(function () {
+  function normalizeClipboard(s) {
+    return (s || '').replace(/\u00a0/g, ' ');
+  }
+
+  /** When innerText is empty, treat <br> as newlines (matches Hexo fenced + line_number HTML). */
+  function plainTextFromElement(el) {
+    if (!el) return '';
+    var t = el.innerText;
+    if (t != null && t !== '') return normalizeClipboard(t);
+    var clone = el.cloneNode(true);
+    clone.querySelectorAll('br').forEach(function (br) {
+      br.parentNode.replaceChild(document.createTextNode('\n'), br);
+    });
+    return normalizeClipboard(clone.textContent || '');
+  }
+
+  function extractFromFigure(fig) {
+    if (!fig) return '';
+    var cell = fig.querySelector('td.code') || fig.querySelector('.code');
+    if (cell) return plainTextFromElement(cell);
+    var pre = fig.querySelector('pre');
+    if (pre) return plainTextFromElement(pre);
+    var code = fig.querySelector('code');
+    return code ? plainTextFromElement(code) : '';
+  }
+
+  function extractForCopyBtn(btn) {
+    var fig = btn.closest('figure.highlight');
+    if (fig) return extractFromFigure(fig);
+    var wrap = btn.closest('.code-container');
+    if (wrap) {
+      var innerFig = wrap.querySelector('figure.highlight');
+      if (innerFig) return extractFromFigure(innerFig);
+      var preOnly = wrap.querySelector('pre');
+      if (preOnly) return plainTextFromElement(preOnly);
+    }
+    return '';
+  }
+
+  function setCopyIcon(btn, ok) {
+    var i = btn.querySelector('i');
+    if (i) i.className = ok ? 'fa fa-check-circle fa-fw' : 'fa fa-times-circle fa-fw';
+  }
+
+  function writeClipboard(text, btn) {
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(text).then(
+        function () { setCopyIcon(btn, true); },
+        function () { fallbackCopy(text, btn); }
+      );
+    }
+    fallbackCopy(text, btn);
+    return Promise.resolve();
+  }
+
+  function fallbackCopy(text, btn) {
+    try {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed';
+      ta.style.left = '-9999px';
+      document.body.appendChild(ta);
+      ta.select();
+      var ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      setCopyIcon(btn, ok);
+    } catch (e) {
+      setCopyIcon(btn, false);
+    }
+  }
+
+  document.addEventListener(
+    'click',
+    function (e) {
+      var btn = e.target.closest && e.target.closest('.copy-btn');
+      if (!btn) return;
+      if (!btn.closest('figure.highlight') && !btn.closest('.code-container')) return;
+      e.stopPropagation();
+      e.preventDefault();
+      var text = extractForCopyBtn(btn);
+      writeClipboard(text, btn);
+    },
+    true
+  );
+})();
+</script>
+
+</body>
+</html>
